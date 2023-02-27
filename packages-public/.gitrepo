@@ -6,6 +6,7 @@
 [subrepo]
 	remote = git@github.com:owlprotocol/owlprotocol-subrepo.git
 	branch = main
-	commit = 
+	commit = 144456f729a84a85cfdb18317dec7ae49886d114
 	method = merge
 	cmdver = 0.4.5
+	parent = 863d02a269f4e0ea04bf5cb3c400d0efa6805e41
