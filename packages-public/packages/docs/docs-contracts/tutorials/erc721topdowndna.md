@@ -79,6 +79,8 @@ The sample will have a small number of layers for each `trait`:
 </Box>
 </SimpleGrid>
 
+And no background at all.
+
 ### Hats (Detachable Accessory)
 
 <SimpleGrid className="features-grid" columns={{sm: 2, md: 4}} spacing={8}>
@@ -163,6 +165,10 @@ export const traitImageBg: NFTGenerativeTraitImage = {
     image_type: 'png',
     options: [
         {
+            value: 'None',
+            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+        },
+        {
             value: 'Dunes',
             image_url: 'ipfs://QmfSABDaq7V2WKrdTnK3ofnnbucax4e5jBcztXqL34zsrL/bg-dunes.png',
         },
@@ -171,6 +177,7 @@ export const traitImageBg: NFTGenerativeTraitImage = {
             image_url: 'ipfs://QmfSABDaq7V2WKrdTnK3ofnnbucax4e5jBcztXqL34zsrL/bg-downtown.png',
         },
     ],
+    probabilities: [1, 5, 5],
 };
 
 [...]
@@ -284,7 +291,7 @@ pnpm run build
 3. Now call the `generateSchemaJSON` command on the CLI Tool. We're building the index JS file to `lib/esm/index.js` for now (this will be changed to dist soon).
 
 ```
-| => node lib/esm/index.js generateSchemaJSON collection.js --projectFolder=projects/example-omo
+| => node dist/index.cjs generateSchemaJSON collection.js --projectFolder=projects/example-omo
 ```
 
 Which should output:
@@ -324,7 +331,7 @@ In this case and for your reference, we have uploaded these example JSONs here:
 For generating NFTs we use the CLI command: `generateRandomNFT`.
 
 ```
-| => node lib/esm/index.js generateRandomNFT collection.js 3 --project=projects/example-omo
+| => node dist/index.cjs generateRandomNFT collection.js 3 --project=projects/example-omo
 ```
 
 This will generate 3 items in the subfolder `output/items` in the project folder with their DNAs. For now these are the
@@ -411,7 +418,7 @@ Docs are coming soon that explain this in depth, for now you can follow the depl
 If everything is set up properly, you can now run:
 
 ```
-node lib/esm/index.js deployTopDown --projectFolder=projects/example-omo --deployCommon=true --debug=true
+node dist/index.cjs deployTopDown --projectFolder=projects/example-omo --deployCommon=true --debug=true
 ```
 
 Requirements:
@@ -462,7 +469,7 @@ Also the NFT item JSON files will be updated to track the deployment:
 You can use the `viewTopDown` command on the CLI to quickly view the NFT:
 
 ```
-node lib/esm/index.js viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a  --tokenId=1
+node dist/index.cjs viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a --tokenId=1
 ```
 
 This should show something similar to:
@@ -500,7 +507,7 @@ To do this, we call the `viewTopDown` command again, but with the `--debug` opti
 This will call the NFT contract's `tokenURI` method, which is that a NFT Marketplace that does not support the `nft-sdk`
 would typically call.
 
-`node lib/esm/index.js viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a  --tokenId=1 --debug`
+`node dist/index.cjs viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a --tokenId=1 --debug`
 
 For our example, the result at the end shows:
 
@@ -555,7 +562,7 @@ Which is:
 
 We use the `detachTopDown` command to remove/detach the NFT:
 
-`node lib/esm/index.js detachTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a -c 0x91a4Df19DE444cDA86ef24f61A6190838Cec2b22 --tokenId=1`
+`node dist/index.cjs detachTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a -c 0x91a4Df19DE444cDA86ef24f61A6190838Cec2b22 --tokenId=1`
 
 Outputs:
 
@@ -579,7 +586,7 @@ Now let's view the NFT again:
 
 Again we run:
 ```
-node lib/esm/index.js viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a  --tokenId=1 --debug
+node dist/index.cjs viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a  --tokenId=1 --debug
 ```
 
 Which gives us the `tokenUri`, `http://metadata.owlprotocol.xyz:32001/metadata/getMetadata/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAA...`
