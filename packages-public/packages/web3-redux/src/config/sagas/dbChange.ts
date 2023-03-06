@@ -1,6 +1,5 @@
 import { Action } from "redux";
 import { all, put } from "typed-redux-saga";
-import { Utils } from "@owlprotocol/contracts";
 import { eventGetPastAction } from "../../contracteventquery/actions/index.js";
 import { ContractEventSubscribeCRUD } from "../../contracteventsubscribe/crud.js";
 import { coder } from "../../utils/web3-eth-abi/index.js";
@@ -66,12 +65,9 @@ export function stopAssetSubscribe(networkId: string, account: string): {
     const addressTopic = coder.encodeParameter('address', account);
 
     actions.push(
-        ContractEventSubscribeCRUD.actions.delete({ networkId, address: '*', topic0: TransferERC20Topic, topic1: addressTopic, topic2: '*', topic3: '*' }),
-        ContractEventSubscribeCRUD.actions.delete({ networkId, address: '*', topic0: TransferERC20Topic, topic1: '*', topic2: addressTopic, topic3: '*' }),
-        ContractEventSubscribeCRUD.actions.delete({ networkId, address: '*', topic0: TransferSingleERC1155Topic, topic1: '*', topic2: addressTopic, topic3: '*' }),
-        ContractEventSubscribeCRUD.actions.delete({ networkId, address: '*', topic0: TransferSingleERC1155Topic, topic1: '*', topic2: '*', topic3: addressTopic }),
-        ContractEventSubscribeCRUD.actions.delete({ networkId, address: '*', topic0: TransferBatchERC1155Topic, topic1: '*', topic2: addressTopic, topic3: '*' }),
-        ContractEventSubscribeCRUD.actions.delete({ networkId, address: '*', topic0: TransferBatchERC1155Topic, topic1: '*', topic2: '*', topic3: addressTopic })
+        ContractEventSubscribeCRUD.actions.delete({ networkId, address: '*', topic0: '*', topic1: addressTopic, topic2: '*', topic3: '*' }),
+        ContractEventSubscribeCRUD.actions.delete({ networkId, address: '*', topic0: '*', topic1: '*', topic2: addressTopic, topic3: '*' }),
+        ContractEventSubscribeCRUD.actions.delete({ networkId, address: '*', topic0: '*', topic1: '*', topic2: '*', topic3: addressTopic }),
     )
     return { actions }
 }
