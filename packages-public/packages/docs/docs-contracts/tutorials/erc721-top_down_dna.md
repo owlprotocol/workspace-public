@@ -310,15 +310,15 @@ pnpm run build
 3. Now call the `generateSchemaJSON` command on the CLI Tool. We're building the index JS file to `lib/esm/index.js` for now (this will be changed to dist soon).
 
 ```
-| => node dist/index.cjs generateSchemaJSON collection.js --projectFolder=projects/example-omo
+| => node dist/index.cjs generateSchemaJSON collections.js --projectFolder=projects/example-omo
 ```
 
 Which should output:
 
 ```
 getProjectSubfolder /Users/owl/owl_protocol/owlprotocol/packages/cli/src/projects/example-omo/output
-Creating JSON(s) for collection.js to folder: /Users/owl/owl_protocol/owlprotocol/packages/cli/src/projects/example-omo/output
-projects/example-omo collection.js
+Creating JSON(s) for collections.js to folder: /Users/owl/owl_protocol/owlprotocol/packages/cli/src/projects/example-omo/output
+projects/example-omo collections.js
 Done
 ```
 
@@ -350,7 +350,7 @@ In this case and for your reference, we have uploaded these example JSONs here:
 For generating NFTs we use the CLI command: `generateRandomNFT`.
 
 ```
-| => node dist/index.cjs generateRandomNFT collection.js 3 --project=projects/example-omo
+| => node dist/index.cjs generateRandomNFT collections.js 3 --project=projects/example-omo
 ```
 
 This will generate 3 items in the subfolder `output/items` in the project folder with their DNAs. For now these are the

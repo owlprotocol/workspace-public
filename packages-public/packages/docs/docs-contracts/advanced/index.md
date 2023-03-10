@@ -7,7 +7,7 @@ slug: '/advanced'
 
 ### Deployment
 
-In [deploy](https://github.com/owlprotocol/contracts/tree/master/packages/owlprotocol-contracts/deploy/001_Implementation), run `ProxyFactory.ts` script. Take the address outputted and place it in variable `ProxyFactoryAddress` in `CrafterTransfer.ts`
+TODO
 
 ### Architecture
 

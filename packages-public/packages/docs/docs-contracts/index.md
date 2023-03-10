@@ -23,7 +23,7 @@ Explore step by step, how to create a new collection NFT profile pic, with dynam
 [**CLICK HERE**](/contracts/tutorial-topdowndna)
 :::
 
-## Our **standards** are Smart Contract **Primitives** that can be combined to create amazing use cases for Dynamic NFTs (DNFTs).
+## Our **standards** are Smart Contract **Primitives** that can be combined to create complex use cases for Dynamic NFTs (DNFTs).
 
 ### 1. Dynamic NFT Data
 
@@ -36,7 +36,7 @@ The most basic requirement for Dynamic NFTs is a standardized way to *encode dat
 
 2. **Flexible**
 
-    For our Dynamic NFT data standard we extend [EIP-721] with only the minimal methods necessary to implement Dynamic NFTs. a single arbitrary
+    For our Dynamic NFT data standard we extend [EIP-721] with only the minimal methods necessary to implement Dynamic NFTs.
 
     Our data standard uses only a **single** arbitrary length byte array of data per NFT, simply referred to as the **DNA**.
 
