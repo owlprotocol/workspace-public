@@ -1,7 +1,8 @@
 ---
 sidebar_position: 1
 ---
-# Use Cases
+
+# Tutorials
 
 Our tutorials will take you through the basic use cases and are the best way to become acquainted with Owl Protocol's
 Dynamic NFT features:
