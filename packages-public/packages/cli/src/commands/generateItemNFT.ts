@@ -10,15 +10,15 @@ const { map } = lodash;
 
 let debug = false;
 
-export const command = 'generateRandomNFT <collectionJS> <numItems>';
+export const command = 'generateItemNFT <nftItemJS>';
 
-export const describe = `Devtool - Generates random instances for NFTGenerativeCollection
+export const describe = `Devtool - Generates the NFT Item's JS
 
 For now this always outputs to the folder "./output/items/" relative to the projectFolder
 
-collectionJS - path to the collection's JS file, relative from the projectFolder
+nftItemJS - path to the NFT item file, relative from the projectFolder
 
-e.g. node dist/index.cjs generateRandomNFT collections.js 3 --project=projects/example-omo
+e.g. node dist/index.cjs generateItemNFT items/collection-item-1.js --project=projects/example-omo
 
 
 
@@ -43,50 +43,39 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 };
 
 // TODO: this should have an option to import from Schema JSON
-export const handler = async (argv: Argv & { numItems?: number }) => {
+export const handler = async (argv: Argv & { nftItemJS?: string }) => {
     argvCheck(argv);
 
     debug = !!argv.debug || false;
 
     let projectFolder = argv.projectFolder!;
-    const collectionJS = argv.collectionJS!;
+    const nftItemJS = argv.nftItemJS!;
+
+    const nftItemFilename = path.parse(nftItemJS).name;
 
     let outputFolder = getProjectSubfolder(argv, 'output/items');
 
-    console.log(`Generating NFTGenerativeItem Random JSON(s) for ${collectionJS} to folder: ${outputFolder}`);
+    // TODO: rename `importCollectionClass`
+    const nftItemExport = await importCollectionClass(projectFolder, nftItemJS);
+    const nftItem = nftItemExport.default;
 
-    const nftGenerativeCollectionExport = await importCollectionClass(projectFolder, collectionJS);
+    debug && console.debug(nftItem);
 
-    const collParent = nftGenerativeCollectionExport.default;
-    const numItems: number = <number>argv.numItems;
-    const nftItems: Array<NFTGenerativeItemClass> = Array.from({ length: numItems }, () =>
-        collParent.generateInstance(),
+    fs.writeFileSync(
+        path.resolve(outputFolder, `${nftItemFilename}.json`),
+        JSON.stringify(nftItem.fullDnaWithChildren(), null, 2),
     );
-
-    debug && console.debug('nftItems', nftItems);
-
-    map(nftItems, async (nftItem, i) => {
-        fs.writeFileSync(
-            path.resolve(outputFolder, `collection-item-${i + 1}.json`),
-            JSON.stringify(nftItem.fullDnaWithChildren(), null, 2),
-        );
-    });
 
     console.log('Done');
 };
 
 const argvCheck = (argv: Argv) => {
-    if (!check.string(argv.collectionJS) || (!check.undefined(argv.outputFolder) && !check.string(argv.outputFolder))) {
+    if (!check.string(argv.nftItemJS) || (!check.undefined(argv.outputFolder) && !check.string(argv.outputFolder))) {
         console.error(`Args collectionJS and outputPath must both be strings`);
         process.exit();
     }
 
     if (!check.undefined(argv.outputFolder) && fs.existsSync(argv.outputFolder)) {
         console.error(`Args collectionJS and outputPath must both be strings`);
-    }
-
-    if (!check.number(argv.numItems)) {
-        console.error(`Arg <numItems> is not a number, passed in value "${argv.numItems}"`);
-        process.exit();
     }
 };

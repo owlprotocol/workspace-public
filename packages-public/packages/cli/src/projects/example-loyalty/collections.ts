@@ -25,14 +25,14 @@ const collExampleLoyaltyDef: NFTGenerativeCollection = {
     fee_recipient: '0xc2A3cB7d4BF24e456051E3a710057ac61f5dB133',
     generatedImageType: 'png',
     traits: {
-        attrMemberIdNumber,
-        attrTierEnum,
-        attrTierBgImage,
-        attrTierIconImage,
-        attrPointsNumber,
-        attrCountryEnum,
-        attrSubGroupEnum,
-        attrLastTransferTimestampNumber
+        'Member ID': attrMemberIdNumber,
+        'Status Tier': attrTierEnum,
+        'Background': attrTierBgImage,
+        'Tier Badge': attrTierIconImage,
+        'Points': attrPointsNumber,
+        'Country': attrCountryEnum,
+        'Sub Group': attrSubGroupEnum,
+        'Last Transferred': attrLastTransferTimestampNumber
     }
 };
 

@@ -4,8 +4,9 @@ export const attrMemberIdNumber: NFTGenerativeTraitNumber = {
     name: 'Member ID',
     type: 'number',
     description: `Owner's membership ID`,
-    min: 10000000000,
+    min: 1000000,
     max: 99999999999,
+    abi: 'uint48'
 }
 
 export const attrTierEnum: NFTGenerativeTraitEnum = {
@@ -76,7 +77,8 @@ export const attrPointsNumber: NFTGenerativeTraitNumber = {
     type: 'number',
     description: 'Points collected from participation',
     min: 0,
-    max: 9999999999,
+    max: 16777215,
+    abi: 'uint24'
 };
 
 export const attrCountryEnum: NFTGenerativeTraitEnum = {
@@ -295,7 +297,8 @@ export const attrLastTransferTimestampNumber: NFTGenerativeTraitNumber = {
     type: 'number',
     description: 'Time this NFT was last transferred, as seconds since the epoch - JS time.now() / 1000',
     min: 0,
-    max: 4294967295
+    max: 4294967295,
+    abi: 'uint32'
 };
 
 
