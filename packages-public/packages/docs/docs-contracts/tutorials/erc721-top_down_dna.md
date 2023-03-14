@@ -371,7 +371,7 @@ See: [cli/src/commands/viewTopDown.ts](https://github.com/owlprotocol/owlprotoco
 
 You will need to create an `owlproject.json` file in the project folder:
 
-```
+```json
 {
   "rootContract": {
     "tokenSymbol": "ExampleNFT",
@@ -492,7 +492,7 @@ node dist/index.cjs viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44
 ```
 
 This should show something similar to:
-```
+```json
 View ERC721TopDownDna 0xe3f62b8f72E49e75081B991685AeA19dd783b44a on ganache
 Fetching Metadata Schema JSON from: https:/leovigna.mypinata.cloud/ipfs/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9
 {
@@ -543,7 +543,7 @@ Yes, that's a very ugly `base64` encoded DNA string, but that's never seen by us
 
 If you `curl` that URL, you will get:
 
-```
+```json
 | => curl -s http://metadata.owlprotocol.xyz:32001/metadata/getMetadata/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA | jq '.'
 {
   "description": "Example from https://docs.owlprotocol.xyz/contracts/tutorial-topdowndna",
@@ -585,7 +585,7 @@ We use the `detachTopDown` command to remove/detach the NFT:
 
 Outputs:
 
-```
+```json
 Detaching from ERC721TopDownDna on ganache
 Fetching Metadata Schema JSON from: https:/leovigna.mypinata.cloud/ipfs/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9
 {

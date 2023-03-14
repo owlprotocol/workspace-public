@@ -7,7 +7,7 @@ slug: '/advanced'
 
 ### Deployment
 
-TODO
+Use our [CLI Tool](/contracts/getting-started/cli)'s command `deployCommon` to deploy the base smart contracts, beacons, and proxies.
 
 ### Architecture
 
