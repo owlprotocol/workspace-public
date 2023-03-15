@@ -17,11 +17,11 @@ let debug = false;
 
 import { NFTGenerativeCollectionClass, NFTGenerativeItemClass } from '@owlprotocol/nft-sdk';
 
-export const command = 'viewTopDown';
+export const command = 'updateDnaNFT';
 
 export const describe = `Introspect and view the NFT TopDownDna contract
 
-e.g. node dist/index.cjs viewTopDown --root=0xbE705Ab239b7CE7c078E84965A518834Cb7CFE4b --tokenId=1
+e.g. node dist/index.cjs updateDnaNFT --root=0xbE705Ab239b7CE7c078E84965A518834Cb7CFE4b --tokenId=1 --dna=AAAA...=
 
 
 
@@ -42,6 +42,14 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
             describe: 'tokenId',
             alias: ['token'],
             type: 'number'
+        })
+        .option('trait', {
+            describe: 'trait to edit',
+            type: 'string'
+        })
+        .option('attribute', {
+            describe: 'new attribute/value',
+            alias: ['attr']
         })
         .demandOption(['rootContractAddr', 'tokenId']);
 };
@@ -81,16 +89,24 @@ export const handler = async (argv: Argv) => {
 
     debug && console.debug(collectionClass);
 
+    // this returns the abi encoded parent + children arrayify
     const fullDnaWithChildren = await rootContract.getDna(tokenId);
     const nftItem = collectionClass.createFromFullDna(fullDnaWithChildren);
 
-    const attrWithChildren = nftItem.attributesFormattedWithChildren();
+    console.log('Initial', nftItem.attributesFormatted());
 
-    console.log(nftItem.attributesFormatted());
-    mapValues(attrWithChildren.children, (c: any, k) => {
-        console.log(k, c.attributes);
-    });
-
-    debug && console.log('tokenUri', await rootContract.tokenURI(tokenId));
     debug && console.debug('fullDnaWithChildren', fullDnaWithChildren);
+
+    const nftItemUpdated = nftItem.withAttribute(argv.trait as string, argv.attribute as string | number);
+
+    console.log('New', nftItemUpdated.attributesFormatted());
+
+    debug && console.debug(nftItemUpdated.dna());
+
+    const txUpdate = await rootContract.updateDna(tokenId, nftItemUpdated.dna());
+
+    await txUpdate.wait(1);
+
+    console.log('Done');
+
 }
