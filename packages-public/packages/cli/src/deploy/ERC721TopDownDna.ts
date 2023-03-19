@@ -42,8 +42,6 @@ export const deployERC721TopDownDna = async (
     let rootTokenId: number;
     let nonce = await provider.getTransactionCount(signerAddress);
 
-    console.log(`deployERC721TopDownDna - nonce start: ${nonce}`);
-
     const contractPromises = mapValues(contracts, async (c, k): Promise<MintNFTResult> => {
         let tokenId: number;
         const contract = c.contract;
@@ -62,7 +60,6 @@ export const deployERC721TopDownDna = async (
 
         try {
             const owner = await contract.ownerOf(tokenId);
-            // console.debug(`${k} ${tokenId} exists, owned by: ${owner}`);
             const fullDna = await contract.getDna(tokenId);
             const [dna, fullDnaChildren] = utils.defaultAbiCoder.decode(['bytes', 'bytes[]'], fullDna);
             return {
@@ -73,7 +70,6 @@ export const deployERC721TopDownDna = async (
                 deployed: false,
             };
         } catch (err) {
-            //console.error(error);
             //Not minted
             // TODO: capture the mints and return to caller for faster processing with respect to nonce
             const tx = await contract.safeMintWithDna(signerAddress, dna, {

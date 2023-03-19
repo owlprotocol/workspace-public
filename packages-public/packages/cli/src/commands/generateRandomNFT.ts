@@ -76,13 +76,9 @@ export const handler = async (argv: Argv & { numItems?: number }) => {
 };
 
 const argvCheck = (argv: Argv) => {
-    if (!check.string(argv.collectionJS) || (!check.undefined(argv.outputFolder) && !check.string(argv.outputFolder))) {
-        console.error(`Args collectionJS and outputPath must both be strings`);
+    if (!check.string(argv.collectionJS) || (!check.undefined(argv.projectFolder) && !check.string(argv.projectFolder))) {
+        console.error(`Args "collectionJS" and "projectFolder" must both be strings`);
         process.exit();
-    }
-
-    if (!check.undefined(argv.outputFolder) && fs.existsSync(argv.outputFolder)) {
-        console.error(`Args collectionJS and outputPath must both be strings`);
     }
 
     if (!check.number(argv.numItems)) {
