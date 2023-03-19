@@ -1,6 +1,6 @@
 {
   "rootContract": {
-    "tokenSymbol": "ExampleOmoNFT",
+    "tokenSymbol": "InnoVot",
     "tokenIdStart": 1,
     "cfg": {
       "ipfsEndpoint": "https://leovigna.mypinata.cloud",
