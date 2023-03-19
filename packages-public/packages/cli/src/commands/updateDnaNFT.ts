@@ -41,24 +41,24 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
         .option('rootContractAddr', {
             describe: 'Parent/root contract address',
             alias: ['r', 'root'],
-            type: 'string'
+            type: 'string',
         })
         .option('tokenId', {
             describe: 'tokenId',
             alias: ['token'],
-            type: 'number'
+            type: 'number',
         })
         .option('trait', {
             describe: 'trait to edit',
-            type: 'string'
+            type: 'string',
         })
         .option('attribute', {
             describe: 'new attribute/value',
-            alias: ['attr']
+            alias: ['attr'],
         })
         .option('updateJSON', {
             describe: 'JSON file of the attrs to update',
-            alias: ['json']
+            alias: ['json'],
         })
         .demandOption(['rootContractAddr', 'tokenId']);
 };
@@ -123,15 +123,20 @@ export const handler = async (argv: Argv) => {
     await txUpdate.wait(1);
 
     console.log('Done');
+};
 
-}
-
-const getNftItemUpdatedByTrait = (nftItem: NFTGenerativeItemInterface, trait: string, attribute: string | number): NFTGenerativeItemInterface => {
+const getNftItemUpdatedByTrait = (
+    nftItem: NFTGenerativeItemInterface,
+    trait: string,
+    attribute: string | number,
+): NFTGenerativeItemInterface => {
     return nftItem.withAttribute(trait, attribute);
-}
+};
 
-const getNftItemUpdatedByJSON = (nftItem: NFTGenerativeItemInterface, jsonFilepath: string): NFTGenerativeItemInterface => {
-
+const getNftItemUpdatedByJSON = (
+    nftItem: NFTGenerativeItemInterface,
+    jsonFilepath: string,
+): NFTGenerativeItemInterface => {
     const newAttrs = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'src', jsonFilepath)).toString());
 
     const traitKeys = _.keys(newAttrs);
@@ -143,16 +148,21 @@ const getNftItemUpdatedByJSON = (nftItem: NFTGenerativeItemInterface, jsonFilepa
     }
 
     return nftItemUpdated;
-}
+};
 
 const argvCheck = (argv: Argv) => {
-    if ((!check.undefined(argv.trait) || !check.undefined(argv.attr)) && (check.undefined(argv.trait) || check.undefined(argv.attr))) {
+    if (
+        (!check.undefined(argv.trait) || !check.undefined(argv.attr)) &&
+        (check.undefined(argv.trait) || check.undefined(argv.attr))
+    ) {
         console.error(`ERROR: Args "trait" and "attribute" MUST both be defined, if either is passed in.`);
         process.exit();
     }
 
     if ((!check.undefined(argv.trait) || !check.undefined(argv.attr)) && !check.undefined(argv.json)) {
-        console.error(`ERROR: Args "updateJSON" file, and args "trait" and "attribute" are both defined, please choose one.`);
+        console.error(
+            `ERROR: Args "updateJSON" file, and args "trait" and "attribute" are both defined, please choose one.`,
+        );
         process.exit();
     }
 

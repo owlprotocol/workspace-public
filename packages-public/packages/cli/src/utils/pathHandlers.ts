@@ -20,21 +20,19 @@ export type Argv = yargs.ArgumentsCamelCase & {
  * @param subFolder - OPTIONAL - overrides the outputFolder, and must already exist
  */
 export const getProjectFolder = (argv: Argv): string => {
-
     if (!check.string(argv.projectFolder)) {
         console.error(`getProjectFolder - project folder required, but not passed in`);
         process.exit();
     }
 
     if (argv.projectFolder.substring(0, 1) === '/' || argv.projectFolder.substring(0, 1) === '\\') {
-        console.error(`getProjectFolder - project folder cannot be an absolute path - passed in: ${argv.projectFolder}`);
+        console.error(
+            `getProjectFolder - project folder cannot be an absolute path - passed in: ${argv.projectFolder}`,
+        );
         process.exit();
     }
 
-    const projectFolder = path.resolve(
-        'src',
-        argv.projectFolder
-    );
+    const projectFolder = path.resolve('src', argv.projectFolder);
 
     if (!fs.existsSync(projectFolder)) {
         fs.mkdirSync(projectFolder, { recursive: true });
@@ -49,7 +47,6 @@ export const getProjectFolder = (argv: Argv): string => {
  * - Also respects an "overrideOutputFolder" option
  */
 export const getProjectSubfolder = (argv: Argv, subfolder: string) => {
-
     let projectSubfolder;
 
     if (argv.outputFolder) {
@@ -62,17 +59,14 @@ export const getProjectSubfolder = (argv: Argv, subfolder: string) => {
     } else {
         const projectFolder = getProjectFolder(argv);
 
-        projectSubfolder = path.resolve(
-            projectFolder,
-            subfolder
-        );
+        projectSubfolder = path.resolve(projectFolder, subfolder);
         console.debug(`getProjectSubfolder ${projectSubfolder}`);
         if (!fs.existsSync(projectSubfolder)) {
             fs.mkdirSync(projectSubfolder, { recursive: true });
         }
     }
     return projectSubfolder;
-}
+};
 
 export const importCollectionClass = async (projectFolder: string, collectionJS: string): Promise<{ default: any }> => {
     console.debug(projectFolder, collectionJS);

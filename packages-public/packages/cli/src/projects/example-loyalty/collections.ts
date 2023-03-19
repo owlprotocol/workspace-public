@@ -6,7 +6,7 @@ import {
     attrPointsNumber,
     attrCountryEnum,
     attrLastTransferTimestampNumber,
-    attrSubGroupEnum
+    attrSubGroupEnum,
 } from './traits.js';
 
 import {
@@ -27,26 +27,26 @@ const collExampleLoyaltyDef: NFTGenerativeCollection = {
     traits: {
         'Member ID': attrMemberIdNumber,
         'Status Tier': attrTierEnum,
-        'Background': attrTierBgImage,
+        Background: attrTierBgImage,
         'Tier Badge': attrTierIconImage,
-        'Points': attrPointsNumber,
-        'Country': attrCountryEnum,
+        Points: attrPointsNumber,
+        Country: attrCountryEnum,
         'Sub Group': attrSubGroupEnum,
-        'Last Transferred': attrLastTransferTimestampNumber
-    }
+        'Last Transferred': attrLastTransferTimestampNumber,
+    },
 };
 
-export const collExampleLoyalty = NFTGenerativeCollectionClass.fromData(collExampleLoyaltyDef) as NFTGenerativeCollectionClass<
-    {
-        'Member ID': NFTGenerativeTraitNumberClass,
-        'Status Tier': NFTGenerativeTraitEnumClass,
-        'Background': NFTGenerativeTraitImageClass,
-        'Tier Badge': NFTGenerativeTraitImageClass,
-        'Points': NFTGenerativeTraitNumberClass,
-        'Country': NFTGenerativeTraitEnumClass,
-        'Sub Group': NFTGenerativeTraitEnumClass
-        'Last Transferred': NFTGenerativeTraitNumberClass
-    }
->;
+export const collExampleLoyalty = NFTGenerativeCollectionClass.fromData(
+    collExampleLoyaltyDef,
+) as NFTGenerativeCollectionClass<{
+    'Member ID': NFTGenerativeTraitNumberClass;
+    'Status Tier': NFTGenerativeTraitEnumClass;
+    Background: NFTGenerativeTraitImageClass;
+    'Tier Badge': NFTGenerativeTraitImageClass;
+    Points: NFTGenerativeTraitNumberClass;
+    Country: NFTGenerativeTraitEnumClass;
+    'Sub Group': NFTGenerativeTraitEnumClass;
+    'Last Transferred': NFTGenerativeTraitNumberClass;
+}>;
 
 export default collExampleLoyaltyDef;

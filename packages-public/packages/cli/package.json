@@ -1,8 +1,6 @@
 {
     "name": "@owlprotocol/nft-sdk-cli",
     "version": "1.2.0",
-    "private": true,
-    "homepage": "https://owlprotocol.github.io/starter-typescript",
     "license": "MIT",
     "type": "module",
     "main": "./lib/cjs/index.cjs",

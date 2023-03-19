@@ -28,7 +28,7 @@ export const deployERC721TopDownDna = async (
     owlProject: OwlProject,
     nftItem: NFTGenerativeItemInterface,
     contracts: Record<string, any>,
-    factories: FactoriesResult
+    factories: FactoriesResult,
 ) => {
     if (!factories.initialized) {
         console.error('Call to deployERC721TopDownDna does not have factories initialized');

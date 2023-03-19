@@ -36,12 +36,12 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
         .option('rootContractAddr', {
             describe: 'Parent/root contract address',
             alias: ['r', 'root'],
-            type: 'string'
+            type: 'string',
         })
         .option('tokenId', {
             describe: 'tokenId',
             alias: ['token'],
-            type: 'number'
+            type: 'number',
         })
         .demandOption(['rootContractAddr']);
 };
@@ -50,5 +50,4 @@ export const handler = async (argv: Argv) => {
     console.log(`View ERC721TopDownDna ${argv.rootContractAddr} on ${NETWORK}`);
 
     debug = !!argv.debug || false;
-
 };

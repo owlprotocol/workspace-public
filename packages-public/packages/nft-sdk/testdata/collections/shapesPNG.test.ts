@@ -5,7 +5,7 @@ import { omit } from 'lodash-es';
 import { readFileSync, writeFileSync } from 'fs';
 
 import { collectionShapesPNG, bgCirclePNG, fgCirclePNG } from './shapesPNG.js';
-import { NFTGenerativeTraitImageOption } from '../types/index.js';
+import { NFTGenerativeTraitImageOption } from '../../src/index.js';
 
 describe('NFTGenerativeCollectionClass', () => {
     const mergeOptions = { Canvas, Image };

@@ -33,7 +33,7 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
             This is usually relative to the compiled src, by default we use a folder called "projects".
             e.g. "projects/acme"
             `,
-            type: 'string'
+            type: 'string',
         })
         .option('debug', {
             describe: 'Outputs debug statements',

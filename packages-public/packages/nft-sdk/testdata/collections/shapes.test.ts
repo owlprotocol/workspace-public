@@ -6,8 +6,8 @@ import { omit } from 'lodash-es';
 import { writeFileSync } from 'fs';
 import { collectionShapes } from './shapes.js';
 import { traitColormap } from './colormap.js';
-import { svgToString } from '../utils/svgToString.js';
-import { NFTGenerativeTraitImageOption } from '../types/index.js';
+import { svgToString } from '../../src/utils/svgToString.js';
+import { NFTGenerativeTraitImageOption } from '../../src/index.js';
 
 describe('NFTGenerativeCollectionClass', () => {
     const mergeOptions = { Canvas, Image };

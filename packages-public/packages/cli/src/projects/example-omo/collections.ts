@@ -1,9 +1,4 @@
-import {
-    traitEnumVibe,
-    traitImageBg,
-    traitImageBody,
-    traitImageHats
-} from './traits.js';
+import { traitEnumVibe, traitImageBg, traitImageBody, traitImageHats } from './traits.js';
 
 import {
     NFTGenerativeCollection,

@@ -6,8 +6,8 @@ export const attrMemberIdNumber: NFTGenerativeTraitNumber = {
     description: `Owner's membership ID`,
     min: 1000000,
     max: 99999999999,
-    abi: 'uint48'
-}
+    abi: 'uint48',
+};
 
 export const attrTierEnum: NFTGenerativeTraitEnum = {
     name: 'Status Tier',
@@ -40,8 +40,8 @@ export const attrTierBgImage: NFTGenerativeTraitImage = {
         {
             value: 'Tunnels',
             image_url: 'ipfs://QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-squares.png',
-        }
-    ]
+        },
+    ],
 };
 
 export const attrTierIconImage: NFTGenerativeTraitImage = {
@@ -68,8 +68,8 @@ export const attrTierIconImage: NFTGenerativeTraitImage = {
         {
             value: 'Diamond',
             image_url: 'ipfs://QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-diamond.png',
-        }
-    ]
+        },
+    ],
 };
 
 export const attrPointsNumber: NFTGenerativeTraitNumber = {
@@ -78,7 +78,7 @@ export const attrPointsNumber: NFTGenerativeTraitNumber = {
     description: 'Points collected from participation',
     min: 0,
     max: 16777215,
-    abi: 'uint24'
+    abi: 'uint24',
 };
 
 export const attrCountryEnum: NFTGenerativeTraitEnum = {
@@ -280,8 +280,8 @@ export const attrCountryEnum: NFTGenerativeTraitEnum = {
         'Vietnam',
         'Yemen',
         'Zambia',
-        'Zimbabwe'
-    ]
+        'Zimbabwe',
+    ],
 };
 
 export const attrSubGroupEnum: NFTGenerativeTraitEnum = {
@@ -289,7 +289,7 @@ export const attrSubGroupEnum: NFTGenerativeTraitEnum = {
     type: 'enum',
     description: 'The special subgroup the user is part of, if any',
     options: ['None', 'Yacht Club', 'Car Club', 'Diving Club'],
-    abi: 'uint16'
+    abi: 'uint16',
 };
 
 export const attrLastTransferTimestampNumber: NFTGenerativeTraitNumber = {
@@ -298,7 +298,5 @@ export const attrLastTransferTimestampNumber: NFTGenerativeTraitNumber = {
     description: 'Time this NFT was last transferred, as seconds since the epoch - JS time.now() / 1000',
     min: 0,
     max: 4294967295,
-    abi: 'uint32'
+    abi: 'uint32',
 };
-
-

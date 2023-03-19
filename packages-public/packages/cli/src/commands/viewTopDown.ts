@@ -35,12 +35,12 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
         .option('rootContractAddr', {
             describe: 'Parent/root contract address',
             alias: ['r', 'root'],
-            type: 'string'
+            type: 'string',
         })
         .option('tokenId', {
             describe: 'tokenId',
             alias: ['token'],
-            type: 'number'
+            type: 'number',
         })
         .demandOption(['rootContractAddr', 'tokenId']);
 };
@@ -83,17 +83,15 @@ export const handler = async (argv: Argv) => {
     const fullDnaWithChildren = await rootContract.getDna(tokenId);
     const nftItem = collectionClass.createFromFullDna(fullDnaWithChildren);
 
-    const owner = await rootContract.ownerOf(tokenId) as string;
+    const owner = (await rootContract.ownerOf(tokenId)) as string;
 
     dumpInfoNFT(tokenId, owner, nftItem);
 
     debug && console.log('tokenUri', await rootContract.tokenURI(tokenId));
     debug && console.debug('fullDnaWithChildren', fullDnaWithChildren);
-
-}
+};
 
 const dumpInfoNFT = (tokenId: number, owner: string, nftItem: NFTGenerativeItemInterface) => {
-
     console.log(`NFT tokenId: ${tokenId} - owned by ${owner}`);
 
     const attrWithChildren = nftItem.attributesFormattedWithChildren();
@@ -102,4 +100,4 @@ const dumpInfoNFT = (tokenId: number, owner: string, nftItem: NFTGenerativeItemI
     mapValues(attrWithChildren.children, (c: any, k) => {
         console.log(k, c.attributes);
     });
-}
+};
