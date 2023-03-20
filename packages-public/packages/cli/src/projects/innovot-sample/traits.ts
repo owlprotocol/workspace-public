@@ -7,6 +7,12 @@ export const traitEnumName: NFTGenerativeTraitEnum = {
     abi: 'uint16'
 }
 
+/*
+Based on the Outfit
+—Inattention—  Designer
+—Impulsivity— Party
+—Hyperactivity — Thread Haus
+ */
 export const traitEnumSignificance: NFTGenerativeTraitEnum = {
     name: 'Significance',
     type: 'enum',
@@ -24,7 +30,7 @@ export const traitImageBg: NFTGenerativeTraitImage = {
         },
         {
             value: 'Orange',
-            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+            image_url: 'ipfs://QmdKp4SD14hTVFqbhRBgN24qzLwFG5v1xW7FdGLQVo4TCT',
         }
     ]
 }
@@ -36,11 +42,11 @@ export const traitImageLight: NFTGenerativeTraitImage = {
     options: [
         {
             value: 'Blue [Medication]',
-            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+            image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/light/Blue-Medication.png',
         },
         {
             value: 'Yellow [Mindful Meditation]',
-            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+            image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/light/Yellow-Mindful_Meditation.png',
         }
     ]
 }
@@ -52,7 +58,7 @@ export const traitImageBase: NFTGenerativeTraitImage = {
     options: [
         {
             value: 'Default',
-            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+            image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/base/1.png',
         }
     ]
 }
@@ -64,11 +70,11 @@ export const traitImageOutfit: NFTGenerativeTraitImage = {
     options: [
         {
             value: 'Party - Suit 2',
-            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+            image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/outfit/Party-Suit_2.png',
         },
         {
             value: 'Thread Haus - Blue Hoodie',
-            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+            image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/outfit/ThreadHaus-Blue_Hoodie.png',
         }
     ]
 }
@@ -80,11 +86,11 @@ export const traitImageGlasses: NFTGenerativeTraitImage = {
     options: [
         {
             value: 'Party - Glasses 17',
-            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+            image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/glasses/Party-Glasses_17.png',
         },
         {
             value: 'Thread Haus - Kani Glasses',
-            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+            image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/glasses/ThreadHaus-Kani_Glasses.png',
         }
     ]
 }
@@ -96,11 +102,11 @@ export const traitImageHat: NFTGenerativeTraitImage = {
     options: [
         {
             value: 'Sport - Blue Baseball Cap',
-            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+            image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/hat/Sport-Blue_Baseball_Cap.png',
         },
         {
             value: 'Military - R3 Crew Cap Camo',
-            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+            image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/hat/Military-R3_Crew_Cap_Camo.png',
         }
     ]
 }
@@ -112,11 +118,11 @@ export const traitImageFacialHair: NFTGenerativeTraitImage = {
     options: [
         {
             value: 'Facial Hair 1',
-            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+            image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/facial_hair/Facial_Hair_1.png',
         },
         {
             value: 'Flat Beard 2',
-            image_url: 'ipfs://QmeYhQsx2PGeKoCco8Ck4gUcoSNN7ecShKcZaXDsHardQL',
+            image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/facial_hair/Flat_Beard_2.png',
         }
     ]
 }

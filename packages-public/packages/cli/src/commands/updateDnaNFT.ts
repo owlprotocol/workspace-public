@@ -28,7 +28,7 @@ e.g. node dist/index.cjs updateDnaNFT --root=0xbE705Ab239b7CE7c078E84965A518834C
 
 OR
 
-node dist/index.cjs updateDnaNFT --root=0xbE705Ab239b7CE7c078E84965A518834Cb7CFE4b --tokenId=1 --json=projects/example-loyalty/exampleUpdateDnaNFT.json
+node dist/index.cjs updateDnaNFT --root=0xbE705Ab239b7CE7c078E84965A518834Cb7CFE4b --tokenId=1 --json=src/projects/example-loyalty/exampleUpdateDnaNFT.json
 
 `;
 
@@ -57,7 +57,7 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
             alias: ['attr'],
         })
         .option('updateJSON', {
-            describe: 'JSON file of the attrs to update',
+            describe: 'JSON file of the attrs to update, relative from the current directory of the CLI',
             alias: ['json'],
         })
         .demandOption(['rootContractAddr', 'tokenId']);
@@ -133,11 +133,15 @@ const getNftItemUpdatedByTrait = (
     return nftItem.withAttribute(trait, attribute);
 };
 
+/**
+ * @param nftItem
+ * @param jsonFilepath
+ */
 const getNftItemUpdatedByJSON = (
     nftItem: NFTGenerativeItemInterface,
     jsonFilepath: string,
 ): NFTGenerativeItemInterface => {
-    const newAttrs = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'src', jsonFilepath)).toString());
+    const newAttrs = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), jsonFilepath)).toString());
 
     const traitKeys = _.keys(newAttrs);
     let nftItemUpdated: NFTGenerativeItemInterface = nftItem;

@@ -107,7 +107,7 @@ export const attrMemberIdNumber: NFTGenerativeTraitNumber = {
     name: 'Member ID',
     type: 'number',
     description: `Owner's membership ID`,
-    min: 10000000000,
+    min: 1000000,
     max: 99999999999,
 }
 
@@ -180,6 +180,12 @@ export default collExampleLoyaltyDef;
 ```
 [https://github.com/owlprotocol/owlprotocol/tree/main/packages/cli/src/projects](https://github.com/owlprotocol/owlprotocol/tree/main/packages/cli/src/projects)
 
+:::caution Don't Forget the Default Export
+The CLI expects that the base/parent collection is exported as the default:
+
+e.g. `export default collExampleLoyaltyDef;`
+:::
+
 ## Step 3: Generate the Schema JSON using the [CLI Tool](/contracts/getting-started/cli)
 
 We then use the CLI Tool to generate the Schema JSON.
@@ -218,3 +224,6 @@ Now you should see a new folder in `projects/example-omo` called `output`, and i
 - collection-child-Hats.json
 
 ## Step 4: Upload the Schema JSON to IPFS.
+
+We use Pinata for this tutorial, but you can upload it to any IPFS provider including your own.
+

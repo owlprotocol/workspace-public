@@ -17,7 +17,7 @@ import {
     NFTGenerativeTraitImageClass,
 } from '@owlprotocol/nft-sdk';
 
-const collOutfitsChildDef: NFTGenerativeCollection = {
+const collOutfitChildDef: NFTGenerativeCollection = {
     name: 'The Vision of InnoVot - Outfits Sub-Collection',
     description: `InnoVot is a father x son collaboration and inspired by some of Thread haus Collection and some of the industry top trendsetters in fashion music and film.
     The Vision of InnoVot was inspired by my son at the age 14. A representation of his dad through his eyes on his own life's journey…
@@ -31,7 +31,7 @@ const collOutfitsChildDef: NFTGenerativeCollection = {
     fee_recipient: '0xCF28F97AbDfE1d0b9c51aDF6cF334f6489e080Fd',
     generatedImageType: 'png',
     traits: {
-        Outfit: traitImageOutfit,
+        'Outfit [The Symptoms]': traitImageOutfit,
     },
 };
 
@@ -49,7 +49,7 @@ const collGlassesChildDef: NFTGenerativeCollection = {
     fee_recipient: '0xCF28F97AbDfE1d0b9c51aDF6cF334f6489e080Fd',
     generatedImageType: 'png',
     traits: {
-        Glasses: traitImageGlasses,
+        'Glasses [The Appearance]': traitImageGlasses,
     },
 };
 
@@ -67,7 +67,7 @@ const collHatChildDef: NFTGenerativeCollection = {
     fee_recipient: '0xCF28F97AbDfE1d0b9c51aDF6cF334f6489e080Fd',
     generatedImageType: 'png',
     traits: {
-        Hat: traitImageHat,
+        'Hat [The Appearance]': traitImageHat,
     },
 };
 
@@ -85,11 +85,11 @@ const collFacialHairChildDef: NFTGenerativeCollection = {
     fee_recipient: '0xCF28F97AbDfE1d0b9c51aDF6cF334f6489e080Fd',
     generatedImageType: 'png',
     traits: {
-        'Facial Hair': traitImageFacialHair,
+        'Facial Hair [Identity]': traitImageFacialHair,
     },
 };
 
-const collNestedDef: NFTGenerativeCollection = {
+export const collNestedDef: NFTGenerativeCollection = {
     name: 'The Vision of InnoVot - Base Collection',
     description: `InnoVot is a father x son collaboration and inspired by some of Thread haus Collection and some of the industry top trendsetters in fashion music and film.
     The Vision of InnoVot was inspired by my son at the age 14. A representation of his dad through his eyes on his own life's journey…
@@ -109,16 +109,59 @@ const collNestedDef: NFTGenerativeCollection = {
     generatedImageType: 'png',
     traits: {
         Name: traitEnumName,
-        Significant: traitEnumSignificance,
-        Background: traitImageBg,
-        'Light Bulb': traitImageLight,
-        Base: traitImageBase,
+        Significance: traitEnumSignificance,
+        'Background [The Environment]': traitImageBg,
+        'Light Bulb [The Treatment]': traitImageLight,
+        'Base [The Source]': traitImageBase,
     },
     //@ts-ignore
     children: {
-        Outfit: collOutfitsChildDef,
+        Outfit: collOutfitChildDef,
         Glasses: collGlassesChildDef,
         Hat: collHatChildDef,
         'Facial Hair': collFacialHairChildDef
     },
 };
+
+export const collOutfitChild = NFTGenerativeCollectionClass.fromData(collOutfitChildDef) as NFTGenerativeCollectionClass<{
+    Outfit: NFTGenerativeTraitImageClass;
+}>;
+
+export const collGlassesChild = NFTGenerativeCollectionClass.fromData(collGlassesChildDef) as NFTGenerativeCollectionClass<{
+    Glasses: NFTGenerativeTraitImageClass;
+}>;
+
+export const collHatChild = NFTGenerativeCollectionClass.fromData(collHatChildDef) as NFTGenerativeCollectionClass<{
+    Hat: NFTGenerativeTraitImageClass;
+}>;
+
+export const collFacialHairChild = NFTGenerativeCollectionClass.fromData(collFacialHairChildDef) as NFTGenerativeCollectionClass<{
+    'Facial Hair': NFTGenerativeTraitImageClass;
+}>;
+
+export const collInnovotExample = NFTGenerativeCollectionClass.fromData(collNestedDef) as NFTGenerativeCollectionClass<
+    {
+        Name: NFTGenerativeTraitEnumClass;
+        Significance: NFTGenerativeTraitEnumClass;
+        'Background [The Environment]': NFTGenerativeTraitImageClass;
+        'Light Bulb [The Treatment]': NFTGenerativeTraitImageClass;
+        'Base [The Source]': NFTGenerativeTraitImageClass;
+    },
+    {
+        Outfit: NFTGenerativeCollectionClass<{
+            'Outfit [The Symptoms]': NFTGenerativeTraitImageClass;
+        }>;
+        Glasses: NFTGenerativeCollectionClass<{
+            'Glasses [The Appearance]': NFTGenerativeTraitImageClass;
+        }>;
+        Hat: NFTGenerativeCollectionClass<{
+            'Hat [The Appearance]': NFTGenerativeTraitImageClass;
+        }>;
+        'Facial Hair': NFTGenerativeCollectionClass<{
+            'Facial Hair [Identity]': NFTGenerativeTraitImageClass;
+        }>;
+    }
+>;
+
+export default collInnovotExample;
+

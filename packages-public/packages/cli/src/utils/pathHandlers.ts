@@ -68,6 +68,11 @@ export const getProjectSubfolder = (argv: Argv, subfolder: string) => {
     return projectSubfolder;
 };
 
+/**
+ * TODO: it's not obvious that we use the generated JS, perhaps use ts-node or make this more foolproof
+ * @param projectFolder
+ * @param collectionJS
+ */
 export const importCollectionClass = async (projectFolder: string, collectionJS: string): Promise<{ default: any }> => {
     console.debug(projectFolder, collectionJS);
     return await import(path.join(process.cwd(), 'lib/esm', projectFolder, collectionJS));

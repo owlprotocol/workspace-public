@@ -209,6 +209,16 @@ See: [/packages/cli/src/projects/example-omo/traits.ts](https://github.com/owlpr
 `probabilities` are normalized, correspond in order with the values, and there must be the same number of probabilities as values.
 :::
 
+:::caution About IPFS Hashes for Images
+
+You need to manually upload images to IPFS, and add the `image_url` as `ipfs://[hash]/[path]`.
+
+The `ipfs://` will be replaced by the `ENV` variable `IPFS_GATEWAY` that is passed into the [CLI tool](/contracts/getting-started/cli).
+
+We'll have more tools and a UI for uploading to IPFS soon.
+
+:::
+
 ---
 
 ## Step 3: Create the `collection.ts` that connects the traits/collection together:
