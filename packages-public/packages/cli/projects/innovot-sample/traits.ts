@@ -4,8 +4,8 @@ export const traitEnumName: NFTGenerativeTraitEnum = {
     name: 'Name',
     type: 'enum',
     options: ['Unnamed', 'Hussle', 'Mann', 'NerD', 'PaC'],
-    abi: 'uint16'
-}
+    abi: 'uint16',
+};
 
 /*
 Based on the Outfit
@@ -16,11 +16,11 @@ Based on the Outfit
 export const traitEnumSignificance: NFTGenerativeTraitEnum = {
     name: 'Significance',
     type: 'enum',
-    options: ['N/A', 'Inattention', 'Impulsivity', 'Hyperactivity']
-}
+    options: ['N/A', 'Inattention', 'Impulsivity', 'Hyperactivity'],
+};
 
 export const traitImageBg: NFTGenerativeTraitImage = {
-    name: 'Background [The Environment]',
+    name: 'Background',
     type: 'image',
     image_type: 'png',
     options: [
@@ -31,40 +31,40 @@ export const traitImageBg: NFTGenerativeTraitImage = {
         {
             value: 'Orange',
             image_url: 'ipfs://QmdKp4SD14hTVFqbhRBgN24qzLwFG5v1xW7FdGLQVo4TCT',
-        }
-    ]
-}
+        },
+    ],
+};
 
 export const traitImageLight: NFTGenerativeTraitImage = {
-    name: 'Light Bulb [The Treatment]',
+    name: 'Light Bulb',
     type: 'image',
     image_type: 'png',
     options: [
         {
-            value: 'Blue [Medication]',
+            value: 'Blue',
             image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/light/Blue-Medication.png',
         },
         {
-            value: 'Yellow [Mindful Meditation]',
+            value: 'Yellow',
             image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/light/Yellow-Mindful_Meditation.png',
-        }
-    ]
-}
+        },
+    ],
+};
 
 export const traitImageBase: NFTGenerativeTraitImage = {
-    name: 'Base [The Source]',
+    name: 'Base',
     type: 'image',
     image_type: 'png',
     options: [
         {
             value: 'Default',
             image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/base/1.png',
-        }
-    ]
-}
+        },
+    ],
+};
 
 export const traitImageOutfit: NFTGenerativeTraitImage = {
-    name: 'Outfit [The Symptoms]',
+    name: 'Outfit',
     type: 'image',
     image_type: 'png',
     options: [
@@ -73,14 +73,14 @@ export const traitImageOutfit: NFTGenerativeTraitImage = {
             image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/outfit/Party-Suit_2.png',
         },
         {
-            value: 'Thread Haus - Blue Hoodie',
+            value: 'TH - Blue Hoodie',
             image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/outfit/ThreadHaus-Blue_Hoodie.png',
-        }
-    ]
-}
+        },
+    ],
+};
 
 export const traitImageGlasses: NFTGenerativeTraitImage = {
-    name: 'Glasses [The Appearance]',
+    name: 'Glasses',
     type: 'image',
     image_type: 'png',
     options: [
@@ -89,14 +89,14 @@ export const traitImageGlasses: NFTGenerativeTraitImage = {
             image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/glasses/Party-Glasses_17.png',
         },
         {
-            value: 'Thread Haus - Kani Glasses',
+            value: 'TH - Kani Glasses',
             image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/glasses/ThreadHaus-Kani_Glasses.png',
-        }
-    ]
-}
+        },
+    ],
+};
 
 export const traitImageHat: NFTGenerativeTraitImage = {
-    name: 'Hat [The Appearance]',
+    name: 'Hat',
     type: 'image',
     image_type: 'png',
     options: [
@@ -107,12 +107,12 @@ export const traitImageHat: NFTGenerativeTraitImage = {
         {
             value: 'Military - R3 Crew Cap Camo',
             image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/hat/Military-R3_Crew_Cap_Camo.png',
-        }
-    ]
-}
+        },
+    ],
+};
 
 export const traitImageFacialHair: NFTGenerativeTraitImage = {
-    name: 'Facial Hair [Identity]',
+    name: 'Facial Hair',
     type: 'image',
     image_type: 'png',
     options: [
@@ -123,6 +123,6 @@ export const traitImageFacialHair: NFTGenerativeTraitImage = {
         {
             value: 'Flat Beard 2',
             image_url: 'ipfs://Qmb2Bh7UPRMjhF8naZJZZWpE13dts2taRt5hL7KFwJEqVS/facial_hair/Flat_Beard_2.png',
-        }
-    ]
-}
+        },
+    ],
+};

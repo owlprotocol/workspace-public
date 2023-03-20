@@ -1,7 +1,7 @@
 {
   "rootContract": {
     "tokenSymbol": "InnoVot",
-    "tokenIdStart": 1,
+    "tokenIdStart": 3,
     "cfg": {
       "ipfsEndpoint": "https://leovigna.mypinata.cloud",
       "ipfsPath": "ipfs",
@@ -12,25 +12,25 @@
   },
   "children": {
     "Outfit": {
-      "tokenIdStart": 1,
+      "tokenIdStart": 3,
       "cfg": {
         "schemaJsonIpfs": "QmYcSapx8LhuhrvNyAYyPWSCmkpN8mNVP1jLmwXitA4Vwg"
       }
     },
     "Glasses": {
-      "tokenIdStart": 1,
+      "tokenIdStart": 3,
       "cfg": {
         "schemaJsonIpfs": "QmQKbYbMzk1uLjZBQ2BNcw35WUGYoZrM5ALRCEJAWSoSvN"
       }
     },
     "Hat": {
-      "tokenIdStart": 1,
+      "tokenIdStart": 3,
       "cfg": {
         "schemaJsonIpfs": "QmQFawTA7T8MQZETkUSrofVg7ZUbw9DFkXfuicuKrCDJxR"
       }
     },
     "Facial Hair": {
-      "tokenIdStart": 1,
+      "tokenIdStart": 3,
       "cfg": {
         "schemaJsonIpfs": "QmPfuiWXug5KuncBcr9HvuP5JcTvFQ623dZtv6QF3D2i3a"
       }

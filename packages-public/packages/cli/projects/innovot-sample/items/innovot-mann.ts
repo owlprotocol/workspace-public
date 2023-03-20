@@ -2,34 +2,34 @@ import { collInnovotExample } from '../collections.js';
 
 const nftItem = collInnovotExample.create({
     attributes: {
-        Name: 'Hussle',
-        Significance: 'Hyperactivity',
+        Name: 'Mann',
+        Significance: 'Impulsivity',
         Background: 'Orange',
-        'Light Bulb': 'Blue [Medication]',
-        Base: 'Default'
+        'Light Bulb': 'Yellow',
+        Base: 'Default',
     },
     children: {
         Outfit: {
             attributes: {
-                Outfit: 'Thread Haus - Blue Hoodie'
-            }
+                Outfit: 'Party - Suit 2',
+            },
         },
         Glasses: {
             attributes: {
-                Glasses: 'Thread Haus - Kani Glasses'
-            }
+                Glasses: 'Party - Glasses 17',
+            },
         },
         Hat: {
             attributes: {
-                Hat: 'Sport - Blue Baseball Cap'
-            }
+                Hat: 'Military - R3 Crew Cap Camo',
+            },
         },
         'Facial Hair': {
             attributes: {
-                'Facial Hair': 'Flat Beard 2'
-            }
-        }
-    }
+                'Facial Hair': 'Facial Hair 1',
+            },
+        },
+    },
 });
 
 export default nftItem;

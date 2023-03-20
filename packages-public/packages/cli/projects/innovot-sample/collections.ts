@@ -7,8 +7,8 @@ import {
     traitImageOutfit,
     traitImageGlasses,
     traitImageHat,
-    traitImageFacialHair
-} from './traits.js'
+    traitImageFacialHair,
+} from './traits.js';
 
 import {
     NFTGenerativeCollection,
@@ -20,88 +20,88 @@ import {
 const collOutfitChildDef: NFTGenerativeCollection = {
     name: 'The Vision of InnoVot - Outfits Sub-Collection',
     description: `InnoVot is a father x son collaboration and inspired by some of Thread haus Collection and some of the industry top trendsetters in fashion music and film.
-    The Vision of InnoVot was inspired by my son at the age 14. A representation of his dad through his eyes on his own life's journey…
+The Vision of InnoVot was inspired by my son at the age 14. A representation of his dad through his eyes on his own life's journey.
 
-    This is the Outfit "Sub-Collection" which can be worn by the Base Collection: The Vision of InnoVot.
+This is the Outfit "Sub-Collection" which can be worn by the Base Collection: The Vision of InnoVot.
 
-    Follow the journey at: https://tell.ie/threadhausCo/D5RQ6SBsgpAp
+Follow the journey at: https://tell.ie/threadhausCo/D5RQ6SBsgpAp
     `,
     external_url: 'https://tell.ie/threadhausCo/D5RQ6SBsgpAp',
     seller_fee_basis_points: 5000,
     fee_recipient: '0xCF28F97AbDfE1d0b9c51aDF6cF334f6489e080Fd',
     generatedImageType: 'png',
     traits: {
-        'Outfit [The Symptoms]': traitImageOutfit,
+        Outfit: traitImageOutfit,
     },
 };
 
 const collGlassesChildDef: NFTGenerativeCollection = {
     name: 'The Vision of InnoVot - Glasses Sub-Collection',
     description: `InnoVot is a father x son collaboration and inspired by some of Thread haus Collection and some of the industry top trendsetters in fashion music and film.
-    The Vision of InnoVot was inspired by my son at the age 14. A representation of his dad through his eyes on his own life's journey…
+The Vision of InnoVot was inspired by my son at the age 14. A representation of his dad through his eyes on his own life's journey.
 
-    This is the Glasses "Sub-Collection" which can be worn by the Base Collection: The Vision of InnoVot.
+This is the Glasses "Sub-Collection" which can be worn by the Base Collection: The Vision of InnoVot.
 
-    Follow the journey at: https://tell.ie/threadhausCo/D5RQ6SBsgpAp
+Follow the journey at: https://tell.ie/threadhausCo/D5RQ6SBsgpAp
     `,
     external_url: 'https://tell.ie/threadhausCo/D5RQ6SBsgpAp',
     seller_fee_basis_points: 5000,
     fee_recipient: '0xCF28F97AbDfE1d0b9c51aDF6cF334f6489e080Fd',
     generatedImageType: 'png',
     traits: {
-        'Glasses [The Appearance]': traitImageGlasses,
+        Glasses: traitImageGlasses,
     },
 };
 
 const collHatChildDef: NFTGenerativeCollection = {
     name: 'The Vision of InnoVot - Hats Sub-Collection',
     description: `InnoVot is a father x son collaboration and inspired by some of Thread haus Collection and some of the industry top trendsetters in fashion music and film.
-    The Vision of InnoVot was inspired by my son at the age 14. A representation of his dad through his eyes on his own life's journey…
+The Vision of InnoVot was inspired by my son at the age 14. A representation of his dad through his eyes on his own life's journey.
 
-    This is the Hats "Sub-Collection" which can be worn by the Base Collection: The Vision of InnoVot.
+This is the Hats "Sub-Collection" which can be worn by the Base Collection: The Vision of InnoVot.
 
-    Follow the journey at: https://tell.ie/threadhausCo/D5RQ6SBsgpAp
+Follow the journey at: https://tell.ie/threadhausCo/D5RQ6SBsgpAp
     `,
     external_url: 'https://tell.ie/threadhausCo/D5RQ6SBsgpAp',
     seller_fee_basis_points: 5000,
     fee_recipient: '0xCF28F97AbDfE1d0b9c51aDF6cF334f6489e080Fd',
     generatedImageType: 'png',
     traits: {
-        'Hat [The Appearance]': traitImageHat,
+        Hat: traitImageHat,
     },
 };
 
 const collFacialHairChildDef: NFTGenerativeCollection = {
     name: 'The Vision of InnoVot - Hats Sub-Collection',
     description: `InnoVot is a father x son collaboration and inspired by some of Thread haus Collection and some of the industry top trendsetters in fashion music and film.
-    The Vision of InnoVot was inspired by my son at the age 14. A representation of his dad through his eyes on his own life's journey…
+The Vision of InnoVot was inspired by my son at the age 14. A representation of his dad through his eyes on his own life's journey...
 
-    This is the Hats "Sub-Collection" which can be worn by the Base Collection: The Vision of InnoVot.
+This is the Hats "Sub-Collection" which can be worn by the Base Collection: The Vision of InnoVot.
 
-    Follow the journey at: https://tell.ie/threadhausCo/D5RQ6SBsgpAp
+Follow the journey at: https://tell.ie/threadhausCo/D5RQ6SBsgpAp
     `,
     external_url: 'https://tell.ie/threadhausCo/D5RQ6SBsgpAp',
     seller_fee_basis_points: 5000,
     fee_recipient: '0xCF28F97AbDfE1d0b9c51aDF6cF334f6489e080Fd',
     generatedImageType: 'png',
     traits: {
-        'Facial Hair [Identity]': traitImageFacialHair,
+        'Facial Hair': traitImageFacialHair,
     },
 };
 
 export const collNestedDef: NFTGenerativeCollection = {
     name: 'The Vision of InnoVot - Base Collection',
     description: `InnoVot is a father x son collaboration and inspired by some of Thread haus Collection and some of the industry top trendsetters in fashion music and film.
-    The Vision of InnoVot was inspired by my son at the age 14. A representation of his dad through his eyes on his own life's journey…
+The Vision of InnoVot was inspired by my son at the age 14. A representation of his dad through his eyes on his own life's journey.
 
-    The Outfit InnVoT is wearing signifies one of the 3 out of 5 symptoms that correlates with that mental illness ..
-    —Inattention—  Designer
-    —Impulsivity— Party
-    —Hyperactivity — Thread Haus
+The Outfit InnVoT is wearing signifies one of the 3 out of 5 symptoms that correlates with that mental illness:
+- Inattention - Designer
+— Impulsivity — Party
+— Hyperactivity — Thread Haus
 
-    This collection features detachable clothing and accessories by connecting your wallet at https://owlprotocol.xyz.
+This collection features detachable clothing and accessories by connecting your wallet at https://owlprotocol.xyz.
 
-    Follow the journey at: https://tell.ie/threadhausCo/D5RQ6SBsgpAp
+Follow the journey at: https://tell.ie/threadhausCo/D5RQ6SBsgpAp
     `,
     external_url: 'https://docs.owlprotocol.xyz/contracts/tutorial-topdowndna',
     seller_fee_basis_points: 10000,
@@ -110,24 +110,28 @@ export const collNestedDef: NFTGenerativeCollection = {
     traits: {
         Name: traitEnumName,
         Significance: traitEnumSignificance,
-        'Background [The Environment]': traitImageBg,
-        'Light Bulb [The Treatment]': traitImageLight,
-        'Base [The Source]': traitImageBase,
+        Background: traitImageBg,
+        'Light Bulb': traitImageLight,
+        Base: traitImageBase,
     },
     //@ts-ignore
     children: {
         Outfit: collOutfitChildDef,
         Glasses: collGlassesChildDef,
         Hat: collHatChildDef,
-        'Facial Hair': collFacialHairChildDef
+        'Facial Hair': collFacialHairChildDef,
     },
 };
 
-export const collOutfitChild = NFTGenerativeCollectionClass.fromData(collOutfitChildDef) as NFTGenerativeCollectionClass<{
+export const collOutfitChild = NFTGenerativeCollectionClass.fromData(
+    collOutfitChildDef,
+) as NFTGenerativeCollectionClass<{
     Outfit: NFTGenerativeTraitImageClass;
 }>;
 
-export const collGlassesChild = NFTGenerativeCollectionClass.fromData(collGlassesChildDef) as NFTGenerativeCollectionClass<{
+export const collGlassesChild = NFTGenerativeCollectionClass.fromData(
+    collGlassesChildDef,
+) as NFTGenerativeCollectionClass<{
     Glasses: NFTGenerativeTraitImageClass;
 }>;
 
@@ -135,7 +139,9 @@ export const collHatChild = NFTGenerativeCollectionClass.fromData(collHatChildDe
     Hat: NFTGenerativeTraitImageClass;
 }>;
 
-export const collFacialHairChild = NFTGenerativeCollectionClass.fromData(collFacialHairChildDef) as NFTGenerativeCollectionClass<{
+export const collFacialHairChild = NFTGenerativeCollectionClass.fromData(
+    collFacialHairChildDef,
+) as NFTGenerativeCollectionClass<{
     'Facial Hair': NFTGenerativeTraitImageClass;
 }>;
 
@@ -143,25 +149,24 @@ export const collInnovotExample = NFTGenerativeCollectionClass.fromData(collNest
     {
         Name: NFTGenerativeTraitEnumClass;
         Significance: NFTGenerativeTraitEnumClass;
-        'Background [The Environment]': NFTGenerativeTraitImageClass;
-        'Light Bulb [The Treatment]': NFTGenerativeTraitImageClass;
-        'Base [The Source]': NFTGenerativeTraitImageClass;
+        Background: NFTGenerativeTraitImageClass;
+        'Light Bulb': NFTGenerativeTraitImageClass;
+        Base: NFTGenerativeTraitImageClass;
     },
     {
         Outfit: NFTGenerativeCollectionClass<{
-            'Outfit [The Symptoms]': NFTGenerativeTraitImageClass;
+            Outfit: NFTGenerativeTraitImageClass;
         }>;
         Glasses: NFTGenerativeCollectionClass<{
-            'Glasses [The Appearance]': NFTGenerativeTraitImageClass;
+            Glasses: NFTGenerativeTraitImageClass;
         }>;
         Hat: NFTGenerativeCollectionClass<{
-            'Hat [The Appearance]': NFTGenerativeTraitImageClass;
+            Hat: NFTGenerativeTraitImageClass;
         }>;
         'Facial Hair': NFTGenerativeCollectionClass<{
-            'Facial Hair [Identity]': NFTGenerativeTraitImageClass;
+            'Facial Hair': NFTGenerativeTraitImageClass;
         }>;
     }
 >;
 
 export default collInnovotExample;
-

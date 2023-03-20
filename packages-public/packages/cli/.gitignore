@@ -21,6 +21,10 @@ dist-ssr
 lib
 .serverless
 
+# adjacent js for projects
+projects/**/*.js
+projects/**/*.d.ts
+
 # local deployments
 packages/contracts/packages/owlprotocol-contracts/deployments/ganache/*
 

@@ -27,6 +27,7 @@
         "test": "mocha 'lib/esm/**/*.test.js'",
         "build": "npm-run-all -p tsc esbuild",
         "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
+        "build:projects": "tsc --project tsconfig.projects.json",
         "esbuild": "node esbuild.config.mjs",
         "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
         "tsc": "tsc",
@@ -37,7 +38,7 @@
         "madge": "madge src/index.ts -c",
         "lint": "eslint",
         "lint:fix": "eslint --fix",
-        "prettier": "prettier --write src",
+        "prettier": "prettier --write src && prettier --write projects",
         "ganache": "ganache --wallet.seed myCustomSeed"
     },
     "dependencies": {
