@@ -17,11 +17,11 @@ let debug = false;
 
 import { NFTGenerativeCollectionClass, NFTGenerativeItemClass } from '@owlprotocol/nft-sdk';
 
-export const command = 'viewTopDown';
+export const command = 'burnNFT';
 
 export const describe = `Burns the NFT and all children (if any)
 
-e.g. node dist/index.cjs burnNFT --root=0xbE705Ab239b7CE7c078E84965A518834Cb7CFE4b --tokenId=1
+e.g. node dist/index.cjs burnNFT --contract=0x74Dbc83C18fE41B8db1d8A31A9B5E665d974D55b --tokenId=3
 
 
 
@@ -33,9 +33,9 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
             describe: 'Outputs debug statements',
             type: 'boolean',
         })
-        .option('rootContractAddr', {
-            describe: 'Parent/root contract address',
-            alias: ['r', 'root'],
+        .option('contractAddr', {
+            describe: 'contract address',
+            alias: ['contract'],
             type: 'string',
         })
         .option('tokenId', {
@@ -43,11 +43,34 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
             alias: ['token'],
             type: 'number',
         })
-        .demandOption(['rootContractAddr']);
+        .demandOption(['contractAddr']);
 };
 
 export const handler = async (argv: Argv) => {
-    console.log(`View ERC721TopDownDna ${argv.rootContractAddr} on ${NETWORK}`);
+    console.log(`Burn ERC721TopDownDnaMintable ${argv.contractAddr} with tokenId: ${argv.tokenId} on ${NETWORK}`);
 
     debug = !!argv.debug || false;
+
+    const signers = new Array<ethers.Wallet>();
+    if (HD_WALLET_MNEMONIC) {
+        signers[0] = ethers.Wallet.fromMnemonic(HD_WALLET_MNEMONIC);
+    } else if (PRIVATE_KEY_0) {
+        signers[0] = new ethers.Wallet(PRIVATE_KEY_0);
+    } else {
+        throw new Error('ENV variable HD_WALLET_MNEMONIC or PRIVATE_KEY_0 must be provided');
+    }
+    signers[0] = signers[0].connect(provider);
+
+    const contractAddr = argv.contractAddr as string;
+    const tokenId = argv.tokenId as number;
+
+    const rootContract = new ethers.Contract(contractAddr, Artifacts.ERC721TopDownDnaMintable.abi, signers[0]);
+
+    const tx = await rootContract.burn(tokenId);
+
+    const receipt = await tx.wait(1);
+
+    debug && console.debug(receipt);
+
+    console.log('Done');
 };

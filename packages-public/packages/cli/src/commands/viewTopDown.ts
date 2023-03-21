@@ -63,7 +63,7 @@ export const handler = async (argv: Argv) => {
     const rootContractAddr = argv.rootContractAddr as string;
     const tokenId = argv.tokenId as number;
 
-    const rootContract = new ethers.Contract(rootContractAddr, Artifacts.ERC721TopDownDna.abi, signers[0]);
+    const rootContract = new ethers.Contract(rootContractAddr, Artifacts.ERC721TopDownDnaMintable.abi, signers[0]);
     const contractURI = await rootContract.contractURI();
 
     console.log(`Fetching Metadata Schema JSON from: ${contractURI}`);
