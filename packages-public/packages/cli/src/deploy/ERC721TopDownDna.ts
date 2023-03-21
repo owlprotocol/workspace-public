@@ -72,7 +72,7 @@ export const deployERC721TopDownDna = async (
         } catch (err) {
             //Not minted
             // TODO: capture the mints and return to caller for faster processing with respect to nonce
-            const tx = await contract.safeMintWithDna(signerAddress, dna, {
+            const tx = await contract.safeMintWithDna(signerAddress, tokenId, dna, {
                 nonce: nonce++,
                 type: 2,
             });

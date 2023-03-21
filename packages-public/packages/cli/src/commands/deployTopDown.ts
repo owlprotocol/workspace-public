@@ -22,14 +22,14 @@ const { map, mapValues, omit } = _;
 
 import { deployCommon } from './deployCommon.js';
 import { deployERC721TopDownDna } from '../deploy/ERC721TopDownDna.js';
-import { ERC721TopDownDna__factory } from '@owlprotocol/contracts/lib/types/typechain/ethers';
+import { ERC721TopDownDnaMintable__factory } from '@owlprotocol/contracts/lib/types/typechain/ethers';
 import { awaitAllObj } from '@owlprotocol/utils';
 import {
     BeaconProxy,
     BeaconProxy__factory,
-    ERC721TopDownDna as ERC721TopDownDnaContract,
+    ERC721TopDownDnaMintable as ERC721TopDownDnaMintableContract,
 } from '@owlprotocol/contracts/src/typechain/ethers';
-import { ERC721TopDownDnaInterface } from '@owlprotocol/contracts/src/typechain/ethers/ERC721TopDownDna';
+import { ERC721TopDownDnaMintableInterface } from '@owlprotocol/contracts/src/typechain/ethers/ERC721TopDownDnaMintable';
 
 const jsonRpcEndpoint: string = config.get(`network.${NETWORK}.config.url`);
 const provider = new ethers.providers.JsonRpcProvider(jsonRpcEndpoint);
@@ -248,12 +248,12 @@ const initializeFactories = async (signer: Signer): Promise<any> => {
     );
 
     const UpgradeableBeaconFactory = deterministicInitializeFactories.UpgradeableBeacon;
-    const implementationAddress = deterministicFactories.ERC721TopDownDna.getAddress();
+    const implementationAddress = deterministicFactories.ERC721TopDownDnaMintable.getAddress();
 
-    const ERC721TopDownDnaInitEncoder = Utils.ERC1167Factory.getInitDataEncoder<
-        ERC721TopDownDnaContract,
+    const ERC721TopDownDnaMintableInitEncoder = Utils.ERC1167Factory.getInitDataEncoder<
+        ERC721TopDownDnaMintableContract,
         'proxyInitialize'
-    >(factories.ERC721TopDownDna.interface as ERC721TopDownDnaInterface, 'proxyInitialize');
+    >(factories.ERC721TopDownDnaMintable.interface as ERC721TopDownDnaMintableInterface, 'proxyInitialize');
 
     const beaconAddress = UpgradeableBeaconFactory.getAddress(signerAddress, implementationAddress);
     const BeaconProxyFactory = Utils.ERC1167Factory.deterministicFactory<
@@ -270,8 +270,8 @@ const initializeFactories = async (signer: Signer): Promise<any> => {
 
     return {
         msgSender: signerAddress,
-        ERC721TopDownDna: factories.ERC721TopDownDna,
-        ERC721TopDownDnaInitEncoder,
+        ERC721TopDownDnaMintable: factories.ERC721TopDownDnaMintable,
+        ERC721TopDownDnaMintableInitEncoder,
         BeaconProxyFactory,
         beaconAddress,
         initialized: true,
@@ -307,7 +307,7 @@ const initializeArgs = (owlProject: OwlProject, factories: any) => {
         console.debug(k, contractInit);
 
         const args = Utils.ERC721TopDownDna.flattenInitArgsERC721TopDownDna(contractInit);
-        const data = factories.ERC721TopDownDnaInitEncoder(...args);
+        const data = factories.ERC721TopDownDnaMintableInitEncoder(...args);
         const argsBeacon = [factories.msgSender, factories.beaconAddress, data] as [string, string, string];
 
         c.cfg.address = factories.BeaconProxyFactory.getAddress(...argsBeacon);
@@ -334,7 +334,7 @@ const initializeArgs = (owlProject: OwlProject, factories: any) => {
     console.debug('parent', parentInit);
 
     const parentArgs = Utils.ERC721TopDownDna.flattenInitArgsERC721TopDownDna(parentInit);
-    const parentData = factories.ERC721TopDownDnaInitEncoder(...parentArgs);
+    const parentData = factories.ERC721TopDownDnaMintableInitEncoder(...parentArgs);
     const parentArgsBeacon = [factories.msgSender, factories.beaconAddress, parentData] as [string, string, string];
 
     owlProject.rootContract.cfg.address = factories.BeaconProxyFactory.getAddress(...parentArgsBeacon);
@@ -371,7 +371,7 @@ const deployContracts = async (owlProject: OwlProject, factories: any) => {
             if (await factories.BeaconProxyFactory.exists(...args)) {
                 return {
                     address,
-                    contract: factories.ERC721TopDownDna.attach(address),
+                    contract: factories.ERC721TopDownDnaMintable.attach(address),
                     deployed: false,
                 };
             } else {
@@ -379,7 +379,7 @@ const deployContracts = async (owlProject: OwlProject, factories: any) => {
 
                 return {
                     address,
-                    contract: factories.ERC721TopDownDna.attach(address),
+                    contract: factories.ERC721TopDownDnaMintable.attach(address),
                     deployed: true,
                 };
             }
