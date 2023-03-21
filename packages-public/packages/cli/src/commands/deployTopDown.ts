@@ -299,10 +299,12 @@ const initializeArgs = (owlProject: OwlProject, factories: any) => {
             admin: factories.msgSender,
             contractUri: schemaJsonUrl.toString(),
             name: metadata.children[k].name,
-            symbol: metadata.children[k].name.substring(0, 12),
+            symbol: owlProject.rootContract.tokenSymbol + k,
             initBaseURI: `${baseUri}/`,
             feeReceiver: metadata.fee_recipient,
         } as Utils.ERC721TopDownDna.ERC721TopDownDnaInitializeArgs;
+
+        console.debug(k, contractInit);
 
         const args = Utils.ERC721TopDownDna.flattenInitArgsERC721TopDownDna(contractInit);
         const data = factories.ERC721TopDownDnaInitEncoder(...args);
@@ -322,12 +324,14 @@ const initializeArgs = (owlProject: OwlProject, factories: any) => {
         admin: factories.msgSender,
         contractUri: schemaJsonUrl.toString(),
         name: owlProject.metadata.name,
-        symbol: owlProject.metadata.name.substring(0, 12),
+        symbol: owlProject.rootContract.tokenSymbol,
         initBaseURI: `${baseUri}/`,
         feeReceiver: owlProject.metadata.fee_recipient,
         childContracts721: map(owlProject.children, (c) => c.cfg.address),
         childContracts1155: [],
     } as Utils.ERC721TopDownDna.ERC721TopDownDnaInitializeArgs;
+
+    console.debug('parent', parentInit);
 
     const parentArgs = Utils.ERC721TopDownDna.flattenInitArgsERC721TopDownDna(parentInit);
     const parentData = factories.ERC721TopDownDnaInitEncoder(...parentArgs);

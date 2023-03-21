@@ -32,7 +32,7 @@ export const getProjectFolder = (argv: Argv): string => {
         process.exit();
     }
 
-    const projectFolder = path.resolve('src', argv.projectFolder);
+    const projectFolder = path.resolve(argv.projectFolder);
 
     if (!fs.existsSync(projectFolder)) {
         fs.mkdirSync(projectFolder, { recursive: true });
@@ -75,5 +75,5 @@ export const getProjectSubfolder = (argv: Argv, subfolder: string) => {
  */
 export const importCollectionClass = async (projectFolder: string, collectionJS: string): Promise<{ default: any }> => {
     console.debug(projectFolder, collectionJS);
-    return await import(path.join(process.cwd(), 'lib/esm', projectFolder, collectionJS));
+    return await import(path.join(process.cwd(), projectFolder, collectionJS));
 };
