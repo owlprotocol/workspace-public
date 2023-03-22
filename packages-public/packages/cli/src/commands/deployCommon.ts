@@ -1,8 +1,8 @@
 import yargs from 'yargs';
 import config from 'config';
 import { ethers } from 'ethers';
-import { HD_WALLET_MNEMONIC, PRIVATE_KEY_0, NETWORK } from '../utils/environment.js';
 import { Deploy } from '@owlprotocol/contracts';
+import { HD_WALLET_MNEMONIC, PRIVATE_KEY_0, NETWORK } from '../utils/environment.js';
 
 const jsonRpcEndpoint: string = config.get(`network.${NETWORK}.config.url`);
 const provider = new ethers.providers.JsonRpcProvider(jsonRpcEndpoint);
@@ -66,16 +66,16 @@ export const deployCommon = async ({
     signers,
     network,
 }: Deploy.RunTimeEnvironment): Promise<DeployCommonResult> => {
-    let deployCommonResult: DeployCommonResult = {};
+    const deployCommonResult: DeployCommonResult = {};
 
-    deployCommonResult.deterministicDeployer = await Deploy.deployDeterministicDeployer({
+    deployCommonResult.deterministicDeployer = await Deploy.DeterministicDeployerDeploy({
         provider,
         signers,
         network,
     });
-    deployCommonResult.proxyFactory = await Deploy.deployProxyFactory({ provider, signers, network });
-    deployCommonResult.implementations = await Deploy.deployImplementations({ provider, signers, network });
-    deployCommonResult.upgradeableBeacon = await Deploy.deployUpgradeableBeacon({ provider, signers, network });
+    deployCommonResult.proxyFactory = await Deploy.ProxyFactoryDeploy({ provider, signers, network });
+    deployCommonResult.implementations = await Deploy.ImplementationsDeploy({ provider, signers, network });
+    deployCommonResult.upgradeableBeacon = await Deploy.UpgradeableBeaconDeploy({ provider, signers, network });
 
     return deployCommonResult;
 };

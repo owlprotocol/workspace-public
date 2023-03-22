@@ -2,7 +2,7 @@ import { useTheme, FormControl, FormErrorMessage } from '@chakra-ui/react';
 import { Select, CreatableSelect } from 'chakra-react-select';
 import { Contract } from '@owlprotocol/web3-redux';
 import { useForm, useController } from 'react-hook-form';
-import { intersection } from 'lodash-es';
+import { compact, flatten, intersection, uniq } from 'lodash-es';
 import Web3 from 'web3';
 import { useCallback, useState } from 'react';
 
@@ -13,7 +13,7 @@ const coder = web3.eth.abi;
 //https://codesandbox.io/s/chakra-react-select-react-hook-form-usecontroller-single-select-typescript-v3-3hvkm
 //https://github.com/csandman/chakra-react-select/tree/v3#react-hook-form
 export interface Props {
-    networkId: string | undefined;
+    networkId: string;
     indexFilter?: string[] | undefined;
     showOtherAddresses?: boolean;
     creatable?: boolean;
@@ -31,8 +31,8 @@ export const SelectAddress = ({
     const [error, setError] = useState<Error | undefined>();
     const [, setValue] = useState<string | undefined>();
 
-    const tags = Contract.hooks.useGetTags(networkId);
-    const contracts = Contract.hooks.useForNetworkId(networkId);
+    const [contracts] = Contract.hooks.useWhere({ networkId });
+    const tags = uniq(compact(flatten(contracts.map((c) => c.tags))))
 
     //Options map tags to list of contracts with them
     const options = tags.map((t) => {

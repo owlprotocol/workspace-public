@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Box, Button, FormControl, FormErrorMessage, useTheme } from '@chakra-ui/react';
 import { Contract, Config, ContractSendStatus } from '@owlprotocol/web3-redux';
 import { useCallback, useState } from 'react';

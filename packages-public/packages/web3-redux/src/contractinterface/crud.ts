@@ -1,13 +1,18 @@
-import { name } from './common.js';
-import { ContractInterfaceId, ContractInterface } from './model/index.js';
-import { createCRUDModel } from '@owlprotocol/crud-redux';
-import getDB, { Web3ReduxDexie } from '../db.js';
+import { createCRUDModel } from "@owlprotocol/crud-redux";
+import { ContractInterfaceName } from "./common.js";
+import { ContractInterfaceId, ContractInterface, validateId, toPrimaryKey } from "./model/index.js";
+import { getDB, Web3ReduxDexie } from "../db.js";
 
 export const ContractInterfaceCRUD = createCRUDModel<
-    typeof name,
+    typeof ContractInterfaceName,
     ContractInterfaceId,
     ContractInterface,
-    ContractInterface,
-    ContractInterfaceId,
     Web3ReduxDexie
->(name, getDB);
+>({
+    name: ContractInterfaceName,
+    getDB,
+    validators: {
+        validateId,
+        toPrimaryKey,
+    },
+});

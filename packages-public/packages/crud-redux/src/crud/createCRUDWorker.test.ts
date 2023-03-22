@@ -1,18 +1,19 @@
-import { assert } from 'chai';
-import { omit } from 'lodash-es'
-import { ReduxErrorCRUD } from '../error/crud.js';
-import { sleep } from '../utils/sleep.js';
-import { createCRUDWorkers } from './createCRUDWorker.js';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { assert } from "chai";
+import { omit } from "lodash-es";
+import { createCRUDWorkers } from "./createCRUDWorker.js";
+import { ReduxErrorCRUD } from "../error/crud.js";
+import { sleep } from "../utils/sleep.js";
 
-describe('createCRUDWorker.test.ts', () => {
-    let item1 = { id: '1', id2: 1, errorMessage: 'test' }
+describe("createCRUDWorker.test.ts", () => {
+    const item1 = { id: "1", id2: 1, errorMessage: "test" };
 
-    it('create', async () => {
+    it("create", async () => {
         const workers = createCRUDWorkers(2);
-        workers[0].postMessage(ReduxErrorCRUD.actions.create({ id: '1', errorMessage: 'test' }));
-        await sleep(1000)
-        workers[1].postMessage(ReduxErrorCRUD.actions.create({ id: '1', errorMessage: 'test' }));
-        await sleep(1000)
+        workers[0].postMessage(ReduxErrorCRUD.actions.create({ id: "1", errorMessage: "test" }));
+        await sleep(1000);
+        workers[1].postMessage(ReduxErrorCRUD.actions.create({ id: "1", errorMessage: "test" }));
+        await sleep(1000);
 
         /*
         //Dexie

@@ -2,8 +2,8 @@
  * @module ContractInterface
  */
 
-import { ContractInterfaceCRUD } from './crud.js';
-import { rootSaga } from './sagas/index.js';
+import { ContractInterfaceCRUD } from "./crud.js";
+import { contractInterfaceSaga } from "./sagas/index.js";
 
 export const ContractInterface = {
     name: ContractInterfaceCRUD.name,
@@ -13,7 +13,7 @@ export const ContractInterface = {
     },
     sagas: {
         ...ContractInterfaceCRUD.sagas,
-        rootSaga,
+        rootSaga: contractInterfaceSaga,
     },
     hooks: {
         ...ContractInterfaceCRUD.hooks,
@@ -23,6 +23,6 @@ export const ContractInterface = {
     reducer: ContractInterfaceCRUD.reducer,
     validate: ContractInterfaceCRUD.validate,
     validateId: ContractInterfaceCRUD.validateId,
-    hydrate: ContractInterfaceCRUD.hydrate,
+    validateWithRedux: ContractInterfaceCRUD.validateWithRedux,
     encode: ContractInterfaceCRUD.encode,
 };

@@ -1,9 +1,7 @@
-import { all, spawn } from 'typed-redux-saga';
-import { ContractInterfaceCRUD } from '../crud.js';
+import { all, spawn } from "typed-redux-saga";
+import { ContractInterfaceCRUD } from "../crud.js";
 
 /** @internal */
-export function* rootSaga() {
-    yield* all([
-        spawn(ContractInterfaceCRUD.sagas.crudRootSaga),
-    ]);
+export function* contractInterfaceSaga() {
+    yield* all([spawn(ContractInterfaceCRUD.sagas.crudRootSaga)]);
 }

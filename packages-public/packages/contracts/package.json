@@ -58,6 +58,8 @@
     "test:ERC721Mintable": "hh test lib/cjs/test/assets/ERC721/ERC721Mintable.test.js",
     "deploy": "npm-run-all to:commonjs deploy:all to:module",
     "deploy:all": "hardhat deploy --tags All --network anvil",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "eslint --fix 'src/**/*.ts'",
     "madge": "madge src/index.ts -c",
     "to:commonjs": "sed 's/\"type\": \"module\"/\"type\": \"commonjs\"/g' package.json > ./temp.package.json && mv ./temp.package.json package.json",
     "to:module": "sed 's/\"type\": \"commonjs\"/\"type\": \"module\"/g' package.json > ./temp.package.json && mv -f ./temp.package.json package.json"
@@ -100,6 +102,8 @@
     "@openzeppelin/contracts-upgradeable": "^4.7.0",
     "@openzeppelin/hardhat-upgrades": "^1.17.0",
     "@owlprotocol/esbuild-config": "workspace:*",
+    "@owlprotocol/eslint-config": "workspace:*",
+    "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/nft-sdk": "workspace:*",
     "@owlprotocol/utils": "workspace:*",
     "@typechain/ethers-v5": "7.2.0",

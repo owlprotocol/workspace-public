@@ -1,12 +1,19 @@
-import { T_Encoded_Base } from '@owlprotocol/crud-redux';
-import type { AbiItem } from 'web3-utils';
+import type { AbiItem } from "web3-utils";
 
 export interface ContractInterfaceId {
     readonly interfaceId: string;
 }
 
-export interface ContractInterface extends ContractInterfaceId, T_Encoded_Base {
+export interface ContractInterface extends ContractInterfaceId {
     readonly abi: AbiItem[];
 }
 
-export const ContractInterfaceIndex = 'interfaceId';
+export function validateId({ interfaceId }: ContractInterfaceId): ContractInterfaceId {
+    return { interfaceId };
+}
+
+export function toPrimaryKey({ interfaceId }: ContractInterfaceId): [string] {
+    return [interfaceId];
+}
+
+export const ContractInterfaceIndex = "interfaceId";

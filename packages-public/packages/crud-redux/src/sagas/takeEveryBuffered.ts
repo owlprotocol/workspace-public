@@ -1,4 +1,4 @@
-import { actionChannel, take, race, delay, fork, join, FixedTask } from 'typed-redux-saga';
+import { actionChannel, take, race, delay, fork, join, FixedTask } from "typed-redux-saga";
 
 //https://redux-saga.js.org/docs/advanced/Channels/
 
@@ -46,6 +46,6 @@ export function* takeEveryBuffered(action: string, saga: any, options?: TakeEver
             action: tasksAll,
             timeout: delay(bufferCompletionTimeout!),
         });
-        if (timeout) console.debug('takeEveryBuffer buffer execution timeout');
+        if (timeout) console.debug("takeEveryBuffer buffer execution timeout");
     }
 }

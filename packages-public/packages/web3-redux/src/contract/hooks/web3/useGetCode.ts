@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { ReduxError } from '@owlprotocol/crud-redux';
+import { useEffect, useMemo, useCallback } from "react";
+import { useDispatch } from "react-redux";
+import { ReduxError } from "@owlprotocol/crud-redux";
 
-import NetworkCRUD from '../../../network/crud.js';
-import { getCodeAction as getCodeAction2 } from '../../actions/index.js';
-import ContractCRUD from '../../crud.js';
+import { NetworkCRUD } from "../../../network/crud.js";
+import { getCodeAction as getCodeAction2 } from "../../actions/index.js";
+import { ContractCRUD } from "../../crud.js";
 
 /**
  * Get Contract bytecode
@@ -14,7 +14,7 @@ import ContractCRUD from '../../crud.js';
 export function useGetCode(
     networkId: string | undefined,
     address: string | undefined,
-    sync = 'ifnull' as 'ifnull' | false,
+    sync = "ifnull" as "ifnull" | false,
 ) {
     const dispatch = useDispatch();
 
@@ -24,7 +24,7 @@ export function useGetCode(
     const network = NetworkCRUD.hooks.useSelectByIdSingle(networkId);
     const web3Exists = !!(network?.web3 ?? network?.web3Sender);
     const codeExists = !!contract?.balance;
-    const executeSync = (sync === 'ifnull' && !codeExists) || !!sync; //refresh
+    const executeSync = (sync === "ifnull" && !codeExists) || !!sync; //refresh
 
     //Action
     const getCodeAction = useMemo(() => {
@@ -45,8 +45,8 @@ export function useGetCode(
     //Error
     const [reduxError] = ReduxError.hooks.useGet(getCodeAction?.meta.uuid);
     const error = useMemo(() => {
-        if (!networkId) return new Error('networkId undefined');
-        else if (!address) return new Error('address undefined');
+        if (!networkId) return new Error("networkId undefined");
+        else if (!address) return new Error("address undefined");
         else if (!!reduxError) {
             const err = new Error(reduxError.errorMessage);
             err.stack = reduxError.stack;
@@ -62,5 +62,3 @@ export function useGetCode(
 
     return [code, returnOptions] as [typeof code, typeof returnOptions];
 }
-
-export default useGetCode;

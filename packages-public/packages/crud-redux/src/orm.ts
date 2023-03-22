@@ -1,4 +1,4 @@
-import { ORM } from 'redux-orm';
+import { ORM } from "redux-orm";
 
 //Fix undefined import issue
 export const orm = new ORM({

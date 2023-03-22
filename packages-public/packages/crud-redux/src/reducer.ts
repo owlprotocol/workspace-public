@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-import { Action, Reducer } from 'redux';
+import { Reducer } from "redux";
 
-export const rootReducer: Reducer = (state: any, action: Action) => {
+export const rootReducer: Reducer = (state: any) => {
     return state;
 };

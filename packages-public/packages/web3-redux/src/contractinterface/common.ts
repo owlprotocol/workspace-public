@@ -1,1 +1,1 @@
-export const name = 'ContractInterface';
+export const ContractInterfaceName = "ContractInterface";

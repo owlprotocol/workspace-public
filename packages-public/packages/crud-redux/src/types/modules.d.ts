@@ -1,1 +1,1 @@
-declare module 'redux-orm';
+declare module "redux-orm";

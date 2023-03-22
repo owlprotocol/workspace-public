@@ -1,20 +1,15 @@
-import React from "react";
-import {
-    Outlet,
-    RouterProvider,
-    createReactRouter,
-    createRouteConfig,
-} from "@tanstack/react-router";
-import composeHooks from "react-hooks-compose";
-import {
-    /*useConfigureFromWeb3React,*/ useMockData,
-} from "../src/hooks/index.js";
-import {
-    withChakraProvider /*withWeb3ReactProvider*/,
-} from "../src/hoc/index.js";
-import { THEME_COLORS } from "../src/constants/index.js";
-import { Provider } from "react-redux";
-import { createStore } from "@owlprotocol/web3-redux";
+import React from 'react';
+import { RouterProvider, createReactRouter, createRouteConfig } from '@tanstack/react-router';
+import composeHooks from 'react-hooks-compose';
+import { Environment } from '@owlprotocol/web3-redux';
+import { /*useConfigureFromWeb3React,*/ } from '../src/hooks/index.js'
+import { withChakraProvider, /*withWeb3ReactProvider*/ } from '../src/hoc/index.js';
+import { THEME_COLORS } from '../src/constants/index.js';
+import { Provider } from 'react-redux';
+import { createStore } from '@owlprotocol/web3-redux';
+import { getEnvironment } from '../src/environment.js';
+
+Environment.setEnvironment(getEnvironment() as any);
 
 const store = createStore();
 export const parameters = {
@@ -45,9 +40,7 @@ export const decorators = [
         let Story2 = withChakraProvider(Story);
         //Story2 = withWeb3ReactProvider(Story2)
         Story2 = composeHooks(() => ({
-            //useConfigureFromWeb3React,
-            useMockData,
-        }))(Story2);
+        }))(Story2)
 
         const rootRoute = createRouteConfig({
             component: () => {

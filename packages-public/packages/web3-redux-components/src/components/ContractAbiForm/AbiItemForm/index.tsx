@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useCallback, useEffect, useState } from 'react';
 import { Box, useTheme, Button, FormControl, FormErrorMessage } from '@chakra-ui/react';
 import type { AbiType, StateMutabilityType } from 'web3-utils';

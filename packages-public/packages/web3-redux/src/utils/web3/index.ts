@@ -1,4 +1,4 @@
-import Web3 from 'web3';
+import Web3 from "web3";
 
 //https://web3js.readthedocs.io/en/v1.7.3/web3-eth.html?#configuration
 const httpProviderOptions = {
@@ -22,7 +22,7 @@ export const fromHttpRpc = (rpc: string, options?: any) => {
     //@ts-ignore
     web3.eth.ens._lastSyncCheck = Number.MAX_SAFE_INTEGER;
     //@ts-ignore
-    web3.eth.ens.registryAddress = '0x0000000000000000000000000000000000000000';
+    web3.eth.ens.registryAddress = "0x0000000000000000000000000000000000000000";
     return web3;
 };
 
@@ -61,7 +61,7 @@ export const fromWsRpc = (rpc: string, options?: any) => {
     //@ts-ignore
     web3.eth.ens._lastSyncCheck = Number.MAX_SAFE_INTEGER;
     //@ts-ignore
-    web3.eth.ens.registryAddress = '0x0000000000000000000000000000000000000000';
+    web3.eth.ens.registryAddress = "0x0000000000000000000000000000000000000000";
     return web3;
 };
 
@@ -69,8 +69,8 @@ export const fromWsRpc = (rpc: string, options?: any) => {
 export const fromRpc = (rpc: string, options?: any) => {
     const url = new URL(rpc);
     const protocol = url.protocol;
-    if (protocol === 'http:' || protocol == 'https:') return fromHttpRpc(rpc, options);
-    else if (protocol === 'ws:' || protocol === 'wss:') return fromWsRpc(rpc, options);
+    if (protocol === "http:" || protocol == "https:") return fromHttpRpc(rpc, options);
+    else if (protocol === "ws:" || protocol === "wss:") return fromWsRpc(rpc, options);
 
     throw new Error(`Invalid protocol for rpc: ${rpc}`);
 };
