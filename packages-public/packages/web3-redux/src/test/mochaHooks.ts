@@ -3,7 +3,6 @@ import { JSDOM } from "jsdom";
 import Dexie from "dexie";
 //@ts-ignore
 import setGlobalVars from "indexeddbshim";
-import { getDB as getCrudReduxDB } from "@owlprotocol/crud-redux";
 import { getDB } from "../db.js";
 
 const beforeAll = async () => {
@@ -24,9 +23,8 @@ const beforeAll = async () => {
 };
 
 const beforeEach = async () => {
-    const dbCrudRedux = getCrudReduxDB();
     const db = getDB();
-    await Promise.all([db.clear(), dbCrudRedux.clear()]);
+    await Promise.all([db.clear()]);
 };
 
 const afterAll = async () => {
@@ -34,9 +32,8 @@ const afterAll = async () => {
 };
 
 const afterEach = async () => {
-    const dbCrudRedux = getCrudReduxDB();
     const db = getDB();
-    await Promise.all([db.clear(), dbCrudRedux.clear()]);
+    await Promise.all([db.clear()]);
 };
 
 export const mochaHooks = {

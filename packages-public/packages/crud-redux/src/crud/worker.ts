@@ -1,11 +1,10 @@
 import { channel } from "../channel.js";
-import { getDB } from "../db.js";
-import { ReduxErrorCRUD } from "../error/crud.js";
+//import { getDB } from "../db.js";
 
 //TODO: Use real db for testing (bc no shared memory)
 //const store = createStore()
 
-console.debug(getDB());
+//console.debug(getDB());
 
 //Shared messages across ALL workers
 //Receivers _POST messages
@@ -18,10 +17,9 @@ self.onmessage = async () => {
     //console.debug('test0')
     //console.debug(e.data)
     //console.debug('test')
-    const item1Dexie = await ReduxErrorCRUD.db.get({ id: "1" });
-    console.debug({ item1Dexie });
+    //const item1Dexie = await ReduxErrorCRUD.db.get({ id: "1" });
+    //console.debug({ item1Dexie });
     //postMessage({ item1Dexie })
-
     /*
     store.dispatch(e.data)
     const item2Dexie = await ReduxErrorCRUD.db.get({ id: '1' });

@@ -45,15 +45,15 @@ export type EthLogQueryIndexInput =
     | { networkId: string; address: string; topic0: string }
     | { networkId: string; address: string; eventFormatFull: string }
     | {
-          networkId: string;
-          address: string;
-          eventFormatFull: string;
-          topic1: string;
-          topic2: string;
-          topic3: string;
-          fromBlock: number;
-          toBlock: number;
-      };
+        networkId: string;
+        address: string;
+        eventFormatFull: string;
+        topic1: string;
+        topic2: string;
+        topic3: string;
+        fromBlock: number;
+        toBlock: number;
+    };
 /**
 | { networkId: string, address: string, eventFormatFull: string, topic1: string, topic2: string, fromBlock: number, toBlock: number }
 | { networkId: string, address: string, eventFormatFull: string, topic1: string, topic3: string, fromBlock: number, toBlock: number }
@@ -117,7 +117,7 @@ export function toPrimaryKey({
 export function validateEthLogQuery<Filter = any>(item: EthLogQueryPartial<Filter>): EthLogQuery {
     const filter = validateEthLogFilter(item);
     const { address, topics } = filter;
-    const { fromBlock, toBlock, errorId } = item;
+    const { fromBlock, toBlock, errorId, events } = item;
     const item2: EthLogQuery = {
         ...omit(filter, "topics", "address"),
         address: address ?? "*",
@@ -128,6 +128,7 @@ export function validateEthLogQuery<Filter = any>(item: EthLogQueryPartial<Filte
         fromBlock,
         toBlock,
         errorId,
+        events,
     };
 
     return omitBy(item2, isUndefined) as unknown as EthLogQuery;

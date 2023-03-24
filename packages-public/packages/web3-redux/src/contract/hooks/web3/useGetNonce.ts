@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { ReduxError } from "@owlprotocol/crud-redux";
+import { ReduxError, getReduxErrorCRUD } from "@owlprotocol/crud-redux";
 
 import { NetworkCRUD } from "../../../network/crud.js";
 import { SyncCRUD } from "../../../sync/crud.js";
 import { GenericSync } from "../../../sync/model/index.js";
 import { getNonceAction as getNonceAction2, getNonceSynced } from "../../actions/index.js";
 import { ContractCRUD } from "../../crud.js";
+import { getDB } from "../../../db.js";
 
 /**
  * Get address nonce
@@ -67,7 +68,7 @@ export function useGetNonce(
     }, [dispatch, syncId]);
 
     //Error
-    const [reduxError] = ReduxError.hooks.useGet(getNonceAction?.meta.uuid);
+    const [reduxError] = getReduxErrorCRUD(getDB).hooks.useGet(getNonceAction?.meta.uuid);
     const error = useMemo(() => {
         if (!networkId) return new Error("networkId undefined");
         else if (!address) return new Error("address undefined");

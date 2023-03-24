@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import { omit } from "lodash-es";
 import { Child, ChildId } from "./child/model/interface.js";
 import { ChildCRUD } from "./child/crud.js";
-import { createStore, StoreType } from "../store.js";
+import { createStore, StoreType } from "./store.js";
 
 describe(`hook.test.tsx`, () => {
     const id0: ChildId = { firstName: "John", lastName: "Doe" };

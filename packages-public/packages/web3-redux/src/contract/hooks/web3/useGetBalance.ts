@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { ReduxError } from "@owlprotocol/crud-redux";
+import { getReduxErrorCRUD } from "@owlprotocol/crud-redux";
 
 import { NetworkCRUD } from "../../../network/crud.js";
 import { SyncCRUD } from "../../../sync/crud.js";
 import { GenericSync } from "../../../sync/model/index.js";
 import { getBalanceAction as getBalanceAction2, getBalanceSynced } from "../../actions/index.js";
 import { ContractCRUD } from "../../crud.js";
+import { getDB } from "../../../db.js";
 
 /**
  * Get address balance
@@ -68,7 +69,7 @@ export function useGetBalance(
     }, [dispatch, syncId]);
 
     //Error
-    const [reduxError] = ReduxError.hooks.useGet(getBalanceAction?.meta.uuid);
+    const [reduxError] = getReduxErrorCRUD(getDB).hooks.useGet(getBalanceAction?.meta.uuid);
     const error = useMemo(() => {
         if (!networkId) return new Error("networkId undefined");
         else if (!address) return new Error("address undefined");

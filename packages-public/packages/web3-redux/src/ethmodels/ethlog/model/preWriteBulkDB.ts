@@ -1,51 +1,78 @@
 import { utils } from "ethers";
-import { pick, zip } from "lodash-es";
+import { compact, pick } from "lodash-es";
 import { EthLog, indexedTopicsLengthMatch } from "./interface.js";
 import { mapDeepBigNumberToString } from "../../../utils/mapDeepBigNumberToString.js";
 import { EthLogAbiCRUD } from "../../ethlogabi/crud.js";
 import { getContractCRUD } from "../../../contract/crudGet.js";
-//import { ERC165CRUD } from "../../../contractmodels/erc165/crud.js";
+import { ERC165AbiCRUD } from "../../../contractmodels/erc165abi/crud.js";
+import { getERC165CRUD } from "../../../contractmodels/erc165/crudGet.js";
 
 const ContractCRUD = getContractCRUD();
+const ERC165CRUD = getERC165CRUD();
 
 export async function preWriteBulkDB(items: EthLog[]): Promise<EthLog[]> {
-    //const erc165 = await ERC165CRUD.db.bulkWhere(items.map((c) => pick(c, "networkId", "address")));
-    //TODO: erc165abi map interfaceId => abi
-    const contracts = await ContractCRUD.db.bulkGet(items.map((c) => pick(c, "networkId", "address")));
-    const ethlogabisArr = await EthLogAbiCRUD.db.bulkWhere(
-        items.map((c) => {
-            return { eventSighash: c.topic0 ?? "" };
-        }),
-    );
-
-    const promises = zip(items, contracts, ethlogabisArr).map(async ([e, contract, ethlogabis]) => {
+    const promises = items.map(async (e) => {
         const { data, topics, topic0 } = e!;
         let eventFormatFull = e!.eventFormatFull;
         let returnValues = e!.returnValues;
 
         if (topic0 && (!eventFormatFull || !returnValues)) {
-            /*
-            //ERC165 - useless as already handled in-memory
-            //TODO: Use DB mapping iface => abi, stores API data
-            const abi165 = flatten(
-                ifaces!.map((iface) => {
-                    return interfaceIds[iface.interfaceId] ?? [];
-                }),
-            );
-            const iface165 = new utils.Interface(abi165 as any);
-            const methodFormatFull = inferEthLogFormatFullFromIface(topics, iface165);
-            */
-
+            //ERC165
+            const erc165 = await ERC165CRUD.db.where(pick(e, "networkId", "address"));
+            const erc165Abi = compact(await ERC165AbiCRUD.db.bulkGet(erc165.map((e) => pick(e, "interfaceId"))));
+            for (const abi of erc165Abi) {
+                try {
+                    const iface = new utils.Interface(abi as any);
+                    const fragment = iface.getEvent(topic0);
+                    if (indexedTopicsLengthMatch(topics, fragment)) {
+                        //Decode
+                        if (!eventFormatFull) {
+                            eventFormatFull = fragment.format(utils.FormatTypes.full).replace("event ", "");
+                        }
+                        if (!returnValues) {
+                            const iface = new utils.Interface([fragment]);
+                            returnValues = iface.decodeEventLog(fragment, data, topics);
+                            returnValues = mapDeepBigNumberToString(returnValues);
+                        }
+                        return {
+                            ...e!,
+                            eventFormatFull,
+                            returnValues,
+                        };
+                    }
+                    // eslint-disable-next-line no-empty
+                } catch (error) { }
+            }
+            const contract = await ContractCRUD.db.get(pick(e, "networkId", "address"));
             //Contract
-            const eventFragments: utils.EventFragment[] = [];
             const abi = contract?.abi;
             if (abi) {
                 try {
                     const iface = new utils.Interface(abi as any);
-                    eventFragments.push(iface.getEvent(topic0));
+                    const fragment = iface.getEvent(topic0);
+                    if (indexedTopicsLengthMatch(topics, fragment)) {
+                        //Decode
+                        if (!eventFormatFull) {
+                            eventFormatFull = fragment.format(utils.FormatTypes.full).replace("event ", "");
+                        }
+                        if (!returnValues) {
+                            const iface = new utils.Interface([fragment]);
+                            returnValues = iface.decodeEventLog(fragment, data, topics);
+                            returnValues = mapDeepBigNumberToString(returnValues);
+                        }
+                        return {
+                            ...e!,
+                            eventFormatFull,
+                            returnValues,
+                        };
+                    }
                     // eslint-disable-next-line no-empty
-                } catch (error) {}
+                } catch (error) { }
             }
+
+            //EthLog Abis
+            const ethlogabis = await EthLogAbiCRUD.db.where({ eventSighash: topic0 });
+            const eventFragments: utils.EventFragment[] = [];
             eventFragments.push(...ethlogabis!.map((e) => utils.EventFragment.from(e.eventFormatFull)));
 
             for (const fragment of eventFragments) {

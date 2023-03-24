@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { ReduxError } from "@owlprotocol/crud-redux";
+import { getReduxErrorCRUD } from "@owlprotocol/crud-redux";
 
 import { NetworkCRUD } from "../../../network/crud.js";
 import { getCodeAction as getCodeAction2 } from "../../actions/index.js";
 import { ContractCRUD } from "../../crud.js";
+import { getDB } from "../../../db.js";
 
 /**
  * Get Contract bytecode
@@ -43,7 +44,7 @@ export function useGetCode(
     }, [dispatch, dispatchGetCode, web3Exists, executeSync]);
 
     //Error
-    const [reduxError] = ReduxError.hooks.useGet(getCodeAction?.meta.uuid);
+    const [reduxError] = getReduxErrorCRUD(getDB).hooks.useGet(getCodeAction?.meta.uuid);
     const error = useMemo(() => {
         if (!networkId) return new Error("networkId undefined");
         else if (!address) return new Error("address undefined");

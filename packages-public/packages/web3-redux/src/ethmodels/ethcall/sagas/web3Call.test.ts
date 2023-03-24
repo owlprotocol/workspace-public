@@ -11,6 +11,7 @@ import { EthCallCRUD } from "../crud.js";
 import { network1336 } from "../../../network/data.js";
 import { NetworkCRUD } from "../../../network/crud.js";
 import { web3CallAction } from "../actions/web3Call.js";
+import { EthCallStatus } from "../model/interface.js";
 
 const networkId = network1336.networkId;
 const web3 = network1336.web3!;
@@ -42,9 +43,6 @@ describe(`${EthCallName}/sagas/call.ts`, () => {
 
         describe("web3Call", () => {
             it("(): success", async () => {
-                //const ethCallInitial = ethCall;
-                //const rpcBatchInitial = rpcBatch;
-
                 const tx2 = await web3Contract.methods.setValue(42);
                 const gas2 = await tx2.estimateGas();
                 await tx2.send({ from: accounts[0], gas: gas2, gasPrice: "875000000" });
@@ -66,7 +64,33 @@ describe(`${EthCallName}/sagas/call.ts`, () => {
                     to: address,
                     methodFormatFull: "getValue() returns (uint256)",
                 });
+                assert.equal(ethCall?.status, EthCallStatus.SUCCESS);
                 assert.equal(ethCall?.returnValue, 42);
+            });
+
+            it("(): revertTx", async () => {
+                const tx2 = await web3Contract.methods.setValue(42);
+                const gas2 = await tx2.estimateGas();
+                await tx2.send({ from: accounts[0], gas: gas2, gasPrice: "875000000" });
+
+                store.dispatch(
+                    web3CallAction({
+                        networkId,
+                        to: address,
+                        methodFormatFull: "revertTx()",
+                        args: [],
+                        maxCacheAge: Number.MAX_SAFE_INTEGER,
+                    }),
+                );
+                await sleep(2000);
+
+                //Selector
+                const ethCall = await EthCallCRUD.db.get({
+                    networkId,
+                    to: address,
+                    methodFormatFull: "revertTx()",
+                });
+                assert.equal(ethCall?.status, EthCallStatus.ERROR);
             });
         });
     });

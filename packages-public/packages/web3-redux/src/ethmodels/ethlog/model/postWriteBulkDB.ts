@@ -15,11 +15,15 @@ import { AssetRouterOutputBasket } from "../../../contractmodels/assetrouteroutp
 import { Contract } from "../../../contract/model/interface.js";
 import { ERC20AllowanceCRUD } from "../../../contractmodels/erc20allowance/crud.js";
 import { getContractCRUD } from "../../../contract/crudGet.js";
+//import { ERC165 } from "../../../contractmodels/erc165/model/interface.js";
+//import { getERC165CRUD } from "../../../contractmodels/erc165/crudGet.js";
 
 const ContractCRUD = getContractCRUD();
+//const ERC165CRUD = getERC165CRUD();
 
 export async function postWriteBulkDB(items: EthLog[]) {
     const ContractUpserts: Contract[] = [];
+    //const ERC165Upserts: ERC165[] = [];
     const ERC20AllowanceUpserts: ERC20Allowance[] = [];
     const ERC20BalanceUpserts: ERC20Balance[] = [];
     const ERC721Upserts: ERC721[] = [];
@@ -38,9 +42,22 @@ export async function postWriteBulkDB(items: EthLog[]) {
         ) {
             const returnValues = e.returnValues;
             if (returnValues) {
-                const { implementer } = returnValues;
-                //New contract
-                ContractUpserts.push({ networkId, address: implementer });
+                const { implementer, interfaceHash } = returnValues as { implementer: string; interfaceHash: string };
+                //0x01ffc9a7ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                let interfaceId: string;
+                if (interfaceHash.slice(10) === "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff") {
+                    //ERC165
+                    interfaceId = interfaceHash.slice(0, 10);
+                } else {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    interfaceId = interfaceHash;
+                }
+
+                //console.debug({ networkId, address: implementer, interfaceId, x: x++ });
+
+                //New contract with known interface
+                ContractUpserts.push({ networkId, address: implementer, interfaceCheckedAt: Date.now() });
+                //ERC165Upserts.push({ networkId, address: implementer, interfaceId });
             }
         } else {
             //Register any contract that emits an event
@@ -163,6 +180,7 @@ export async function postWriteBulkDB(items: EthLog[]) {
 
     return Promise.all([
         ContractCRUD.db.bulkUpsertUnchained(ContractUpserts),
+        //ERC165CRUD.db.bulkUpdateUnchained(ERC165Upserts),
         ERC20AllowanceCRUD.db.bulkUpsertUnchained(ERC20AllowanceUpserts),
         ERC20BalanceCRUD.db.bulkUpsertUnchained(ERC20BalanceUpserts),
         ERC721CRUD.db.bulkUpsertUnchained(ERC721Upserts),

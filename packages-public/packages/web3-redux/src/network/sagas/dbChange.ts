@@ -18,24 +18,7 @@ export function* dbCreatingSaga(action: ReturnType<typeof NetworkCRUD.actions.db
 
     //Skip test cases
     if (syncContracts) {
-        const contractsImplementation = Object.entries(Ethers.implementationFactories).map(([k, f]) => {
-            return {
-                networkId,
-                address: f.getAddress(),
-                label: `${k}Implementation`,
-                tags: ["Implementation"],
-            };
-        });
-        yield* put(
-            ContractCRUD.actions.createBatched([
-                { networkId, address: Utils.ERC1820.registryAddress },
-                {
-                    networkId,
-                    address: Utils.ERC1167Factory.ERC1167FactoryAddress,
-                },
-                ...contractsImplementation,
-            ]),
-        );
+        yield* call(syncNetworkContracts, networkId);
     }
 
     if (syncBlocks) {
@@ -53,24 +36,7 @@ export function* dbUpdatingSaga(action: ReturnType<typeof NetworkCRUD.actions.db
     }
 
     if (syncContracts) {
-        const contractsImplementation = Object.entries(Ethers.implementationFactories).map(([k, f]) => {
-            return {
-                networkId,
-                address: f.getAddress(),
-                label: `${k}Implementation`,
-                tags: ["Implementation"],
-            };
-        });
-        yield* put(
-            ContractCRUD.actions.createBatched([
-                { networkId, address: Utils.ERC1820.registryAddress },
-                {
-                    networkId,
-                    address: Utils.ERC1167Factory.ERC1167FactoryAddress,
-                },
-                ...contractsImplementation,
-            ]),
-        );
+        yield* call(syncNetworkContracts, networkId);
     }
 
     if (syncBlocks) {
@@ -90,6 +56,34 @@ export function* dbDeletingSaga(action: ReturnType<typeof NetworkCRUD.actions.db
             yield put(blockUnsubscribeAction(networkId));
         }
     }
+}
+
+export function* syncNetworkContracts(networkId: string) {
+    //Interface is marked as checked
+    const contractsImplementation = Object.entries(Ethers.implementationFactories).map(([k, f]) => {
+        return {
+            networkId,
+            address: f.getAddress(),
+            label: `${k}Implementation`,
+            tags: ["Implementation"],
+            //interfaceCheckedAt: Number.MAX_SAFE_INTEGER,
+        };
+    });
+    yield* put(
+        ContractCRUD.actions.createBatched([
+            {
+                networkId,
+                address: Utils.ERC1820.registryAddress,
+                //interfaceCheckedAt: Number.MAX_SAFE_INTEGER
+            },
+            {
+                networkId,
+                address: Utils.ERC1167Factory.ERC1167FactoryAddress,
+                //interfaceCheckedAt: Number.MAX_SAFE_INTEGER,
+            },
+            ...contractsImplementation,
+        ]),
+    );
 }
 
 export function* validateWithReduxNetworkContracts(networkId: string) {

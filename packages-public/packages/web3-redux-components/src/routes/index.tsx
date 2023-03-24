@@ -1,9 +1,5 @@
 import {
-    Outlet,
-    Link,
-    Router,
     Route,
-    RootRoute,
 } from '@tanstack/react-router'
 import { rootRoute } from './__root.js'
 

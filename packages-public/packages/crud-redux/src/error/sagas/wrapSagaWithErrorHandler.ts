@@ -1,15 +1,16 @@
-import { Action } from "redux";
+import { AnyAction } from "redux";
 import { call, put } from "typed-redux-saga";
 import { v4 as uuidv4 } from "uuid";
-import { create as createError } from "../actions/index.js";
+import { createReduxError as createError } from "../actions/index.js";
 
-interface ActionWithId extends Action {
+interface AnyActionWithId extends AnyAction {
     meta?: {
         uuid: string;
+        [k: string]: any;
     };
 }
 
-export function wrapSagaWithErrorHandler<T extends ActionWithId = ActionWithId>(
+export function wrapSagaWithErrorHandler<T extends AnyActionWithId = AnyActionWithId>(
     saga: (action: T) => Generator<any, any, any>,
     name?: string,
 ) {

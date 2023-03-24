@@ -1,13 +1,15 @@
 /* eslint-disable no-empty */
-import { put, call, select } from "typed-redux-saga";
+import { put, call, select, all } from "typed-redux-saga";
 import { interfaces, Utils } from "@owlprotocol/contracts";
 import { NetworkCRUD } from "../../../network/crud.js";
 import { ADDRESS_1 } from "../../../data.js";
 import { ERC165CRUD } from "../crud.js";
 import { ContractHelpers } from "../../../common/contracts.js";
 import { InferInterfaceAction } from "../actions/inferInterface.js";
+import { ContractCRUD } from "../../../contract/crud.js";
+import { fetchERC165 } from "../../actions/fetchERC165.js";
 
-export function* inferIERC165(networkId: string, address: string): Generator<any, string[] | undefined> {
+export function* inferIERC165(networkId: string, address: string): Generator<any, boolean> {
     //IERC165
     try {
         const supported = yield* ContractHelpers.IERC165.callSaga.supportsInterface({
@@ -17,11 +19,15 @@ export function* inferIERC165(networkId: string, address: string): Generator<any
             maxCacheAge: Number.MAX_SAFE_INTEGER,
         });
         if (supported.returnValue && supported.returnValue[0]) {
-            return [interfaces.IERC165.interfaceId];
+            return true;
+        } else {
+            return false;
         }
         //Unsupported
         // eslint-disable-next-line prettier/prettier
     } catch (error) { }
+
+    return false;
 }
 
 export function* inferIERC20(networkId: string, address: string): Generator<any, string[] | undefined> {
@@ -188,7 +194,10 @@ export function* inferInterface(networkId: string, address: string): Generator<a
     if (!web3) throw new Error(`Network ${networkId} missing web3`);
 
     const isIERC165 = yield* call(inferIERC165, networkId, address);
-    if (isIERC165) return isIERC165;
+    if (isIERC165) {
+        yield* all(fetchERC165(networkId, address).map((a) => put(a)));
+        return [interfaces.IERC165.interfaceId];
+    }
     const isIERC721 = yield* call(inferIERC721, networkId, address);
     if (isIERC721) return isIERC721;
     const isIERC1155 = yield* call(inferIERC1155, networkId, address);
@@ -202,11 +211,15 @@ export function* inferInterface(networkId: string, address: string): Generator<a
 /** @category Sagas */
 export function* inferInterfaceSaga(action: InferInterfaceAction): Generator<any, string[]> {
     const { payload } = action;
-    const { networkId, address } = payload;
+    const { networkId, address, interfaceCheckedAtMaxCacheAge } = payload;
 
-    const erc165 = yield* call(ERC165CRUD.db.where, { networkId, address });
-    if (erc165.length > 0) return erc165.map((c) => c.interfaceId); //ABI Known
+    const contract = yield* call(ContractCRUD.db.get, { networkId, address });
+    if (contract?.interfaceCheckedAt && Date.now() - contract.interfaceCheckedAt < interfaceCheckedAtMaxCacheAge) {
+        const erc165 = yield* call(ERC165CRUD.db.where, { networkId, address });
+        return erc165.map((c) => c.interfaceId); //ABI Known
+    }
 
+    yield put(ContractCRUD.actions.upsert({ networkId, address, interfaceCheckedAt: Date.now() }));
     const interfaceIds = yield* call(inferInterface, networkId, address);
 
     if (interfaceIds.length > 0) {

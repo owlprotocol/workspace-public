@@ -1,8 +1,6 @@
-import { interfaceIds, interfaces } from "@owlprotocol/contracts";
+import { interfaces } from "@owlprotocol/contracts";
 import { utils } from "ethers";
-import { isEqual, uniqWith } from "lodash-es";
 import { call, put } from "typed-redux-saga";
-import { ContractCRUD } from "../../../contract/crud.js";
 import { httpGet } from "../../../http/actions/httpGet.js";
 import { catAction } from "../../../ipfs/actions/cat.js";
 import { EthCallCRUD } from "../crud.js";
@@ -33,23 +31,14 @@ export function* dbDeletingSaga(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     action: ReturnType<typeof EthCallCRUD.actions.dbDeleting>,
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-): Generator<any, any> {}
+): Generator<any, any> { }
 
 export function* handleEthCallReturnValueUpdate(
     ethcall: Omit<EthCall, "returnValues"> & { returnValue: any },
 ): Generator<any, any> {
-    const { networkId, to, args, methodFormatFull, returnValue } = ethcall;
+    const { args, methodFormatFull, returnValue } = ethcall;
 
     if (
-        methodFormatFull ===
-        interfaces.IERC165.interface
-            .getFunction("supportsInterface")
-            .format(utils.FormatTypes.full)
-            .replace("function ", "")
-    ) {
-        const interfaceId = args![0];
-        yield* call(handleSupportsInterface, networkId, to, interfaceId);
-    } else if (
         methodFormatFull ===
         interfaces.IContractURI.interface
             .getFunction("contractURI")
@@ -88,13 +77,5 @@ export function* handleEthCallReturnValueUpdate(
         } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
             yield put(catAction({ path: uri.replace("{id}", args[0]) }));
         }
-    }
-}
-
-export function* handleSupportsInterface(networkId: string, address: string, interfaceId: string) {
-    const contract = yield* call(ContractCRUD.db.get, { networkId, address });
-    const abi = uniqWith([...(contract?.abi ?? []), ...interfaceIds[interfaceId]], isEqual);
-    if (!isEqual(abi, contract?.abi)) {
-        yield* put(ContractCRUD.actions.upsert({ networkId, address, abi }));
     }
 }

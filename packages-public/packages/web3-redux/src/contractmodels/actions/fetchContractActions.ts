@@ -27,7 +27,7 @@ export function fetchContractActions(
 
     //Handle interface
     if (interfaceName === "IERC165") {
-        actions.push(...fetchERC165(networkId, address));
+        //actions.push(...fetchERC165(networkId, address));
     } else if (interfaceName === "IERC1820") {
         actions.push(...fetchERC1820(networkId, address));
     } else if (interfaceName === "IRouterReceiver") {

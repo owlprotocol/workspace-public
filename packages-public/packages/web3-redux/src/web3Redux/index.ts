@@ -12,9 +12,11 @@ import { Web3ReduxName } from "./common.js";
 export const Web3Redux = {
     name: Web3ReduxName,
     actionTypes: {
+        CLEAR: Actions.CLEAR,
         INITIALIZE: Actions.INITIALIZE,
     },
     actions: {
+        clear: Actions.clear,
         initialize: Actions.initialize,
     },
     sagas: {

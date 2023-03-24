@@ -1,11 +1,11 @@
 import { all, spawn } from "typed-redux-saga";
 
-import { ReduxError } from "@owlprotocol/crud-redux";
+import { getReduxErrorCRUD } from "@owlprotocol/crud-redux";
 
 import { assetPickerSaga } from "./assetpicker/sagas/index.js";
 import { configSaga } from "./config/sagas/index.js";
 import { contractSaga } from "./contract/sagas/index.js";
-import { contractInterfaceSaga } from "./contractinterface/sagas/index.js";
+import { contractInterfaceSaga } from "./contractmodels/erc165abi/sagas/index.js";
 
 import { ethBlockSaga } from "./ethmodels/ethblock/sagas/index.js";
 import { ethCallSaga } from "./ethmodels/ethcall/sagas/index.js";
@@ -35,10 +35,13 @@ import { syncSaga as syncSaga } from "./sync/sagas/index.js";
 
 //Abstractions
 import { web3ReduxSaga as Web3ReduxSaga } from "./web3Redux/sagas/index.js";
+import { getDB } from "./db.js";
 
 //https://typed-redux-saga.js.org/docs/advanced/RootSaga.html
 export function* rootSaga() {
     yield* all([
+        //crud-redux
+        spawn(getReduxErrorCRUD(getDB).sagas.crudRootSaga),
         //ethmodels
         spawn(ethBlockSaga),
         spawn(ethCallSaga),
@@ -49,7 +52,6 @@ export function* rootSaga() {
         spawn(ethLogSubscribeSaga),
         spawn(ethSendSaga),
         spawn(ethTransactionSaga),
-        spawn(ReduxError.sagas.rootSaga),
         //contractmodels
         spawn(assetRouterInputBasketSaga),
         spawn(assetRouterOuputBasketSaga),

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { interfaceIds } from "@owlprotocol/contracts";
 import { compact, flatten, isEqual, omit, zip } from "lodash-es";
 
@@ -7,6 +8,9 @@ import { ContractCRUD } from "../../../contract/crud.js";
 import { abiDeterministic } from "../../../utils/abiDeterministic.js";
 
 export async function postWriteBulkDB(items: ERC165[]): Promise<any> {
+    return;
+
+    /*
     const ContractUpserts: Contract[] = [];
 
     //Merge Abis
@@ -47,4 +51,5 @@ export async function postWriteBulkDB(items: ERC165[]): Promise<any> {
     //console.debug({ ContractUpserts })
 
     return Promise.all([ContractCRUD.db.bulkPutUnchained(ContractUpserts)]);
+    */
 }

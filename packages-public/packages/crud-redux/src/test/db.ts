@@ -4,7 +4,7 @@ import { ChildName } from "./child/common.js";
 import { Child, ChildIndex } from "./child/model/interface.js";
 import { ReduxError, ReduxErrorIndex } from "../error/model/index.js";
 
-import { name as ReduxErrorName } from "../error/common.js";
+import { ReduxErrorName as ReduxErrorName } from "../error/common.js";
 import { isClient } from "../utils/isClient.js";
 
 export class CrudDexie extends Dexie {

@@ -49,6 +49,8 @@ export interface Contract extends ContractId {
     readonly metadataURI?: string;
     /** Metadata JSON */
     readonly metadata?: ContractMetadata;
+    /** Interface was checked */
+    readonly interfaceCheckedAt?: number;
 }
 
 export type ContractIndexInput = ContractId | { networkId: string } | { label: string } | { tags: string[] };

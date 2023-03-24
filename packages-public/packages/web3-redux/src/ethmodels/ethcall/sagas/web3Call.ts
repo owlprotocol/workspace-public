@@ -17,7 +17,7 @@ import { web3CallBatchedAction, Web3CallBatchedAction, WEB3_CALL_BATCHED } from 
 export function* web3CallSaga<Args extends any[] = any[], Ret = any>(
     action: Web3CallAction<Args>,
 ): Generator<any, EthCall<Args, Ret>> {
-    const { payload } = action;
+    const { payload, meta } = action;
     const { networkId, from, to, data, gas, defaultBlock, maxCacheAge } = payload;
 
     const dbSelected = yield* call(EthCallCRUD.db.get, { networkId, to, data });
@@ -33,23 +33,33 @@ export function* web3CallSaga<Args extends any[] = any[], Ret = any>(
     const web3 = network?.web3;
     if (!web3) throw new Error(`Network ${networkId} missing web3`);
 
-    const gasDefined = gas ?? (yield* call(web3.eth.estimateGas, { from, to, data })); //default gas
-    const returnData: string = yield* call(
-        //@ts-ignore
-        web3.eth.call,
-        { from, to, data, gas: gasDefined },
-        defaultBlock,
-    );
+    try {
+        const gasDefined = gas ?? (yield* call(web3.eth.estimateGas, { from, to, data })); //default gas
+        const returnData: string = yield* call(
+            //@ts-ignore
+            web3.eth.call,
+            { from, to, data, gas: gasDefined },
+            defaultBlock,
+        );
+        const ethcall = validateEthCall({
+            ...payload,
+            gas: gasDefined,
+            returnData,
+            status: EthCallStatus.SUCCESS,
+        }) as EthCall<Args, Ret>;
 
-    const ethcall = validateEthCall({
-        ...payload,
-        gas: gasDefined,
-        returnData,
-        status: EthCallStatus.SUCCESS,
-    }) as EthCall<Args, Ret>;
+        yield* put(EthCallCRUD.actions.upsert(ethcall, meta.uuid, meta.ts));
+        return ethcall;
+    } catch (err) {
+        const ethcall = validateEthCall({
+            ...payload,
+            status: EthCallStatus.ERROR,
+            errorId: meta.uuid,
+        }) as EthCall<Args, Ret>;
 
-    yield* put(EthCallCRUD.actions.upsert(ethcall, action.meta.uuid));
-    return ethcall;
+        yield* put(EthCallCRUD.actions.upsert(ethcall, meta.uuid, meta.ts));
+        throw err;
+    }
 }
 
 // Omit<Web3CallAction<Args>, 'payload'> & { payload: Omit<Web3CallAction<Args>['payload'], 'methodFormatFull'> }

@@ -42,7 +42,7 @@ export const ERC721MintableDeploy = async ({ provider, signers, network, tokens,
     //Contracts
     const deployments: { [key: string]: ERC721MintableInitializeArgs } = {};
     for (let i = 0; i < tokens; i++) {
-        const name = `ERC721MintableAutoId-${i}`;
+        const name = `ERC721Mintable-${i}`;
 
         deployments[name] = {
             admin: signerAddress,

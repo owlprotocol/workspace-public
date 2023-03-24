@@ -2,8 +2,8 @@ import { createStore as createReduxStore, applyMiddleware, compose } from "redux
 import createSagaMiddleware from "redux-saga";
 
 import { rootSaga } from "./saga.js";
+import { rootReducer } from "./reducer.js";
 import { isClient } from "../utils/isClient.js";
-import { rootReducer } from "../reducer.js";
 import { channel } from "../channel.js";
 import { crashReporter } from "../middleware/index.js";
 
