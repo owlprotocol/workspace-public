@@ -4,6 +4,8 @@ import {
     attrTierBgImage,
     attrTierIconImage,
     attrPointsNumber,
+    attrCountryEnum,
+    attrLastTransferTimestampNumber,
     attrSubGroupEnum,
 } from './traits.js';
 
@@ -28,7 +30,9 @@ const collExampleLoyaltyDef: NFTGenerativeCollection = {
         Background: attrTierBgImage,
         'Tier Badge': attrTierIconImage,
         Points: attrPointsNumber,
+        Country: attrCountryEnum,
         'Sub Group': attrSubGroupEnum,
+        'Last Transferred': attrLastTransferTimestampNumber,
     },
 };
 
@@ -40,7 +44,9 @@ export const collExampleLoyalty = NFTGenerativeCollectionClass.fromData(
     Background: NFTGenerativeTraitImageClass;
     'Tier Badge': NFTGenerativeTraitImageClass;
     Points: NFTGenerativeTraitNumberClass;
+    Country: NFTGenerativeTraitEnumClass;
     'Sub Group': NFTGenerativeTraitEnumClass;
+    'Last Transferred': NFTGenerativeTraitNumberClass;
 }>;
 
 export default collExampleLoyaltyDef;
