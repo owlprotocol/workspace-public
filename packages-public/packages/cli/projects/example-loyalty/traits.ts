@@ -1,4 +1,4 @@
-import { NFTGenerativeTraitImage, NFTGenerativeTraitEnum, NFTGenerativeTraitNumber } from '@owlprotocol/nft-sdk';
+import {NFTGenerativeTraitImage, NFTGenerativeTraitEnum, NFTGenerativeTraitNumber} from '@owlprotocol/nft-sdk';
 
 export const attrMemberIdNumber: NFTGenerativeTraitNumber = {
     name: 'Member ID',
@@ -23,23 +23,23 @@ export const attrTierBgImage: NFTGenerativeTraitImage = {
     options: [
         {
             value: 'Basic',
-            image_url: 'ipfs://QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-blue.png',
+            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-blue.png',
         },
         {
             value: 'Facets',
-            image_url: 'ipfs://QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-silver.png',
+            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-silver.png',
         },
         {
             value: 'Swirls',
-            image_url: 'ipfs://QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-purple.png',
+            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-purple.png',
         },
         {
             value: 'Dark',
-            image_url: 'ipfs://QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-dark.png',
+            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-dark.png',
         },
         {
             value: 'Tunnels',
-            image_url: 'ipfs://QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-squares.png',
+            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-squares.png',
         },
     ],
 };
@@ -51,23 +51,23 @@ export const attrTierIconImage: NFTGenerativeTraitImage = {
     options: [
         {
             value: 'Bronze',
-            image_url: 'ipfs://QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-bronze.png',
+            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-bronze.png',
         },
         {
             value: 'Silver',
-            image_url: 'ipfs://QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-silver.png',
+            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-silver.png',
         },
         {
             value: 'Gold',
-            image_url: 'ipfs://QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-gold.png',
+            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-gold.png',
         },
         {
             value: 'Platinum',
-            image_url: 'ipfs://QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-platinum.png',
+            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-platinum.png',
         },
         {
             value: 'Diamond',
-            image_url: 'ipfs://QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-diamond.png',
+            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-diamond.png',
         },
     ],
 };
@@ -161,6 +161,7 @@ export const attrCountryEnum: NFTGenerativeTraitEnum = {
         'Guyana',
         'Haiti',
         'Holy See',
+        'Hong Kong',
         'Honduras',
         'Hungary',
         'Iceland',
@@ -258,6 +259,7 @@ export const attrCountryEnum: NFTGenerativeTraitEnum = {
         'Sweden',
         'Switzerland',
         'Syria',
+        'Taiwan',
         'Tajikistan',
         'Tanzania',
         'Thailand',
