@@ -13,7 +13,7 @@ This is a developer tool useful for:
 - Invoking common functions on Dynamic NFTs, such as attaching/detaching child NFTs
 
 :::tip
-See our [Tutorials](/contracts/tutorials) for how we use the CLI - [**LINK**](/contracts/tutorials)
+See our [Tutorials](/contracts/tutorials) for how we use the CLI
 :::
 
 > View the help with: `node dist/index.cjs --help`

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 3
-sidebar_label: 'DNFT Image Layers with DNA'
+sidebar_label: 'NFT Image Layers with DNA'
 slug: '/tutorial-topdowndna'
 ---
 
@@ -41,7 +41,7 @@ In this example we are creating a Dynamic PFP (Profile Picture NFT).
 - **The hat is its own NFT!** And can be detached/removed, or re-attached to the base NFT.
 - When attached/removed the NFT will show the hat on or off.
 - The hat once removed can be traded on its own with other hats, or sold, it's up the owner.
-- The onchain data, and IPFS hosted Schema JSON is all that is required to render the NFT graphics.
+- The onchain data, and IPFS-hosted JSON Schema is all that is required to render the NFT graphics.
 - No centralized back-ends, or dependencies on other tools. **Our `nft-sdk` is the only thing a client/browser needs to render the NFT.**
 
 :::caution
@@ -161,9 +161,9 @@ under `packages/cli/src/projects` we will need to create a folder for the projec
 ```
 
 For the `traits` in this example we'll use the `nft-sdk` to instantiate the [NFTGenerativeCollectionClass](https://github.com/owlprotocol/owlprotocol/blob/main/packages/nft-sdk/src/classes/NFTGenerativeCollection/NFTGenerativeCollectionClass.ts) and use the CLI
-tool to generate the **Schema JSON**, which is uploaded to IPFS.
+tool to generate the **JSON Schema**, which is uploaded to IPFS.
 
-> The `nft-sdk` needs this Schema JSON to translate the binary onchain data (DNA).
+> The `nft-sdk` needs this JSON Schema to translate the binary onchain data (DNA).
 
 `packages/cli/src/projects/example-omo/traits.ts`
 
@@ -213,7 +213,7 @@ See: [/packages/cli/src/projects/example-omo/traits.ts](https://github.com/owlpr
 
 You need to manually upload images to IPFS, and add the `image_url` as `ipfs://[hash]/[path]`.
 
-The `ipfs://` will be replaced by the `ENV` variable `IPFS_GATEWAY` that used by our provided API, so you don't need to be concerned about that.
+The `ipfs://` will be replaced by the environemnt variable `IPFS_GATEWAY` that used by our provided API, so you don't need to be concerned about that.
 
 We'll have more tools and a UI for uploading to IPFS soon.
 
@@ -298,9 +298,9 @@ See: [/packages/cli/projects/example-omo/collection.ts](https://github.com/owlpr
 
 ---
 
-## Step 4: Generate the Schema JSON
+## Step 4: Generate the JSON Schema
 
-The **Schema JSON** is used to interpret and translate the on-chain DNA or NFT on-chain data to something that can be rendered
+The **JSON Schema** is used to interpret and translate the on-chain DNA or NFT on-chain data to something that can be rendered
 or executed upon.
 
 > We believe storing the on-chain data in a single binary encoded format is ideal because it minimizes the number of esoteric methods on the smart contract. Rather we leave it up to the client to interpret and parse the schema.
@@ -309,7 +309,7 @@ or executed upon.
 This is not to confused with the **Metadata JSON**, which is what NFT Marketplaces use to describe the NFT.
 :::
 
-### Using the CLI to Generate the Schema JSON
+### Using the CLI to Generate the JSON Schema
 
 1. First make sure you have a `.env.development` file, for this step it's fine to just copy the included `.env.example` file.
 
@@ -346,7 +346,7 @@ Now you should see a new folder in `projects/example-omo` called `output`, and i
 
 ---
 
-## Step 5: Upload the Schema JSON to IPFS
+## Step 5: Upload the JSON Schema to IPFS
 
 :::info
 We have 2 collections here, which should make sense because the **Hats** collection is a separate NFT.
@@ -357,7 +357,7 @@ However when we mint the NFT, we only mint the parent NFT, and we attach the min
 
 We generally prefer Pinata, but of course you can choose a more decentralized option.
 
-For this example we will use Pinata, **upload both Schema JSONs to IPFS, and take note of the IPFS hashes.**
+For this example we will use Pinata, **upload both JSON Schemas to IPFS, and take note of the IPFS hashes.**
 
 In this case and for your reference, we have uploaded these example JSONs here:
 - [collection-parent.json](https://leovigna.mypinata.cloud/ipfs/QmRNrcuGtaqefB72NHuGdDtvzEZjNvX6m2E1AgBXW65EKq) - Hash: `QmRNrcuGtaqefB72NHuGdDtvzEZjNvX6m2E1AgBXW65EKq`
@@ -399,8 +399,7 @@ You will need to create an `owlproject.json` file in the project folder:
     "tokenSymbol": "ExampleOmoNFT",
     "tokenIdStart": 1,
     "cfg": {
-      "ipfsEndpoint": "https://leovigna.mypinata.cloud",
-      "ipfsPath": "ipfs",
+      "ipfsEndpoint": "https://leovigna.mypinata.cloud/ipfs",
       "apiEndpoint": "https://metadata.owlprotocol.xyz",
       "apiPath": "metadata/getMetadata",
       "schemaJsonIpfs": "QmRNrcuGtaqefB72NHuGdDtvzEZjNvX6m2E1AgBXW65EKq"
@@ -420,13 +419,13 @@ You will need to create an `owlproject.json` file in the project folder:
 ### Important
 - You need a working IPFS endpoint for now for `ipfsEndpoint`, we are using [Pinata](https://pinata.cloud/)
 - Do not change `apiEndpoint`, this is the fallback API for browsers/clients that do not support the `nft-sdk`
-- Replace the `schemaJsonIpfs` for the parent and children according to the **Schema JSON** from earlier, this is misnamed at the moment.
+- Replace the `schemaJsonIpfs` for the parent and children according to the **JSON Schema** from earlier, this is misnamed at the moment.
 
 ---
 
 ## Step 8: Deploy and Mint the NFTs
 
-1. We need to start a local Ganache blockchain, or you can use any other chain you specify in the `.env.development` or appropriate `ENV` file.
+1. We need to start a local Ganache blockchain, or you can use any other chain you specify in the `.env.development` or appropriate environemnt file.
 
 2. If you are using a different chain, you must define the network config in `packages/cli/config/default.json`.
 
@@ -467,7 +466,7 @@ node dist/index.cjs deployTopDown --projectFolder=projects/example-omo --deployC
 ```
 
 Requirements:
-- Schema JSON uploaded to IPFS, and IPFS hashes specified in `owlproject.json` file.
+- JSON Schema uploaded to IPFS, and IPFS hashes specified in `owlproject.json` file.
 - Network configured properly in `.env.[NODE_ENV]` file and `cli/config/default.json`.
 - NFT item JSONs generated in `output/items`
 
@@ -515,14 +514,18 @@ Also the NFT item JSON files will be updated to track the deployment:
 
 You can use the `viewTopDown` command on the CLI to quickly view the NFT:
 
-```
+```bash
 node dist/index.cjs viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a --tokenId=1
 ```
 
 This should show something similar to:
-```json
+```
 View ERC721TopDownDna 0xe3f62b8f72E49e75081B991685AeA19dd783b44a on ganache
-Fetching Metadata Schema JSON from: https:/leovigna.mypinata.cloud/ipfs/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9
+Fetching Metadata JSON Schema from: https:/leovigna.mypinata.cloud/ipfs/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9
+```
+
+And the following JSON:
+```javascript
 {
   Body: {
     value: 'Downtown',
@@ -544,7 +547,7 @@ Hats {
 
 ### View the Rendered NFT PFP
 
-Typically your webapp should use the `nft-sdk`, instantiate the collection class from the Schema JSON, and read the
+Typically your webapp should use the `nft-sdk`, instantiate the collection class from the JSON Schema, and read the
 NFT's `dna` to render the NFT.
 
 > But we can use the centralized fallback API to quickly use our deployed public endpoint, which does the same job, but should not be relied upon!
@@ -567,12 +570,16 @@ But we are only interested in the `tokenUri`:
 
 `http://metadata.owlprotocol.xyz:32001/metadata/getMetadata/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`
 
-Yes, that's a very ugly `base64` encoded DNA string, but that's never seen by users.
+Yes, that's a very ugly base64-encoded DNA string, but that's never seen by users.
 
-If you `curl` that URL, you will get:
+ `curl` that URL:
 
+```bash
+curl -s https://metadata.owlprotocol.xyz/metadata/getMetadata/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+```
+
+You should get the following JSON:
 ```json
-| => curl -s https://metadata.owlprotocol.xyz/metadata/getMetadata/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA | jq '.'
 {
   "description": "Example from https://docs.owlprotocol.xyz/contracts/tutorial-topdowndna",
   "external_url": "https://docs.owlprotocol.xyz/contracts/tutorial-topdowndna",
@@ -615,9 +622,11 @@ We use the `detachTopDown` command to remove/detach the NFT:
 
 Outputs:
 
-```json
+```
 Detaching from ERC721TopDownDna on ganache
-Fetching Metadata Schema JSON from: https:/leovigna.mypinata.cloud/ipfs/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9
+Fetching Metadata JSON Schema from: https:/leovigna.mypinata.cloud/ipfs/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9
+```
+```javascript
 {
   Body: {
     value: 'Downtown',

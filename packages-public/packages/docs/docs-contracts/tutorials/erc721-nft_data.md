@@ -241,7 +241,6 @@ We use the `uint8` type default for a trait. This means that a trait can have `2
 
 We will now use the Owl Protocol command-line interface (CLI) to generate the JSON Schema.
 
-<!-- TODO: where? -->
 1. Build the CLI package in the [owlprotocol repository](https://github.com/owlprotocol/owlprotocol/tree/main/packages/cli), to generate the CLI.
 
 ```
@@ -308,7 +307,7 @@ Create a file called `owlproject.json` in the project folder. This will contain 
 
 ## Step 6: Deploy and Mint the NFT
 
-:::tip 
+:::tip
 For initial testing, prefer a local blockchain over a testnet. A local blockchain like Ganache is simpler and faster.
 :::
 
@@ -343,7 +342,7 @@ If you are deploying to a new chain, or fresh ganache blockchain, the common bea
 
 We enable this by passing `--deployCommon=true` into the deployment command. Don't worry if you forget to remove this flag later. Our deployer always deploys the beacons to the same addresses. Therefore, the deployer will skip deploying beacons if they already exist.
 
-<!-- TODO: make this make sense -->
+<!-- TODO: make this make sense
 :::info
 Owl Protocol uses advanced smart contract beacons that feature:
 - **Deterministic Deployment** - provides the same addresses for registries and implementations across multiple blockchains.
@@ -352,6 +351,7 @@ Owl Protocol uses advanced smart contract beacons that feature:
 
 Docs are coming soon that explain this in depth, for now you can follow the deployment strategies here: [deployCommon.ts](https://github.com/owlprotocol/owlprotocol/blob/tutorial-example-omo/packages/cli/src/commands/deployCommon.ts)
 :::
+-->
 
 ### Deploy Contracts and Mint NFTs
 
@@ -361,15 +361,18 @@ If everything is set up properly, you can now run in the CLI folder:
 node dist/index.cjs deployTopDown --projectFolder=projects/example-loyalty --deployCommon=true --debug=true
 ```
 
-<!-- TODO: confusing -->
-Requirements:
-- Schema JSON uploaded to IPFS, and IPFS hashes specified in `owlproject.json` file.
-- Network configured properly in `.env.[NODE_ENV]` file and `cli/config/default.json`.
-- NFT item JSONs generated in `output/items`
+:::note
+This will deploy and mint all NFT JSONs in the project's `/output/items` folder.
+:::
 
-**This will deploy and mint all NFT JSONs in that folder.**
+At this point make sure you have the following:
+- A Schema JSON uploaded to IPFS, and the corresponding IPFS hash in the `owlproject.json` file.
+- The network configured properly in `.env.development` file and `cli/config/default.json`.
+- JSONs files of the NFTs you will mint in `output/items`.
 
-If it works you should see something similar to:
+
+
+And if the command succeeds you should see something similar to:
 ```
 Deploying NFT: 1
 
