@@ -1,6 +1,6 @@
-import React from 'react';
-import { ChakraProvider } from '@chakra-ui/react';
-import { theme } from '@owlprotocol/owl-theme';
+import React from "react";
+import { ChakraProvider } from "@chakra-ui/react";
+import { theme } from "../src/theme/index.js";
 
 export const decorators = [
     (Story) => {

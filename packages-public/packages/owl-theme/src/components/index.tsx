@@ -1,4 +1,4 @@
-import { THEME_COLORS } from "../../constants/index.js";
+import { THEME_COLORS } from "../constants/index.js";
 import Button from "./Button";
 import Text from "./Text";
 import Link from "./Link";

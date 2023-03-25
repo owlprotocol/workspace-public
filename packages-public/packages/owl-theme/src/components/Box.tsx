@@ -1,4 +1,4 @@
-import { THEME_COLORS } from "../../constants/index.js";
+import { THEME_COLORS } from "../constants/index.js";
 
 const box_grad_bg =
     "linear-gradient(143.93deg, rgba(28, 28, 36, 0.6) 0%, rgba(45, 45, 54, 0.6) 50%, rgba(28, 28, 36, 0.6) 100%)";

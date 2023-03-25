@@ -51,6 +51,7 @@
     "@owlprotocol/nft-sdk-components": "workspace:*",
     "@owlprotocol/web3-redux": "workspace:*",
     "@owlprotocol/template-data": "workspace:*",
+    "@owlprotocol/owl-theme": "workspace:*",
     "@tanstack/react-router": "0.0.1-beta.83",
     "@tanstack/react-table": "^8.7.9",
     "@walletconnect/encoding": "^1.0.1",

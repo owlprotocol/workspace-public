@@ -1,10 +1,10 @@
-import { ChakraProvider } from '@chakra-ui/react';
-import { Provider } from 'react-redux';
-import { RouterProvider } from '@tanstack/react-router';
-import { Environment, createStore } from '@owlprotocol/web3-redux';
-import { router } from './router.js';
-import theme from './theme/index.js';
-import { getEnvironment } from './environment.js';
+import { ChakraProvider } from "@chakra-ui/react";
+import { Provider } from "react-redux";
+import { RouterProvider } from "@tanstack/react-router";
+import { Environment, createStore } from "@owlprotocol/web3-redux";
+import { router } from "./router.js";
+import { theme } from "@owlprotocol/owl-theme";
+import { getEnvironment } from "./environment.js";
 //import './i18n';
 
 //import '@fontsource/inter/400.css';
@@ -14,7 +14,7 @@ import { getEnvironment } from './environment.js';
 //import '@fontsource/inter/800.css';
 
 Environment.setEnvironment(getEnvironment() as any);
-const store = createStore()
+const store = createStore();
 
 const App = () => {
     return (
@@ -23,8 +23,7 @@ const App = () => {
                 <RouterProvider router={router} />
             </ChakraProvider>
         </Provider>
-
-    )
+    );
 };
 
 export default App;

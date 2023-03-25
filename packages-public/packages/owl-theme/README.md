@@ -1,4 +1,6 @@
-# Chakra UI Theme System
+# Owl Design System
+
+_based on Chakra UI Theme System_
 
 ## Exposing the color variables
 
@@ -13,11 +15,9 @@ Usage: themes.color5
 
 Any chakra component has props such as `color` and `bg`
 
-
 ```
 Usage: <Box bg={themes.color5} />
 ```
-
 
 ## How to use in component with styled-components
 
@@ -29,11 +29,13 @@ const { themes } = useTheme();
 ```
 
 2. add styled-component variable
+
 ```
 color9={themes.color9}
 ```
 
 3. add styled-component css
+
 ```
 background: ${(props: any) => props.bg};
 ```

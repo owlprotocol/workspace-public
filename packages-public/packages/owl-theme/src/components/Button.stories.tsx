@@ -13,7 +13,7 @@ export default {
 } as ComponentMeta<typeof Button>;
 
 const Template: ComponentStory<typeof Button> = (args: any) => (
-    <Button {...args} />
+    <Button {...args}>Hello Owl Button</Button>
 );
 export const Main = Template.bind({});
 

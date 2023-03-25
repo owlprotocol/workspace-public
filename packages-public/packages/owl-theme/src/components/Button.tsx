@@ -1,4 +1,4 @@
-import { THEME_COLORS } from "../../constants/index.js";
+import { THEME_COLORS } from "../constants/index.js";
 
 const Button = (CURRENT_THEME: string) => {
     // @ts-ignore

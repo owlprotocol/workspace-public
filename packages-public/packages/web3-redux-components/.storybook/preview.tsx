@@ -1,13 +1,12 @@
-import React from 'react';
-import { RouterProvider, createReactRouter, createRouteConfig } from '@tanstack/react-router';
-import composeHooks from 'react-hooks-compose';
-import { Environment } from '@owlprotocol/web3-redux';
-import { /*useConfigureFromWeb3React,*/ } from '../src/hooks/index.js'
-import { withChakraProvider, /*withWeb3ReactProvider*/ } from '../src/hoc/index.js';
-import { THEME_COLORS } from '../src/constants/index.js';
-import { Provider } from 'react-redux';
-import { createStore } from '@owlprotocol/web3-redux';
-import { getEnvironment } from '../src/environment.js';
+// import { RouterProvider } from "@tanstack/react-router";
+import React from "react";
+import composeHooks from "react-hooks-compose";
+import { Environment } from "@owlprotocol/web3-redux";
+import { withChakraProvider } from "../src/hoc/index.js";
+import { THEME_COLORS } from "@owlprotocol/owl-theme";
+import { Provider } from "react-redux";
+import { createStore } from "@owlprotocol/web3-redux";
+import { getEnvironment } from "../src/environment.js";
 
 Environment.setEnvironment(getEnvironment() as any);
 
@@ -39,26 +38,27 @@ export const decorators = [
     (Story) => {
         let Story2 = withChakraProvider(Story);
         //Story2 = withWeb3ReactProvider(Story2)
-        Story2 = composeHooks(() => ({
-        }))(Story2)
+        Story2 = composeHooks(() => ({}))(Story2);
 
-        const rootRoute = createRouteConfig({
-            component: () => {
-                return <Story2 />;
-            },
-        });
-        const indexRoute = rootRoute.createRoute({
-            path: "/",
-            component: () => {
-                return <></>;
-            },
-        });
-        const routeConfig = rootRoute.addChildren([indexRoute]);
-        const router = createReactRouter({ routeConfig });
+        //
+        // const rootRoute = createRouteConfig({
+        //     component: () => {
+        //         return <Story2 />;
+        //     },
+        // });
+        // const indexRoute = rootRoute.createRoute({
+        //     path: "/",
+        //     component: () => {
+        //         return <></>;
+        //     },
+        // });
+        // const routeConfig = rootRoute.addChildren([indexRoute]);
+        // const router = createReactRouter({ routeConfig });
 
         return (
             <Provider store={store}>
-                <RouterProvider router={router} />
+                {/* <RouterProvider router={router} /> */}
+                <Story2 />
             </Provider>
         );
     },

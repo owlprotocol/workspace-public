@@ -1,16 +1,17 @@
-import { extendTheme } from '@chakra-ui/react';
-import components from './components/index.js';
-import { THEME_COLORS } from '../constants/index.js';
+import { extendTheme } from "@chakra-ui/react";
+import components from "../components/index.js";
+import { THEME_COLORS } from "../constants/index.js";
+import TableWrapper from "./TableStyleOverrides.js";
 
-const CURRENT_THEME = 'theme1';
+const CURRENT_THEME = "theme1";
 
 const themeOverrides = {
     styles: {
         global: {
-            'html, body': {
+            "html, body": {
                 backgroundColor: THEME_COLORS[CURRENT_THEME].background,
                 color: THEME_COLORS[CURRENT_THEME].color4,
-                lineHeight: '1.2',
+                lineHeight: "1.2",
             },
             a: {
                 color: THEME_COLORS[CURRENT_THEME].color1,
@@ -20,16 +21,14 @@ const themeOverrides = {
     textStyles: {
         title: {
             // responsive sizes TBA
-            fontSize: ['20px', '20px'],
-            fontWeight: '400',
-            lineHeight: '27px',
+            fontSize: ["20px", "20px"],
+            fontWeight: "400",
+            lineHeight: "27px",
         },
     },
     components: components(CURRENT_THEME),
     themes: THEME_COLORS[CURRENT_THEME],
 };
 
-// @ts-ignore
-const theme = extendTheme(themeOverrides);
-
-export default theme;
+const theme: any = extendTheme(themeOverrides);
+export { theme, TableWrapper };

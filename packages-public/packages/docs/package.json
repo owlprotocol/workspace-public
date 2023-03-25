@@ -20,6 +20,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@owlprotocol/owl-theme": "workspace:*",
     "@chakra-ui/react": "1.8.9",
     "@emotion/react": "11.10.5",
     "framer-motion": "6.5.1",
