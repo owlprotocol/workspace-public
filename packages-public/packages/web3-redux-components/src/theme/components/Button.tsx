@@ -78,6 +78,9 @@ const Button = (CURRENT_THEME: string) => {
                     opacity: 0.8,
                 },
             },
+            "grad-1": {
+                bg: "linear-gradient(99.23deg, #942457 1.6%, #8318DD 97.94%)",
+            },
         },
     };
 };

@@ -33,7 +33,7 @@ const Select = (CURRENT_THEME: string) => {
                 h: "27px",
                 bg: "transparent",
                 color: theme.color9,
-                borderRadius: 8,
+                borderRadius: 12,
                 borderWidth: 1,
                 borderStyle: "solid",
                 borderColor: theme.color9,

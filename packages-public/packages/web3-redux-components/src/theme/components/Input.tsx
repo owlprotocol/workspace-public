@@ -12,7 +12,7 @@ const Input = (CURRENT_THEME: string) => {
                     height: "52px",
                     bg: theme.color5,
                     color: theme.color7,
-                    borderRadius: 8,
+                    borderRadius: 12,
                     outline: 0,
                     border: 0,
                     _placeholder: {

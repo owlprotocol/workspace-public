@@ -1,3 +1,4 @@
+import { THEME_COLORS } from "../../constants/index.js";
 import Button from "./Button";
 import Text from "./Text";
 import Link from "./Link";
@@ -7,13 +8,14 @@ import Select from "./Select";
 import AccordionButton from "./AccordionButton";
 import FormLabel from "./FormLabel";
 import AccordionIcon from "./AccordionIcon";
-import { THEME_COLORS } from "../../constants/index.js";
+import Box from "./Box";
 
 const components = (CURRENT_THEME: string) => {
     // @ts-ignore
     const { color6, color9 } = THEME_COLORS[CURRENT_THEME];
 
     return {
+        Box: Box(CURRENT_THEME),
         Button: Button(CURRENT_THEME),
         Text: Text(CURRENT_THEME),
         Input: Input(CURRENT_THEME),

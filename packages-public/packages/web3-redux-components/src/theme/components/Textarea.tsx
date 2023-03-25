@@ -5,11 +5,16 @@ const Textarea = (CURRENT_THEME: string) => {
     const theme = THEME_COLORS[CURRENT_THEME];
 
     return {
+        // baseStyle: {
+        //     field: {
+        //         p: 10,
+        //     },
+        // },
         variants: {
             form: {
                 minHeight: "104px",
                 color: theme.color7,
-                borderRadius: 8,
+                borderRadius: 12,
                 backgroundColor: theme.color5,
                 border: 0,
                 outline: 0,
