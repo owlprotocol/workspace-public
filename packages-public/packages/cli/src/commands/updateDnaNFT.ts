@@ -1,12 +1,13 @@
 import yargs from 'yargs';
 import _ from 'lodash';
-
+import fetchRetryWrapper from 'fetch-retry';
 import { Argv } from '../utils/pathHandlers.js';
 import { HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0 } from '../utils/environment.js';
 
 import { ethers } from 'ethers';
 
 const { mapValues } = _;
+const fetchRetry = fetchRetryWrapper(fetch);
 
 import { Artifacts, Deploy } from '@owlprotocol/contracts';
 import config from 'config';
@@ -85,8 +86,14 @@ export const handler = async (argv: Argv) => {
     const rootContract = new ethers.Contract(rootContractAddr, Artifacts.ERC721TopDownDna.abi, signers[0]);
     const contractURI = await rootContract.contractURI();
 
-    console.log(`Fetching Metadata Schema JSON from: ${contractURI}`);
-    const collMetadataRes = await fetch(contractURI);
+    let collMetadataRes;
+    try {
+        debug && console.debug(`Fetching Schema JSON from ${contractURI}`);
+        collMetadataRes = await fetchRetry(contractURI, { retryDelay: 200 });
+    } catch (err) {
+        console.error(`Fetch Collection Schema JSON failed`);
+        throw err;
+    }
 
     if (!collMetadataRes.ok) {
         console.error(`Error fetching ${contractURI}`);

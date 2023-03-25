@@ -3,6 +3,7 @@ import path from 'path';
 import config from 'config';
 import fs from 'fs';
 import _ from 'lodash';
+import fetchRetryWrapper from 'fetch-retry';
 import check from 'check-types';
 import { constants, ethers, Signer, utils } from 'ethers';
 import { NFTGenerativeItemInterface, NFTGenerativeCollectionClass, NFTGenerativeItemClass } from '@owlprotocol/nft-sdk';
@@ -18,7 +19,8 @@ import {
     MintNFTResult,
 } from '../classes/owlProject.js';
 
-const { map, mapValues, omit } = _;
+const { map, mapValues, omit, endsWith } = _;
+const fetchRetry = fetchRetryWrapper(fetch);
 
 import { deployCommon } from './deployCommon.js';
 import { deployERC721TopDownDna } from '../deploy/ERC721TopDownDna.js';
@@ -214,10 +216,33 @@ const getOwlProject = async (owlProjectFilepath: string): Promise<OwlProject> =>
 
     const rootCfg = owlProject.rootContract.cfg;
 
-    const schemaJsonUrl = new URL(path.join(rootCfg.ipfsPath, rootCfg.schemaJsonIpfs!), rootCfg.ipfsEndpoint);
+    if (!rootCfg.schemaJsonEndpoint) {
+        throw new Error('config.schemaJsonEndpoint is not defined');
+    }
 
-    // TODO: add fetch-retry handling from nft-sdk-api
-    const collMetadataRes = await fetch(schemaJsonUrl);
+    if (!rootCfg.sdkApiEndpoint) {
+        throw new Error('config.sdkApiEndpoint is not defined');
+    }
+
+    if (!endsWith(rootCfg.schemaJsonEndpoint, '/')) {
+        rootCfg.schemaJsonEndpoint += '/';
+    }
+
+    if (!endsWith(rootCfg.sdkApiEndpoint, '/')) {
+        rootCfg.sdkApiEndpoint += '/';
+    }
+
+    const schemaJsonUrl = new URL(rootCfg.schemaJsonIpfs!, rootCfg.schemaJsonEndpoint);
+
+    let collMetadataRes;
+
+    try {
+        debug && console.debug(`Fetching Schema JSON from ${schemaJsonUrl}`);
+        collMetadataRes = await fetchRetry(schemaJsonUrl.toString(), { retryDelay: 200 });
+    } catch (err) {
+        console.error(`Fetch Collection Schema JSON failed`);
+        throw err;
+    }
 
     if (!collMetadataRes.ok) {
         console.error(`Error fetching ${schemaJsonUrl}`);
@@ -293,8 +318,8 @@ const initializeArgs = (owlProject: OwlProject, factories: any) => {
     mapValues(owlProject.children, (c, k) => {
         const metadata = owlProject.metadata;
 
-        const schemaJsonUrl = new URL(path.join(rootCfg.ipfsPath, c.cfg.schemaJsonIpfs!), rootCfg.ipfsEndpoint);
-        const baseUri = new URL(path.join(rootCfg.apiPath!, c.cfg.schemaJsonIpfs!), rootCfg.apiEndpoint);
+        const schemaJsonUrl = new URL(c.cfg.schemaJsonIpfs!, rootCfg.schemaJsonEndpoint);
+        const baseUri = new URL(c.cfg.schemaJsonIpfs!, rootCfg.sdkApiEndpoint);
         const contractInit = {
             admin: factories.msgSender,
             contractUri: schemaJsonUrl.toString(),
@@ -318,8 +343,8 @@ const initializeArgs = (owlProject: OwlProject, factories: any) => {
         };
     });
 
-    const schemaJsonUrl = new URL(path.join(rootCfg.ipfsPath, rootCfg.schemaJsonIpfs!), rootCfg.ipfsEndpoint);
-    const baseUri = new URL(path.join(rootCfg.apiPath!, rootCfg.schemaJsonIpfs!), rootCfg.apiEndpoint);
+    const schemaJsonUrl = new URL(rootCfg.schemaJsonIpfs!, rootCfg.schemaJsonEndpoint);
+    const baseUri = new URL(rootCfg.schemaJsonIpfs!, rootCfg.sdkApiEndpoint);
     const parentInit = {
         admin: factories.msgSender,
         contractUri: schemaJsonUrl.toString(),

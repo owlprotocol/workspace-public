@@ -3,8 +3,10 @@ import lodash from 'lodash';
 import { Argv } from '../utils/pathHandlers.js';
 import { HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0 } from '../utils/environment.js';
 import { ethers, utils } from 'ethers';
+import fetchRetryWrapper from 'fetch-retry';
 
 const { mapValues } = lodash;
+const fetchRetry = fetchRetryWrapper(fetch);
 
 import { Utils, Deploy, Artifacts } from '@owlprotocol/contracts';
 import config from 'config';
@@ -79,8 +81,14 @@ export const handler = async (argv: Argv) => {
     const fullDna = await rootContract.getDna(tokenId);
     const contractURI = await rootContract.contractURI();
 
-    console.log(`Fetching Metadata Schema JSON from: ${contractURI}`);
-    const collMetadataRes = await fetch(contractURI);
+    let collMetadataRes;
+    try {
+        debug && console.debug(`Fetching Schema JSON from ${contractURI}`);
+        collMetadataRes = await fetchRetry(contractURI, { retryDelay: 200 });
+    } catch (err) {
+        console.error(`Fetch Collection Schema JSON failed`);
+        throw err;
+    }
 
     if (!collMetadataRes.ok) {
         console.error(`Error fetching ${contractURI}`);

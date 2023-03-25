@@ -7,9 +7,7 @@ const nftItem = collExampleLoyalty.create({
         Background: 'Tunnels',
         'Tier Badge': 'Silver',
         Points: 123600,
-        Country: 'Belgium',
-        'Sub Group': 'Yacht Club',
-        'Last Transferred': 1678831284,
+        'Sub Group': 'Yacht Club'
     },
 });
 
