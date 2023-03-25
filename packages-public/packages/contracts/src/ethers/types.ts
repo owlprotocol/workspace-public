@@ -57,7 +57,6 @@ export type {
     ERC721TopDownDnaMintableInterface,
 } from "../typechain/ethers/ERC721TopDownDnaMintable";
 export type { ERC721TopDownDna, ERC721TopDownDnaInterface } from "../typechain/ethers/ERC721TopDownDna";
-export type { OwlTemplate } from "../typechain/ethers/OwlTemplate";
 
 export type { IERC1155Dna, IERC1155DnaInterface } from "../typechain/ethers/IERC1155Dna";
 export type { IERC1155Mintable, IERC1155MintableInterface } from "../typechain/ethers/IERC1155Mintable";
@@ -76,7 +75,7 @@ export type { AssetRouterInput, AssetRouterInputInterface } from "../typechain/e
 export type { AssetRouterOutput, AssetRouterOutputInterface } from "../typechain/ethers/AssetRouterOutput";
 
 //Examples
-export type { ERC721TopDownDna } from "../typechain/ethers/ERC721TopDownDna";
+export type { OwlTemplate } from "../typechain/ethers/OwlTemplate";
 
 /*
 //Finance
