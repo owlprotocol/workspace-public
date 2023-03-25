@@ -40,6 +40,7 @@ export { default as ERC721TopDownDna } from "./artifacts/contracts/assets/ERC721
 //Libraries
 export { default as ERC721TopDownLib } from "./artifacts/contracts/assets/ERC721/ERC721TopDownLib.sol/ERC721TopDownLib.js";
 export { default as ERC721TopDownDnaLib } from "./artifacts/contracts/assets/ERC721/ERC721TopDownDnaLib.sol/ERC721TopDownDnaLib.js";
+export { default as OwlTemplateHelperLib } from "./artifacts/contracts/helpers/OwlTemplateHelperLib.sol/OwlTemplateHelperLib.js";
 
 export { default as IERC1155Dna } from "./artifacts/contracts/assets/ERC1155/IERC1155Dna.sol/IERC1155Dna.js";
 export { default as IERC1155Mintable } from "./artifacts/contracts/assets/ERC1155/IERC1155Mintable.sol/IERC1155Mintable.js";
@@ -59,6 +60,9 @@ export { default as IAssetRouterOutput } from "./artifacts/contracts/plugins/Ass
 export { default as AssetRouterCraft } from "./artifacts/contracts/plugins/AssetRouter/AssetRouterCraft.sol/AssetRouterCraft.js";
 export { default as AssetRouterInput } from "./artifacts/contracts/plugins/AssetRouter/AssetRouterInput.sol/AssetRouterInput.js";
 export { default as AssetRouterOutput } from "./artifacts/contracts/plugins/AssetRouter/AssetRouterOutput.sol/AssetRouterOutput.js";
+
+//Examples
+export { default as OwlTemplate } from "./artifacts/contracts/examples/OwlTemplate.sol/OwlTemplate.js";
 
 /*
 //Finance

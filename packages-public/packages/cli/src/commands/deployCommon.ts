@@ -48,6 +48,7 @@ export const deployCommon = async ({
         network,
     });
     deployCommonResult.proxyFactory = await Deploy.ProxyFactoryDeploy({ provider, signers, network });
+    // this deploys everything in contracts/src/ethers/factories
     deployCommonResult.implementations = await Deploy.ImplementationsDeploy({ provider, signers, network });
     deployCommonResult.upgradeableBeacon = await Deploy.UpgradeableBeaconDeploy({ provider, signers, network });
 

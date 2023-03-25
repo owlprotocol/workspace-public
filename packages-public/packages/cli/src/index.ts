@@ -10,9 +10,9 @@ import * as viewTopDown from './commands/viewTopDown.js';
 import * as updateDnaNFT from './commands/updateDnaNFT.js';
 import * as burnNFT from './commands/burnNFT.js';
 import * as deployCommon from './commands/deployCommon.js';
+import * as deployExamples from './commands/deployExamples.js';
 
 yargs(hideBin(process.argv))
-    // .describe('config', 'Path to the config file. Default: "config/default.json"')
     .command(generateJsonSchema)
     .command(generateItemNFT)
     .example(generateItemNFT.example, generateItemNFT.exampleDescription)
@@ -31,6 +31,7 @@ yargs(hideBin(process.argv))
     .example(burnNFT.example, burnNFT.exampleDescription)
     .command(deployCommon)
     .example(deployCommon.example, deployCommon.exampleDescription)
+    .command(deployExamples)
     .demandCommand()
     .recommendCommands()
     .wrap(null)

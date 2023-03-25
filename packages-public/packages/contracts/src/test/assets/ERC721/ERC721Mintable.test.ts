@@ -87,7 +87,7 @@ describe("ERC721Mintable", function () {
     it("balanceOf", async () => {
         await ERC721Mintable.mint(signers[0].address, 1);
         const result = await ERC721Mintable.balanceOf(signers[0].address);
-        expect(result).to.be.eq(1);
+        expect(parseInt(result.toString())).to.be.eq(1);
     });
 
     it("InterfaceImplementerSet", async () => {

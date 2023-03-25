@@ -56,7 +56,7 @@ export type {
     ERC721TopDownDnaMintable,
     ERC721TopDownDnaMintableInterface,
 } from "../typechain/ethers/ERC721TopDownDnaMintable";
-export type { ERC721TopDownDna, ERC721TopDownDnaInterface } from "../typechain/ethers/ERC721TopDownDna";
+export type { OwlTemplate } from "../typechain/ethers/OwlTemplate";
 
 export type { IERC1155Dna, IERC1155DnaInterface } from "../typechain/ethers/IERC1155Dna";
 export type { IERC1155Mintable, IERC1155MintableInterface } from "../typechain/ethers/IERC1155Mintable";
@@ -73,6 +73,9 @@ export type { IAssetRouterOutput, IAssetRouterOutputInterface } from "../typecha
 export type { AssetRouterCraft, AssetRouterCraftInterface } from "../typechain/ethers/AssetRouterCraft";
 export type { AssetRouterInput, AssetRouterInputInterface } from "../typechain/ethers/AssetRouterInput";
 export type { AssetRouterOutput, AssetRouterOutputInterface } from "../typechain/ethers/AssetRouterOutput";
+
+//Examples
+export type { ERC721TopDownDna } from "../typechain/ethers/ERC721TopDownDna";
 
 /*
 //Finance
@@ -199,3 +202,6 @@ export type { IERC1155ReceiverUpgradeable__factory as IERC1155Receiver__factory 
 
 export type { IERC165Upgradeable__factory as IERC165__factory } from "../typechain/ethers/factories/IERC165Upgradeable__factory";
 export type { IERC1820RegistryUpgradeable__factory as IERC1820Registry__factory } from "../typechain/ethers/factories/IERC1820RegistryUpgradeable__factory";
+
+//Examples
+export type { OwlTemplate__factory } from "../typechain/ethers/factories/OwlTemplate__factory";

@@ -11,7 +11,7 @@ export function logDeployment(
     networkName: string,
     contractName: string,
     address: string,
-    deploymentType: "nicks" | "deterministic" | "implementation" | "proxy" | "beacon" | "beacon-proxy",
+    deploymentType: "nicks" | "deterministic" | "implementation" | "proxy" | "beacon" | "beacon-proxy" | "example",
     status: "exists" | "deployed" | "failed",
 ) {
     if (process.env.LOG_LEVEL != "info") {

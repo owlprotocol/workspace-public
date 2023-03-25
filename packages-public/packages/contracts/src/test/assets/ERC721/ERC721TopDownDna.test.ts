@@ -18,6 +18,7 @@ import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
 const cloneFactory = factories.ERC1167Factory.attach(ERC1167FactoryAddress);
 
 describe("ERC721TopDownDna", function () {
+
     let signers: SignerWithAddress[];
     let factories: Factories;
     let deterministicFactories: InitializeFactories;
