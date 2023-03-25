@@ -56,6 +56,7 @@ export type {
     ERC721TopDownDnaMintable,
     ERC721TopDownDnaMintableInterface,
 } from "../typechain/ethers/ERC721TopDownDnaMintable";
+export type { ERC721TopDownDna, ERC721TopDownDnaInterface } from "../typechain/ethers/ERC721TopDownDna";
 export type { OwlTemplate } from "../typechain/ethers/OwlTemplate";
 
 export type { IERC1155Dna, IERC1155DnaInterface } from "../typechain/ethers/IERC1155Dna";
