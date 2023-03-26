@@ -25,4 +25,4 @@ Main.args = {
     networkId: "1337",
     address: "0xf5059a5d33d5853360d16c683c16e67980206f36",
     eventName,
-};
+} as any;

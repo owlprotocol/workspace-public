@@ -7,6 +7,7 @@
 import * as Actions from "./actions/index.js";
 import { EthSendCRUD } from "./crud.js";
 import { ethSendSaga } from "./sagas/index.js";
+export { EthSendStatus } from './model';
 
 export const EthSend = {
     name: EthSendCRUD.name,
