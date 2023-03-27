@@ -11,13 +11,7 @@ else if (NODE_ENV === 'mumbai') defaultEnv = '.env.mumbai';
 
 const envFile = path.resolve(process.cwd(), defaultEnv);
 
-const dotenvRes = dotenv.config({ path: envFile, override: true });
-
-if (dotenvRes.error) {
-    console.error(`Missing required ${defaultEnv} file for NODE_ENV=${NODE_ENV} expected at ${process.cwd()}`);
-    console.error(dotenvRes.error);
-    process.exit(0);
-}
+const dotenvRes = dotenv.config({path: envFile, override: true});
 
 export const NETWORK = process.env.NETWORK || 'anvil';
 export const HD_WALLET_MNEMONIC = process.env.HD_WALLET_MNEMONIC;
