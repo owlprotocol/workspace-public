@@ -1,5 +1,5 @@
 import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
+import {hideBin} from 'yargs/helpers';
 
 import * as generateSchemaJSON from './commands/generateSchemaJSON.js';
 import * as generateItemNFT from './commands/generateItemNFT.js';
@@ -12,15 +12,25 @@ import * as burnNFT from './commands/burnNFT.js';
 import * as deployCommon from './commands/deployCommon.js';
 
 yargs(hideBin(process.argv))
+    // .describe('config', 'Path to the config file. Default: "config/default.json"')
     .command(generateSchemaJSON)
     .command(generateItemNFT)
+    .example(generateItemNFT.example, generateItemNFT.exampleDescription)
     .command(generateRandomNFT)
+    .example(generateRandomNFT.example, generateRandomNFT.exampleDescription)
     .command(deployTopDown)
+    .example(deployTopDown.example, deployTopDown.exampleDescription)
     .command(detachTopDown)
+    .example(detachTopDown.example, detachTopDown.exampleDescription)
     .command(viewTopDown)
+    .example(viewTopDown.example, viewTopDown.exampleDescription)
     .command(updateDnaNFT)
+    .example(updateDnaNFT.example, updateDnaNFT.exampleDescription)
+    .example(updateDnaNFT.example, updateDnaNFT.exampleDescription2)
     .command(burnNFT)
+    .example(burnNFT.example, burnNFT.exampleDescription)
     .command(deployCommon)
+    .example(deployCommon.example, deployCommon.exampleDescription)
     .demandCommand()
     .recommendCommands()
     .wrap(null)

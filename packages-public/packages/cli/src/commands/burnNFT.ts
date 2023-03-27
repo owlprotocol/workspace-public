@@ -1,31 +1,27 @@
 import yargs from 'yargs';
 import _ from 'lodash';
 
-import { Argv } from '../utils/pathHandlers.js';
-import { HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0 } from '../utils/environment.js';
+import {Argv} from '../utils/pathHandlers.js';
+import {HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0} from '../utils/environment.js';
 
-import { ethers } from 'ethers';
+import {ethers} from 'ethers';
 
-const { mapValues } = _;
+const {mapValues} = _;
 
-import { Artifacts, Deploy } from '@owlprotocol/contracts';
+import {Artifacts, Deploy} from '@owlprotocol/contracts';
 import config from 'config';
 
 const jsonRpcEndpoint: string = config.get(`network.${NETWORK}.config.url`);
 const provider = new ethers.providers.JsonRpcProvider(jsonRpcEndpoint);
 let debug = false;
 
-import { NFTGenerativeCollectionClass, NFTGenerativeItemClass } from '@owlprotocol/nft-sdk';
-
 export const command = 'burnNFT';
 
-export const describe = `Burns the NFT and all children (if any)
-
-e.g. node dist/index.cjs burnNFT --contract=0x74Dbc83C18fE41B8db1d8A31A9B5E665d974D55b --tokenId=3
-
-
-
+export const describe = `Burn the NFT and all children (if any).
 `;
+
+export const example = 'node dist/index.cjs burnNFT --contract=<contract> --tokenId=<id>';
+export const exampleDescription = 'burn the NFT at the given contract and tokenId, including all of the NFTs the NFT owns';
 
 export const builder = (yargs: ReturnType<yargs.Argv>) => {
     return yargs

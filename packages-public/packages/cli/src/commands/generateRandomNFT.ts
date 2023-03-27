@@ -3,26 +3,22 @@ import path from 'path';
 import check from 'check-types';
 import lodash from 'lodash';
 import fs from 'fs';
-import { NFTGenerativeItemClass } from '@owlprotocol/nft-sdk';
-import { Argv, getProjectSubfolder, importCollectionClass } from '../utils/pathHandlers.js';
+import {NFTGenerativeItemClass} from '@owlprotocol/nft-sdk';
+import {Argv, getProjectSubfolder, importCollectionClass} from '../utils/pathHandlers.js';
 
-const { map } = lodash;
+const {map} = lodash;
 
 let debug = false;
 
 export const command = 'generateRandomNFT <collectionJS> <numItems>';
 
-export const describe = `Devtool - Generates random instances for NFTGenerativeCollection
-
-For now this always outputs to the folder "./output/items/" relative to the projectFolder
-
+export const describe = `Devtool - Generate random instances for NFTGenerativeCollection.
+Outputs to the "./output/items/" folder relative to the projectFolder.
 collectionJS - path to the collection's JS file, relative from the projectFolder
-
-e.g. node dist/index.cjs generateRandomNFT collections.js 3 --project=projects/example-omo
-
-
-
 `;
+
+export const example = `node dist/index.cjs generateRandomNFT collections.js 3 --project=projects/example-omo`;
+export const exampleDescription = 'generate 3 NFT item instances of the collection at "projects/example-omo/collections.js"';
 
 export const builder = (yargs: ReturnType<yargs.Argv>) => {
     return yargs
@@ -43,7 +39,7 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 };
 
 // TODO: this should have an option to import from Schema JSON
-export const handler = async (argv: Argv & { numItems?: number }) => {
+export const handler = async (argv: Argv & {numItems?: number}) => {
     argvCheck(argv);
 
     debug = !!argv.debug || false;
@@ -59,7 +55,7 @@ export const handler = async (argv: Argv & { numItems?: number }) => {
 
     const collParent = nftGenerativeCollectionExport.default;
     const numItems: number = <number>argv.numItems;
-    const nftItems: Array<NFTGenerativeItemClass> = Array.from({ length: numItems }, () =>
+    const nftItems: Array<NFTGenerativeItemClass> = Array.from({length: numItems}, () =>
         collParent.generateInstance(),
     );
 

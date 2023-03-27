@@ -2,26 +2,22 @@ import yargs from 'yargs';
 import fs from 'fs';
 import path from 'path';
 import lodash from 'lodash';
-import config from 'config';
 import check from 'check-types';
 
-const { mapValues } = lodash;
+const {mapValues} = lodash;
 
-import { NFTGenerativeCollectionClass } from '@owlprotocol/nft-sdk';
+import {NFTGenerativeCollectionClass} from '@owlprotocol/nft-sdk';
 
-import { Argv, getProjectFolder, getProjectSubfolder, importCollectionClass } from '../utils/pathHandlers.js';
+import {Argv, getProjectFolder, getProjectSubfolder, importCollectionClass} from '../utils/pathHandlers.js';
 
 export const command = 'generateSchemaJSON <collectionJS>';
 
-export const describe = `Generates the Schema JSON from the default export of the specified JS file
-
+export const describe = `Generate the JSON Schema from the default export of the specified JS file.
 The "collectionJS" file is relative to the required project folder option.
-
-e.g. node dist/index.cjs generateSchemaJSON collections.js --project=projects/example-omo
-
-
-
 `;
+
+export const example = `node dist/index.cjs generateSchemaJSON collections.js --project=projects/example-omo`;
+export const exampleDescription = 'generate the JSON Schema of the collection at "projects/example-omo/collections.js"';
 
 // TODO: override path options
 export const builder = (yargs: ReturnType<yargs.Argv>) => {
@@ -58,10 +54,10 @@ export const handler = async (argv: yargs.ArgumentsCamelCase & Argv) => {
 
     const collParent = nftGenerativeCollectionClass.default;
 
-    await fs.writeFileSync(path.resolve(outputFolder, 'collection-parent.json'), JSON.stringify(collParent, null, 2));
+    fs.writeFileSync(path.resolve(outputFolder, 'collection-parent.json'), JSON.stringify(collParent, null, 2));
 
     const promises = mapValues(collParent.children, async (childColl: NFTGenerativeCollectionClass, key) => {
-        await fs.writeFileSync(
+        fs.writeFileSync(
             path.resolve(outputFolder, `collection-child-${key}.json`),
             JSON.stringify(childColl, null, 2),
         );

@@ -5,33 +5,30 @@ import fs from 'fs';
 import _ from 'lodash';
 import fetchRetryWrapper from 'fetch-retry';
 import check from 'check-types';
-import { constants, ethers, Signer, utils } from 'ethers';
-import { NFTGenerativeItemInterface, NFTGenerativeCollectionClass, NFTGenerativeItemClass } from '@owlprotocol/nft-sdk';
-import { Deploy, Ethers, Utils, Artifacts } from '@owlprotocol/contracts';
-import { Argv, getProjectFolder, getProjectSubfolder } from '../utils/pathHandlers.js';
-import { HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0 } from '../utils/environment.js';
+import {ethers, Signer} from 'ethers';
+import {NFTGenerativeItemInterface, NFTGenerativeCollectionClass} from '@owlprotocol/nft-sdk';
+import {Deploy, Ethers, Utils, Artifacts} from '@owlprotocol/contracts';
+import {Argv, getProjectFolder, getProjectSubfolder} from '../utils/pathHandlers.js';
+import {HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0} from '../utils/environment.js';
 import {
     OwlProject,
     InitArgs,
     ContractConfig,
     DeployNFTResult,
-    FactoriesResult,
-    MintNFTResult,
 } from '../classes/owlProject.js';
 
-const { map, mapValues, omit, endsWith } = _;
+const {map, mapValues, omit, endsWith} = _;
 const fetchRetry = fetchRetryWrapper(fetch);
 
-import { deployCommon } from './deployCommon.js';
-import { deployERC721TopDownDna } from '../deploy/ERC721TopDownDna.js';
-import { ERC721TopDownDnaMintable__factory } from '@owlprotocol/contracts/lib/types/typechain/ethers';
-import { awaitAllObj } from '@owlprotocol/utils';
+import {deployCommon} from './deployCommon.js';
+import {deployERC721TopDownDna} from '../deploy/ERC721TopDownDna.js';
+import {awaitAllObj} from '@owlprotocol/utils';
 import {
     BeaconProxy,
     BeaconProxy__factory,
     ERC721TopDownDnaMintable as ERC721TopDownDnaMintableContract,
 } from '@owlprotocol/contracts/src/typechain/ethers';
-import { ERC721TopDownDnaMintableInterface } from '@owlprotocol/contracts/src/typechain/ethers/ERC721TopDownDnaMintable';
+import {ERC721TopDownDnaMintableInterface} from '@owlprotocol/contracts/src/typechain/ethers/ERC721TopDownDnaMintable';
 
 const jsonRpcEndpoint: string = config.get(`network.${NETWORK}.config.url`);
 const provider = new ethers.providers.JsonRpcProvider(jsonRpcEndpoint);
@@ -39,15 +36,12 @@ let debug = false;
 
 export const command = 'deployTopDown';
 
-export const describe = `Deploy the collection defined by the metadataIPFS to the configured chain
-
-For now this always expects the nftItems in the folder "./output/items/" relative to the projectFolder
-
-e.g. node dist/index.cjs deployTopDown --projectFolder=projects/example-omo --deployCommon=true --debug=true
-
-
-
+export const describe = `Deploy the collection defined by the metadataIPFS to the configured chain.
+Expects the nftItems in the folder "./output/items/" relative to the projectFolder
 `;
+
+export const example = 'node dist/index.cjs deployTopDown --projectFolder=projects/example-omo --deployCommon --debug';
+export const exampleDescription = 'deploy the collection at the given project folder and base common contracts, print debug statements';
 
 export const builder = (yargs: ReturnType<yargs.Argv>) => {
     return yargs
@@ -104,7 +98,7 @@ export const handler = async (argv: Argv) => {
     const network: Deploy.RunTimeEnvironment['network'] = config.get(`network.${NETWORK}`);
 
     if (argv.deployCommon) {
-        await deployCommon({ provider, signers, network });
+        await deployCommon({provider, signers, network});
     }
 
     const factories = await initializeFactories(signers[0]);
@@ -129,7 +123,7 @@ export const handler = async (argv: Argv) => {
         const nftJsonFilePath = nft.nftJsonFilePath;
 
         const mints = await deployERC721TopDownDna(
-            { provider, signers, network },
+            {provider, signers, network},
             owlProject,
             nftItem,
             contracts,
@@ -179,7 +173,7 @@ Minted ${nftItemResults[i].nftJsonFilePath}`);
 const getNftItems = async (
     collectionClass: NFTGenerativeCollectionClass,
     itemsFolder: string,
-): Promise<{ nftJsonFilePath: string; nftJson: any; nftItem: NFTGenerativeItemInterface }[]> => {
+): Promise<{nftJsonFilePath: string; nftJson: any; nftItem: NFTGenerativeItemInterface}[]> => {
     const nftItemFiles = fs.readdirSync(itemsFolder);
 
     const nftItems = map(nftItemFiles, async (nftItemFile) => {
@@ -238,7 +232,7 @@ const getOwlProject = async (owlProjectFilepath: string): Promise<OwlProject> =>
 
     try {
         debug && console.debug(`Fetching Schema JSON from ${schemaJsonUrl}`);
-        collMetadataRes = await fetchRetry(schemaJsonUrl.toString(), { retryDelay: 200 });
+        collMetadataRes = await fetchRetry(schemaJsonUrl.toString(), {retryDelay: 200});
     } catch (err) {
         console.error(`Fetch Collection Schema JSON failed`);
         throw err;
@@ -371,16 +365,16 @@ const initializeArgs = (owlProject: OwlProject, factories: any) => {
 };
 
 const deployContracts = async (owlProject: OwlProject, factories: any) => {
-    const { awaitAllObj } = await import('@owlprotocol/utils');
+    const {awaitAllObj} = await import('@owlprotocol/utils');
 
     let nonce = await provider.getTransactionCount(factories.msgSender);
 
-    const deployments: Record<string, { tokenSymbol?: string; cfg: ContractConfig; initArgs?: InitArgs }> = {
+    const deployments: Record<string, {tokenSymbol?: string; cfg: ContractConfig; initArgs?: InitArgs}> = {
         ...owlProject.children,
         root: owlProject.rootContract,
     };
 
-    const contractPromises = mapValues(deployments, async ({ cfg, initArgs }): Promise<any> => {
+    const contractPromises = mapValues(deployments, async ({cfg, initArgs}): Promise<any> => {
         const args = initArgs!.args;
         const address = cfg.address!;
 
@@ -400,7 +394,7 @@ const deployContracts = async (owlProject: OwlProject, factories: any) => {
                     deployed: false,
                 };
             } else {
-                await factories.BeaconProxyFactory.deploy(...args, { nonce: nonce++, gasLimit: 10e6 });
+                await factories.BeaconProxyFactory.deploy(...args, {nonce: nonce++, gasLimit: 10e6});
 
                 return {
                     address,
@@ -409,7 +403,7 @@ const deployContracts = async (owlProject: OwlProject, factories: any) => {
                 };
             }
         } catch (error: any) {
-            return { address, error };
+            return {address, error};
         }
     });
 
