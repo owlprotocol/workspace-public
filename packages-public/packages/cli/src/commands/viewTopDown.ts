@@ -1,33 +1,34 @@
 import yargs from 'yargs';
 import lodash from 'lodash';
-import {Argv} from '../utils/pathHandlers.js';
-import {HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0} from '../utils/environment.js';
+import { Argv } from '../utils/pathHandlers.js';
+import { HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0 } from '../utils/environment.js';
 
-import {ethers} from 'ethers';
+import { ethers } from 'ethers';
 
-import {Artifacts} from '@owlprotocol/contracts';
+import { Artifacts } from '@owlprotocol/contracts';
 import config from 'config';
 
-const {mapValues} = lodash;
+const { mapValues } = lodash;
 
 const jsonRpcEndpoint: string = config.get(`network.${NETWORK}.config.url`);
 const provider = new ethers.providers.JsonRpcProvider(jsonRpcEndpoint);
 let debug = false;
 
-import {NFTGenerativeCollectionClass, NFTGenerativeItemInterface} from '@owlprotocol/nft-sdk';
+import { NFTGenerativeCollectionClass, NFTGenerativeItemInterface } from '@owlprotocol/nft-sdk';
 
 export const command = 'viewTopDown';
 
 export const describe = `View an NFT's DNA and attributes, and that of its children.
 `;
 
-export const example = 'node dist/index.cjs viewTopDown --root=0xbE705Ab239b7CE7c078E84965A518834Cb7CFE4b --tokenId=1';
-export const exampleDescription = 'View the DNA and attributes of the NFT at <rootContractAddr> with token id 1, and that of its children';
+export const example = 'node dist/index.cjs viewTopDown -r <rootContractAddr> --tokenId=<id>';
+export const exampleDescription =
+    'view the DNA and attributes of the NFT at <rootContractAddr> with token id <id>, and that of its children';
 
 export const builder = (yargs: ReturnType<yargs.Argv>) => {
     return yargs
         .option('debug', {
-            describe: 'Outputs debug statements',
+            describe: 'Output debug statements',
             type: 'boolean',
         })
         .option('rootContractAddr', {
@@ -64,7 +65,7 @@ export const handler = async (argv: Argv) => {
     const rootContract = new ethers.Contract(rootContractAddr, Artifacts.ERC721TopDownDnaMintable.abi, signers[0]);
     const contractURI = await rootContract.contractURI();
 
-    console.log(`Fetching Metadata Schema JSON from: ${contractURI}`);
+    console.log(`Fetching Metadata JSON Schema from: ${contractURI}`);
     const collMetadataRes = await fetch(contractURI);
 
     if (!collMetadataRes.ok) {

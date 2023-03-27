@@ -4,19 +4,19 @@ import path from 'path';
 import lodash from 'lodash';
 import check from 'check-types';
 
-const {mapValues} = lodash;
+const { mapValues } = lodash;
 
-import {NFTGenerativeCollectionClass} from '@owlprotocol/nft-sdk';
+import { NFTGenerativeCollectionClass } from '@owlprotocol/nft-sdk';
 
-import {Argv, getProjectFolder, getProjectSubfolder, importCollectionClass} from '../utils/pathHandlers.js';
+import { Argv, getProjectFolder, getProjectSubfolder, importCollectionClass } from '../utils/pathHandlers.js';
 
-export const command = 'generateSchemaJSON <collectionJS>';
+export const command = 'generateJsonSchema <collectionJS>';
 
 export const describe = `Generate the JSON Schema from the default export of the specified JS file.
-The "collectionJS" file is relative to the required project folder option.
+The <collectionJS> file is relative to the required project folder option.
 `;
 
-export const example = `node dist/index.cjs generateSchemaJSON collections.js --project=projects/example-omo`;
+export const example = `node dist/index.cjs generateJsonSchema collections.js --project=projects/example-omo`;
 export const exampleDescription = 'generate the JSON Schema of the collection at "projects/example-omo/collections.js"';
 
 // TODO: override path options
@@ -24,17 +24,13 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
     return yargs
         .option('projectFolder', {
             alias: 'project',
-            describe: `Root folder for the project.
-
-            This is usually relative to the compiled src, by default we use a folder called "projects".
-            e.g. "projects/acme"
-            `,
+            describe: 'Root folder for the project as a relative path.',
             type: 'string',
         })
         .option('outputFolder', {
             alias: ['overrideOutputFolder', 'overrideOutput'],
-            describe: `Optional output folder, should be an absolute path.
-            Otherwise this command defaults to a subfolder called "output" in the same folder as collectionJS`,
+            describe: `Output folder, can be an absolute path.
+            Default: a sub-folder "output" in the directory of <collectionJS>`,
             type: 'string',
         })
         .demandOption(['projectFolder']);

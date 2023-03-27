@@ -1,7 +1,7 @@
 import yargs from 'yargs';
-import {hideBin} from 'yargs/helpers';
+import { hideBin } from 'yargs/helpers';
 
-import * as generateSchemaJSON from './commands/generateSchemaJSON.js';
+import * as generateJsonSchema from './commands/generateJsonSchema.js';
 import * as generateItemNFT from './commands/generateItemNFT.js';
 import * as generateRandomNFT from './commands/generateRandomNFT.js';
 import * as deployTopDown from './commands/deployTopDown.js';
@@ -13,7 +13,7 @@ import * as deployCommon from './commands/deployCommon.js';
 
 yargs(hideBin(process.argv))
     // .describe('config', 'Path to the config file. Default: "config/default.json"')
-    .command(generateSchemaJSON)
+    .command(generateJsonSchema)
     .command(generateItemNFT)
     .example(generateItemNFT.example, generateItemNFT.exampleDescription)
     .command(generateRandomNFT)

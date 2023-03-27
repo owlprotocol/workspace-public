@@ -1,22 +1,22 @@
 import yargs from 'yargs';
 import _ from 'lodash';
 import fetchRetryWrapper from 'fetch-retry';
-import {Argv} from '../utils/pathHandlers.js';
-import {HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0} from '../utils/environment.js';
+import { Argv } from '../utils/pathHandlers.js';
+import { HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0 } from '../utils/environment.js';
 
-import {ethers} from 'ethers';
+import { ethers } from 'ethers';
 
-const {mapValues} = _;
+const { mapValues } = _;
 const fetchRetry = fetchRetryWrapper(fetch);
 
-import {Artifacts, Deploy} from '@owlprotocol/contracts';
+import { Artifacts, Deploy } from '@owlprotocol/contracts';
 import config from 'config';
 
 const jsonRpcEndpoint: string = config.get(`network.${NETWORK}.config.url`);
 const provider = new ethers.providers.JsonRpcProvider(jsonRpcEndpoint);
 let debug = false;
 
-import {NFTGenerativeCollectionClass, NFTGenerativeItemClass, NFTGenerativeItemInterface} from '@owlprotocol/nft-sdk';
+import { NFTGenerativeCollectionClass, NFTGenerativeItemClass, NFTGenerativeItemInterface } from '@owlprotocol/nft-sdk';
 import check from 'check-types';
 import fs from 'fs';
 import path from 'path';
@@ -27,14 +27,15 @@ export const describe = `Update an NFT's DNA data.
 `;
 
 export const example = `node dist/index.cjs updateDnaNFT -r <rootContractAddr> --tokenId=<id> --trait='xyz' --attr='abc'`;
-export const exampleDescription = 'update the trait <trait> with attribute <attr> for NFT <id> at contract <rootContractAddr>';
+export const exampleDescription =
+    'update the trait <trait> with attribute <attr> for NFT <id> at contract <rootContractAddr>';
 export const example2 = `node dist/index.cjs updateDnaNFT -r <rootContractAddr> --tokenId=<id> --json=<jsonFile>`;
 export const exampleDescription2 = 'update NFT <id> at contract <rootContractAddr> with the attributes in <jsonFile>';
 
 export const builder = (yargs: ReturnType<yargs.Argv>) => {
     return yargs
         .option('debug', {
-            describe: 'Outputs debug statements',
+            describe: 'Output debug statements',
             type: 'boolean',
         })
         .option('rootContractAddr', {
@@ -86,10 +87,10 @@ export const handler = async (argv: Argv) => {
 
     let collMetadataRes;
     try {
-        debug && console.debug(`Fetching Schema JSON from ${contractURI}`);
-        collMetadataRes = await fetchRetry(contractURI, {retryDelay: 200});
+        debug && console.debug(`Fetching JSON Schema from ${contractURI}`);
+        collMetadataRes = await fetchRetry(contractURI, { retryDelay: 200 });
     } catch (err) {
-        console.error(`Fetch Collection Schema JSON failed`);
+        console.error(`Fetch Collection JSON Schema failed`);
         throw err;
     }
 

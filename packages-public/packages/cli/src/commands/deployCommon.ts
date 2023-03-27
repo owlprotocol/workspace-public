@@ -1,8 +1,8 @@
 import yargs from 'yargs';
 import config from 'config';
-import {ethers} from 'ethers';
-import {Deploy} from '@owlprotocol/contracts';
-import {HD_WALLET_MNEMONIC, PRIVATE_KEY_0, NETWORK} from '../utils/environment.js';
+import { ethers } from 'ethers';
+import { Deploy } from '@owlprotocol/contracts';
+import { HD_WALLET_MNEMONIC, PRIVATE_KEY_0, NETWORK } from '../utils/environment.js';
 
 const jsonRpcEndpoint: string = config.get(`network.${NETWORK}.config.url`);
 const provider = new ethers.providers.JsonRpcProvider(jsonRpcEndpoint);
@@ -25,11 +25,11 @@ export const describe = `Deploy the base smart contracts:
 `;
 
 export const example = 'node dist/index.cjs deployCommon';
-export const exampleDescription = 'deploys the base smart contracts';
+export const exampleDescription = 'deploy the base smart contracts';
 
 export const builder = (yargs: ReturnType<yargs.Argv>) => {
     return yargs.option('debug', {
-        describe: 'Outputs debug statements',
+        describe: 'Output debug statements',
         type: 'boolean',
     });
 };
@@ -53,7 +53,7 @@ export const handler = async (argv: yargs.ArgumentsCamelCase) => {
 
     signers[0] = walletOne.connect(provider);
 
-    const deployCommonResult = await deployCommon({provider, signers, network});
+    const deployCommonResult = await deployCommon({ provider, signers, network });
     debug && console.debug(deployCommonResult);
 
     console.log('Done');
@@ -71,9 +71,9 @@ export const deployCommon = async ({
         signers,
         network,
     });
-    deployCommonResult.proxyFactory = await Deploy.ProxyFactoryDeploy({provider, signers, network});
-    deployCommonResult.implementations = await Deploy.ImplementationsDeploy({provider, signers, network});
-    deployCommonResult.upgradeableBeacon = await Deploy.UpgradeableBeaconDeploy({provider, signers, network});
+    deployCommonResult.proxyFactory = await Deploy.ProxyFactoryDeploy({ provider, signers, network });
+    deployCommonResult.implementations = await Deploy.ImplementationsDeploy({ provider, signers, network });
+    deployCommonResult.upgradeableBeacon = await Deploy.UpgradeableBeaconDeploy({ provider, signers, network });
 
     return deployCommonResult;
 };

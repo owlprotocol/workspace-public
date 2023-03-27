@@ -5,30 +5,25 @@ import fs from 'fs';
 import _ from 'lodash';
 import fetchRetryWrapper from 'fetch-retry';
 import check from 'check-types';
-import {ethers, Signer} from 'ethers';
-import {NFTGenerativeItemInterface, NFTGenerativeCollectionClass} from '@owlprotocol/nft-sdk';
-import {Deploy, Ethers, Utils, Artifacts} from '@owlprotocol/contracts';
-import {Argv, getProjectFolder, getProjectSubfolder} from '../utils/pathHandlers.js';
-import {HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0} from '../utils/environment.js';
-import {
-    OwlProject,
-    InitArgs,
-    ContractConfig,
-    DeployNFTResult,
-} from '../classes/owlProject.js';
+import { ethers, Signer } from 'ethers';
+import { NFTGenerativeItemInterface, NFTGenerativeCollectionClass } from '@owlprotocol/nft-sdk';
+import { Deploy, Ethers, Utils, Artifacts } from '@owlprotocol/contracts';
+import { Argv, getProjectFolder, getProjectSubfolder } from '../utils/pathHandlers.js';
+import { HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0 } from '../utils/environment.js';
+import { OwlProject, InitArgs, ContractConfig, DeployNFTResult } from '../classes/owlProject.js';
 
-const {map, mapValues, omit, endsWith} = _;
+const { map, mapValues, omit, endsWith } = _;
 const fetchRetry = fetchRetryWrapper(fetch);
 
-import {deployCommon} from './deployCommon.js';
-import {deployERC721TopDownDna} from '../deploy/ERC721TopDownDna.js';
-import {awaitAllObj} from '@owlprotocol/utils';
+import { deployCommon } from './deployCommon.js';
+import { deployERC721TopDownDna } from '../deploy/ERC721TopDownDna.js';
+import { awaitAllObj } from '@owlprotocol/utils';
 import {
     BeaconProxy,
     BeaconProxy__factory,
     ERC721TopDownDnaMintable as ERC721TopDownDnaMintableContract,
 } from '@owlprotocol/contracts/src/typechain/ethers';
-import {ERC721TopDownDnaMintableInterface} from '@owlprotocol/contracts/src/typechain/ethers/ERC721TopDownDnaMintable';
+import { ERC721TopDownDnaMintableInterface } from '@owlprotocol/contracts/src/typechain/ethers/ERC721TopDownDnaMintable';
 
 const jsonRpcEndpoint: string = config.get(`network.${NETWORK}.config.url`);
 const provider = new ethers.providers.JsonRpcProvider(jsonRpcEndpoint);
@@ -41,28 +36,24 @@ Expects the nftItems in the folder "./output/items/" relative to the projectFold
 `;
 
 export const example = 'node dist/index.cjs deployTopDown --projectFolder=projects/example-omo --deployCommon --debug';
-export const exampleDescription = 'deploy the collection at the given project folder and base common contracts, print debug statements';
+export const exampleDescription =
+    'deploy the collection at the given project folder and base common contracts, print debug statements';
 
 export const builder = (yargs: ReturnType<yargs.Argv>) => {
     return yargs
         .option('debug', {
-            describe: 'Outputs debug statements',
+            describe: 'Output debug statements',
             type: 'boolean',
         })
         .option('deployCommon', {
-            describe: `Deploy the base common contracts - deployer, proxy, beacons, and implementations
-
+            describe: `Deploy the base common contracts - deployer, proxy, beacons, and implementations.
             Required for the first deployment on a new chain, especially on a local ephemeral chain.
             `,
             type: 'boolean',
         })
         .option('projectFolder', {
             alias: 'project',
-            describe: `Root folder for the project.
-
-            This is usually relative to the compiled src, by default we use a folder called "projects".
-            e.g. "projects/acme"
-            `,
+            describe: 'Root folder for the project as a relative path.',
             type: 'string',
         })
         .demandOption(['projectFolder']);
@@ -98,7 +89,7 @@ export const handler = async (argv: Argv) => {
     const network: Deploy.RunTimeEnvironment['network'] = config.get(`network.${NETWORK}`);
 
     if (argv.deployCommon) {
-        await deployCommon({provider, signers, network});
+        await deployCommon({ provider, signers, network });
     }
 
     const factories = await initializeFactories(signers[0]);
@@ -123,7 +114,7 @@ export const handler = async (argv: Argv) => {
         const nftJsonFilePath = nft.nftJsonFilePath;
 
         const mints = await deployERC721TopDownDna(
-            {provider, signers, network},
+            { provider, signers, network },
             owlProject,
             nftItem,
             contracts,
@@ -173,7 +164,7 @@ Minted ${nftItemResults[i].nftJsonFilePath}`);
 const getNftItems = async (
     collectionClass: NFTGenerativeCollectionClass,
     itemsFolder: string,
-): Promise<{nftJsonFilePath: string; nftJson: any; nftItem: NFTGenerativeItemInterface}[]> => {
+): Promise<{ nftJsonFilePath: string; nftJson: any; nftItem: NFTGenerativeItemInterface }[]> => {
     const nftItemFiles = fs.readdirSync(itemsFolder);
 
     const nftItems = map(nftItemFiles, async (nftItemFile) => {
@@ -210,36 +201,36 @@ const getOwlProject = async (owlProjectFilepath: string): Promise<OwlProject> =>
 
     const rootCfg = owlProject.rootContract.cfg;
 
-    if (!rootCfg.schemaJsonEndpoint) {
-        throw new Error('config.schemaJsonEndpoint is not defined');
+    if (!rootCfg.jsonSchemaEndpoint) {
+        throw new Error('config.jsonSchemaEndpoint is not defined');
     }
 
     if (!rootCfg.sdkApiEndpoint) {
         throw new Error('config.sdkApiEndpoint is not defined');
     }
 
-    if (!endsWith(rootCfg.schemaJsonEndpoint, '/')) {
-        rootCfg.schemaJsonEndpoint += '/';
+    if (!endsWith(rootCfg.jsonSchemaEndpoint, '/')) {
+        rootCfg.jsonSchemaEndpoint += '/';
     }
 
     if (!endsWith(rootCfg.sdkApiEndpoint, '/')) {
         rootCfg.sdkApiEndpoint += '/';
     }
 
-    const schemaJsonUrl = new URL(rootCfg.schemaJsonIpfs!, rootCfg.schemaJsonEndpoint);
+    const jsonSchemaUrl = new URL(rootCfg.jsonSchemaIpfs!, rootCfg.jsonSchemaEndpoint);
 
     let collMetadataRes;
 
     try {
-        debug && console.debug(`Fetching Schema JSON from ${schemaJsonUrl}`);
-        collMetadataRes = await fetchRetry(schemaJsonUrl.toString(), {retryDelay: 200});
+        debug && console.debug(`Fetching JSON Schema from ${jsonSchemaUrl}`);
+        collMetadataRes = await fetchRetry(jsonSchemaUrl.toString(), { retryDelay: 200 });
     } catch (err) {
-        console.error(`Fetch Collection Schema JSON failed`);
+        console.error(`Fetch Collection JSON Schema failed`);
         throw err;
     }
 
     if (!collMetadataRes.ok) {
-        console.error(`Error fetching ${schemaJsonUrl}`);
+        console.error(`Error fetching ${jsonSchemaUrl}`);
         process.exit();
     }
 
@@ -312,11 +303,11 @@ const initializeArgs = (owlProject: OwlProject, factories: any) => {
     mapValues(owlProject.children, (c, k) => {
         const metadata = owlProject.metadata;
 
-        const schemaJsonUrl = new URL(c.cfg.schemaJsonIpfs!, rootCfg.schemaJsonEndpoint);
-        const baseUri = new URL(c.cfg.schemaJsonIpfs!, rootCfg.sdkApiEndpoint);
+        const jsonSchemaUrl = new URL(c.cfg.jsonSchemaIpfs!, rootCfg.jsonSchemaEndpoint);
+        const baseUri = new URL(c.cfg.jsonSchemaIpfs!, rootCfg.sdkApiEndpoint);
         const contractInit = {
             admin: factories.msgSender,
-            contractUri: schemaJsonUrl.toString(),
+            contractUri: jsonSchemaUrl.toString(),
             name: metadata.children[k].name,
             symbol: owlProject.rootContract.tokenSymbol + k,
             initBaseURI: `${baseUri}/`,
@@ -337,11 +328,11 @@ const initializeArgs = (owlProject: OwlProject, factories: any) => {
         };
     });
 
-    const schemaJsonUrl = new URL(rootCfg.schemaJsonIpfs!, rootCfg.schemaJsonEndpoint);
-    const baseUri = new URL(rootCfg.schemaJsonIpfs!, rootCfg.sdkApiEndpoint);
+    const jsonSchemaUrl = new URL(rootCfg.jsonSchemaIpfs!, rootCfg.jsonSchemaEndpoint);
+    const baseUri = new URL(rootCfg.jsonSchemaIpfs!, rootCfg.sdkApiEndpoint);
     const parentInit = {
         admin: factories.msgSender,
-        contractUri: schemaJsonUrl.toString(),
+        contractUri: jsonSchemaUrl.toString(),
         name: owlProject.metadata.name,
         symbol: owlProject.rootContract.tokenSymbol,
         initBaseURI: `${baseUri}/`,
@@ -365,16 +356,16 @@ const initializeArgs = (owlProject: OwlProject, factories: any) => {
 };
 
 const deployContracts = async (owlProject: OwlProject, factories: any) => {
-    const {awaitAllObj} = await import('@owlprotocol/utils');
+    const { awaitAllObj } = await import('@owlprotocol/utils');
 
     let nonce = await provider.getTransactionCount(factories.msgSender);
 
-    const deployments: Record<string, {tokenSymbol?: string; cfg: ContractConfig; initArgs?: InitArgs}> = {
+    const deployments: Record<string, { tokenSymbol?: string; cfg: ContractConfig; initArgs?: InitArgs }> = {
         ...owlProject.children,
         root: owlProject.rootContract,
     };
 
-    const contractPromises = mapValues(deployments, async ({cfg, initArgs}): Promise<any> => {
+    const contractPromises = mapValues(deployments, async ({ cfg, initArgs }): Promise<any> => {
         const args = initArgs!.args;
         const address = cfg.address!;
 
@@ -394,7 +385,7 @@ const deployContracts = async (owlProject: OwlProject, factories: any) => {
                     deployed: false,
                 };
             } else {
-                await factories.BeaconProxyFactory.deploy(...args, {nonce: nonce++, gasLimit: 10e6});
+                await factories.BeaconProxyFactory.deploy(...args, { nonce: nonce++, gasLimit: 10e6 });
 
                 return {
                     address,
@@ -403,7 +394,7 @@ const deployContracts = async (owlProject: OwlProject, factories: any) => {
                 };
             }
         } catch (error: any) {
-            return {address, error};
+            return { address, error };
         }
     });
 

@@ -3,43 +3,40 @@ import path from 'path';
 import check from 'check-types';
 import lodash from 'lodash';
 import fs from 'fs';
-import {NFTGenerativeItemClass} from '@owlprotocol/nft-sdk';
-import {Argv, getProjectSubfolder, importCollectionClass} from '../utils/pathHandlers.js';
+import { NFTGenerativeItemClass } from '@owlprotocol/nft-sdk';
+import { Argv, getProjectSubfolder, importCollectionClass } from '../utils/pathHandlers.js';
 
-const {map} = lodash;
+const { map } = lodash;
 
 let debug = false;
 
 export const command = 'generateRandomNFT <collectionJS> <numItems>';
 
-export const describe = `Devtool - Generate random instances for NFTGenerativeCollection.
+export const describe = `Generate random instances for NFTGenerativeCollection.
 Outputs to the "./output/items/" folder relative to the projectFolder.
-collectionJS - path to the collection's JS file, relative from the projectFolder
+<collectionJS> - path to the collection's JS file, relative from the projectFolder
 `;
 
 export const example = `node dist/index.cjs generateRandomNFT collections.js 3 --project=projects/example-omo`;
-export const exampleDescription = 'generate 3 NFT item instances of the collection at "projects/example-omo/collections.js"';
+export const exampleDescription =
+    'generate 3 NFT item instances of the collection at "projects/example-omo/collections.js"';
 
 export const builder = (yargs: ReturnType<yargs.Argv>) => {
     return yargs
         .option('projectFolder', {
             alias: 'project',
-            describe: `Root folder for the project.
-
-            This is usually relative to the compiled src, by default we use a folder called "projects".
-            e.g. "projects/acme"
-            `,
+            describe: 'Root folder for the project as a relative path.',
             type: 'string',
         })
         .option('debug', {
-            describe: 'Outputs debug statements',
+            describe: 'Output debug statements',
             type: 'boolean',
         })
         .demandOption(['projectFolder']);
 };
 
-// TODO: this should have an option to import from Schema JSON
-export const handler = async (argv: Argv & {numItems?: number}) => {
+// TODO: this should have an option to import from JSON Schema
+export const handler = async (argv: Argv & { numItems?: number }) => {
     argvCheck(argv);
 
     debug = !!argv.debug || false;
@@ -55,7 +52,7 @@ export const handler = async (argv: Argv & {numItems?: number}) => {
 
     const collParent = nftGenerativeCollectionExport.default;
     const numItems: number = <number>argv.numItems;
-    const nftItems: Array<NFTGenerativeItemClass> = Array.from({length: numItems}, () =>
+    const nftItems: Array<NFTGenerativeItemClass> = Array.from({ length: numItems }, () =>
         collParent.generateInstance(),
     );
 

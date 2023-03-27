@@ -1,4 +1,4 @@
-import {NFTGenerativeTraitImage, NFTGenerativeTraitEnum, NFTGenerativeTraitNumber} from '@owlprotocol/nft-sdk';
+import { NFTGenerativeTraitImage, NFTGenerativeTraitEnum, NFTGenerativeTraitNumber } from '@owlprotocol/nft-sdk';
 
 export const attrMemberIdNumber: NFTGenerativeTraitNumber = {
     name: 'Member ID',
@@ -23,15 +23,18 @@ export const attrTierBgImage: NFTGenerativeTraitImage = {
     options: [
         {
             value: 'Basic',
-            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-blue.png',
+            image_url:
+                'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-blue.png',
         },
         {
             value: 'Facets',
-            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-silver.png',
+            image_url:
+                'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-silver.png',
         },
         {
             value: 'Dark',
-            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-dark.png',
+            image_url:
+                'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/bg-dark.png',
         },
     ],
 };
@@ -43,15 +46,18 @@ export const attrTierIconImage: NFTGenerativeTraitImage = {
     options: [
         {
             value: 'Bronze',
-            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-bronze.png',
+            image_url:
+                'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-bronze.png',
         },
         {
             value: 'Silver',
-            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-silver.png',
+            image_url:
+                'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-silver.png',
         },
         {
             value: 'Gold',
-            image_url: 'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-gold.png',
+            image_url:
+                'https://leovigna.mypinata.cloud/ipfs/QmTeQUXNbaXZctrhfztbWsvfrz1vBNvaqHui6LVbDp14YV/tier-gold.png',
         },
     ],
 };

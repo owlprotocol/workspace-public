@@ -7,7 +7,7 @@ const nftItem = collExampleLoyalty.create({
         Background: 'Tunnels',
         'Tier Badge': 'Silver',
         Points: 123600,
-        'Sub Group': 'Yacht Club'
+        'Sub Group': 'Yacht Club',
     },
 });
 
