@@ -80,7 +80,7 @@ In this example we are creating a Dynamic PFP (Profile Picture NFT).
 - **The hat is its own NFT!** And can be detached/removed, or re-attached to the base NFT.
 - When attached/removed the NFT will show the hat on or off.
 - The hat once removed can be traded on its own with other hats, or sold, it's up the owner.
-- The onchain data, and IPFS hosted Schema JSON is all that is required to render the NFT graphics.
+- The on-chain data, and IPFS hosted Schema JSON is all that is required to render the NFT graphics.
 - No centralized back-ends, or dependencies on other tools. **Our `nft-sdk` is the only thing a client/browser needs to render the NFT.**
 
 :::info Learn Through Example

@@ -26,7 +26,7 @@ You have to use the **NFT-SDK** and a [JSON Schema](https://json-schema.org/) to
 
 ---
 
-## Step 1: Defining the Data Schema
+## Step 1: Defining the data schema
 
 <SimpleGrid className="features-grid" columns={{sm: 2, md: 4}} spacing={8}>
     <Box>
@@ -82,7 +82,7 @@ We recommend you to upload the image layers to IPFS for decentralization, or Git
 
 ---
 
-## Step 2: Implementing the Traits and Collection
+## Step 2: Implementing the traits and collection
 
 To implement our schema we need to declare our traits and the collection class.
 
@@ -218,7 +218,7 @@ export const collExampleLoyalty = NFTGenerativeCollectionClass.fromData(
     'Sub Group': NFTGenerativeTraitEnumClass;
 }>;
 
-exp
+export default collExampleLoyaltyDef;
 ```
 
 See `collections.ts` on [GitHub](https://github.com/owlprotocol/owlprotocol/blob/main/packages/cli/projects/example-loyalty/collections.ts)
@@ -247,10 +247,10 @@ We will now use the Owl Protocol command-line interface (CLI) to generate the JS
 pnpm run build
 ```
 
-3. Now invoke `generateSchemaJSON` in the CLI. This will create the file that the **nft-sdk** needs to translate the on-chain data.
+3. Now invoke `generateJsonSchema` in the CLI. This will create the file that the **nft-sdk** needs to translate the on-chain data.
 
 ```
-node dist/index.cjs generateSchemaJSON collections.js --projectFolder=projects/example-loyalty
+node dist/index.cjs generateJsonSchema collections.js --projectFolder=projects/example-loyalty
 ```
 
 This should output:
@@ -268,16 +268,15 @@ Now you should see a new folder in `projects/example-loyalty` called `output` wi
 
 ---
 
-## Step 4: Upload the Schema JSON to IPFS.
+## Step 4: Upload the JSON Schema to IPFS.
 
-We use Pinata for this tutorial, but you can upload it to any IPFS provider including your own.
+We use [Pinata](https://www.pinata.cloud/) for this tutorial, but you can upload the schema to any IPFS provider including your own.
 
-For our example you can see have uploaded the schema there:
+For this tutorial you can see the uploaded schema there:
 [https://leovigna.mypinata.cloud/ipfs/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj](https://leovigna.mypinata.cloud/ipfs/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj)
 
-
 :::info
-Keep the IPFS hash handy. In our example, it is `QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj`.
+Keep the IPFS hash handy. In this example, it is `QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj`.
 :::
 
 ---
@@ -293,15 +292,19 @@ Create a file called `owlproject.json` in the project folder. This will contain 
     "tokenSymbol": "ExampleLoyaltyNFT",
     "tokenIdStart": 1,
     "cfg": {
-      "ipfsEndpoint": "https://leovigna.mypinata.cloud/ipfs",
-      "apiEndpoint": "https://metadata.owlprotocol.xyz/metadata/getMetadata",
-      "schemaJsonIpfs": "QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj"
+      "jsonSchemaEndpoint": "https://leovigna.mypinata.cloud/ipfs",
+      "sdkApiEndpoint": "https://metadata.owlprotocol.xyz/metadata/getMetadata",
+      "jsonSchemaIpfs": "QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj"
     }
   }
 }
 ```
 
-> You can define your own `ipfsEndpoint`, but keep the `apiEndpoint` as is to use our hosted API.
+:::caution
+You should not rely on our API and IPFS endpoints as they are centralized.
+
+Ideally, `sdkApiEndpoint` should point to your own web app. For this tutorial, leave it as is.
+:::
 
 ---
 
@@ -319,7 +322,7 @@ NETWORK=ganache
 HD_WALLET_MNEMONIC=test test test test test test test test test test test junk
 ```
 
-2. Start a local Ganache blockchain (see [Ganache quickstart](https://trufflesuite.com/docs/ganache/quickstart/). Use the `--wallet.mnemonic` flag to force a mnemonic:
+2. Start a local Ganache blockchain (see [Ganache quickstart](https://trufflesuite.com/docs/ganache/quickstart/). Use the `--wallet.mnemonic` flag to force the same mnemonic as in your `.env.development` file:
 ```bash
 ganache --wallet.mnemonic "test test test test test test test test test test test junk"
 ```
@@ -338,7 +341,7 @@ To use a private key, **do not set** `HD_WALLET_MNEMONIC` and instead declare th
 
 ### Deploy Common
 
-If you are deploying to a new chain, or fresh ganache blockchain, the common beacon proxies and implementations need to be deployed first.
+If you are deploying to a new chain, or a fresh ganache blockchain, the common [beacon proxies](https://docs.owlprotocol.xyz/contracts/advanced/contract-deployment#beacon-proxy) and implementations need to be deployed first.
 
 We enable this by passing `--deployCommon=true` into the deployment command. Don't worry if you forget to remove this flag later. Our deployer always deploys the beacons to the same addresses. Therefore, the deployer will skip deploying beacons if they already exist.
 
@@ -353,7 +356,7 @@ Docs are coming soon that explain this in depth, for now you can follow the depl
 :::
 -->
 
-### Deploy Contracts and Mint NFTs
+### Deploy contracts and mint NFTs
 
 If everything is set up properly, you can now run in the CLI folder:
 
@@ -371,8 +374,7 @@ At this point make sure you have the following:
 - JSONs files of the NFTs you will mint in `output/items`.
 
 
-
-And if the command succeeds you should see something similar to:
+If the command succeeds you should see an output similar to:
 ```
 Deploying NFT: 1
 
@@ -388,11 +390,11 @@ Done
 
 You can use the `viewTopDown` command on the CLI to quickly view the NFT:
 
-```
+```bash
 node dist/index.cjs viewTopDown --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1
 ```
 
-The output should be something similar to this:
+The output should be similar to this:
 ```
 View ERC721TopDownDna 0xa2B01e08CeD3b06051B59966B540BFe0B90b364c on ganache
 Fetching Metadata Schema JSON from: https://leovigna.mypinata.cloud/ipfs/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj
@@ -421,7 +423,7 @@ And the following object:
 
 ---
 
-## Step 10: View the NFT Image
+## Step 10: View the NFT image
 
 You can view the NFT image by passing in `--debug=true`:
 
@@ -449,11 +451,11 @@ Note the `image` field here will show you the actual image:
 
 ---
 
-## Step 11: Changing the NFT Data
+## Step 11: Changing the NFT data
 
 We can change the NFT's data by using the CLI's `updateDnaNFT` command.
 
-### Changing One Trait at a Time
+### Changing a trait
 
 There are two ways to use this command, the simplest is to change a single attribute:
 
@@ -463,7 +465,7 @@ node dist/index.cjs updateDnaNFT --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b36
 
 This will give you:
 
-```json
+```javascript
 {
   'Last Transferred': 1678831284,
   'Sub Group': 'Yacht Club',
@@ -520,6 +522,4 @@ As you can see the image is updated:
 
 For a more advanced loyalty program example, see this the `example-loyalty-advanced` project on [GitHub](https://github.com/owlprotocol/owlprotocol/tree/main/packages/cli/projects/example-loyalty-advanced).
 
-
 Have questions? Join us in Discord: [https://discord.com/invite/7sANzfGUfe](https://discord.com/invite/7sANzfGUfe)
-

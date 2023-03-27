@@ -10,46 +10,46 @@ import { SimpleGrid } from '@chakra-ui/react'
 
 ## Tutorial
 
-The **ERC721TopDownDna** smart contract combines two of our primary features:
+The [ERC721TopDownDna.sol](https://github.com/owlprotocol/owlprotocol/blob/main/packages/contracts/contracts/assets/ERC721/ERC721TopDownDna.sol) smart contract combines two of our primary features:
 
-1. **TopDown** - Allows NFTs to own other child NFTs in a meaningful way onchain - [ERC721TopDownBase.sol](https://github.com/owlprotocol/owlprotocol/blob/main/packages/contracts/contracts/assets/ERC721/ERC721TopDownBase.sol)
-2. **DNA** - Allows NFTs to encode data onchain in a universal way with offchain schemas - [ERC721DnaBase.sol](https://github.com/owlprotocol/owlprotocol/blob/main/packages/contracts/contracts/assets/ERC721/ERC721DnaBase.sol)
-
-Combined we have the contract: [ERC721TopDownDna.sol](https://github.com/owlprotocol/owlprotocol/blob/main/packages/contracts/contracts/assets/ERC721/ERC721TopDownDna.sol)
+1. **TopDown** ([ERC721TopDownBase.sol](https://github.com/owlprotocol/owlprotocol/blob/main/packages/contracts/contracts/assets/ERC721/ERC721TopDownBase.sol))
+    * Allows an NFT to own other NFTs on-chain
+    * Exposes all owned NFT data to their owner
+2. **DNA** ([ERC721DnaBase.sol](https://github.com/owlprotocol/owlprotocol/blob/main/packages/contracts/contracts/assets/ERC721/ERC721DnaBase.sol))
+    * Allows a standard encoding of NFTs on-chain using an off-chain schema
 
 ## Use Case: PFPs with Detachable Accessories or Equipment
 
-<SimpleGrid className="features-grid" columns={{sm: 2, md: 4}} spacing={8}>
+<SimpleGrid className="features-grid" columns={{sm: 2, md: 4}} spacing={10}>
 <Box>
     <div>
     <img src="/img/tutorial/attached.png"/>
-    <br/>
-    <strong>NFT with Hat</strong>
+    <p>NFT with Hat</p>
     </div>
 </Box>
 <Box>
     <div>
     <img src="/img/tutorial/detached.png"/>
-    <br/>
-    <strong>NFT with Hat Removed</strong>
+    <p>NFT with Hat <strong>Removed</strong></p>
     </div>
 </Box>
 </SimpleGrid>
 
-In this example we are creating a Dynamic PFP (Profile Picture NFT).
+In this tutorial, we will create a Dynamic PFP ([Profile Picture NFT](https://learn.bybit.com/nft/nft-pfps-profile-pictures/)).
 
-- **The hat is its own NFT!** And can be detached/removed, or re-attached to the base NFT.
-- When attached/removed the NFT will show the hat on or off.
-- The hat once removed can be traded on its own with other hats, or sold, it's up the owner.
-- The onchain data, and IPFS-hosted JSON Schema is all that is required to render the NFT graphics.
-- No centralized back-ends, or dependencies on other tools. **Our `nft-sdk` is the only thing a client/browser needs to render the NFT.**
+- **The hat is its own NFT**: it can be detached and re-attached to the main NFT.
+- When you attach the hat, the PFP will show the hat.
+- When you remove the hat, it can be tradeable with other hats or sold.
+- The on-chain data, and JSON Schema is all that is required to render the NFT graphics.
 
+<!-- TODO @ClarenceL: a quick getting started step -->
 :::caution
-Ensure you're able to build the entire project before starting - **READ: [Getting Started](/contracts/getting-started/)**.
+Ensure you're able to build the entire project before starting: see [Getting Started](/contracts/getting-started/).
 :::
 
 ---
 
+<!-- TODO: look over this -->
 ## Step 1: Prepare the layers
 
 :::info
@@ -139,8 +139,9 @@ We'll also encode into the DNA/on-chain data of the NFT an `enum` **Vibe**, whic
 - Eccentric
 
 ---
+<!-- TODO: look over this -->
 
-## Step 2: Setup the Project and Declare the Traits in Javascript
+## Step 2: Setup the project and declare the traits in JavaScript
 
 We will be using the [CLI Tool](/contracts/getting-started/cli) for this, so firstly
 under `packages/cli/src/projects` we will need to create a folder for the project called `example-omo`.
@@ -163,7 +164,7 @@ under `packages/cli/src/projects` we will need to create a folder for the projec
 For the `traits` in this example we'll use the `nft-sdk` to instantiate the [NFTGenerativeCollectionClass](https://github.com/owlprotocol/owlprotocol/blob/main/packages/nft-sdk/src/classes/NFTGenerativeCollection/NFTGenerativeCollectionClass.ts) and use the CLI
 tool to generate the **JSON Schema**, which is uploaded to IPFS.
 
-> The `nft-sdk` needs this JSON Schema to translate the binary onchain data (DNA).
+> The `nft-sdk` needs this JSON Schema to translate the binary on-chain data (DNA).
 
 `packages/cli/src/projects/example-omo/traits.ts`
 
@@ -206,7 +207,7 @@ export const traitImageBg: NFTGenerativeTraitImage = {
 See: [/packages/cli/src/projects/example-omo/traits.ts](https://github.com/owlprotocol/owlprotocol/blob/tutorial-example-omo/packages/cli/src/projects/example-omo/traits.ts)
 
 :::info
-`probabilities` are normalized, correspond in order with the values, and there must be the same number of probabilities as values.
+`probabilities` are normalized, correspond in order with the values, and there must be as many probabilities as values.
 :::
 
 :::caution About IPFS Hashes for Images
@@ -220,8 +221,9 @@ We'll have more tools and a UI for uploading to IPFS soon.
 :::
 
 ---
+<!-- TODO: look over this -->
 
-## Step 3: Create the `collection.ts` that connects the traits/collection together:
+## Step 3: Create the `collection.ts` that connects the traits and collection:
 
 ```typescript
 import {
@@ -300,8 +302,7 @@ See: [/packages/cli/projects/example-omo/collection.ts](https://github.com/owlpr
 
 ## Step 4: Generate the JSON Schema
 
-The **JSON Schema** is used to interpret and translate the on-chain DNA or NFT on-chain data to something that can be rendered
-or executed upon.
+The **JSON Schema** is used to interpret and translate the on-chain DNAto data that can be rendered or executed.
 
 > We believe storing the on-chain data in a single binary encoded format is ideal because it minimizes the number of esoteric methods on the smart contract. Rather we leave it up to the client to interpret and parse the schema.
 
@@ -323,10 +324,10 @@ cp .env.example .env.development
 pnpm run build
 ```
 
-3. Now call the `generateSchemaJSON` command on the CLI Tool. We're building the index JS file to `lib/esm/index.js` for now (this will be changed to dist soon).
+3. Now call the `generateJsonSchema` command on the CLI Tool. We're building the index JS file to `lib/esm/index.js` for now (this will be changed to dist soon).
 
 ```
-| => node dist/index.cjs generateSchemaJSON collections.js --projectFolder=projects/example-omo
+node dist/index.cjs generateJsonSchema collections.js --projectFolder=projects/example-omo
 ```
 
 Which should output:
@@ -340,114 +341,130 @@ Done
 
 > Ignore any warnings for `duplicate definition`.
 
-Now you should see a new folder in `projects/example-omo` called `output`, and inside 2 JSON files:
+Now you should see a new folder in `projects/example-omo` called `output`, and with two JSON files:
 - collection-parent.json
 - collection-child-Hats.json
 
 ---
 
-## Step 5: Upload the JSON Schema to IPFS
+## Step 5: Upload the JSON Schemas to IPFS
+
+We use [Pinata](https://www.pinata.cloud/) for this tutorial, but you can upload the schema to any IPFS provider including your own.
 
 :::info
-We have 2 collections here, which should make sense because the **Hats** collection is a separate NFT.
-However when we mint the NFT, we only mint the parent NFT, and we attach the minted **Hat** NFT to the parent NFT.
+We have 2 collections here: the main NFT collection and the hat collection.
+When we mint the NFT from the parent collection, the hat NFT also automatically gets minted, and it gets attached to the newly-minted parent NFT.
 :::
 
-### Upload to IPFS using your own provider, or [Pinata](https://www.pinata.cloud/)
-
-We generally prefer Pinata, but of course you can choose a more decentralized option.
-
-For this example we will use Pinata, **upload both JSON Schemas to IPFS, and take note of the IPFS hashes.**
-
-In this case and for your reference, we have uploaded these example JSONs here:
-- [collection-parent.json](https://leovigna.mypinata.cloud/ipfs/QmRNrcuGtaqefB72NHuGdDtvzEZjNvX6m2E1AgBXW65EKq) - Hash: `QmRNrcuGtaqefB72NHuGdDtvzEZjNvX6m2E1AgBXW65EKq`
-- [collection-child-Hats.json](https://leovigna.mypinata.cloud/ipfs/QmcYC3fcqxU2gqS7VWEeC7jLDjpFQunMXmfkijXq325RHf) - Hahs: `QmcYC3fcqxU2gqS7VWEeC7jLDjpFQunMXmfkijXq325RHf`
-
----
-
-## Step 6: Generate a Few NFTs
-
-For generating NFTs we use the CLI command: `generateRandomNFT`.
-
-```
-| => node dist/index.cjs generateRandomNFT collections.js 3 --project=projects/example-omo
-```
-
-This will generate 3 items in the subfolder `output/items` in the project folder with their DNAs. For now these are the
-full DNAs and unintelligible, but we will create a command to view these soon.
-
-For now we just need to pass these to the `deployTopDown` command to deploy these.
+For this tutorial you can see the uploaded schemas there:
+- [collection-parent.json](https://leovigna.mypinata.cloud/ipfs/QmRNrcuGtaqefB72NHuGdDtvzEZjNvX6m2E1AgBXW65EKq)
+- [collection-child-Hats.json](https://leovigna.mypinata.cloud/ipfs/QmcYC3fcqxU2gqS7VWEeC7jLDjpFQunMXmfkijXq325RHf)
 
 :::info
-In fact if you review the `nft-sdk` it's pretty straightforward, you can use the instantiated `[NFTCollectionClass (initialized)].createFromFullDna` function
-to initialize the NFT.
-
-Then use `nftItem.attributesFormattedWithChildren()` to view the traits in human readable format.
-
-See: [cli/src/commands/viewTopDown.ts](https://github.com/owlprotocol/owlprotocol/blob/tutorial-example-omo/packages/cli/src/commands/viewTopDown.ts)
+Keep the IPFS hashes handy. In this example, they are:
+- Parent hash: `QmRNrcuGtaqefB72NHuGdDtvzEZjNvX6m2E1AgBXW65EKq`
+- Hats hash: `QmcYC3fcqxU2gqS7VWEeC7jLDjpFQunMXmfkijXq325RHf`
 :::
 
 ---
 
-## Step 7: Configure the Deployment
+## Step 6: Generate a few NFTs
 
-You will need to create an `owlproject.json` file in the project folder:
+To generate NFTs, use the CLI command: `generateRandomNFT`:
 
+```
+node dist/index.cjs generateRandomNFT collections.js 3 --project=projects/example-omo
+```
+
+This will generate 3 items in the subfolder `output/items` of the project folder with their respective DNAs.
+
+We then pass these outputs to the `deployTopDown` command to deploy these NFTs.
+
+:::info
+See `createFromFullDna` in [NFTGenerativeCollectionClass](https://github.com/owlprotocol/owlprotocol/blob/main/packages/nft-sdk/src/classes/NFTGenerativeCollection/NFTGenerativeCollectionClass.ts) for more infromation on how an NFT is instantiated form its DNA.
+:::
+
+---
+
+## Step 7: Declare collection information in the metadata file
+
+Create a file called `owlproject.json` in the project folder. This will contain metadata about the collection.
+
+### `owlproject.json`
 ```json
 {
   "rootContract": {
     "tokenSymbol": "ExampleOmoNFT",
     "tokenIdStart": 1,
     "cfg": {
-      "ipfsEndpoint": "https://leovigna.mypinata.cloud/ipfs",
-      "apiEndpoint": "https://metadata.owlprotocol.xyz",
+      "jsonSchemaEndpoint": "https://leovigna.mypinata.cloud/ipfs",
+      "sdkApiEndpoint": "https://metadata.owlprotocol.xyz",
       "apiPath": "metadata/getMetadata",
-      "schemaJsonIpfs": "QmRNrcuGtaqefB72NHuGdDtvzEZjNvX6m2E1AgBXW65EKq"
+      "jsonSchemaIpfs": "QmRNrcuGtaqefB72NHuGdDtvzEZjNvX6m2E1AgBXW65EKq"
     }
   },
   "children": {
     "Hats": {
       "tokenIdStart": 1,
       "cfg": {
-        "schemaJsonIpfs": "QmcYC3fcqxU2gqS7VWEeC7jLDjpFQunMXmfkijXq325RHf"
+        "jsonSchemaIpfs": "QmcYC3fcqxU2gqS7VWEeC7jLDjpFQunMXmfkijXq325RHf"
       }
     }
   }
 }
 ```
 
+:::caution
+You should not rely on our API and IPFS endpoints as they are centralized.
+
+Ideally, `sdkApiEndpoint` should point to your own web app. For this tutorial, leave it as is.
+:::
+
 ### Important
-- You need a working IPFS endpoint for now for `ipfsEndpoint`, we are using [Pinata](https://pinata.cloud/)
-- Do not change `apiEndpoint`, this is the fallback API for browsers/clients that do not support the `nft-sdk`
+- You need a working IPFS endpoint. We recommend using [Pinata](https://pinata.cloud/)
+- Do not change `sdkApiEndpoint`, this is the fallback API for browsers/clients that do not support the `nft-sdk`
 - Replace the `schemaJsonIpfs` for the parent and children according to the **JSON Schema** from earlier, this is misnamed at the moment.
 
 ---
 
-## Step 8: Deploy and Mint the NFTs
+## Step 8: Deploy and mint NFTs
 
-1. We need to start a local Ganache blockchain, or you can use any other chain you specify in the `.env.development` or appropriate environemnt file.
+:::tip
+For initial testing, prefer a local blockchain over a testnet. A local blockchain like Ganache is simpler and faster.
+:::
 
-2. If you are using a different chain, you must define the network config in `packages/cli/config/default.json`.
+1. Make sure you have a `.env.development` file. It should contain two values: `NETWORK`, and `HD_WALLET_MNEMONIC`.
 
-3. Double check to ensure that the `accounts` in the config match the first two corresponding to the `HD_WALLET_MNEMONIC` ENV Var, and `NETWORK` is correct.
+### `.env.development`
+```bash
+NETWORK=ganache
+HD_WALLET_MNEMONIC=test test test test test test test test test test test junk
+```
+
+2. Start a local Ganache blockchain (see [Ganache quickstart](https://trufflesuite.com/docs/ganache/quickstart/). Use the `--wallet.mnemonic` flag to force the same mnemonic as in your `.env.development` file:
+```bash
+ganache --wallet.mnemonic "test test test test test test test test test test test junk"
+```
 
 :::caution
-The default `.env.example` - `HD_WALLET_MNEMONIC` **MUST** be updated to whatever mnemonic that Ganache gives you:
-```
-HD Wallet
-==================
-Mnemonic:      [YOUR WORDS HERE]
-Base HD Path:  m/44'/60'/0'/0/{account_index}
-```
+Do not use this mnemonic for production!
+:::
+
+3. Double check to ensure that the `accounts` in the CLI config (`cli/config/default.json`) match the first two accounts shown by `ganache`, and that `NETWORK` is set to `ganache`.
+
+:::tip Using a Private Key
+We also support using a single **private key**.
+
+To use a private key, **do not set** `HD_WALLET_MNEMONIC` and instead declare the environment variable `PRIVATE_KEY_0` in `.env.development`.
 :::
 
 ### Deploy Common
 
-If you are deploying to a new chain, or freshly launched local ganache, the common beacon proxies and implementations need to be deployed first.
+If you are deploying to a new chain, or a fresh ganache blockchain, the common [beacon proxies](https://docs.owlprotocol.xyz/contracts/advanced/contract-deployment#beacon-proxy) and implementations need to be deployed first.
 
-We enable this by passing `--deployCommon=true` into the deployment command. Don't worry if you forget to remove this, due to the deterministic deployer
-subsequent deployments will simply skip it if it exists, since they always deploy to the same address.
+We enable this by passing `--deployCommon=true` into the deployment command. Don't worry if you forget to remove this flag later. Our deployer always deploys the beacons to the same addresses. Therefore, the deployer will skip deploying beacons if they already exist.
 
+<!-- TODO: make this make sense
 :::info
 Owl Protocol uses advanced smart contract beacons including:
 - **Deterministic Deployment** - giving us the same addresses for registries and implementations across multiple blockchains.
@@ -456,8 +473,9 @@ Owl Protocol uses advanced smart contract beacons including:
 
 Docs are coming soon that explain this in depth, for now you can follow the deployment strategies here: [deployCommon.ts](https://github.com/owlprotocol/owlprotocol/blob/tutorial-example-omo/packages/cli/src/commands/deployCommon.ts)
 :::
+-->
 
-### Deploy Contracts and Mint NFTs
+### Deploy contracts and mint NFTs
 
 If everything is set up properly, you can now run:
 
@@ -465,14 +483,16 @@ If everything is set up properly, you can now run:
 node dist/index.cjs deployTopDown --projectFolder=projects/example-omo --deployCommon=true --debug=true
 ```
 
-Requirements:
-- JSON Schema uploaded to IPFS, and IPFS hashes specified in `owlproject.json` file.
-- Network configured properly in `.env.[NODE_ENV]` file and `cli/config/default.json`.
-- NFT item JSONs generated in `output/items`
+:::note
+This will deploy and mint all NFT JSONs in the project's `/output/items` folder.
+:::
 
-**This will deploy and mint all NFT JSONs in that folder.**
+At this point make sure you have the following:
+- A JSON Schema uploaded to IPFS, and the corresponding IPFS hash in the `owlproject.json` file.
+- The network configured properly in `.env.development` file and `cli/config/default.json`.
+- JSON files of the NFTs you will mint in `output/items`.
 
-If it works you should see:
+If the command succeeds you should see an output similar to:
 ```
 Minted /Users/clarencel/owl_protocol/owlprotocol/packages/cli/src/projects/example-omo/output/items/collection-item-1.json
 Mint: Hats at 0x91a4Df19DE444cDA86ef24f61A6190838Cec2b22 - tokenId: 1 & dna: 0x00
@@ -510,7 +530,7 @@ Also the NFT item JSON files will be updated to track the deployment:
 
 ---
 
-## Step 9: View and Check the NFTs
+## Step 9: View and check the NFTs
 
 You can use the `viewTopDown` command on the CLI to quickly view the NFT:
 
@@ -518,13 +538,13 @@ You can use the `viewTopDown` command on the CLI to quickly view the NFT:
 node dist/index.cjs viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a --tokenId=1
 ```
 
-This should show something similar to:
+The output should be similar to this:
 ```
 View ERC721TopDownDna 0xe3f62b8f72E49e75081B991685AeA19dd783b44a on ganache
 Fetching Metadata JSON Schema from: https:/leovigna.mypinata.cloud/ipfs/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9
 ```
 
-And the following JSON:
+And the following object:
 ```javascript
 {
   Body: {
@@ -545,34 +565,32 @@ Hats {
 }
 ```
 
-### View the Rendered NFT PFP
+### View the rendered NFT PFP
 
-Typically your webapp should use the `nft-sdk`, instantiate the collection class from the JSON Schema, and read the
-NFT's `dna` to render the NFT.
-
-> But we can use the centralized fallback API to quickly use our deployed public endpoint, which does the same job, but should not be relied upon!
+<!-- Confusing -->
+Typically your app should use the `nft-sdk`, instantiate the collection class from the JSON Schema, and read the NFT's DNA to render the NFT.
 
 To do this, we call the `viewTopDown` command again, but with the `--debug` option.
 
 This will call the NFT contract's `tokenURI` method, which is that a NFT Marketplace that does not support the `nft-sdk`
 would typically call.
 
-`node dist/index.cjs viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a --tokenId=1 --debug`
+```bash
+node dist/index.cjs viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a --tokenId=1 --debug
+```
 
-For our example, the result at the end shows:
+The output at the end shows:
 
 ```
-tokenUri http://metadata.owlprotocol.xyz:32001/metadata/getMetadata/Qmc7Aih1P67d....
+tokenUri http://metadata.owlprotocol.xyz:32001/metadata/getMetadata/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 fullDna 0x0000000000000...
 ```
 
-But we are only interested in the `tokenUri`:
+:::info
+This `tokenUri` is never seen by users, so its complexity is not an issue.
+:::
 
-`http://metadata.owlprotocol.xyz:32001/metadata/getMetadata/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`
-
-Yes, that's a very ugly base64-encoded DNA string, but that's never seen by users.
-
- `curl` that URL:
+`curl` the `tokenURI` URL:
 
 ```bash
 curl -s https://metadata.owlprotocol.xyz/metadata/getMetadata/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -602,23 +620,25 @@ You should get the following JSON:
 }
 ```
 
-> This is exactly what an NFT Marketplace is looking for.
+> This is the metadata that an NFT marketplace is looking for.
 
 And you can also see the `image` field is a link to the actual image:
 
 `http://metadata.owlprotocol.xyz:32001/metadata/getImage/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAA...`
 
-Which is:
+Which is this image:
 
 ![NFT](/img/tutorial/attached.png)
 
 ---
 
-## Step 10: Detaching / Removing the Hat!
+## Step 10: Detaching the hat
 
 We use the `detachTopDown` command to remove/detach the NFT:
 
-`node dist/index.cjs detachTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a -c 0x91a4Df19DE444cDA86ef24f61A6190838Cec2b22 --tokenId=1`
+```bash
+node dist/index.cjs detachTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a -c 0x91a4Df19DE444cDA86ef24f61A6190838Cec2b22 --tokenId=1
+```
 
 Outputs:
 
@@ -642,18 +662,18 @@ Fetching Metadata JSON Schema from: https:/leovigna.mypinata.cloud/ipfs/Qmc7Aih1
 
 Now let's view the NFT again:
 
-Again we run:
 ```
 node dist/index.cjs viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a  --tokenId=1 --debug
 ```
 
-Which gives us the `tokenUri`, `https://metadata.owlprotocol.xyz/metadata/getMetadata/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAA...`
+This gives us different the `tokenUri`. Notice that the image is simply accessible via the `/getImage` path instead of `/getMetadata`.
 
-But you may have noticed the image is accessible simply via the `getImage` path instead of the `getMetadata` path.
-
-So just calling: [https://metadata.owlprotocol.xyz/metadata/getImage/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=](http://metadata.owlprotocol.xyz:32001/metadata/getImage/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=)
+So calling: [https://metadata.owlprotocol.xyz/metadata/getImage/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=](http://metadata.owlprotocol.xyz:32001/metadata/getImage/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=)
 
 Gives us:
 
 ![NFT Detached](/img/tutorial/detached.png)
 
+## More Info
+
+Have questions? Join us in Discord: [https://discord.com/invite/7sANzfGUfe](https://discord.com/invite/7sANzfGUfe)

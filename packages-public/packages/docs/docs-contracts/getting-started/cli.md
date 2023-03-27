@@ -26,13 +26,13 @@ See our [Tutorials](/contracts/tutorials) for how we use the CLI
 
 **Usage:**
 ```
-node dist/index.cjs generateSchemaJSON <collectionJS> --project=projects/[folder]
+node dist/index.cjs generateJsonSchema <collectionJS> --project=projects/[folder]
 ```
 
-Generates the Schema JSON used by the **nft-sdk** to translate the on-chain data.
+Generates the JSON Schema used by the **nft-sdk** to translate the on-chain data.
 
 > Reads the **collectionJS** file relative to the project folder and
-> outputs the Schema JSON to the **output** subfolder.
+> outputs the JSON Schema to the **output** subfolder.
 
 :::info
 To create a new collection this is usually the first step, where you define the collection
@@ -40,7 +40,7 @@ in 1 or more Typescript files.
 
 Then run `pnpm run build:projects`, to generate the required JS file.
 
-e.g. `node dist/index.cjs generateSchemaJSON collections.js --project=projects/example-omo`
+e.g. `node dist/index.cjs generateJsonSchema collections.js --project=projects/example-omo`
 :::
 
 ---
@@ -55,7 +55,7 @@ node dist/index.cjs generateItemNFT <nftItemJS> --project=projects/[folder]`
 Generates an NFT Item's JSON with DNA attributes for minting.
 
 > Reads the **nftItemJS** file relative to the project folder and
-> outputs the Schema JSON to the **output** subfolder.
+> outputs the JSON Schema to the **output** subfolder.
 
 :::info
 Use this command if you know exactly what NFT attributes you want to mint.

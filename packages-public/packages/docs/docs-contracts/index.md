@@ -18,11 +18,9 @@ keywords:
 import { SimpleGrid } from '@chakra-ui/react'
 
 :::tip NEW TUTORIAL
-## Learn from example through our [Dynamic NFT with DNA Tutorial](/contracts/tutorial-topdowndna)!
+## Learn by example through our [Dynamic NFT with DNA Tutorial](/contracts/tutorial-topdowndna)!
 
 Explore step by step, how to create a new collection NFT profile pic, with dynamic detachable elements.
-
-[**CLICK HERE**](/contracts/tutorial-topdowndna)
 :::
 
 ---
