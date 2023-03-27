@@ -1,18 +1,6 @@
 import yargs from 'yargs';
-import config from 'config';
-import { ethers } from 'ethers';
 import { Deploy } from '@owlprotocol/contracts';
-import { HD_WALLET_MNEMONIC, PRIVATE_KEY_0, NETWORK } from '../utils/environment.js';
-
-const jsonRpcEndpoint: string = config.get(`network.${NETWORK}.config.url`);
-const provider = new ethers.providers.JsonRpcProvider(jsonRpcEndpoint);
-
-export type DeployCommonResult = {
-    proxyFactory?: any;
-    deterministicDeployer?: any;
-    implementations?: any;
-    upgradeableBeacon?: any;
-};
+import { getNetworkCfg } from '../utils/networkCfg.js';
 
 export const command = 'deployCommon';
 
@@ -37,21 +25,9 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 export const handler = async (argv: yargs.ArgumentsCamelCase) => {
     const debug = argv.debug || false;
 
-    console.log(`Deploying Common Beacons and Implementations to ${NETWORK}`);
+    const { network, signers, provider } = getNetworkCfg();
 
-    const signers: Array<ethers.Wallet> = [];
-
-    let walletOne: ethers.Wallet;
-    if (HD_WALLET_MNEMONIC) {
-        walletOne = ethers.Wallet.fromMnemonic(HD_WALLET_MNEMONIC);
-    } else if (PRIVATE_KEY_0) {
-        walletOne = new ethers.Wallet(PRIVATE_KEY_0);
-    } else {
-        throw new Error('ENV variable HD_WALLET_MNEMONIC or PRIVATE_KEY_0 must be provided');
-    }
-    const network: Deploy.RunTimeEnvironment['network'] = config.get(`network.${NETWORK}`);
-
-    signers[0] = walletOne.connect(provider);
+    console.log(`Deploying Common Beacons and Implementations to ${network.name}`);
 
     const deployCommonResult = await deployCommon({ provider, signers, network });
     debug && console.debug(deployCommonResult);
@@ -63,8 +39,8 @@ export const deployCommon = async ({
     provider,
     signers,
     network,
-}: Deploy.RunTimeEnvironment): Promise<DeployCommonResult> => {
-    const deployCommonResult: DeployCommonResult = {};
+}: Deploy.RunTimeEnvironment): Promise<any> => {
+    const deployCommonResult: any = {};
 
     deployCommonResult.deterministicDeployer = await Deploy.DeterministicDeployerDeploy({
         provider,

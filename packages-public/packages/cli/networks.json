@@ -33,6 +33,22 @@
         "url": "http://127.0.0.1:8545/",
         "from": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
       }
+    },
+    "mumbai": {
+      "name": "mumbai",
+      "config": {
+        "accounts": [
+          "0x3c246394b4defe253068b9ffcd58e6f921f4aec9eb542f3dbf4bd6541b8214d8"
+        ],
+        "gas": "auto",
+        "gasPrice": "auto",
+        "gasMultiplier": 1,
+        "httpHeaders": {},
+        "timeout": 20000,
+        "chainId": 80001,
+        "url": "https://polygon-mumbai.infura.io/v3/fee5821234524325b482f04d51c75878",
+        "from": "0x3c246394b4defe253068b9ffcd58e6f921f4aec9eb542f3dbf4bd6541b8214d8"
+      }
     }
   }
 }

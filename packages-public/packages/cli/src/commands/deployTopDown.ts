@@ -1,6 +1,5 @@
 import yargs from 'yargs';
 import path from 'path';
-import config from 'config';
 import fs from 'fs';
 import _ from 'lodash';
 import fetchRetryWrapper from 'fetch-retry';
@@ -9,7 +8,6 @@ import { ethers, Signer } from 'ethers';
 import { NFTGenerativeItemInterface, NFTGenerativeCollectionClass } from '@owlprotocol/nft-sdk';
 import { Deploy, Ethers, Utils, Artifacts } from '@owlprotocol/contracts';
 import { Argv, getProjectFolder, getProjectSubfolder } from '../utils/pathHandlers.js';
-import { HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0 } from '../utils/environment.js';
 import { OwlProject, InitArgs, ContractConfig, DeployNFTResult } from '../classes/owlProject.js';
 
 const { map, mapValues, omit, endsWith } = _;
@@ -24,9 +22,8 @@ import {
     ERC721TopDownDnaMintable as ERC721TopDownDnaMintableContract,
 } from '@owlprotocol/contracts/src/typechain/ethers';
 import { ERC721TopDownDnaMintableInterface } from '@owlprotocol/contracts/src/typechain/ethers/ERC721TopDownDnaMintable';
+import { getNetworkCfg } from '../utils/networkCfg.js';
 
-const jsonRpcEndpoint: string = config.get(`network.${NETWORK}.config.url`);
-const provider = new ethers.providers.JsonRpcProvider(jsonRpcEndpoint);
 let debug = false;
 
 export const command = 'deployTopDown';
@@ -60,33 +57,22 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 };
 
 export const handler = async (argv: Argv) => {
-    console.log(`Deploying ERC721TopDownDna to ${NETWORK}`);
 
     argvCheck(argv);
     debug = !!argv.debug || false;
 
+    const { network, signers, provider } = getNetworkCfg();
+
+    console.log(`Deploying ERC721TopDownDna to ${network.name}`);
+
     const itemsFolder = getProjectSubfolder(argv, 'output/items');
-
     const owlProjectPath = path.resolve(getProjectFolder(argv), 'owlproject.json');
-
     const owlProject = await getOwlProject(owlProjectPath);
 
     console.log(`Creating JSON(s) from folder: ${itemsFolder} with IPFS metadata defined at ${owlProjectPath}`);
 
     const collMetadata = NFTGenerativeCollectionClass.fromData(owlProject.metadata);
-
     const nftItemResults = await getNftItems(collMetadata, itemsFolder);
-
-    const signers = new Array<ethers.Wallet>();
-    if (HD_WALLET_MNEMONIC) {
-        signers[0] = ethers.Wallet.fromMnemonic(HD_WALLET_MNEMONIC);
-    } else if (PRIVATE_KEY_0) {
-        signers[0] = new ethers.Wallet(PRIVATE_KEY_0);
-    } else {
-        throw new Error('ENV variable HD_WALLET_MNEMONIC or PRIVATE_KEY_0 must be provided');
-    }
-    signers[0] = signers[0].connect(provider);
-    const network: Deploy.RunTimeEnvironment['network'] = config.get(`network.${NETWORK}`);
 
     if (argv.deployCommon) {
         await deployCommon({ provider, signers, network });
@@ -100,9 +86,9 @@ export const handler = async (argv: Argv) => {
 
     debug && console.debug('owlProjectRoot:', owlProject.rootContract.initArgs?.contractInit);
 
-    const contracts = await deployContracts(owlProject, factories);
+    const contracts = await deployContracts(owlProject, factories, provider, network);
 
-    await setApprovalsForChildren(signers[0], contracts);
+    await setApprovalsForChildren(signers[0], contracts, provider);
 
     // TODO: this is synchronous for now, nonce handling can be improved
     // const mintPromises = map(nftItemResults, async (nft, i) => {
@@ -122,7 +108,7 @@ export const handler = async (argv: Argv) => {
         );
 
         nft.nftJson.deployments = {};
-        nft.nftJson.deployments[NETWORK] = {
+        nft.nftJson.deployments[network.name] = {
             root: {
                 contractAddress: mints.root.contractAddress,
                 tokenId: mints.root.tokenId,
@@ -355,7 +341,7 @@ const initializeArgs = (owlProject: OwlProject, factories: any) => {
     };
 };
 
-const deployContracts = async (owlProject: OwlProject, factories: any) => {
+const deployContracts = async (owlProject: OwlProject, factories: any, provider: ethers.providers.JsonRpcProvider, network: any) => {
     const { awaitAllObj } = await import('@owlprotocol/utils');
 
     let nonce = await provider.getTransactionCount(factories.msgSender);
@@ -403,10 +389,10 @@ const deployContracts = async (owlProject: OwlProject, factories: any) => {
     mapValues(contracts, async (p: DeployNFTResult, k): Promise<DeployNFTResult> => {
         const r = await p;
         if (r.error) {
-            Deploy.logDeployment(NETWORK, k, r.address, 'beacon-proxy', 'failed');
+            Deploy.logDeployment(network.name, k, r.address, 'beacon-proxy', 'failed');
             console.error(r.error);
         } else {
-            Deploy.logDeployment(NETWORK, k, r.address, 'beacon-proxy', r.deployed ? 'deployed' : 'exists');
+            Deploy.logDeployment(network.name, k, r.address, 'beacon-proxy', r.deployed ? 'deployed' : 'exists');
         }
         return r;
     });
@@ -420,8 +406,9 @@ const deployContracts = async (owlProject: OwlProject, factories: any) => {
  * Note: initial value of provider.getTransactionCount(signerAddress); We use that and then increment.
  * @param signer
  * @param contracts
+ * @param provider
  */
-const setApprovalsForChildren = async (signer: ethers.Wallet, contracts: Record<string, any>) => {
+const setApprovalsForChildren = async (signer: ethers.Wallet, contracts: Record<string, any>, provider: ethers.providers.JsonRpcProvider) => {
     const signerAddress = await signer.getAddress();
     let nonce = await provider.getTransactionCount(signerAddress);
     const rootContractAddr = contracts.root.address;

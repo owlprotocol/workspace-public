@@ -1,17 +1,14 @@
 import yargs from 'yargs';
 import lodash from 'lodash';
 import { Argv } from '../utils/pathHandlers.js';
-import { HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0 } from '../utils/environment.js';
 
 import { ethers } from 'ethers';
 
 import { Artifacts } from '@owlprotocol/contracts';
-import config from 'config';
+import { getNetworkCfg } from '../utils/networkCfg.js';
 
 const { mapValues } = lodash;
 
-const jsonRpcEndpoint: string = config.get(`network.${NETWORK}.config.url`);
-const provider = new ethers.providers.JsonRpcProvider(jsonRpcEndpoint);
 let debug = false;
 
 import { NFTGenerativeCollectionClass, NFTGenerativeItemInterface } from '@owlprotocol/nft-sdk';
@@ -45,19 +42,11 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 };
 
 export const handler = async (argv: Argv) => {
-    console.log(`View ERC721TopDownDna ${argv.rootContractAddr} on ${NETWORK}`);
-
     debug = !!argv.debug || false;
 
-    const signers = new Array<ethers.Wallet>();
-    if (HD_WALLET_MNEMONIC) {
-        signers[0] = ethers.Wallet.fromMnemonic(HD_WALLET_MNEMONIC);
-    } else if (PRIVATE_KEY_0) {
-        signers[0] = new ethers.Wallet(PRIVATE_KEY_0);
-    } else {
-        throw new Error('ENV variable HD_WALLET_MNEMONIC or PRIVATE_KEY_0 must be provided');
-    }
-    signers[0] = signers[0].connect(provider);
+    const { network, signers, provider } = getNetworkCfg();
+
+    console.log(`View ERC721TopDownDna ${argv.rootContractAddr} on ${network.name}`);
 
     const rootContractAddr = argv.rootContractAddr as string;
     const tokenId = argv.tokenId as number;

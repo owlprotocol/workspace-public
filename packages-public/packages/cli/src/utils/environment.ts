@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 
 export const NODE_ENV = process.env.NODE_ENV || 'development';
 
@@ -11,9 +12,9 @@ else if (NODE_ENV === 'mumbai') defaultEnv = '.env.mumbai';
 
 const envFile = path.resolve(process.cwd(), defaultEnv);
 
-const dotenvRes = dotenv.config({ path: envFile, override: true });
+dotenv.config({ path: envFile, override: true });
 
-export const NETWORK = process.env.NETWORK || 'anvil';
+export const NETWORK = process.env.NETWORK;
 export const HD_WALLET_MNEMONIC = process.env.HD_WALLET_MNEMONIC;
 
 export const PRIVATE_KEY_0 = process.env.PRIVATE_KEY_0;

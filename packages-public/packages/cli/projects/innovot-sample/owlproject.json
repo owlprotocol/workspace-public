@@ -3,11 +3,9 @@
     "tokenSymbol": "InnoVot",
     "tokenIdStart": 3,
     "cfg": {
-      "ipfsEndpoint": "https://leovigna.mypinata.cloud",
-      "ipfsPath": "ipfs",
-      "apiEndpoint": "https://metadata.owlprotocol.xyz",
-      "apiPath": "metadata/getMetadata",
-      "jsonSchemaIpfs": "Qmc3BeMHKHNwX6tPxBBQ2SEE6uLJuC16AEuhujDrstbTNG"
+      "jsonSchemaIpfs": "Qmc3BeMHKHNwX6tPxBBQ2SEE6uLJuC16AEuhujDrstbTNG",
+      "jsonSchemaEndpoint": "https://leovigna.mypinata.cloud/ipfs",
+      "sdkApiEndpoint": "https://metadata.owlprotocol.xyz/metadata/getMetadata"
     }
   },
   "children": {
