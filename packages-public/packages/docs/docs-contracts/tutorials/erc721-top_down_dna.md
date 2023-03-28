@@ -149,8 +149,7 @@ tool to generate the **JSON Schema**, which we upload to IPFS.
 
 
 We start by defining the traits as [NFTGenerativeTraits](https://github.com/owlprotocol/owlprotocol/tree/main/packages/nft-sdk/src/classes/NFTGenerativeTrait).
-, then added
-to the `NFTGenerativeCollection`.
+, then add them to the `NFTGenerativeCollection`.
 
 ### `traits.ts`
 ```typescript
@@ -435,7 +434,7 @@ ganache --wallet.mnemonic "test test test test test test test test test test tes
 Do not use this mnemonic for production!
 :::
 
-3. Double check to ensure that the `accounts` in the CLI config (`cli/config/default.json`) match the first two accounts shown by `ganache`, and that `NETWORK` is set to `ganache`.
+3. Double check to ensure that the `accounts` in the CLI (`networks.json`) match the first account shown by `ganache`, and that `NETWORK` is set to `ganache`.
 
 :::tip Using a Private Key
 We also support using a single **private key**.
@@ -474,7 +473,7 @@ This will deploy and mint all NFT JSONs in the project's `/output/items` folder.
 
 At this point make sure you have the following:
 - A JSON Schema uploaded to IPFS, and the corresponding IPFS hash in the `owlproject.json` file.
-- The network configured properly in `.env.development` file and `cli/config/default.json`.
+- The network configured properly in `.env.development` file and `networks.json`.
 - JSON files of the NFTs you will mint in `output/items`.
 
 If the command succeeds you should see an output similar to:
