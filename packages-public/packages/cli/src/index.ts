@@ -11,6 +11,7 @@ import * as updateDnaNFT from './commands/updateDnaNFT.js';
 import * as burnNFT from './commands/burnNFT.js';
 import * as deployCommon from './commands/deployCommon.js';
 import * as deployExamples from './commands/deployExamples.js';
+import * as config from './commands/config.js';
 
 yargs(hideBin(process.argv))
     .command(generateJsonSchema)
@@ -32,6 +33,8 @@ yargs(hideBin(process.argv))
     .command(deployCommon)
     .example(deployCommon.example, deployCommon.exampleDescription)
     .command(deployExamples)
+    .command(config)
+    .example(config.example, config.exampleDescription)
     .demandCommand()
     .recommendCommands()
     .wrap(null)

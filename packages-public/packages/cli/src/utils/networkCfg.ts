@@ -20,9 +20,19 @@ export const getNetworkCfg = (network: string = NETWORK!, networksFilePath: stri
 
     const signers = new Array<ethers.Wallet>();
     if (HD_WALLET_MNEMONIC) {
-        signers[0] = ethers.Wallet.fromMnemonic(HD_WALLET_MNEMONIC);
+        try {
+            signers[0] = ethers.Wallet.fromMnemonic(HD_WALLET_MNEMONIC);
+        } catch (err) {
+            console.error(`Error creating wallet from HD_WALLET_MNEMONIC: ${HD_WALLET_MNEMONIC}`);
+            process.exit();
+        }
     } else if (PRIVATE_KEY_0) {
-        signers[0] = new ethers.Wallet(PRIVATE_KEY_0);
+        try {
+            signers[0] = new ethers.Wallet(PRIVATE_KEY_0);
+        } catch (err) {
+            console.error(`Error creating wallet from PRIVATE_KEY_0: ${PRIVATE_KEY_0}`);
+            process.exit();
+        }
     } else {
         throw new Error('ENV variable HD_WALLET_MNEMONIC or PRIVATE_KEY_0 must be provided');
     }

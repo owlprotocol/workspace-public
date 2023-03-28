@@ -1,20 +1,20 @@
 import * as dotenv from 'dotenv';
 import path from 'path';
-import fs from 'fs';
 
 export const NODE_ENV = process.env.NODE_ENV || 'development';
 
-let defaultEnv = '';
-if (NODE_ENV === 'production') defaultEnv = '.env';
-else if (NODE_ENV === 'development') defaultEnv = '.env.development';
-else if (NODE_ENV === 'test') defaultEnv = '.env.test';
-else if (NODE_ENV === 'mumbai') defaultEnv = '.env.mumbai';
+process.env.NODE_ENV = NODE_ENV;
 
-const envFile = path.resolve(process.cwd(), defaultEnv);
+const envFilePath = `.env.${NODE_ENV}`;
+const envFile = path.resolve(process.cwd(), envFilePath);
 
-dotenv.config({ path: envFile, override: true });
+const dotenvResult = dotenv.config({ path: envFile, override: true });
 
+if (dotenvResult.error && (!process.env.NETWORK || (!process.env.HD_WALLET_MNEMONIC && !process.env.PRIVATE_KEY_0))) {
+    console.error(dotenvResult.error);
+}
+
+// TODO: Since we are overriding, we should warn developer if something is overwritten
 export const NETWORK = process.env.NETWORK;
 export const HD_WALLET_MNEMONIC = process.env.HD_WALLET_MNEMONIC;
-
 export const PRIVATE_KEY_0 = process.env.PRIVATE_KEY_0;
