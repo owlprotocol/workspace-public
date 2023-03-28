@@ -42,16 +42,7 @@ Cached:    3 cached, 12 total
 
 We include a handy CLI Tool for common use cases and interactions.
 
-[CLICK HERE for the CLI Tool Docs](/contracts/getting-started/cli)
-
----
-
-## Tutorials
-
-We have a set of tutorials for the common use cases, this is also a good way to get started and experiment with the basic
-use cases.
-
-- [**DNA Encoding - ERC721TopDownDna**](/contracts/tutorial-topdowndna) - create a Dynamic NFT with detachable child NFTs and proper onchain data encoding.
+See [CLI Tool Docs](/contracts/getting-started/cli)
 
 :::info
 We are still in **Alpha**, If you experience any issues please email us at [contact@owlprotocol.xyz](mailto:contact@owlprotocol.xyz).

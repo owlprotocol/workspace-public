@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 sidebar_label: 'NFT Data Encoding'
-slug: '/tutorial-nftdata'
+slug: '/tutorials/nft-data'
 ---
 
 import { SimpleGrid } from '@chakra-ui/react'
@@ -192,8 +192,8 @@ import {
 
 const collExampleLoyaltyDef: NFTGenerativeCollection = {
     name: 'Tutorial Example - Loyalty Program',
-    description: 'Example from https://docs.owlprotocol.xyz/contracts/tutorial-nftdata',
-    external_url: 'https://docs.owlprotocol.xyz/contracts/tutorial-nftdata',
+    description: 'Example from https://docs.owlprotocol.xyz/contracts/tutorials/nft-data',
+    external_url: 'https://docs.owlprotocol.xyz/contracts/tutorials/nft-data',
     seller_fee_basis_points: 0,
     fee_recipient: '0xc2A3cB7d4BF24e456051E3a710057ac61f5dB133',
     generatedImageType: 'png',
@@ -369,7 +369,7 @@ This will deploy and mint all NFT JSONs in the project's `/output/items` folder.
 :::
 
 At this point make sure you have the following:
-- A Schema JSON uploaded to IPFS, and the corresponding IPFS hash in the `owlproject.json` file.
+- A JSON Schema uploaded to IPFS, and the corresponding IPFS hash in the `owlproject.json` file.
 - The network configured properly in `.env.development` file and `cli/config/default.json`.
 - JSONs files of the NFTs you will mint in `output/items`.
 
@@ -397,7 +397,7 @@ node dist/index.cjs viewTopDown --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364
 The output should be similar to this:
 ```
 View ERC721TopDownDna 0xa2B01e08CeD3b06051B59966B540BFe0B90b364c on ganache
-Fetching Metadata Schema JSON from: https://leovigna.mypinata.cloud/ipfs/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj
+Fetching Metadata JSON Schema from: https://leovigna.mypinata.cloud/ipfs/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj
 NFT tokenId: 1 - owned by 0xa1eF58670368eCCB27EdC6609dea0fEFC5884f09
 ```
 
@@ -440,7 +440,7 @@ This link will show the NFT Standard Metadata JSON:
 [https://metadata.owlprotocol.xyz/metadata/getMetadata/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj/AAAA...](https://metadata.owlprotocol.xyz/metadata/getMetadata/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATAAAAD2i_AQQBAeLQEQABZBDutAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==)
 
 ```json
-{"description":"Example from https://docs.owlprotocol.xyz/contracts/tutorial-nftdata","external_url":"https://docs.owlprotocol.xyz/contracts/tutorial-nftdata","image":"https://metadata.owlprotocol.xyz/metadata/getImage/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATAAAAD2i_AQQBAeLQEQABZBDutAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==","name":"Tutorial Example - Loyalty Program","attributes":[{"trait_type":"Last Transferred","value":1678831284},{"trait_type":"Sub Group","value":"Yacht Club"},{"trait_type":"Country","value":"Belgium"},{"trait_type":"Points","value":123600},{"trait_type":"Tier Badge","value":"Silver"},{"trait_type":"Background","value":"Tunnels"},{"trait_type":"Status Tier","value":"Silver"},{"trait_type":"Member ID","value":1009855}]}
+{"description":"Example from https://docs.owlprotocol.xyz/contracts/tutorials/nft-data","external_url":"https://docs.owlprotocol.xyz/contracts/tutorials/nft-data","image":"https://metadata.owlprotocol.xyz/metadata/getImage/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATAAAAD2i_AQQBAeLQEQABZBDutAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==","name":"Tutorial Example - Loyalty Program","attributes":[{"trait_type":"Last Transferred","value":1678831284},{"trait_type":"Sub Group","value":"Yacht Club"},{"trait_type":"Country","value":"Belgium"},{"trait_type":"Points","value":123600},{"trait_type":"Tier Badge","value":"Silver"},{"trait_type":"Background","value":"Tunnels"},{"trait_type":"Status Tier","value":"Silver"},{"trait_type":"Member ID","value":1009855}]}
 ```
 
 :::info

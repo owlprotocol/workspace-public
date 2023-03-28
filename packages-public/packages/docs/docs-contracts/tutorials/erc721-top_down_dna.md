@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
-sidebar_label: 'NFT Image Layers with DNA'
-slug: '/tutorial-topdowndna'
+sidebar_label: 'NFT Image Layers'
+slug: '/tutorials/nft-image-layers'
 ---
 
 import { SimpleGrid } from '@chakra-ui/react'
 
-# DNA Encoding - ERC721TopDownDna
+# DNA Image Layers - ERC721TopDownDna
 
 ## Tutorial
 
@@ -49,15 +49,13 @@ Ensure you're able to build the entire project before starting: see [Getting Sta
 
 ---
 
-<!-- TODO: look over this -->
 ## Step 1: Prepare the layers
 
 :::info
 The sample will have a small number of layers for each `trait`:
 
-> These **MUST** be transparent PNGs, which will be combined, therefore the positioning must be taken into account.
+These **must** be transparent PNGs. These will be combined, so the positioning must be taken into account.
 
-> You **MUST** upload these images to ideally IPFS, but an accessible image host works as well.
 :::
 
 ### Background
@@ -79,7 +77,7 @@ The sample will have a small number of layers for each `trait`:
 </Box>
 </SimpleGrid>
 
-**And no background at all.**
+Note: no background at all is also an option.
 
 ### Body
 
@@ -100,7 +98,7 @@ The sample will have a small number of layers for each `trait`:
 </Box>
 </SimpleGrid>
 
-### Hats (Detachable Accessory)
+### Hats (the detachable accessory)
 
 <SimpleGrid className="features-grid" columns={{sm: 2, md: 4}} spacing={8}>
 <Box>
@@ -139,38 +137,22 @@ We'll also encode into the DNA/on-chain data of the NFT an `enum` **Vibe**, whic
 - Eccentric
 
 ---
-<!-- TODO: look over this -->
 
 ## Step 2: Setup the project and declare the traits in JavaScript
 
-We will be using the [CLI Tool](/contracts/getting-started/cli) for this, so firstly
-under `packages/cli/src/projects` we will need to create a folder for the project called `example-omo`.
-```
-.
-└── packages/
-    ├── cli/
-    │   └── src/
-    │       ├── classes
-    │       ├── commands
-    │       ├── deploy
-    │       ├── projects/
-    │       │   └── example-omo
-    │       ├── types
-    │       └── utils
-    ├── contracts
-    └── [...]
-```
+We will be using the [CLI Tool](/contracts/getting-started/cli) for this. Firstly, set up a project folder under the CLI package. For example, the final project is under `/cli/projects/example-omo`.
 
-For the `traits` in this example we'll use the `nft-sdk` to instantiate the [NFTGenerativeCollectionClass](https://github.com/owlprotocol/owlprotocol/blob/main/packages/nft-sdk/src/classes/NFTGenerativeCollection/NFTGenerativeCollectionClass.ts) and use the CLI
-tool to generate the **JSON Schema**, which is uploaded to IPFS.
+For the `traits` in this example we will use the `nft-sdk` to instantiate an [NFTGenerativeCollectionClass](https://github.com/owlprotocol/owlprotocol/blob/main/packages/nft-sdk/src/classes/NFTGenerativeCollection/NFTGenerativeCollectionClass.ts) and use the CLI
+tool to generate the **JSON Schema**, which we upload to IPFS.
 
-> The `nft-sdk` needs this JSON Schema to translate the binary on-chain data (DNA).
+> The `nft-sdk` needs this JSON Schema to translate the on-chain data (DNA).
 
-`packages/cli/src/projects/example-omo/traits.ts`
 
-Traits are first instantiated as [NFTGenerativeTraits](https://github.com/owlprotocol/owlprotocol/tree/main/packages/nft-sdk/src/classes/NFTGenerativeTrait), then added
+We start by defining the traits as [NFTGenerativeTraits](https://github.com/owlprotocol/owlprotocol/tree/main/packages/nft-sdk/src/classes/NFTGenerativeTrait).
+, then added
 to the `NFTGenerativeCollection`.
 
+### `traits.ts`
 ```typescript
 import { NFTGenerativeTraitEnum, NFTGenerativeTraitImage } from '@owlprotocol/nft-sdk';
 
@@ -204,7 +186,8 @@ export const traitImageBg: NFTGenerativeTraitImage = {
 
 [...]
 ```
-See: [/packages/cli/src/projects/example-omo/traits.ts](https://github.com/owlprotocol/owlprotocol/blob/tutorial-example-omo/packages/cli/src/projects/example-omo/traits.ts)
+
+See `traits.ts` on [GitHub](https://github.com/owlprotocol/owlprotocol/blob/tutorial-example-omo/packages/cli/src/projects/example-omo/traits.ts)
 
 :::info
 `probabilities` are normalized, correspond in order with the values, and there must be as many probabilities as values.
@@ -216,15 +199,17 @@ You need to manually upload images to IPFS, and add the `image_url` as `ipfs://[
 
 The `ipfs://` will be replaced by the environemnt variable `IPFS_GATEWAY` that used by our provided API, so you don't need to be concerned about that.
 
-We'll have more tools and a UI for uploading to IPFS soon.
+We will have more tools and a UI for uploading to IPFS soon.
 
 :::
 
+We will then define a collection that uses these traits.
+
 ---
-<!-- TODO: look over this -->
 
 ## Step 3: Create the `collection.ts` that connects the traits and collection:
 
+### `collection.ts`
 ```typescript
 import {
     traitEnumVibe,
@@ -242,8 +227,8 @@ import {
 
 const collHatsChildDef: NFTGenerativeCollection = {
     name: 'Tutorial Example - NFT Hats Sub-Collection',
-    description: 'Example from https://docs.owlprotocol.xyz/contracts/tutorial-topdowndna',
-    external_url: 'https://docs.owlprotocol.xyz/contracts/tutorial-topdowndna',
+    description: 'Example from https://docs.owlprotocol.xyz/contracts/tutorials/nft-image-layers',
+    external_url: 'https://docs.owlprotocol.xyz/contracts/tutorials/nft-image-layers',
     seller_fee_basis_points: 5000,
     fee_recipient: '0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf',
     generatedImageType: 'png',
@@ -254,8 +239,8 @@ const collHatsChildDef: NFTGenerativeCollection = {
 
 const collNestedDef: NFTGenerativeCollection = {
     name: 'Thread Haus - Innovot NFT Collection',
-    description: 'Example from https://docs.owlprotocol.xyz/contracts/tutorial-topdowndna',
-    external_url: 'https://docs.owlprotocol.xyz/contracts/tutorial-topdowndna',
+    description: 'Example from https://docs.owlprotocol.xyz/contracts/tutorials/nft-image-layers',
+    external_url: 'https://docs.owlprotocol.xyz/contracts/tutorials/nft-image-layers',
     seller_fee_basis_points: 10000,
     fee_recipient: '0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf',
     generatedImageType: 'png',
@@ -290,13 +275,13 @@ export const collExample = NFTGenerativeCollectionClass.fromData(collNestedDef) 
 export default collExample;
 ```
 
+See `collection.ts` on [GitHub](https://github.com/owlprotocol/owlprotocol/blob/tutorial-example-omo/packages/cli/src/projects/example-omo/collection.ts)
+
 :::caution
-For now the trait key must be the same as the trait name.
+The trait key must be the same as the trait name and is case sensitive.
 
-e.g. `traitImageBg` has the field name as `Background` capitalized, and therefore `collExample` also declares its trait as `Background`.
+For example, `traitImageBg` has the trait key `Background` capitalized. Therefore `collExample` must also declares `Background`, capitalized.
 :::
-
-See: [/packages/cli/projects/example-omo/collection.ts](https://github.com/owlprotocol/owlprotocol/blob/tutorial-example-omo/packages/cli/projects/example-omo/collection.ts)
 
 ---
 
@@ -599,8 +584,8 @@ curl -s https://metadata.owlprotocol.xyz/metadata/getMetadata/Qmc7Aih1P67dmHF4PD
 You should get the following JSON:
 ```json
 {
-  "description": "Example from https://docs.owlprotocol.xyz/contracts/tutorial-topdowndna",
-  "external_url": "https://docs.owlprotocol.xyz/contracts/tutorial-topdowndna",
+  "description": "Example from https://docs.owlprotocol.xyz/contracts/tutorials/nft-image-layers",
+  "external_url": "https://docs.owlprotocol.xyz/contracts/tutorials/nft-image-layers",
   "image": "http://metadata.owlprotocol.xyz:32001/metadata/getImage/Qmc7Aih1P67dmHF4PDMg5KfLABMtR6DXmDaxRvgF8Wgoe9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   "name": "Thread Haus - Innovot NFT Collection",
   "attributes": [

@@ -123,7 +123,7 @@ The duplicate artifacts files may be a bit confusing. The reason they are requir
 
 
 ## [Typechain] types
-[Typechain] can be used to generate Typescript types for the smart contracts. We do **NOT** use the [@typechain/hardhat] plugin as it only supports generating types for 1 framework.
+[Typechain] can be used to generate Typescript types for the smart contracts. We do **NOT** use the [@typechain/hardhat] plugin as it only supports generating types for one framework.
 
 Generated [Typechain] types for [ether.js] and [web3.js] using:
 ```bash

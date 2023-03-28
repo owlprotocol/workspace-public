@@ -11,16 +11,14 @@ keywords:
 
 # Owl Protocol - Developer Documentation
 
-[https://github.com/owlprotocol/owlprotocol](https://github.com/owlprotocol/owlprotocol)
-
 [EIP-721]: https://eips.ethereum.org/EIPS/eip-721
 
 import { SimpleGrid } from '@chakra-ui/react'
 
 :::tip NEW TUTORIAL
-## Learn by example through our [Dynamic NFT with DNA Tutorial](/contracts/tutorial-topdowndna)!
+## Learn by example with our [DNA Image Layers Tutorial](/contracts/tutorials/nft-image-layers)!
 
-Explore step by step, how to create a new collection NFT profile pic, with dynamic detachable elements.
+Explore how to create a new collection NFT profile pic, with detachable layers.
 :::
 
 ---
@@ -35,7 +33,7 @@ Owl Protocol is working with various groups to create templates and standards fo
 - A powerful JS SDK encapsulates all data management of our standards.
 
 :::info Try It Out!
-See our [NFT Data Encoding Tutorial](/contracts/tutorial-nftdata) to learn how it works.
+See our [NFT Data Encoding Tutorial](/contracts/tutorials/nft-data) to learn how it works.
 :::
 
 ### - **Dynamic NFT Logic** - Primitives for NFT Mechanics
@@ -60,7 +58,7 @@ Common Mechanics:
 - Cross Metaverse Interoperability
 - Web3 Gaming
 
-Our flexible Schema JSON, allows developers/creators to encode compressed binary data on-chain, that can still be understood by anyone through our SDK.
+Our flexible JSON Schema allows developers andcreators to encode compressed binary data on-chain, that can decoded by anyone anyone with our SDK.
 
 Add critical data such as **Date Last Transferred, Points, Level, Tier, Status, and more** in a manageable way.
 

@@ -1,6 +1,5 @@
 ---
 sidebar_position: 1
-sidebar_label: 'General'
 slug: '/concepts'
 ---
 
@@ -25,7 +24,7 @@ slug: '/concepts'
 To make the dynamic properties possible, we have added the following:
 
 1. **Binary On-Chain Data** format that is stored for each NFT.
-2. **Collection Schema JSON** that describes and corresponds to the above data format.
+2. **Collection JSON Schema** that describes and corresponds to the above data format.
 3. **Client-Side SDK** that allows apps, marketplaces, and games to translate the above to meaningful data, such as the rendered NFT visual/image.
 
 ![NFT Data Basics 1](/img/basics-1-v4.jpg)
@@ -105,7 +104,7 @@ function getDna(uint256 tokenId) public view returns (bytes memory) {
 
 By exposing the on-chain data of the attached NFTs, our Dynamic NFTs can be rendered fully with any attached equipment, accessories, clothing, or add-ons.
 
-To maximize decentralization of this process we recommend using our Client-Side SDK to render the NFT on-chain data using the **IPFS hosted Schema JSON**.
+To maximize decentralization of this process we recommend using our Client-Side SDK to render the NFT on-chain data using the **IPFS-hosted JSON Schema**.
 This allows us to minimize the on-chain data, while still being able to reference high quality graphics.
 
 Currently, we support 2D rendering for composite PNG and SVG images, and will be releasing more features such as dynamic colors for SVGs, and layer transformations.
@@ -125,7 +124,7 @@ or game wants to incorporate the game within their world.
 
 However, there are a few balancing issues and considerations to take:
 
-1. External 3rd-party projects are free to interpret the NFT data however they choose, using the **Collection Schema JSON** defined for your NFT as a starting template.
+1. External 3rd-party projects are free to interpret the NFT data however they choose, using the **Collection JSON Schema** defined for your NFT as a starting template.
     **This especially applies for visual elements or rendering**. For example, a trait on your NFT for *"long hair"* can be rendered in many ways, and as each rendering
     engine is different, unless you open source your graphic assets, other projects would likely render a trait in their own way.
 
