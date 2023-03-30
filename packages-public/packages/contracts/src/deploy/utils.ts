@@ -31,4 +31,4 @@ interface Props {
 export const getContractURIs = ({ chainId, name, tokenId }: Props) => ({
     contractUri: `http://localhost:3020/${chainId}/${name}/metadata`,
     tokenUri: `http://localhost:3020/${chainId}/${name}/metadata/${tokenId}`,
-})
+});
