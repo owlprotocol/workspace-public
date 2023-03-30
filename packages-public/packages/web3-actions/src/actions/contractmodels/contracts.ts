@@ -1,6 +1,6 @@
 import { interfaces } from "@owlprotocol/contracts";
 import { BaseContract, ContractFunction, ContractTransaction, utils } from "ethers";
-import { TypedEventFilter } from "@owlprotocol/contracts/lib/types/typechain/ethers/common.js";
+import { TypedEvent, TypedEventFilter } from "@owlprotocol/contracts/lib/types/typechain/ethers/common.js";
 import { mapValues } from "lodash-es";
 import { web3CallActionFactory } from "../ethmodels/ethcall/web3Call.js";
 import { web3SendActionFactory } from "../ethmodels/ethsend/web3Send.js";
@@ -18,9 +18,8 @@ type InitialParameters<F extends (...args: any) => any> = Wrap<Parameters<F>> ex
     : never;
 
 //https://stackoverflow.com/questions/44851268/typescript-how-to-extract-the-generic-parameter-from-a-type
-type extractTypedEventFilterArgs<T extends TypedEventFilter<any, any>> = T extends TypedEventFilter<
-    infer ArgsArr,
-    infer ArgsObj
+type extractTypedEventFilterArgs<T extends TypedEventFilter<TypedEvent<any, any>>> = T extends TypedEventFilter<
+    TypedEvent<infer ArgsArr, infer ArgsObj>
 >
     ? [ArgsArr, ArgsObj]
     : never;

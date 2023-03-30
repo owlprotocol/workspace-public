@@ -289,7 +289,7 @@ export async function postWriteBulkEthCall(items: EthCall[]): Promise<any> {
             } else if (interfaceNames.has("IAssetRouterOutput") || interfaceNames.has("IAssetRouterCraft")) {
                 if (
                     methodFormatFull ===
-                    interfaces.IAssetRouterInput.interface
+                    interfaces.IAssetRouterOutput.interface
                         .getFunction("getOutputBasket")
                         .format(utils.FormatTypes.full)
                         .replace("function ", "")
