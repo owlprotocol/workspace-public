@@ -1,10 +1,10 @@
 import yargs from 'yargs';
+import {ethers} from 'ethers';
 
-import { Argv } from '../utils/pathHandlers.js';
-import { ethers } from 'ethers';
+import {Artifacts} from '@owlprotocol/contracts';
 
-import { Artifacts } from '@owlprotocol/contracts';
-import { getNetworkCfg } from '../utils/networkCfg.js';
+import {Argv} from '../utils/pathHandlers.js';
+import {getNetworkCfg} from '../utils/networkCfg.js';
 
 let debug = false;
 
@@ -13,7 +13,7 @@ export const command = 'burnNFT';
 export const describe = `Burn the NFT and all children (if any).
 `;
 
-export const example = 'node dist/index.cjs burnNFT --contract=<contract> --tokenId=<id>';
+export const example = '$0 burnNFT --contract=<contract> --tokenId=<id>';
 export const exampleDescription =
     'burn the NFT at the given contract and tokenId, including all of the NFTs the NFT owns';
 
@@ -39,7 +39,7 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 export const handler = async (argv: Argv) => {
     debug = !!argv.debug || false;
 
-    const { network, signers } = getNetworkCfg();
+    const {network, signers} = getNetworkCfg();
 
     console.log(`Burn ERC721TopDownDnaMintable ${argv.contractAddr} with tokenId: ${argv.tokenId} on ${network.name}`);
 

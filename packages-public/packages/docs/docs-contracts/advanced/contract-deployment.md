@@ -15,14 +15,14 @@ sidebar_position: 2
 [ether.js]: https://github.com/ethers-io/ethers.js/
 [web3.js]: https://github.com/web3/web3.js
 
-[ERC1167Factory]: ../../owlprotocol-contracts/contracts/proxy/ERC1167/ERC1167Factory.sol
-[UpgradeableBeacon]: ../../owlprotocol-contracts/contracts/proxy/Beacon/UpgradeableBeacon.sol
-[BeaconProxy]: ../../owlprotocol-contracts/contracts/proxy/Beacon/BeaconProxy.sol
+[ERC1167Factory]: https://github.com/owlprotocol/owlprotocol/tree/main/packages/contracts/contracts/proxy/ERC1167/ERC1167Factory.sol
+[UpgradeableBeacon]: https://github.com/owlprotocol/owlprotocol/tree/main/packages/contracts/contracts/proxy/Beacon/UpgradeableBeacon.sol
+[BeaconProxy]: https://github.com/owlprotocol/owlprotocol/tree/main/packages/contracts/contracts/proxy/Beacon/BeaconProxy.sol
 
-[factories.ts]: ../../owlprotocol-contracts/src/ethers/factories.ts
-[deterministicFactories.ts]: ../../owlprotocol-contracts/src/ethers/deterministicFactories.ts
-[proxy1167Factories.ts]: ../../owlprotocol-contracts/src/ethers/proxy1167Factories.ts
-[beaconProxyFactories.ts]: ../../owlprotocol-contracts/src/ethers/beaconProxyFactories.ts
+[factories.ts]: https://github.com/owlprotocol/owlprotocol/tree/main/packages/contracts/src/ethers/factories.ts
+[deterministicFactories.ts]: https://github.com/owlprotocol/owlprotocol/tree/main/packages/contracts/src/ethers/deterministicFactories.ts
+[proxy1167Factories.ts]: https://github.com/owlprotocol/owlprotocol/tree/main/packages/contracts/src/ethers/proxy1167Factories.ts
+[beaconProxyFactories.ts]: https://github.com/owlprotocol/owlprotocol/tree/main/packages/contracts/src/ethers/beaconProxyFactories.ts
 
 Owl Protocol is designed to support the deployment of many smart contracts. As such we have designed 3 advanced deployment strategies to enable deterministic, cheap, and upgradeable smart contracts.
 

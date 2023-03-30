@@ -1,6 +1,4 @@
-import yargs from 'yargs';
-import { Argv } from '../utils/pathHandlers';
-import { getNetworkCfg } from '../utils/networkCfg.js';
+import {getNetworkCfg} from '../utils/networkCfg.js';
 
 export const command = 'config';
 
@@ -10,11 +8,11 @@ The config/environment is managed by two files:
 - .env.[NODE_ENV] - default [NODE_ENV] = "development"
 `;
 
-export const example = 'node dist/index.cjs config';
+export const example = '$0 config';
 export const exampleDescription = 'display the current config based on the current NODE_ENV.';
 
 export const handler = async () => {
-    const { network, signers, provider } = getNetworkCfg();
+    const {network, signers, provider} = getNetworkCfg();
 
     console.log('CLI Config');
     console.log(`NODE_ENV: ${process.env.NODE_ENV}`);

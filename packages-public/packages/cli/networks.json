@@ -38,7 +38,7 @@
       "name": "mumbai",
       "config": {
         "accounts": [
-          "0x3c246394b4defe253068b9ffcd58e6f921f4aec9eb542f3dbf4bd6541b8214d8"
+          "0x5b3208286264f409e1873e3709d3138acf47f6cc733e74a6b47a040b50472fd8"
         ],
         "gas": "auto",
         "gasPrice": "auto",
@@ -46,8 +46,8 @@
         "httpHeaders": {},
         "timeout": 20000,
         "chainId": 80001,
-        "url": "https://polygon-mumbai.infura.io/v3/fee5821234524325b482f04d51c75878",
-        "from": "0x3c246394b4defe253068b9ffcd58e6f921f4aec9eb542f3dbf4bd6541b8214d8"
+        "url": "https://polygon-mumbai.infura.io/v3/<infura_key>",
+        "from": "0x5b3208286264f409e1873e3709d3138acf47f6cc733e74a6b47a040b50472fd8"
       }
     }
   }

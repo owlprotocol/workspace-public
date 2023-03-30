@@ -1,16 +1,16 @@
 import yargs from 'yargs';
 import lodash from 'lodash';
-import { Argv } from '../utils/pathHandlers.js';
-import { ethers, utils } from 'ethers';
+import {ethers, utils} from 'ethers';
 import fetchRetryWrapper from 'fetch-retry';
 
-const { mapValues } = lodash;
+import {Utils, Deploy, Artifacts} from '@owlprotocol/contracts';
+import {NFTGenerativeCollectionClass} from '@owlprotocol/nft-sdk';
+
+import {Argv} from '../utils/pathHandlers.js';
+import {getNetworkCfg} from '../utils/networkCfg.js';
+
+const {mapValues} = lodash;
 const fetchRetry = fetchRetryWrapper(fetch);
-
-import { Utils, Deploy, Artifacts } from '@owlprotocol/contracts';
-import { NFTGenerativeCollectionClass } from '@owlprotocol/nft-sdk';
-
-import { getNetworkCfg } from '../utils/networkCfg.js';
 
 let debug = false;
 
@@ -19,9 +19,9 @@ export const command = 'detachTopDown';
 export const describe = `Detach a child NFT from a parent NFT at the given token id.
 `;
 
-export const example = 'node dist/index.cjs detachTopDown -r <rootContractAddr> -c <childContractAddr> --tokenId=<id>';
+export const example = '$0 detachTopDown -r <rootContractAddr> -c <childContractAddr> --tokenId=<id>';
 export const exampleDescription =
-    'detaches the child NFT of <childContractAddr> from the <rootContractAddr> NFT with tokenId <id>';
+    'detache the child NFT of <childContractAddr> from the <rootContractAddr> NFT with tokenId <id>';
 
 export const builder = (yargs: ReturnType<yargs.Argv>) => {
     return yargs
@@ -47,11 +47,10 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 };
 
 export const handler = async (argv: Argv) => {
-
     // TODO: consider LOG_LEVEL
     debug = !!argv.debug || false;
 
-    const { network, signers, provider } = getNetworkCfg();
+    const {network, signers, provider} = getNetworkCfg();
 
     console.log(`Detaching from ERC721TopDownDna on ${network.name}`);
 
@@ -61,7 +60,7 @@ export const handler = async (argv: Argv) => {
 
     const rootContract = new ethers.Contract(rootContractAddr, Artifacts.ERC721TopDownDna.abi, signers[0]);
 
-    await detachTopDown({ provider, signers, network }, rootContract, childContractAddr, tokenId);
+    await detachTopDown({provider, signers, network}, rootContract, childContractAddr, tokenId);
 
     const fullDna = await rootContract.getDna(tokenId);
     const contractURI = await rootContract.contractURI();
@@ -69,7 +68,7 @@ export const handler = async (argv: Argv) => {
     let collMetadataRes;
     try {
         debug && console.debug(`Fetching JSON Schema from ${contractURI}`);
-        collMetadataRes = await fetchRetry(contractURI, { retryDelay: 200 });
+        collMetadataRes = await fetchRetry(contractURI, {retryDelay: 200});
     } catch (err) {
         console.error(`Fetch Collection JSON Schema failed`);
         throw err;
@@ -105,7 +104,7 @@ export const handler = async (argv: Argv) => {
 };
 
 const detachTopDown = async (
-    { provider, signers, network }: Deploy.RunTimeEnvironment,
+    {provider, signers, network}: Deploy.RunTimeEnvironment,
     rootContract: any,
     childContractAddr: string,
     tokenId: number,

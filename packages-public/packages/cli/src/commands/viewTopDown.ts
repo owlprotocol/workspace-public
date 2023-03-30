@@ -1,24 +1,23 @@
 import yargs from 'yargs';
 import lodash from 'lodash';
-import { Argv } from '../utils/pathHandlers.js';
+import {ethers} from 'ethers';
 
-import { ethers } from 'ethers';
+import {Artifacts} from '@owlprotocol/contracts';
+import {NFTGenerativeCollectionClass, NFTGenerativeItemInterface} from '@owlprotocol/nft-sdk';
 
-import { Artifacts } from '@owlprotocol/contracts';
-import { getNetworkCfg } from '../utils/networkCfg.js';
+import {Argv} from '../utils/pathHandlers.js';
+import {getNetworkCfg} from '../utils/networkCfg.js';
 
-const { mapValues } = lodash;
+const {mapValues} = lodash;
 
 let debug = false;
-
-import { NFTGenerativeCollectionClass, NFTGenerativeItemInterface } from '@owlprotocol/nft-sdk';
 
 export const command = 'viewTopDown';
 
 export const describe = `View an NFT's DNA and attributes, and that of its children.
 `;
 
-export const example = 'node dist/index.cjs viewTopDown -r <rootContractAddr> --tokenId=<id>';
+export const example = '$0 viewTopDown -r <rootContractAddr> --tokenId=<id>';
 export const exampleDescription =
     'view the DNA and attributes of the NFT at <rootContractAddr> with token id <id>, and that of its children';
 
@@ -44,7 +43,7 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 export const handler = async (argv: Argv) => {
     debug = !!argv.debug || false;
 
-    const { network, signers, provider } = getNetworkCfg();
+    const {network, signers, provider} = getNetworkCfg();
 
     console.log(`View ERC721TopDownDna ${argv.rootContractAddr} on ${network.name}`);
 

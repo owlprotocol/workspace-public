@@ -8,11 +8,7 @@ process.env.NODE_ENV = NODE_ENV;
 const envFilePath = `.env.${NODE_ENV}`;
 const envFile = path.resolve(process.cwd(), envFilePath);
 
-const dotenvResult = dotenv.config({ path: envFile, override: true });
-
-if (dotenvResult.error && (!process.env.NETWORK || (!process.env.HD_WALLET_MNEMONIC && !process.env.PRIVATE_KEY_0))) {
-    console.error(dotenvResult.error);
-}
+dotenv.config({path: envFile, override: true});
 
 // TODO: Since we are overriding, we should warn developer if something is overwritten
 export const NETWORK = process.env.NETWORK;

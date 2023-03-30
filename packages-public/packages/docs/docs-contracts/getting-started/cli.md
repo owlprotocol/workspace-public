@@ -16,7 +16,15 @@ This is a developer tool useful for:
 See our [Tutorials](/contracts/tutorials) for how we use the CLI
 :::
 
-> View the help with: `node dist/index.cjs --help`
+> View the help with: `owl-cli --help`
+
+---
+
+## Installation
+
+```bash
+npm install -g @owlprotocol/nft-sdk-cli
+```
 
 ---
 
@@ -24,14 +32,14 @@ See our [Tutorials](/contracts/tutorials) for how we use the CLI
 
 ### List commands
 ```
-node dist/index.cjs --help
+owl-cli --help
 ```
 
 ### generateSchemaJSON
 
 **Usage:**
 ```
-node dist/index.cjs generateJsonSchema <collectionJS> --project=projects/[folder]
+owl-cli generateJsonSchema <collectionJS> --project=projects/[folder]
 ```
 
 Generates the JSON Schema used by the **nft-sdk** to translate the on-chain data.
@@ -45,7 +53,7 @@ in one or more Typescript files.
 
 Then run `pnpm run build:projects`, to generate the required JS file.
 
-e.g. `node dist/index.cjs generateJsonSchema collections.js --project=projects/example-omo`
+e.g. `owl-cli generateJsonSchema collections.js --project=projects/example-omo`
 :::
 
 ---
@@ -54,7 +62,7 @@ e.g. `node dist/index.cjs generateJsonSchema collections.js --project=projects/e
 
 **Usage:**
 ```
-node dist/index.cjs generateItemNFT <nftItemJS> --project=projects/[folder]`
+owl-cli generateItemNFT <nftItemJS> --project=projects/[folder]`
 ```
 
 Generates an NFT Item's JSON with DNA attributes for minting.
@@ -69,5 +77,5 @@ Use this command if you know exactly what NFT attributes you want to mint.
 
 Run `pnpm run build:projects`, to generate the required NFT Item's JS file.
 
-e.g. `node dist/index.cjs generateItemNFT items/collection-item-1.js --project=projects/example-omo`
+e.g. `owl-cli generateItemNFT items/collection-item-1.js --project=projects/example-omo`
 :::

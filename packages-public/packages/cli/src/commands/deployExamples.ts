@@ -1,6 +1,8 @@
 import yargs from 'yargs';
-import { Deploy } from '@owlprotocol/contracts';
-import { getNetworkCfg } from '../utils/networkCfg.js';
+
+import {Deploy} from '@owlprotocol/contracts';
+
+import {getNetworkCfg} from '../utils/networkCfg.js';
 
 export const command = 'deployExamples';
 
@@ -15,23 +17,22 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
     });
 };
 
+export const example = '$0 deployExamples';
+export const exampleDescription = 'deploy example smart contracts';
+
 export const handler = async (argv: yargs.ArgumentsCamelCase) => {
     const debug = argv.debug || false;
 
-    const { network, signers, provider } = getNetworkCfg();
+    const {network, signers, provider} = getNetworkCfg();
 
     console.log(`Deploying Examples to ${network.name}`);
 
-    const deployExampleResult = await deployExamples({ provider, signers, network });
+    const deployExampleResult = await deployExamples({provider, signers, network});
     debug && console.debug(deployExampleResult);
 
     console.log('Done');
 };
 
-export const deployExamples = async ({
-    provider,
-    signers,
-    network,
-}: Deploy.RunTimeEnvironment): Promise<any> => {
-    return await Deploy.ExamplesDeploy({ provider, signers, network });
+export const deployExamples = async ({provider, signers, network}: Deploy.RunTimeEnvironment): Promise<any> => {
+    return await Deploy.ExamplesDeploy({provider, signers, network});
 };

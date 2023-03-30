@@ -8,11 +8,9 @@ import { SimpleGrid } from '@chakra-ui/react'
 
 # NFT Data Encoding - ERC721Dna
 
-:::info
-In this tutorial we will create an NFT for a **loyalty program** with a basic badge. See final code on [GitHub](https://github.com/owlprotocol/owlprotocol/tree/main/packages/cli/projects/example-loyalty).
+In this tutorial we will create an NFT for a **loyalty program** with a basic badge. See final code on [GitHub](https://github.com/owlprotocol/starter-cli/tree/main/projects/example-loyalty).
 
 ![loyalty-silver](/img/loyalty-silver.jpg)
-:::
 
 ## Tutorial
 
@@ -26,7 +24,7 @@ You have to use the **NFT-SDK** and a [JSON Schema](https://json-schema.org/) to
 
 ---
 
-## Step 1: Defining the data schema
+## Step 1: Define the data schema
 
 <SimpleGrid className="features-grid" columns={{sm: 2, md: 4}} spacing={8}>
     <Box>
@@ -66,9 +64,7 @@ For our loyalty program, we will use these traits:
 - Member ID
 - Status Tier
 - Points
-- Country
 - Sub Group
-- Last Transferred
 
 We will also have two image layers:
 
@@ -80,9 +76,28 @@ We recommend you to upload the image layers to IPFS for decentralization, or Git
 :::
 
 
+--- 
+
+## Step 2: Setup the project folder
+
+You will need to clone our [starter-cli](https://github.com/owlprotocol/starter-cli) repository, install the dependencies and create a folder for your project, say `my-example-loyalty`.
+
+```bash
+git@github.com:owlprotocol/starter-cli.git
+cd starter-cli
+
+# Note: npm is sufficent, but we recommend using pnpm
+pnpm install
+
+mkdir projects/my-example-loyalty
+cd projects/my-example-loyalty
+```
+
+This is recommended so that you can have a working `package.json`, and `tsconfig`.
+
 ---
 
-## Step 2: Implementing the traits and collection
+## Step 3: Implement the traits and collection
 
 To implement our schema we need to declare our traits and the collection class.
 
@@ -237,38 +252,54 @@ We use the `uint8` type default for a trait. This means that a trait can have `2
 
 ---
 
-## Step 3: Generate the JSON Schema using the [CLI Tool](/contracts/getting-started/cli)
+## Step 4: Generate the JSON Schema using the [CLI Tool](/contracts/getting-started/cli)
 
 We will now use the Owl Protocol command-line interface (CLI) to generate the JSON Schema.
 
-1. Build the CLI package in the [owlprotocol repository](https://github.com/owlprotocol/owlprotocol/tree/main/packages/cli), to generate the CLI.
+1. Install the CLI package in the [owlprotocol repository](https://github.com/owlprotocol/owlprotocol/tree/main/packages/cli)
 
 ```
+pnpm install -g @owlproject/nft-sdk-cli
+```
+
+2. Compile the `collections.ts` file
+
+In the `starter-cli` folder, you can run:
+```bash
 pnpm run build
 ```
+
+:::info
+Under the hood, this command runs:
+```bash
+tsc --project tsconfig.projects.json
+```
+:::
+
+This is needed as the CLI take a JavaScript file.
 
 3. Now invoke `generateJsonSchema` in the CLI. This will create the file that the **nft-sdk** needs to translate the on-chain data.
 
 ```
-node dist/index.cjs generateJsonSchema collections.js --projectFolder=projects/example-loyalty
+owl-cli generateJsonSchema collections.js --projectFolder=projects/my-example-loyalty
 ```
 
 This should output:
 
 ```
-getProjectSubfolder ~/owlprotocol/packages/cli/projects/example-loyalty/output
-Creating JSON(s) for collections.js to folder: ~/owlprotocol/packages/cli/projects/example-loyalty/output
-projects/example-loyalty collections.js
+getProjectSubfolder ~/starter-cli/projects/my-example-loyalty/output
+Creating JSON(s) for collections.js to folder: ~/starter-cli/projects/my-example-loyalty/output
+projects/my-example-loyalty collections.js
 Done
 ```
 
 > Ignore any warnings for `duplicate definition`.
 
-Now you should see a new folder in `projects/example-loyalty` called `output` with one JSON file: `collection-parent.json`
+Now you should see a new folder in `projects/my-example-loyalty` called `output` with one JSON file: `collection-parent.json`
 
 ---
 
-## Step 4: Upload the JSON Schema to IPFS.
+## Step 5: Upload the JSON Schema to IPFS.
 
 We use [Pinata](https://www.pinata.cloud/) for this tutorial, but you can upload the schema to any IPFS provider including your own.
 
@@ -281,7 +312,7 @@ Keep the IPFS hash handy. In this example, it is `QmXrpPT5KveNCcMHXdZiknnGiLbNve
 
 ---
 
-## Step 5: Declare collection information in the metadata file
+## Step 6: Declare collection information in the metadata file
 
 Create a file called `owlproject.json` in the project folder. This will contain metadata about the collection.
 
@@ -308,7 +339,7 @@ Ideally, `sdkApiEndpoint` should point to your own web app. For this tutorial, l
 
 ---
 
-## Step 6: Deploy and Mint the NFT
+## Step 7: Deploy and Mint the NFT
 
 :::tip
 For initial testing, prefer a local blockchain over a testnet. A local blockchain like Ganache is simpler and faster.
@@ -361,7 +392,7 @@ Docs are coming soon that explain this in depth, for now you can follow the depl
 If everything is set up properly, you can now run in the CLI folder:
 
 ```
-node dist/index.cjs deployTopDown --projectFolder=projects/example-loyalty --deployCommon=true --debug=true
+owl-cli deployTopDown --projectFolder=projects/my-example-loyalty --deployCommon=true --debug=true
 ```
 
 :::note
@@ -379,19 +410,19 @@ If the command succeeds you should see an output similar to:
 Deploying NFT: 1
 
 
-Minted ~/owl_protocol/workspace/packages-public/packages/cli/projects/example-loyalty/output/items/collection-item-1.json
+Minted ~/owl_protocol/workspace/packages-public/packages/cli/projects/my-example-loyalty/output/items/collection-item-1.json
 Mint: root at 0xa2B01e08CeD3b06051B59966B540BFe0B90b364c - tokenId: 1 & dna: 0x0000000f68bf01040101e2d01100016410eeb4
 Done
 ```
 
 ---
 
-## Step 9: View and Check the NFTs
+## Step 8: View and Check the NFTs
 
 You can use the `viewTopDown` command on the CLI to quickly view the NFT:
 
 ```bash
-node dist/index.cjs viewTopDown --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1
+owl-cli viewTopDown --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1
 ```
 
 The output should be similar to this:
@@ -404,9 +435,7 @@ NFT tokenId: 1 - owned by 0xa1eF58670368eCCB27EdC6609dea0fEFC5884f09
 And the following object:
 ```javascript
 {
-  'Last Transferred': 1678831284,
   'Sub Group': 'Yacht Club',
-  Country: 'Belgium',
   Points: 123600,
   'Tier Badge': {
     value: 'Silver',
@@ -423,12 +452,12 @@ And the following object:
 
 ---
 
-## Step 10: View the NFT image
+## Step 9: View the NFT image
 
 You can view the NFT image by passing in `--debug=true`:
 
 ```
-node dist/index.cjs viewTopDown --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1 --debug=true
+owl-cli viewTopDown --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1 --debug=true
 ```
 
 Which should show at the bottom:
@@ -440,7 +469,7 @@ This link will show the NFT Standard Metadata JSON:
 [https://metadata.owlprotocol.xyz/metadata/getMetadata/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj/AAAA...](https://metadata.owlprotocol.xyz/metadata/getMetadata/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATAAAAD2i_AQQBAeLQEQABZBDutAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==)
 
 ```json
-{"description":"Example from https://docs.owlprotocol.xyz/contracts/tutorials/nft-data","external_url":"https://docs.owlprotocol.xyz/contracts/tutorials/nft-data","image":"https://metadata.owlprotocol.xyz/metadata/getImage/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATAAAAD2i_AQQBAeLQEQABZBDutAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==","name":"Tutorial Example - Loyalty Program","attributes":[{"trait_type":"Last Transferred","value":1678831284},{"trait_type":"Sub Group","value":"Yacht Club"},{"trait_type":"Country","value":"Belgium"},{"trait_type":"Points","value":123600},{"trait_type":"Tier Badge","value":"Silver"},{"trait_type":"Background","value":"Tunnels"},{"trait_type":"Status Tier","value":"Silver"},{"trait_type":"Member ID","value":1009855}]}
+{"description":"Example from https://docs.owlprotocol.xyz/contracts/tutorials/nft-data","external_url":"https://docs.owlprotocol.xyz/contracts/tutorials/nft-data","image":"https://metadata.owlprotocol.xyz/metadata/getImage/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATAAAAD2i_AQQBAeLQEQABZBDutAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==","name":"Tutorial Example - Loyalty Program","attributes":["value":1678831284},{"trait_type":"Sub Group","value":"Yacht Club"},{"trait_type":"Points","value":123600},{"trait_type":"Tier Badge","value":"Silver"},{"trait_type":"Background","value":"Tunnels"},{"trait_type":"Status Tier","value":"Silver"},{"trait_type":"Member ID","value":1009855}]}
 ```
 
 :::info
@@ -451,7 +480,7 @@ Note the `image` field here will show you the actual image:
 
 ---
 
-## Step 11: Changing the NFT data
+## Step 10: Change the NFT data
 
 We can change the NFT's data by using the CLI's `updateDnaNFT` command.
 
@@ -460,16 +489,14 @@ We can change the NFT's data by using the CLI's `updateDnaNFT` command.
 There are two ways to use this command, the simplest is to change a single attribute:
 
 ````bash
-node dist/index.cjs updateDnaNFT --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1 --trait='Points' --attr=170555
+owl-cli updateDnaNFT --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1 --trait='Points' --attr=170555
 ```
 
 This will give you:
 
 ```javascript
 {
-  'Last Transferred': 1678831284,
   'Sub Group': 'Yacht Club',
-  Country: 'Belgium',
   Points: 170555,
   'Tier Badge': {
     value: 'Silver',
@@ -497,7 +524,7 @@ You can also pass in a JSON file to update multiple traits as such:
 ```
 
 ```bash
-node dist/index.cjs updateDnaNFT --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1 --json=projects/example-loyalty/exampleUpdateDnaNFT.json
+owl-cli updateDnaNFT --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1 --json=projects/my-example-loyalty/exampleUpdateDnaNFT.json
 ```
 
 :::
@@ -505,7 +532,7 @@ node dist/index.cjs updateDnaNFT --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b36
 Now if we view the NFT:
 
 ```
-node dist/index.cjs viewTopDown --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1 --debug=true
+owl-cli viewTopDown --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1 --debug=true
 ```
 
 The command returns an `image` field with:

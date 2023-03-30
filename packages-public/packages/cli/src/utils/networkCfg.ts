@@ -1,10 +1,16 @@
 import fs from 'fs';
 import ethers from 'ethers';
-import { Deploy } from '@owlprotocol/contracts';
+import {Deploy} from '@owlprotocol/contracts';
 
-import { HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0 } from './environment.js';
+import {HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0} from './environment.js';
 
-export const getNetworkCfg = (network: string = NETWORK!, networksFilePath: string = './networks.json') => {
+export const getNetworkCfg = (networksFilePath: string = './networks.json') => {
+    if (NETWORK == undefined) {
+        throw new Error('NETWORK environment variable not set');
+    }
+
+    const network = NETWORK!;
+
     let networksFile: string;
 
     networksFile = fs.readFileSync(networksFilePath).toString();

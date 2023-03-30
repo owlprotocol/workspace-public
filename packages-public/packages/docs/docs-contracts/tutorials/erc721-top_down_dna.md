@@ -8,6 +8,8 @@ import { SimpleGrid } from '@chakra-ui/react'
 
 # DNA Image Layers - ERC721TopDownDna
 
+In this tutorial we will create an NFT with a detachable hat. See final code on [GitHub](https://github.com/owlprotocol/starter-cli/tree/main/projects/example-omo).
+
 ## Tutorial
 
 The [ERC721TopDownDna.sol](https://github.com/owlprotocol/owlprotocol/blob/main/packages/contracts/contracts/assets/ERC721/ERC721TopDownDna.sol) smart contract combines two of our primary features:
@@ -136,11 +138,28 @@ We'll also encode into the DNA/on-chain data of the NFT an `enum` **Vibe**, whic
 - Boring
 - Eccentric
 
+--- 
+
+## Step 2: Setup the project folder
+
+You will need to clone our [starter-cli](https://github.com/owlprotocol/starter-cli) repository, install the dependencies and create a folder for your project, say `my-example-omo`.
+
+```bash
+git@github.com:owlprotocol/starter-cli.git
+cd starter-cli
+
+# Note: npm is sufficent, but we recommend using pnpm
+pnpm install
+
+mkdir projects/my-example-omo
+cd projects/my-example-omo
+```
+
+This is recommended so that you can have a working `package.json`, and `tsconfig`.
+
 ---
 
-## Step 2: Setup the project and declare the traits in JavaScript
-
-We will be using the [CLI Tool](/contracts/getting-started/cli) for this. Firstly, set up a project folder under the CLI package. For example, the final project is under `/cli/projects/example-omo`.
+## Step 3: Declare the traits in JavaScript
 
 For the `traits` in this example we will use the `nft-sdk` to instantiate an [NFTGenerativeCollectionClass](https://github.com/owlprotocol/owlprotocol/blob/main/packages/nft-sdk/src/classes/NFTGenerativeCollection/NFTGenerativeCollectionClass.ts) and use the CLI
 tool to generate the **JSON Schema**, which we upload to IPFS.
@@ -186,7 +205,7 @@ export const traitImageBg: NFTGenerativeTraitImage = {
 [...]
 ```
 
-See `traits.ts` on [GitHub](https://github.com/owlprotocol/owlprotocol/blob/tutorial-example-omo/packages/cli/src/projects/example-omo/traits.ts)
+See `traits.ts` on [GitHub](https://github.com/owlprotocol/owlprotocol/blob/main/packages/cli/projects/example-omo/traits.ts)
 
 :::info
 `probabilities` are normalized, correspond in order with the values, and there must be as many probabilities as values.
@@ -206,7 +225,7 @@ We will then define a collection that uses these traits.
 
 ---
 
-## Step 3: Create the `collection.ts` that connects the traits and collection:
+## Step 4: Create the `collection.ts` that connects the traits and collection:
 
 ### `collection.ts`
 ```typescript
@@ -274,7 +293,7 @@ export const collExample = NFTGenerativeCollectionClass.fromData(collNestedDef) 
 export default collExample;
 ```
 
-See `collection.ts` on [GitHub](https://github.com/owlprotocol/owlprotocol/blob/tutorial-example-omo/packages/cli/src/projects/example-omo/collection.ts)
+See `collection.ts` on [GitHub](https://github.com/owlprotocol/owlprotocol/blob/main/packages/cli/projects/example-omo/collection.ts)
 
 :::caution
 The trait key must be the same as the trait name and is case sensitive.
@@ -284,54 +303,64 @@ For example, `traitImageBg` has the trait key `Background` capitalized. Therefor
 
 ---
 
-## Step 4: Generate the JSON Schema
+## Step 5: Generate the JSON Schema using the [CLI Tool](/contracts/getting-started/cli)
 
-The **JSON Schema** is used to interpret and translate the on-chain DNAto data that can be rendered or executed.
+The **JSON Schema** is used to interpret and translate the on-chain DNA to data that can be rendered or executed.
 
 > We believe storing the on-chain data in a single binary encoded format is ideal because it minimizes the number of esoteric methods on the smart contract. Rather we leave it up to the client to interpret and parse the schema.
 
 :::info
-This is not to confused with the **Metadata JSON**, which is what NFT Marketplaces use to describe the NFT.
+This is not to be confused with the **Metadata JSON**, which is what NFT Marketplaces use to describe the NFT.
 :::
 
 ### Using the CLI to Generate the JSON Schema
 
-1. First make sure you have a `.env.development` file, for this step it's fine to just copy the included `.env.example` file.
+1. Install the CLI package in the [owlprotocol repository](https://github.com/owlprotocol/owlprotocol/tree/main/packages/cli).
 
 ```
-cp .env.example .env.development
+pnpm install -g @owlproject/nft-sdk-cli
 ```
 
-2. Then build the CLI package, to generate the JS files we execute.
+2. Compile the `collections.ts` file
 
-```
+In the `starter-cli` folder, you can run:
+```bash
 pnpm run build
 ```
 
-3. Now call the `generateJsonSchema` command on the CLI Tool. We're building the index JS file to `lib/esm/index.js` for now (this will be changed to dist soon).
+:::info
+Under the hood, this command runs:
+```bash
+tsc --project tsconfig.projects.json
+```
+:::
+
+This is needed as the CLI take a JavaScript file.
+
+3. Now call the `generateJsonSchema` command on the CLI Tool.
 
 ```
-node dist/index.cjs generateJsonSchema collections.js --projectFolder=projects/example-omo
+owl-cli generateJsonSchema collections.js --projectFolder=projects/my-example-omo
 ```
 
 Which should output:
 
 ```
-getProjectSubfolder ~/owl_protocol/owlprotocol/packages/cli/projects/example-omo/output
-Creating JSON(s) for collections.js to folder: ~/owl_protocol/owlprotocol/packages/cli/projects/example-omo/output
-projects/example-omo collections.js
+getProjectSubfolder ~/starter-cli/projects/my-example-omo/output
+Creating JSON(s) for collections.js to folder: ~/start-cli/projects/my-example-omo/output
+projects/my-example-omo collections.js
 Done
 ```
 
 > Ignore any warnings for `duplicate definition`.
 
-Now you should see a new folder in `projects/example-omo` called `output`, and with two JSON files:
+Now you should see a new folder in `projects/my-example-omo` called `output`, and with two JSON files:
 - collection-parent.json
 - collection-child-Hats.json
 
 ---
 
-## Step 5: Upload the JSON Schemas to IPFS
+## Step 6: Upload the JSON Schemas to IPFS
 
 We use [Pinata](https://www.pinata.cloud/) for this tutorial, but you can upload the schema to any IPFS provider including your own.
 
@@ -352,12 +381,12 @@ Keep the IPFS hashes handy. In this example, they are:
 
 ---
 
-## Step 6: Generate a few NFTs
+## Step 7: Generate a few NFTs
 
 To generate NFTs, use the CLI command: `generateRandomNFT`:
 
 ```
-node dist/index.cjs generateRandomNFT collections.js 3 --project=projects/example-omo
+owl-cli generateRandomNFT collections.js 3 --project=projects/my-example-omo
 ```
 
 This will generate 3 items in the subfolder `output/items` of the project folder with their respective DNAs.
@@ -370,7 +399,7 @@ See `createFromFullDna` in [NFTGenerativeCollectionClass](https://github.com/owl
 
 ---
 
-## Step 7: Declare collection information in the metadata file
+## Step 8: Declare collection information in the metadata file
 
 Create a file called `owlproject.json` in the project folder. This will contain metadata about the collection.
 
@@ -411,7 +440,7 @@ Ideally, `sdkApiEndpoint` should point to your own web app. For this tutorial, l
 
 ---
 
-## Step 8: Deploy and mint NFTs
+## Step 9: Deploy and mint NFTs
 
 :::tip
 For initial testing, prefer a local blockchain over a testnet. A local blockchain like Ganache is simpler and faster.
@@ -464,7 +493,7 @@ Docs are coming soon that explain this in depth, for now you can follow the depl
 If everything is set up properly, you can now run:
 
 ```
-node dist/index.cjs deployTopDown --projectFolder=projects/example-omo --deployCommon=true --debug=true
+owl-cli deployTopDown --projectFolder=projects/my-example-omo --deployCommon=true --debug=true
 ```
 
 :::note
@@ -478,7 +507,7 @@ At this point make sure you have the following:
 
 If the command succeeds you should see an output similar to:
 ```
-Minted /Users/clarencel/owl_protocol/owlprotocol/packages/cli/src/projects/example-omo/output/items/collection-item-1.json
+Minted ~/start-cli/projects/my-example-omo/output/items/collection-item-1.json
 Mint: Hats at 0x91a4Df19DE444cDA86ef24f61A6190838Cec2b22 - tokenId: 1 & dna: 0x00
 Mint: root at 0xe3f62b8f72E49e75081B991685AeA19dd783b44a - tokenId: 1 & dna: 0x000101
 ```
@@ -514,12 +543,12 @@ Also the NFT item JSON files will be updated to track the deployment:
 
 ---
 
-## Step 9: View and check the NFTs
+## Step 10: View and check the NFTs
 
 You can use the `viewTopDown` command on the CLI to quickly view the NFT:
 
 ```bash
-node dist/index.cjs viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a --tokenId=1
+owl-cli viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a --tokenId=1
 ```
 
 The output should be similar to this:
@@ -560,7 +589,7 @@ This will call the NFT contract's `tokenURI` method, which is that a NFT Marketp
 would typically call.
 
 ```bash
-node dist/index.cjs viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a --tokenId=1 --debug
+owl-cli viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a --tokenId=1 --debug
 ```
 
 The output at the end shows:
@@ -616,12 +645,12 @@ Which is this image:
 
 ---
 
-## Step 10: Detaching the hat
+## Step 11: Detach the hat
 
 We use the `detachTopDown` command to remove/detach the NFT:
 
 ```bash
-node dist/index.cjs detachTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a -c 0x91a4Df19DE444cDA86ef24f61A6190838Cec2b22 --tokenId=1
+owl-cli detachTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a -c 0x91a4Df19DE444cDA86ef24f61A6190838Cec2b22 --tokenId=1
 ```
 
 Outputs:
@@ -647,7 +676,7 @@ Fetching Metadata JSON Schema from: https:/leovigna.mypinata.cloud/ipfs/Qmc7Aih1
 Now let's view the NFT again:
 
 ```
-node dist/index.cjs viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a  --tokenId=1 --debug
+owl-cli viewTopDown --root=0xe3f62b8f72E49e75081B991685AeA19dd783b44a  --tokenId=1 --debug
 ```
 
 This gives us different the `tokenUri`. Notice that the image is simply accessible via the `/getImage` path instead of `/getMetadata`.

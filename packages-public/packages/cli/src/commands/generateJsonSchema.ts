@@ -4,11 +4,11 @@ import path from 'path';
 import lodash from 'lodash';
 import check from 'check-types';
 
-const { mapValues } = lodash;
+import {NFTGenerativeCollectionClass} from '@owlprotocol/nft-sdk';
 
-import { NFTGenerativeCollectionClass } from '@owlprotocol/nft-sdk';
+import {Argv, getProjectSubfolder, importCollectionClass} from '../utils/pathHandlers.js';
 
-import { Argv, getProjectFolder, getProjectSubfolder, importCollectionClass } from '../utils/pathHandlers.js';
+const {mapValues} = lodash;
 
 export const command = 'generateJsonSchema <collectionJS>';
 
@@ -16,7 +16,7 @@ export const describe = `Generate the JSON Schema from the default export of the
 The <collectionJS> file is relative to the required project folder option.
 `;
 
-export const example = `node dist/index.cjs generateJsonSchema collections.js --project=projects/example-omo`;
+export const example = `$0 generateJsonSchema collections.js --project=projects/example-omo`;
 export const exampleDescription = 'generate the JSON Schema of the collection at "projects/example-omo/collections.js"';
 
 // TODO: override path options

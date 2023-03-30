@@ -2,7 +2,8 @@ import yargs from 'yargs';
 import path from 'path';
 import check from 'check-types';
 import fs from 'fs';
-import { Argv, getProjectSubfolder, importCollectionClass } from '../utils/pathHandlers.js';
+
+import {Argv, getProjectSubfolder, importCollectionClass} from '../utils/pathHandlers.js';
 
 let debug = false;
 
@@ -13,7 +14,7 @@ Outputs to the folder "./output/items/" relative to the "projectFolder".
 <itemJS> - path to the NFT item file, relative to the "projectFolder"
 `;
 
-export const example = 'node dist/index.cjs generateItemNFT <itemJS> --projectFolder=<projectDir>';
+export const example = '$0 generateItemNFT <itemJS> --projectFolder=<projectDir>';
 export const exampleDescription = 'generate the JSON Schema of the NFT item at "<projectDir>/<itemJS>"';
 
 export const builder = (yargs: ReturnType<yargs.Argv>) => {
@@ -35,7 +36,7 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 };
 
 // TODO: this should have an option to import from JSON Schema
-export const handler = async (argv: Argv & { itemJS?: string }) => {
+export const handler = async (argv: Argv & {itemJS?: string}) => {
     argvCheck(argv);
 
     debug = !!argv.debug || false;
