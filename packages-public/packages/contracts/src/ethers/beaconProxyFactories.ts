@@ -32,7 +32,7 @@ export function getBeaconProxyFactories(
             cloneFactory,
             msgSender,
             beaconAddress,
-            initSignature: "proxyInitialize",
+            initSignature: "initialize",
         });
     }) as any as ProxyInitializeFactories;
 }

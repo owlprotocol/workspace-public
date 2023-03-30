@@ -1,5 +1,5 @@
 {
-  "address": "0x25Ea411B98097cB523f2d42b7c535D172A9975aE",
+  "address": "0x58eA40d46c1b27fE47e378D26F149622387C4FA3",
   "abi": [
     {
       "inputs": [],
@@ -932,64 +932,6 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "_admin",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "_initContractURI",
-          "type": "string"
-        },
-        {
-          "internalType": "address",
-          "name": "_gsnForwarder",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "_name",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "_symbol",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "_initBaseURI",
-          "type": "string"
-        },
-        {
-          "internalType": "address",
-          "name": "_feeReceiver",
-          "type": "address"
-        },
-        {
-          "internalType": "uint96",
-          "name": "_feeNumerator",
-          "type": "uint96"
-        },
-        {
-          "internalType": "address[]",
-          "name": "_childContracts721",
-          "type": "address[]"
-        },
-        {
-          "internalType": "address[]",
-          "name": "_childContracts1155",
-          "type": "address[]"
-        }
-      ],
-      "name": "proxyInitialize",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "bytes32",
           "name": "role",
           "type": "bytes32"
@@ -1429,5 +1371,5 @@
       "type": "function"
     }
   ],
-  "numDeployments": 1
+  "numDeployments": 2
 }

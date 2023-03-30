@@ -17,7 +17,7 @@ const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironmen
             const { abi } = await deployments.getExtendedArtifact(k);
 
             const submission = await getOrNull(k + "Beacon");
-            if (!submission?.numDeployments) {
+            if (submission?.address != address) {
                 return save(k + "Beacon", {
                     address,
                     //args: [],

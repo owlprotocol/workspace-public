@@ -16,7 +16,7 @@ const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironmen
             const { abi } = await deployments.getExtendedArtifact(k);
 
             const submission = await getOrNull(k + "Implementation");
-            if (!submission?.numDeployments) {
+            if (submission?.address != address) {
                 //Bloat
                 return save(k + "Implementation", {
                     address,

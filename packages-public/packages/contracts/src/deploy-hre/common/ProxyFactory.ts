@@ -16,7 +16,7 @@ const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironmen
     //TODO: Add back additional artifact info for verification?
     const { save, getOrNull } = deployments;
     const submission = await getOrNull(ProxyFactoryDeploy.tags[0]);
-    if (!submission?.numDeployments) {
+    if (submission?.address != cloneFactory.address) {
         await save(ProxyFactoryDeploy.tags[0], {
             address: cloneFactory.address,
             //args: [],

@@ -31,7 +31,7 @@ const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironmen
 
     const { save, getOrNull } = deployments;
     const submission = await getOrNull(DeterministicDeployerDeploy.tags[0]);
-    if (!submission?.numDeployments) {
+    if (submission?.address != address) {
         await save(DeterministicDeployerDeploy.tags[0], { address, abi: [] });
     }
 

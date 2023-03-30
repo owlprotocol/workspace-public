@@ -14,7 +14,7 @@ const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironmen
 
     const { save, getOrNull } = deployments;
     const submission = await getOrNull(ERC1820Deploy.tags[0]);
-    if (!submission?.numDeployments) {
+    if (submission?.address != address) {
         await save(ERC1820Deploy.tags[0], { address, abi: IERC1820Registry.abi });
     }
 

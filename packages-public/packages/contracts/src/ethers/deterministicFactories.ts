@@ -20,7 +20,7 @@ export type InitializeFactories = {
 };
 
 export type ProxyInitializeFactories = {
-    [K in keyof F_ProxyInitialize]: CustomFactory<ReturnType<F_ProxyInitialize[K]["attach"]>, "proxyInitialize">;
+    [K in keyof F_ProxyInitialize]: CustomFactory<ReturnType<F_ProxyInitialize[K]["attach"]>, "initialize">;
 };
 
 export function getDeterministicFactories(factories: Factories): NoInitFactories {

@@ -50,7 +50,7 @@ const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironmen
     await Promise.all(
         Object.entries(results).map(async ([k, v]) => {
             const submission = await getOrNull(k);
-            if (!submission?.numDeployments) {
+            if (submission?.address != v.address) {
                 return save(k, { address: v.address, abi: IAssetRouterOutput.abi });
             }
         }),
