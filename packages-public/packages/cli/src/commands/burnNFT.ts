@@ -1,10 +1,10 @@
 import yargs from 'yargs';
-import {ethers} from 'ethers';
+import { ethers } from 'ethers';
 
-import {Artifacts} from '@owlprotocol/contracts';
+import { Artifacts } from '@owlprotocol/contracts';
 
-import {Argv} from '../utils/pathHandlers.js';
-import {getNetworkCfg} from '../utils/networkCfg.js';
+import { Argv } from '../utils/pathHandlers.js';
+import { getNetworkCfg } from '../utils/networkCfg.js';
 
 let debug = false;
 
@@ -39,7 +39,7 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 export const handler = async (argv: Argv) => {
     debug = !!argv.debug || false;
 
-    const {network, signers} = getNetworkCfg();
+    const { network, signers } = getNetworkCfg();
 
     console.log(`Burn ERC721TopDownDnaMintable ${argv.contractAddr} with tokenId: ${argv.tokenId} on ${network.name}`);
 

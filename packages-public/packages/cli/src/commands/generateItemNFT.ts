@@ -3,7 +3,7 @@ import path from 'path';
 import check from 'check-types';
 import fs from 'fs';
 
-import {Argv, getProjectSubfolder, importCollectionClass} from '../utils/pathHandlers.js';
+import { Argv, getProjectSubfolder, importCollectionClass } from '../utils/pathHandlers.js';
 
 let debug = false;
 
@@ -36,7 +36,7 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 };
 
 // TODO: this should have an option to import from JSON Schema
-export const handler = async (argv: Argv & {itemJS?: string}) => {
+export const handler = async (argv: Argv & { itemJS?: string }) => {
     argvCheck(argv);
 
     debug = !!argv.debug || false;

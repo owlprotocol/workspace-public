@@ -1,8 +1,8 @@
 import fs from 'fs';
 import ethers from 'ethers';
-import {Deploy} from '@owlprotocol/contracts';
+import { Deploy } from '@owlprotocol/contracts';
 
-import {HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0} from './environment.js';
+import { HD_WALLET_MNEMONIC, NETWORK, PRIVATE_KEY_0 } from './environment.js';
 
 export const getNetworkCfg = (networksFilePath: string = './networks.json') => {
     if (NETWORK == undefined) {
@@ -44,5 +44,5 @@ export const getNetworkCfg = (networksFilePath: string = './networks.json') => {
     }
     signers[0] = signers[0].connect(provider);
 
-    return {network: networkCfg, signers, provider};
-}
+    return { network: networkCfg, signers, provider };
+};

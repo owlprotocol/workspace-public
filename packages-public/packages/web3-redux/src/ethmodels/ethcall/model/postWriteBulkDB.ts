@@ -254,6 +254,7 @@ export async function postWriteBulkDBEthCall(items: EthCall[]): Promise<any> {
                 if (
                     methodFormatFull ===
                     interfaces.IAssetRouterInput.interface
+                        //@ts-ignore
                         .getFunction("getOutputBasket")
                         .format(utils.FormatTypes.full)
                         .replace("function ", "")

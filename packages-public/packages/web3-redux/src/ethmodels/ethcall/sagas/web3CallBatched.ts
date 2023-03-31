@@ -27,6 +27,7 @@ export function* web3CallBatchedSaga(action: Web3CallBatchedAction): Generator<a
             networkId,
             to,
             data: callData,
+            //@ts-ignore
             methodFormatFull: IMulticall2Interface.functions["aggregate(tuple[])"].format(utils.FormatTypes.full),
         };
 

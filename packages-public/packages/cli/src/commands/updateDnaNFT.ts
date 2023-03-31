@@ -4,13 +4,13 @@ import path from 'path';
 import yargs from 'yargs';
 import _ from 'lodash';
 import fetchRetryWrapper from 'fetch-retry';
-import {ethers} from 'ethers';
+import { ethers } from 'ethers';
 
-import {Artifacts} from '@owlprotocol/contracts';
-import {NFTGenerativeCollectionClass, NFTGenerativeItemInterface} from '@owlprotocol/nft-sdk';
+import { Artifacts } from '@owlprotocol/contracts';
+import { NFTGenerativeCollectionClass, NFTGenerativeItemInterface } from '@owlprotocol/nft-sdk';
 
-import {Argv} from '../utils/pathHandlers.js';
-import {getNetworkCfg} from '../utils/networkCfg.js';
+import { Argv } from '../utils/pathHandlers.js';
+import { getNetworkCfg } from '../utils/networkCfg.js';
 
 const fetchRetry = fetchRetryWrapper(fetch);
 let debug = false;
@@ -61,7 +61,7 @@ export const handler = async (argv: Argv) => {
     argvCheck(argv);
     debug = !!argv.debug || false;
 
-    const {network, signers} = getNetworkCfg();
+    const { network, signers } = getNetworkCfg();
 
     console.log(`View ERC721TopDownDna ${argv.rootContractAddr} on ${network.name}`);
 
@@ -74,7 +74,7 @@ export const handler = async (argv: Argv) => {
     let collMetadataRes;
     try {
         debug && console.debug(`Fetching JSON Schema from ${contractURI}`);
-        collMetadataRes = await fetchRetry(contractURI, {retryDelay: 200});
+        collMetadataRes = await fetchRetry(contractURI, { retryDelay: 200 });
     } catch (err) {
         console.error(`Fetch Collection JSON Schema failed`);
         throw err;

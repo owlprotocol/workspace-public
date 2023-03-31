@@ -26,6 +26,7 @@ type InitialParameters<F extends (...args: any) => any> = Wrap<Parameters<F>> ex
     : never;
 
 //https://stackoverflow.com/questions/44851268/typescript-how-to-extract-the-generic-parameter-from-a-type
+//@ts-ignore
 type extractTypedEventFilterArgs<T extends TypedEventFilter<any, any>> = T extends TypedEventFilter<
     infer ArgsArr,
     infer ArgsObj

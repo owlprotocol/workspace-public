@@ -8,7 +8,7 @@ process.env.NODE_ENV = NODE_ENV;
 const envFilePath = `.env.${NODE_ENV}`;
 const envFile = path.resolve(process.cwd(), envFilePath);
 
-dotenv.config({path: envFile, override: true});
+dotenv.config({ path: envFile, override: true });
 
 // TODO: Since we are overriding, we should warn developer if something is overwritten
 export const NETWORK = process.env.NETWORK;

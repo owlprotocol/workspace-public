@@ -4,11 +4,11 @@ import path from 'path';
 import lodash from 'lodash';
 import check from 'check-types';
 
-import {NFTGenerativeCollectionClass} from '@owlprotocol/nft-sdk';
+import { NFTGenerativeCollectionClass } from '@owlprotocol/nft-sdk';
 
-import {Argv, getProjectSubfolder, importCollectionClass} from '../utils/pathHandlers.js';
+import { Argv, getProjectSubfolder, importCollectionClass } from '../utils/pathHandlers.js';
 
-const {mapValues} = lodash;
+const { mapValues } = lodash;
 
 export const command = 'generateJsonSchema <collectionJS>';
 

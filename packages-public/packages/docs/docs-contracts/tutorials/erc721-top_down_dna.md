@@ -138,7 +138,7 @@ We'll also encode into the DNA/on-chain data of the NFT an `enum` **Vibe**, whic
 - Boring
 - Eccentric
 
---- 
+---
 
 ## Step 2: Setup the project folder
 
@@ -489,6 +489,43 @@ Docs are coming soon that explain this in depth, for now you can follow the depl
 -->
 
 ### Deploy contracts and mint NFTs
+
+We will define an NFT instance (or item):
+
+Add the following file to the `items` folder in your project folder:
+`collection-item-1.ts`
+```typescript
+import { collExampleLoyalty } from '../collections.js';
+
+const nftItem = collExampleLoyalty.create({
+    attributes: {
+        'Member ID': 1009855,
+        'Status Tier': 'Silver',
+        Background: 'Dark',
+        'Tier Badge': 'Silver',
+        Points: 123600,
+        'Sub Group': 'Yacht Club',
+    },
+});
+
+export default nftItem;
+```
+
+Now, run the build process to compile the file into JavaScript:
+```bash
+pnpm run build
+```
+
+We then need to generate the NFT's JSON schema. From the `start-cli` folder, run:
+```bash
+owl-cli generateItemNFT items/collection-item-1.js --projectFolder projects/my-example-loyalty
+```
+
+This will output the NFT's JSON schema to `projects/my-example-loyalty/output/items/`.
+
+Check it out for yourself!
+
+---
 
 If everything is set up properly, you can now run:
 

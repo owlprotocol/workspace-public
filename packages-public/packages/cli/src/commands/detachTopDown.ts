@@ -1,15 +1,15 @@
 import yargs from 'yargs';
 import lodash from 'lodash';
-import {ethers, utils} from 'ethers';
+import { ethers, utils } from 'ethers';
 import fetchRetryWrapper from 'fetch-retry';
 
-import {Utils, Deploy, Artifacts} from '@owlprotocol/contracts';
-import {NFTGenerativeCollectionClass} from '@owlprotocol/nft-sdk';
+import { Utils, Deploy, Artifacts } from '@owlprotocol/contracts';
+import { NFTGenerativeCollectionClass } from '@owlprotocol/nft-sdk';
 
-import {Argv} from '../utils/pathHandlers.js';
-import {getNetworkCfg} from '../utils/networkCfg.js';
+import { Argv } from '../utils/pathHandlers.js';
+import { getNetworkCfg } from '../utils/networkCfg.js';
 
-const {mapValues} = lodash;
+const { mapValues } = lodash;
 const fetchRetry = fetchRetryWrapper(fetch);
 
 let debug = false;
@@ -50,7 +50,7 @@ export const handler = async (argv: Argv) => {
     // TODO: consider LOG_LEVEL
     debug = !!argv.debug || false;
 
-    const {network, signers, provider} = getNetworkCfg();
+    const { network, signers, provider } = getNetworkCfg();
 
     console.log(`Detaching from ERC721TopDownDna on ${network.name}`);
 
@@ -60,7 +60,7 @@ export const handler = async (argv: Argv) => {
 
     const rootContract = new ethers.Contract(rootContractAddr, Artifacts.ERC721TopDownDna.abi, signers[0]);
 
-    await detachTopDown({provider, signers, network}, rootContract, childContractAddr, tokenId);
+    await detachTopDown({ provider, signers, network }, rootContract, childContractAddr, tokenId);
 
     const fullDna = await rootContract.getDna(tokenId);
     const contractURI = await rootContract.contractURI();
@@ -68,7 +68,7 @@ export const handler = async (argv: Argv) => {
     let collMetadataRes;
     try {
         debug && console.debug(`Fetching JSON Schema from ${contractURI}`);
-        collMetadataRes = await fetchRetry(contractURI, {retryDelay: 200});
+        collMetadataRes = await fetchRetry(contractURI, { retryDelay: 200 });
     } catch (err) {
         console.error(`Fetch Collection JSON Schema failed`);
         throw err;
@@ -104,7 +104,7 @@ export const handler = async (argv: Argv) => {
 };
 
 const detachTopDown = async (
-    {provider, signers, network}: Deploy.RunTimeEnvironment,
+    { provider, signers, network }: Deploy.RunTimeEnvironment,
     rootContract: any,
     childContractAddr: string,
     tokenId: number,

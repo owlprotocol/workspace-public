@@ -4,11 +4,11 @@ import check from 'check-types';
 import lodash from 'lodash';
 import fs from 'fs';
 
-import {NFTGenerativeItemClass} from '@owlprotocol/nft-sdk';
+import { NFTGenerativeItemClass } from '@owlprotocol/nft-sdk';
 
-import {Argv, getProjectSubfolder, importCollectionClass} from '../utils/pathHandlers.js';
+import { Argv, getProjectSubfolder, importCollectionClass } from '../utils/pathHandlers.js';
 
-const {map} = lodash;
+const { map } = lodash;
 
 let debug = false;
 
@@ -38,7 +38,7 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 };
 
 // TODO: this should have an option to import from JSON Schema
-export const handler = async (argv: Argv & {numItems?: number}) => {
+export const handler = async (argv: Argv & { numItems?: number }) => {
     argvCheck(argv);
 
     debug = !!argv.debug || false;
@@ -54,7 +54,7 @@ export const handler = async (argv: Argv & {numItems?: number}) => {
 
     const collParent = nftGenerativeCollectionExport.default;
     const numItems: number = <number>argv.numItems;
-    const nftItems: Array<NFTGenerativeItemClass> = Array.from({length: numItems}, () =>
+    const nftItems: Array<NFTGenerativeItemClass> = Array.from({ length: numItems }, () =>
         collParent.generateInstance(),
     );
 

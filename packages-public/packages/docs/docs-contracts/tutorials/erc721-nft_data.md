@@ -76,7 +76,7 @@ We recommend you to upload the image layers to IPFS for decentralization, or Git
 :::
 
 
---- 
+---
 
 ## Step 2: Setup the project folder
 
@@ -362,7 +362,7 @@ ganache --wallet.mnemonic "test test test test test test test test test test tes
 Do not use this mnemonic for production!
 :::
 
-3. Double check to ensure that the `accounts` in the CLI config (`cli/config/default.json`) match the first two accounts shown by `ganache`, and that `NETWORK` is set to `ganache`.
+3. Double check to ensure that the `accounts` in the CLI network config (`networks.json`) match the first two accounts shown by `ganache`, and that `NETWORK` is set to `ganache`.
 
 :::tip Using a Private Key
 We also support using a single **private key**.
@@ -401,7 +401,7 @@ This will deploy and mint all NFT JSONs in the project's `/output/items` folder.
 
 At this point make sure you have the following:
 - A JSON Schema uploaded to IPFS, and the corresponding IPFS hash in the `owlproject.json` file.
-- The network configured properly in `.env.development` file and `cli/config/default.json`.
+- The network configured properly in `.env.development` file and `networks.json`.
 - JSONs files of the NFTs you will mint in `output/items`.
 
 
@@ -410,8 +410,8 @@ If the command succeeds you should see an output similar to:
 Deploying NFT: 1
 
 
-Minted ~/owl_protocol/workspace/packages-public/packages/cli/projects/my-example-loyalty/output/items/collection-item-1.json
-Mint: root at 0xa2B01e08CeD3b06051B59966B540BFe0B90b364c - tokenId: 1 & dna: 0x0000000f68bf01040101e2d01100016410eeb4
+Minted ~/starter-cli/projects/my-example-loyalty/output/items/collection-item-1.json
+Mint: root at 0xfa737b19Dc58b3604fbBBEBD2ACE599a00449D2f - tokenId: 1 & dna: 0x0000000f68bf01020101e2d00001
 Done
 ```
 
@@ -422,12 +422,12 @@ Done
 You can use the `viewTopDown` command on the CLI to quickly view the NFT:
 
 ```bash
-owl-cli viewTopDown --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1
+owl-cli viewTopDown --root=0xfa737b19Dc58b3604fbBBEBD2ACE599a00449D2f --tokenId=1
 ```
 
 The output should be similar to this:
 ```
-View ERC721TopDownDna 0xa2B01e08CeD3b06051B59966B540BFe0B90b364c on ganache
+View ERC721TopDownDna 0xfa737b19Dc58b3604fbBBEBD2ACE599a00449D2f on ganache
 Fetching Metadata JSON Schema from: https://leovigna.mypinata.cloud/ipfs/QmXrpPT5KveNCcMHXdZiknnGiLbNveoccpD7FmagxgtQbj
 NFT tokenId: 1 - owned by 0xa1eF58670368eCCB27EdC6609dea0fEFC5884f09
 ```
@@ -457,7 +457,7 @@ And the following object:
 You can view the NFT image by passing in `--debug=true`:
 
 ```
-owl-cli viewTopDown --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1 --debug=true
+owl-cli viewTopDown --root=0xfa737b19Dc58b3604fbBBEBD2ACE599a00449D2f --tokenId=1 --debug=true
 ```
 
 Which should show at the bottom:
@@ -489,7 +489,7 @@ We can change the NFT's data by using the CLI's `updateDnaNFT` command.
 There are two ways to use this command, the simplest is to change a single attribute:
 
 ````bash
-owl-cli updateDnaNFT --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1 --trait='Points' --attr=170555
+owl-cli updateDnaNFT --root=0xfa737b19Dc58b3604fbBBEBD2ACE599a00449D2f --tokenId=1 --trait='Points' --attr=170555
 ```
 
 This will give you:
@@ -524,7 +524,7 @@ You can also pass in a JSON file to update multiple traits as such:
 ```
 
 ```bash
-owl-cli updateDnaNFT --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1 --json=projects/my-example-loyalty/exampleUpdateDnaNFT.json
+owl-cli updateDnaNFT --root=0xfa737b19Dc58b3604fbBBEBD2ACE599a00449D2f --tokenId=1 --json=projects/my-example-loyalty/exampleUpdateDnaNFT.json
 ```
 
 :::
@@ -532,7 +532,7 @@ owl-cli updateDnaNFT --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId
 Now if we view the NFT:
 
 ```
-owl-cli viewTopDown --root=0xa2B01e08CeD3b06051B59966B540BFe0B90b364c --tokenId=1 --debug=true
+owl-cli viewTopDown --root=0xfa737b19Dc58b3604fbBBEBD2ACE599a00449D2f --tokenId=1 --debug=true
 ```
 
 The command returns an `image` field with:

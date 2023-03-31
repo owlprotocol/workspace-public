@@ -4,25 +4,25 @@ import fs from 'fs';
 import _ from 'lodash';
 import fetchRetryWrapper from 'fetch-retry';
 import check from 'check-types';
-import {ethers, Signer} from 'ethers';
+import { ethers, Signer } from 'ethers';
 
-import {NFTGenerativeItemInterface, NFTGenerativeCollectionClass} from '@owlprotocol/nft-sdk';
-import {Deploy, Ethers, Utils, Artifacts} from '@owlprotocol/contracts';
-import {awaitAllObj} from '@owlprotocol/utils';
+import { NFTGenerativeItemInterface, NFTGenerativeCollectionClass } from '@owlprotocol/nft-sdk';
+import { Deploy, Ethers, Utils, Artifacts } from '@owlprotocol/contracts';
+import { awaitAllObj } from '@owlprotocol/utils';
 import {
     BeaconProxy,
     BeaconProxy__factory,
     ERC721TopDownDnaMintable as ERC721TopDownDnaMintableContract,
 } from '@owlprotocol/contracts/src/typechain/ethers';
-import {ERC721TopDownDnaMintableInterface} from '@owlprotocol/contracts/src/typechain/ethers/ERC721TopDownDnaMintable';
+import { ERC721TopDownDnaMintableInterface } from '@owlprotocol/contracts/src/typechain/ethers/contracts/assets/ERC721/ERC721TopDownDnaMintable';
 
-import {getNetworkCfg} from '../utils/networkCfg.js';
-import {Argv, getProjectFolder, getProjectSubfolder} from '../utils/pathHandlers.js';
-import {OwlProject, InitArgs, ContractConfig, DeployNFTResult} from '../classes/owlProject.js';
-import {deployERC721TopDownDna} from '../deploy/ERC721TopDownDna.js';
-import {deployCommon} from './deployCommon.js';
+import { getNetworkCfg } from '../utils/networkCfg.js';
+import { Argv, getProjectFolder, getProjectSubfolder } from '../utils/pathHandlers.js';
+import { OwlProject, InitArgs, ContractConfig, DeployNFTResult } from '../classes/owlProject.js';
+import { deployERC721TopDownDna } from '../deploy/ERC721TopDownDna.js';
+import { deployCommon } from './deployCommon.js';
 
-const {map, mapValues, omit, endsWith} = _;
+const { map, mapValues, omit, endsWith } = _;
 const fetchRetry = fetchRetryWrapper(fetch);
 
 let debug = false;
@@ -61,7 +61,7 @@ export const handler = async (argv: Argv) => {
     argvCheck(argv);
     debug = !!argv.debug || false;
 
-    const {network, signers, provider} = getNetworkCfg();
+    const { network, signers, provider } = getNetworkCfg();
 
     console.log(`Deploying ERC721TopDownDna to ${network.name}`);
 
@@ -75,7 +75,7 @@ export const handler = async (argv: Argv) => {
     const nftItemResults = await getNftItems(collMetadata, itemsFolder);
 
     if (argv.deployCommon) {
-        await deployCommon({provider, signers, network});
+        await deployCommon({ provider, signers, network });
     }
 
     const factories = await initializeFactories(signers[0]);
@@ -100,7 +100,7 @@ export const handler = async (argv: Argv) => {
         const nftJsonFilePath = nft.nftJsonFilePath;
 
         const mints = await deployERC721TopDownDna(
-            {provider, signers, network},
+            { provider, signers, network },
             owlProject,
             nftItem,
             contracts,
@@ -150,7 +150,7 @@ Minted ${nftItemResults[i].nftJsonFilePath}`);
 const getNftItems = async (
     collectionClass: NFTGenerativeCollectionClass,
     itemsFolder: string,
-): Promise<{nftJsonFilePath: string; nftJson: any; nftItem: NFTGenerativeItemInterface}[]> => {
+): Promise<{ nftJsonFilePath: string; nftJson: any; nftItem: NFTGenerativeItemInterface }[]> => {
     const nftItemFiles = fs.readdirSync(itemsFolder);
 
     const nftItems = map(nftItemFiles, async (nftItemFile) => {
@@ -209,7 +209,7 @@ const getOwlProject = async (owlProjectFilepath: string): Promise<OwlProject> =>
 
     try {
         debug && console.debug(`Fetching JSON Schema from ${jsonSchemaUrl}`);
-        collMetadataRes = await fetchRetry(jsonSchemaUrl.toString(), {retryDelay: 200});
+        collMetadataRes = await fetchRetry(jsonSchemaUrl.toString(), { retryDelay: 200 });
     } catch (err) {
         console.error(`Fetch Collection JSON Schema failed`);
         throw err;
@@ -248,8 +248,8 @@ const initializeFactories = async (signer: Signer): Promise<any> => {
 
     const ERC721TopDownDnaMintableInitEncoder = Utils.ERC1167Factory.getInitDataEncoder<
         ERC721TopDownDnaMintableContract,
-        'proxyInitialize'
-    >(factories.ERC721TopDownDnaMintable.interface as ERC721TopDownDnaMintableInterface, 'proxyInitialize');
+        'initialize'
+    >(factories.ERC721TopDownDnaMintable.interface as ERC721TopDownDnaMintableInterface, 'initialize');
 
     const beaconAddress = UpgradeableBeaconFactory.getAddress(signerAddress, implementationAddress);
     const BeaconProxyFactory = Utils.ERC1167Factory.deterministicFactory<
@@ -347,16 +347,16 @@ const deployContracts = async (
     provider: ethers.providers.JsonRpcProvider,
     network: any,
 ) => {
-    const {awaitAllObj} = await import('@owlprotocol/utils');
+    const { awaitAllObj } = await import('@owlprotocol/utils');
 
     let nonce = await provider.getTransactionCount(factories.msgSender);
 
-    const deployments: Record<string, {tokenSymbol?: string; cfg: ContractConfig; initArgs?: InitArgs}> = {
+    const deployments: Record<string, { tokenSymbol?: string; cfg: ContractConfig; initArgs?: InitArgs }> = {
         ...owlProject.children,
         root: owlProject.rootContract,
     };
 
-    const contractPromises = mapValues(deployments, async ({cfg, initArgs}): Promise<any> => {
+    const contractPromises = mapValues(deployments, async ({ cfg, initArgs }): Promise<any> => {
         const args = initArgs!.args;
         const address = cfg.address!;
 
@@ -376,7 +376,7 @@ const deployContracts = async (
                     deployed: false,
                 };
             } else {
-                await factories.BeaconProxyFactory.deploy(...args, {nonce: nonce++, gasLimit: 10e6});
+                await factories.BeaconProxyFactory.deploy(...args, { nonce: nonce++, gasLimit: 10e6 });
 
                 return {
                     address,
@@ -385,7 +385,7 @@ const deployContracts = async (
                 };
             }
         } catch (error: any) {
-            return {address, error};
+            return { address, error };
         }
     });
 

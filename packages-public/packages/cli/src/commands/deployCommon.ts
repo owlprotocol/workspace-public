@@ -1,8 +1,8 @@
 import yargs from 'yargs';
 
-import {Deploy} from '@owlprotocol/contracts';
+import { Deploy } from '@owlprotocol/contracts';
 
-import {getNetworkCfg} from '../utils/networkCfg.js';
+import { getNetworkCfg } from '../utils/networkCfg.js';
 
 export const command = 'deployCommon';
 
@@ -27,17 +27,17 @@ export const builder = (yargs: ReturnType<yargs.Argv>) => {
 export const handler = async (argv: yargs.ArgumentsCamelCase) => {
     const debug = argv.debug || false;
 
-    const {network, signers, provider} = getNetworkCfg();
+    const { network, signers, provider } = getNetworkCfg();
 
     console.log(`Deploying Common Beacons and Implementations to ${network.name}`);
 
-    const deployCommonResult = await deployCommon({provider, signers, network});
+    const deployCommonResult = await deployCommon({ provider, signers, network });
     debug && console.debug(deployCommonResult);
 
     console.log('Done');
 };
 
-export const deployCommon = async ({provider, signers, network}: Deploy.RunTimeEnvironment): Promise<any> => {
+export const deployCommon = async ({ provider, signers, network }: Deploy.RunTimeEnvironment): Promise<any> => {
     const deployCommonResult: any = {};
 
     deployCommonResult.deterministicDeployer = await Deploy.DeterministicDeployerDeploy({
@@ -45,10 +45,10 @@ export const deployCommon = async ({provider, signers, network}: Deploy.RunTimeE
         signers,
         network,
     });
-    deployCommonResult.proxyFactory = await Deploy.ProxyFactoryDeploy({provider, signers, network});
+    deployCommonResult.proxyFactory = await Deploy.ProxyFactoryDeploy({ provider, signers, network });
     // this deploys everything in contracts/src/ethers/factories
-    deployCommonResult.implementations = await Deploy.ImplementationsDeploy({provider, signers, network});
-    deployCommonResult.upgradeableBeacon = await Deploy.UpgradeableBeaconDeploy({provider, signers, network});
+    deployCommonResult.implementations = await Deploy.ImplementationsDeploy({ provider, signers, network });
+    deployCommonResult.upgradeableBeacon = await Deploy.UpgradeableBeaconDeploy({ provider, signers, network });
 
     return deployCommonResult;
 };

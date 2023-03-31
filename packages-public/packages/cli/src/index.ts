@@ -15,6 +15,7 @@ import * as config from './commands/config.js';
 
 yargs(hideBin(process.argv))
     .command(generateJsonSchema)
+    .example(generateJsonSchema.example, generateJsonSchema.exampleDescription)
     .command(generateItemNFT)
     .example(generateItemNFT.example, generateItemNFT.exampleDescription)
     .command(generateRandomNFT)
@@ -37,5 +38,6 @@ yargs(hideBin(process.argv))
     .example(config.example, config.exampleDescription)
     .demandCommand()
     .recommendCommands()
+    .strict()
     .wrap(null)
     .help().argv;
