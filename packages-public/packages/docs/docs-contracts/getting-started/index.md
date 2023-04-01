@@ -1,4 +1,4 @@
-## Getting started
+# Getting started
 
 ### Requirements
 * Node.js v16 or v18
@@ -64,6 +64,6 @@ This must match the `HD_WALLET_MNEMONIC` in the `.env.development` file.
 owl-cli generateJsonSchema collections.js --projectFolder=projects/<my-project>
 ```
 
-## Continue with our docs at:
+## [Continue with our tutorials](contracts/tutorials)
 
-[https://docs.owlprotocol.xyz/contracts](https://docs.owlprotocol.xyz/contracts)
+

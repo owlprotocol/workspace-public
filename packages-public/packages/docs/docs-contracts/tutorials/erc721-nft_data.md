@@ -488,7 +488,7 @@ We can change the NFT's data by using the CLI's `updateDnaNFT` command.
 
 There are two ways to use this command, the simplest is to change a single attribute:
 
-````bash
+```bash
 owl-cli updateDnaNFT --root=0xfa737b19Dc58b3604fbBBEBD2ACE599a00449D2f --tokenId=1 --trait='Points' --attr=170555
 ```
 
