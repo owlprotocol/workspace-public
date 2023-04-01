@@ -379,9 +379,9 @@ Keep the IPFS hashes handy. In this example, they are:
 - Hats hash: `QmcYC3fcqxU2gqS7VWEeC7jLDjpFQunMXmfkijXq325RHf`
 :::
 
----
+<!--
 
-## Step 7: Generate a few NFTs
+## Step 7: Generate the randomized individual NFTs
 
 To generate NFTs, use the CLI command: `generateRandomNFT`:
 
@@ -389,17 +389,17 @@ To generate NFTs, use the CLI command: `generateRandomNFT`:
 owl-cli generateRandomNFT collections.js 3 --project=projects/my-example-omo
 ```
 
-This will generate 3 items in the subfolder `output/items` of the project folder with their respective DNAs.
+This will generate **three** items in the subfolder `output/items` of the project folder with their respective DNAs.
 
 We then pass these outputs to the `deployTopDown` command to deploy these NFTs.
 
 :::info
 See `createFromFullDna` in [NFTGenerativeCollectionClass](https://github.com/owlprotocol/owlprotocol/blob/main/packages/nft-sdk/src/classes/NFTGenerativeCollection/NFTGenerativeCollectionClass.ts) for more infromation on how an NFT is instantiated form its DNA.
 :::
-
+-->
 ---
 
-## Step 8: Declare collection information in the metadata file
+## Step 7: Declare collection information in the metadata file
 
 Create a file called `owlproject.json` in the project folder. This will contain metadata about the collection.
 
@@ -440,7 +440,7 @@ Ideally, `sdkApiEndpoint` should point to your own web app. For this tutorial, l
 
 ---
 
-## Step 9: Deploy and mint NFTs
+## Step 8: Deploy and mint NFTs
 
 :::tip
 For initial testing, prefer a local blockchain over a testnet. A local blockchain like Ganache is simpler and faster.
@@ -580,7 +580,7 @@ Also the NFT item JSON files will be updated to track the deployment:
 
 ---
 
-## Step 10: View and check the NFTs
+## Step 9: View and check the NFTs
 
 You can use the `viewTopDown` command on the CLI to quickly view the NFT:
 
@@ -682,7 +682,7 @@ Which is this image:
 
 ---
 
-## Step 11: Detach the hat
+## Step 10: Detach the hat
 
 We use the `detachTopDown` command to remove/detach the NFT:
 
