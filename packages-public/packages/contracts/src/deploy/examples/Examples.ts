@@ -1,6 +1,6 @@
 import { mapValues, zipObject } from "../../lodash.js";
 import { logDeployment, RunTimeEnvironment } from "../utils.js";
-import { getDeterministicFactories, getExamples } from '../../ethers';
+import { getDeterministicFactories, getExamples } from "../../ethers/index.js";
 
 export const ExamplesDeploy = async ({ provider, signers, network }: RunTimeEnvironment) => {
     const signer = signers[0];

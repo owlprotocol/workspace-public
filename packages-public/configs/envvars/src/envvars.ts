@@ -104,6 +104,12 @@ declare global {
     }
 }
 
+const isClient = () => typeof window !== 'undefined';
+
+if (!isClient()) {
+    require('dotenv').config()
+}
+
 /** CORS Proxy Endpoint */
 export const TITLE = import.meta.env ? import.meta.env.VITE_TITLE : process.env.TITLE
 export const CORS_PROXY = import.meta.env ? import.meta.env.VITE_CORS_PROXY : process.env.CORS_PROXY

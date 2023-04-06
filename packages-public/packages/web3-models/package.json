@@ -52,6 +52,7 @@
     "lodash-es": "4.17.21",
     "@owlprotocol/utils": "workspace:*",
     "@owlprotocol/contracts": "workspace:*",
+    "@owlprotocol/envvars": "workspace:*",
     "uuid": "^8.3.2",
     "ethers": "5.7.2",
     "multiformats": "9.9.0"
