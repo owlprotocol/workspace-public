@@ -81,6 +81,22 @@ const Button = (CURRENT_THEME: string) => {
             "grad-1": {
                 bg: "linear-gradient(99.23deg, #942457 1.6%, #8318DD 97.94%)",
             },
+            defaultStyle: {
+                minW: "168px",
+                borderRadius: 12,
+                color: theme.color9,
+                backgroundColor: theme.color5,
+                _hover: {
+                    color: theme.color1,
+                },
+                _focus: {
+                    outline: 0,
+                    boxShadow: 0,
+                },
+            },
+        },
+        defaultProps: {
+            variant: "defaultStyle",
         },
     };
 };
