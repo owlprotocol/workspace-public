@@ -67,7 +67,8 @@
     "to:module": "sed 's/\"type\": \"commonjs\"/\"type\": \"module\"/g' package.json > ./temp.package.json && mv -f ./temp.package.json package.json"
   },
   "dependencies": {
-    "lodash": "4.17.21"
+    "lodash": "4.17.21",
+    "loglevel": "^1.8.1"
   },
   "peerDependencies": {
     "@chainlink/contracts": "^0.4.1",

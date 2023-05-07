@@ -1,5 +1,6 @@
 import type { Signer } from "ethers";
 import type { BaseProvider } from "@ethersproject/providers";
+import log from "loglevel";
 
 export interface RunTimeEnvironment {
     provider: BaseProvider;
@@ -15,7 +16,7 @@ export function logDeployment(
     status: "exists" | "deployed" | "failed",
 ) {
     if (process.env.LOG_LEVEL != "info") {
-        console.log(
+        log.log(
             `${networkName.padEnd(20)}\t${contractName.padEnd(30)}\t${deploymentType.padEnd(20)}\t${status.padEnd(
                 10,
             )}\t${address}`,

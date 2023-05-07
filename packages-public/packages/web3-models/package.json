@@ -55,7 +55,8 @@
     "@owlprotocol/envvars": "workspace:*",
     "uuid": "^8.3.2",
     "ethers": "5.7.2",
-    "multiformats": "9.9.0"
+    "multiformats": "9.9.0",
+    "loglevel": "^1.8.1"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",

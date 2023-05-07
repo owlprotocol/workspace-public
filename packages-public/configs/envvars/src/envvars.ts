@@ -6,9 +6,11 @@
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
-            readonly NODE_ENV: 'development' | 'production' | 'test';
+            readonly NODE_ENV?: 'development' | 'production' | 'test';
+            readonly LOG_LEVEL?: "trace" | "debug" | "info" | "warn" | "error";
             readonly TITLE?: string;
             readonly CORS_PROXY?: string
+            readonly PINATA_JWT?: string;
             readonly INFURA_API_KEY?: string
             readonly INFURA_IPFS_PROJECT_ID?: string;
             readonly INFURA_IPFS_PROJECT_SECRET?: string;
@@ -57,11 +59,14 @@ declare global {
 
 declare global {
     interface ImportMetaEnv {
+        readonly VITE_NODE_ENV?: 'development' | 'production' | 'test'
+        readonly VITE_LOG_LEVEL?: "trace" | "debug" | "info" | "warn" | "error";
         readonly VITE_TITLE?: string;
         readonly VITE_CORS_PROXY?: string
         readonly VITE_INFURA_API_KEY?: string
         readonly VITE_INFURA_IPFS_PROJECT_ID?: string;
         readonly VITE_INFURA_IPFS_PROJECT_SECRET?: string;
+        readonly VITE_PINATA_JWT?: string;
         readonly VITE_IPFS_URL?: string;
         readonly VITE_BYTE4_URL?: string;
         readonly VITE_ETHERSCAN_API_KEY?: string;
@@ -106,32 +111,51 @@ declare global {
 
 const isClient = () => typeof window !== 'undefined';
 
+import dotenv from "dotenv";
 if (!isClient()) {
-    require('dotenv').config()
+    dotenv.config()
 }
+
+export const NODE_ENV = import.meta.env ? import.meta.env.VITE_NODE_ENV : process.env.NODE_ENV ?? "development"
+export const LOG_LEVEL = import.meta.env ? import.meta.env.VITE_LOG_LEVEL : process.env.LOG_LEVEL ?? (
+    (NODE_ENV === "development" || NODE_ENV === "test") ? "debug" : "warn"
+)
 
 /** CORS Proxy Endpoint */
 export const TITLE = import.meta.env ? import.meta.env.VITE_TITLE : process.env.TITLE
 export const CORS_PROXY = import.meta.env ? import.meta.env.VITE_CORS_PROXY : process.env.CORS_PROXY
+
+//Default Public Keys Hard-coded
+//WARNING: These keys are insecure and are meant for ease of use in a testing environment.
+//WARNING: These keys are subject to deletion in the event of abuse.
+export const INFURA_API_KEY_PUBLIC = undefined //"f47a5c2dfc1f4c4385f6372fade38618"
+export const INFURA_IPFS_PROJECT_ID_PUBLIC = "2OAhenU1T1fxTGyQMTTFDwdyW5p"
+export const INFURA_IPFS_PROJECT_SECRET_PUBLIC = "8ffddfdc95f32ea7aa43ee3ba9d2d603"
+export const PINATA_JWT_PUBLIC = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJlMzMxZDljZC05MDk4LTRkOTctOGI4Zi03ODY3NTFkZTQxYjgiLCJlbWFpbCI6Imxlby52aWduYUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNzZmYTgwY2I2ZWRmMTkxNTVjODUiLCJzY29wZWRLZXlTZWNyZXQiOiI2YTM1MTkxYThjOTMxMzU3MGFmOGU3NGEyZWQzZmVhYWYxYjFhZDUxY2FkY2ZkNGFhZTc1YjNjMmQ0YzQwMWI3IiwiaWF0IjoxNjgxMDk1ODM3fQ.As9jjfv7BoPF9pTY_Lqj67iMWZXp9EIoGs50zcXaF5Y"
+
 /**
  * Infura API Project Id.
  * Used to defive default Infura connection uri. */
-export const INFURA_API_KEY = import.meta.env ? import.meta.env.VITE_INFURA_API_KEY : process.env.INFURA_API_KEY
+//Default "Public" Infura Key
+export const INFURA_API_KEY = import.meta.env ? import.meta.env.VITE_INFURA_API_KEY : process.env.INFURA_API_KEY ?? INFURA_API_KEY_PUBLIC
 //Infura uses Basic Auth for IPFS
 //https://infura.io/docs/ipfs#section/Getting-Started/Create-your-Infura-IPFS-project
 //TODO: Add basic auth support
 /** Infura Project Id for IPFS API */
-export const INFURA_IPFS_PROJECT_ID = import.meta.env ? import.meta.env.VITE_INFURA_IPFS_PROJECT_ID : process.env.INFURA_IPFS_PROJECT_ID
+//Default "Public" Infura Key
+export const INFURA_IPFS_PROJECT_ID = import.meta.env ? import.meta.env.VITE_INFURA_IPFS_PROJECT_ID : process.env.INFURA_IPFS_PROJECT_ID ?? INFURA_IPFS_PROJECT_ID_PUBLIC
 /** Infura Basic Auth for IPFS */
-export const INFURA_IPFS_PROJECT_SECRET = import.meta.env ? import.meta.env.VITE_INFURA_IPFS_PROJECT_SECRET : process.env.INFURA_IPFS_PROJECT_SECRET
+//Default "Public" Infura Key
+export const INFURA_IPFS_PROJECT_SECRET = import.meta.env ? import.meta.env.VITE_INFURA_IPFS_PROJECT_SECRET : process.env.INFURA_IPFS_PROJECT_SECRET ?? INFURA_IPFS_PROJECT_SECRET_PUBLIC
+export const PINATA_JWT = import.meta.env ? import.meta.env.VITE_PINATA_JWT : process.env.PINATA_JWT ?? PINATA_JWT_PUBLIC;
 
 /** Etherscan API Key */
 export const ETHERSCAN_API_KEY = import.meta.env ? import.meta.env.VITE_ETHERSCAN_API_KEY : process.env.ETHERSCAN_API_KEY
 export const LOG_REDUX_ACTIONS = import.meta.env ? import.meta.env.VITE_LOG_REDUX_ACTIONS : process.env.LOG_REDUX_ACTIONS
 
 /** Local Ganache Blockchain */
-export const GANACHE_RPC = import.meta.env ? import.meta.env.VITE_GANACHE_RPC : process.env.GANACHE_RPC
-export const ANVIL_RPC = import.meta.env ? import.meta.env.VITE_ANVIL_RPC : process.env.ANVIL_RPC
+export const GANACHE_RPC = import.meta.env ? import.meta.env.VITE_GANACHE_RPC : process.env.GANACHE_RPC ?? "ws://localhost:8545"
+export const ANVIL_RPC = import.meta.env ? import.meta.env.VITE_ANVIL_RPC : process.env.ANVIL_RPC ?? "ws://localhost:8545"
 
 /** Ethereum Mainnet Blockchain */
 export const MAINNET_RPC = import.meta.env ? import.meta.env.VITE_MAINNET_RPC : process.env.MAINNET_RPC ?? (INFURA_API_KEY ? `wss://mainnet.infura.io/ws/v3/${INFURA_API_KEY}` : undefined)

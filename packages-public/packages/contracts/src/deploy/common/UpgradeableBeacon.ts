@@ -8,6 +8,7 @@ import {
     NoInitFactories,
 } from "../../ethers/deterministicFactories.js";
 import { ERC1167FactoryAddress } from "../../utils/ERC1167Factory/index.js";
+import log from "loglevel";
 
 /**
  * Deployment is always the same regardless of contract.
@@ -66,7 +67,7 @@ export const UpgradeableBeaconDeploy = async ({ provider, signers, network }: Ru
     mapValues(results, ({ address, error, deployed }, name: string) => {
         if (error) {
             logDeployment(network.name, name, address, "beacon", "failed");
-            console.error(error);
+            log.error(error);
         } else {
             logDeployment(network.name, name, address, "beacon", deployed ? "deployed" : "exists");
         }

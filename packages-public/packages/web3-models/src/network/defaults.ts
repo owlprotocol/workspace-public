@@ -83,6 +83,7 @@ export const defaultNetworks = {
         web3Rpc: ANVIL_RPC,
         syncContracts: false,
         syncBlocks: false,
+        testnet: true,
     },
     "1337": {
         networkId: "1337",
@@ -91,12 +92,14 @@ export const defaultNetworks = {
         web3Rpc: GANACHE_RPC,
         syncContracts: false,
         syncBlocks: false,
+        testnet: true,
     },
     "1336": {
         networkId: "1336",
         name: "ganache2",
         currency: ETHER,
         web3Rpc: GANACHE_RPC,
+        testnet: true,
     },
     "1": {
         networkId: "1",
@@ -117,6 +120,7 @@ export const defaultNetworks = {
         explorerUrl: GOERLI_EXPLORER,
         explorerApiUrl: GOERLI_EXPLORER_API,
         explorerApiKey: ETHERSCAN_API_KEY,
+        testnet: true
     },
     "137": {
         networkId: "137",
@@ -143,6 +147,7 @@ export const defaultNetworks = {
         forwarder: "0x4d4581c01A457925410cd3877d17b2fd4553b2C5",
         versionRegistry: "0x4Fe8824c885D67613848c94a15dce7680897f33E",
         paymaster: "0xcA94aBEdcC18A10521aB7273B3F3D5ED28Cf7B8A",
+        testnet: true,
     },
     "42161": {
         networkId: "42161",
@@ -213,4 +218,4 @@ export const defaultNetworks = {
         forwarder: "0x0DEEF5a1e5bF8794A5145e052E24A852a081AF65",
         versionRegistry: "0x581648Bb9dB7e36360B8B551Cdaf23c481f106c3",
     },
-} as { [networkId: string]: Network | undefined };
+} as { [networkId: string]: Network };
