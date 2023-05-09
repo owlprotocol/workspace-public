@@ -23,6 +23,16 @@ const Button = (CURRENT_THEME: string) => {
             },
         },
         variants: {
+            cube: {
+                minW: "auto",
+                minH: "auto",
+                borderRadius: 12,
+                color: theme.color9,
+                backgroundColor: theme.color5,
+                _hover: {
+                    color: theme.color1,
+                },
+            },
             link: {
                 color: theme.color1,
                 fontSize: 13,
@@ -82,8 +92,9 @@ const Button = (CURRENT_THEME: string) => {
                 bg: "linear-gradient(99.23deg, #942457 1.6%, #8318DD 97.94%)",
             },
             defaultStyle: {
-                minW: "168px",
                 borderRadius: 12,
+                fontSize: 18,
+                fontWeight: 400,
                 color: theme.color9,
                 backgroundColor: theme.color5,
                 _hover: {

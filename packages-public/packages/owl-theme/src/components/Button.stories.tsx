@@ -6,7 +6,7 @@ export default {
     component: Button,
     argTypes: {
         variant: {
-            options: ["", "form", "hollow", "cancel"],
+            options: ["", "defaultStyle", "form", "hollow", "cancel", "grad-1"],
             control: { type: "select" },
         },
     },
@@ -16,6 +16,7 @@ const Template: ComponentStory<typeof Button> = (args: any) => (
     <HStack>
         <Button>Regular Button</Button>
         <Button {...args}>Variants Button</Button>
+        <Button variant="cube">&times;</Button>
     </HStack>
 );
 export const Main = Template.bind({});
