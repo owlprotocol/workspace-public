@@ -9,6 +9,7 @@ import {
 } from "../../ethers/deterministicFactories.js";
 import { ERC1167FactoryAddress } from "../../utils/ERC1167Factory/index.js";
 import log from "loglevel";
+import { BEACON_ADMIN } from "@owlprotocol/envvars";
 
 /**
  * Deployment is always the same regardless of contract.
@@ -37,10 +38,10 @@ export const UpgradeableBeaconDeploy = async ({ provider, signers, network }: Ru
 
     const promises = mapValues(implementationFactories, async (factory) => {
         const implementationAddress = factory.getAddress();
-        const address = UpgradeableBeaconFactory.getAddress(signerAddress, implementationAddress);
+        const address = UpgradeableBeaconFactory.getAddress(BEACON_ADMIN, implementationAddress);
 
         try {
-            if (await UpgradeableBeaconFactory.exists(signerAddress, implementationAddress)) {
+            if (await UpgradeableBeaconFactory.exists(BEACON_ADMIN, implementationAddress)) {
                 return {
                     address,
                     contract: UpgradeableBeaconFactory.attach(address),
@@ -49,7 +50,7 @@ export const UpgradeableBeaconDeploy = async ({ provider, signers, network }: Ru
             } else {
                 return {
                     address,
-                    contract: await UpgradeableBeaconFactory.deploy(signerAddress, implementationAddress, {
+                    contract: await UpgradeableBeaconFactory.deploy(BEACON_ADMIN, implementationAddress, {
                         nonce: nonce++,
                         gasLimit: 10e6,
                         type: 2,
