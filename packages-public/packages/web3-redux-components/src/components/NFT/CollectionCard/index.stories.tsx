@@ -6,7 +6,7 @@ const Wrapper = (props: CollectionCardProps) => {
 };
 
 export default {
-    title: "NFT/Explore/CollectionCard",
+    title: "NFT/CollectionCard",
     component: CollectionCardPresenter,
 } as ComponentMeta<typeof CollectionCardPresenter>;
 

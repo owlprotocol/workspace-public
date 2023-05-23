@@ -7,6 +7,7 @@ import { THEME_COLORS } from "@owlprotocol/owl-theme";
 import { Provider } from "react-redux";
 import { createStore } from "@owlprotocol/web3-redux";
 import { getEnvironment } from "../src/environment.js";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 Environment.setEnvironment(getEnvironment() as any);
 
@@ -55,10 +56,14 @@ export const decorators = [
         // const routeConfig = rootRoute.addChildren([indexRoute]);
         // const router = createReactRouter({ routeConfig });
 
+        const queryClient = new QueryClient();
+
         return (
             <Provider store={store}>
                 {/* <RouterProvider router={router} /> */}
-                <Story2 />
+                <QueryClientProvider client={queryClient}>
+                    <Story2 />
+                </QueryClientProvider>
             </Provider>
         );
     },
