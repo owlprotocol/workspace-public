@@ -30,15 +30,26 @@ import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import { ApiResponse, Item, fetchData } from "./dataFaker";
 import { AvatarCell } from "../Table/Cells/AvatarCell";
 import { PreviewAvatarsCell } from "../Table/Cells/PreviewAvatarsCell";
+import { Filters } from "../Filters";
+import NetworkIcon from "../../../NetworkIcon";
 
 const fetchSize = 25;
+// Sortable accessors
+export const accessors = ["networkId", "title", "isVerified"];
 
 const VirtualComponent = () => {
     const tableContainerRef = useRef<HTMLDivElement>(null);
     const [sorting, setSorting] = useState<SortingState>([]);
+    const [globalFilter, setGlobalFilter] = useState("");
 
     const columns = useMemo<ColumnDef<Item>[]>(
         () => [
+            {
+                accessorKey: "networkId",
+                id: "networkId",
+                // header: "networkId",
+                header: () => <span></span>,
+            },
             {
                 id: "assetAvatarSrc",
                 cell: (props) => {
@@ -160,7 +171,7 @@ const VirtualComponent = () => {
         onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        debugTable: true,
+        debugTable: false,
     });
 
     const { rows } = table.getRowModel();
@@ -177,76 +188,103 @@ const VirtualComponent = () => {
     }
 
     return (
-        <Box
-            ref={tableContainerRef}
-            onScroll={(e) =>
-                fetchMoreOnBottomReached(e.target as HTMLDivElement)
-            }
-        >
-            <TableContainer color={themes.color9} bg={themes.color5}>
-                <ChakraTable variant="unstyled">
-                    <Thead>
-                        {table.getHeaderGroups().map((headerGroup: any) => (
-                            <Tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header: any) => {
-                                    return (
-                                        <Th
-                                            p={4}
-                                            key={header.id}
-                                            colSpan={header.colSpan}
-                                        >
-                                            <HStack>
-                                                <Text
-                                                    fontSize={18}
-                                                    fontWeight={600}
-                                                    textTransform={"none"}
-                                                    cursor={"pointer"}
-                                                    onClick={header.column.getToggleSortingHandler()}
-                                                >
-                                                    {flexRender(
-                                                        header.column.columnDef
-                                                            .header,
-                                                        header.getContext()
-                                                    )}
-                                                </Text>
-                                                <Box>
-                                                    {{
-                                                        asc: " 🔼",
-                                                        desc: " 🔽",
-                                                    }[
-                                                        header.column.getIsSorted() as string
-                                                    ] ?? null}
-                                                </Box>
-                                            </HStack>
-                                        </Th>
-                                    );
-                                })}
-                            </Tr>
-                        ))}
-                    </Thead>
-                    <Tbody>
-                        {virtualRows.map((virtualRow) => {
-                            const row = rows[virtualRow.index] as Row<Item>;
-
-                            return (
-                                <Tr key={row.id}>
-                                    {row.getVisibleCells().map((cell: any) => {
+        <>
+            <Filters
+                accessors={accessors}
+                globalFilter={globalFilter}
+                setGlobalFilter={setGlobalFilter}
+                tableSetSorting={table.setSorting}
+            />
+            <Box
+                ref={tableContainerRef}
+                onScroll={(e) =>
+                    fetchMoreOnBottomReached(e.target as HTMLDivElement)
+                }
+            >
+                <TableContainer color={themes.color9} bg={themes.color5}>
+                    <ChakraTable variant="unstyled">
+                        <Thead>
+                            {table.getHeaderGroups().map((headerGroup: any) => (
+                                <Tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header: any) => {
                                         return (
-                                            <Td key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext()
-                                                )}
-                                            </Td>
+                                            <Th
+                                                p={4}
+                                                key={header.id}
+                                                colSpan={header.colSpan}
+                                            >
+                                                <HStack>
+                                                    <Text
+                                                        fontSize={18}
+                                                        fontWeight={600}
+                                                        textTransform={"none"}
+                                                        cursor={"pointer"}
+                                                        onClick={header.column.getToggleSortingHandler()}
+                                                    >
+                                                        {flexRender(
+                                                            header.column
+                                                                .columnDef
+                                                                .header,
+                                                            header.getContext()
+                                                        )}
+                                                    </Text>
+                                                    <Box>
+                                                        {{
+                                                            asc: " 🔼",
+                                                            desc: " 🔽",
+                                                        }[
+                                                            header.column.getIsSorted() as string
+                                                        ] ?? null}
+                                                    </Box>
+                                                </HStack>
+                                            </Th>
                                         );
                                     })}
                                 </Tr>
-                            );
-                        })}
-                    </Tbody>
-                </ChakraTable>
-            </TableContainer>
-        </Box>
+                            ))}
+                        </Thead>
+                        <Tbody>
+                            {virtualRows.map((virtualRow) => {
+                                const row = rows[virtualRow.index] as Row<Item>;
+
+                                return (
+                                    <Tr key={row.id}>
+                                        {row
+                                            .getVisibleCells()
+                                            .map((cell: any) => {
+                                                if (
+                                                    cell.column.columnDef.id ===
+                                                    "networkId"
+                                                ) {
+                                                    return (
+                                                        <Td key={cell.id}>
+                                                            <NetworkIcon
+                                                                networkId={cell
+                                                                    .getContext()
+                                                                    .getValue()}
+                                                            />
+                                                        </Td>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <Td key={cell.id}>
+                                                        {flexRender(
+                                                            cell.column
+                                                                .columnDef.cell,
+                                                            cell.getContext()
+                                                        )}
+                                                    </Td>
+                                                );
+                                            })}
+                                    </Tr>
+                                );
+                            })}
+                        </Tbody>
+                    </ChakraTable>
+                </TableContainer>
+            </Box>
+        </>
     );
 };
 

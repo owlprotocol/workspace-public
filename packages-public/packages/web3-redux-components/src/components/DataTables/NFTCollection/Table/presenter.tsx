@@ -112,6 +112,7 @@ const NFTCollectionTablePresenter = () => {
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        debugTable: false,
     });
 
     if (data.length < 1) {

@@ -2,6 +2,8 @@ import { faker } from '@faker-js/faker'
 import { ColumnSort, SortingState } from '@tanstack/react-table'
 
 export type Item = {
+    address: string;
+    networkId: number;
     createdAt: string;
     assetAvatarSrc: string;
     title: string;
@@ -33,6 +35,13 @@ const newItem = (): Item => {
     faker.image.abstract(80, 80, true), faker.image.abstract(80, 80, true)];
 
     return {
+        networkId: faker.helpers.shuffle<Item['networkId']>([
+            1,
+            10,
+            56,
+            137,
+        ])[0]!,
+        address: faker.finance.ethereumAddress(),
         assetAvatarSrc: faker.image.abstract(80, 80, true),
         title: faker.internet.domainWord(),
         collectionPreviewSrcs,
@@ -59,7 +68,7 @@ export function makeData(...lens: number[]) {
     return makeDataLevel()
 }
 
-const data = makeData(500)
+const data = makeData(200)
 
 //simulates a backend api
 export const fetchData = (

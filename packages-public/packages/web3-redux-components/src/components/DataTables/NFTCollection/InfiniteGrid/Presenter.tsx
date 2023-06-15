@@ -1,11 +1,15 @@
-import { Box, Button, SimpleGrid, useTheme } from "@chakra-ui/react";
+import { Box, SimpleGrid, useTheme } from "@chakra-ui/react";
 import {
+    Row,
     ColumnDef,
+    useReactTable,
     getCoreRowModel,
     getSortedRowModel,
-    Row,
     SortingState,
-    useReactTable,
+    sortingFns,
+    FilterFn,
+    SortingFn,
+    getFilteredRowModel,
 } from "@tanstack/react-table";
 import {
     QueryClient,
@@ -16,14 +20,29 @@ import { useVirtual } from "react-virtual";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import { CollectionCardPresenter } from "../../../NFT";
 import { ApiResponse, Item, fetchData } from "./dataFaker";
-import { FiltersDrawer } from "./FiltersDrawer";
+import { Filters } from "../Filters";
+import {
+    RankingInfo,
+    rankItem,
+    compareItems,
+} from "@tanstack/match-sorter-utils";
+
+declare module "@tanstack/table-core" {
+    interface FilterFns {
+        fuzzy: FilterFn<unknown>;
+    }
+    interface FilterMeta {
+        itemRank: RankingInfo;
+    }
+}
 
 const fetchSize = 25;
 
+// Sortable accessors
+export const accessors = ["networkId", "title", "isVerified"];
+
 const VirtualComponent = () => {
     const tableContainerRef = useRef<HTMLDivElement>(null);
-    const [sorting, setSorting] = useState<SortingState>([]);
-
     const columns = useMemo<ColumnDef<Item>[]>(
         () => [
             {
@@ -58,12 +77,16 @@ const VirtualComponent = () => {
         []
     );
 
+    const [sorting, setSorting] = useState<SortingState>([]);
+
     const { data, fetchNextPage, isFetching, isLoading } =
         useInfiniteQuery<ApiResponse>(
-            ["table-data", sorting], //adding sorting state as key causes table to reset and fetch from new beginning upon sort
+            //adding sorting state as key causes table to reset and fetch from new beginning upon sort
+            ["table-data", sorting],
             async ({ pageParam = 0 }) => {
                 const start = pageParam * fetchSize;
-                const fetchedData = fetchData(start, fetchSize, sorting); //pretend api call
+                //pretend api call
+                const fetchedData = fetchData(start, fetchSize, sorting);
                 return fetchedData;
             },
             {
@@ -103,16 +126,51 @@ const VirtualComponent = () => {
         fetchMoreOnBottomReached(tableContainerRef.current);
     }, [fetchMoreOnBottomReached]);
 
+    const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
+        let dir = 0;
+
+        // Only sort by rank if the column has ranking information
+        if (rowA.columnFiltersMeta[columnId]) {
+            dir = compareItems(
+                rowA.columnFiltersMeta[columnId]?.itemRank!,
+                rowB.columnFiltersMeta[columnId]?.itemRank!
+            );
+        }
+
+        // Provide an alphanumeric fallback for when the item ranks are equal
+        return dir === 0 ? sortingFns.alphanumeric(rowA, rowB, columnId) : dir;
+    };
+    const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+        // Rank the item
+        const itemRank = rankItem(row.getValue(columnId), value);
+
+        // Store the itemRank info
+        addMeta({
+            itemRank,
+        });
+
+        // Return if the item should be filtered in/out
+        return itemRank.passed;
+    };
+    const [globalFilter, setGlobalFilter] = useState("");
+
     const table = useReactTable({
         data: flatData,
         columns,
+        filterFns: {
+            fuzzy: fuzzyFilter,
+        },
         state: {
             sorting,
+            globalFilter,
         },
+        globalFilterFn: fuzzyFilter,
+        onGlobalFilterChange: setGlobalFilter,
         onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        debugTable: true,
+        getFilteredRowModel: getFilteredRowModel(),
+        debugTable: false,
     });
 
     const { rows } = table.getRowModel();
@@ -129,56 +187,63 @@ const VirtualComponent = () => {
     }
 
     return (
-        <SimpleGrid
-            ref={tableContainerRef}
-            onScroll={(e) =>
-                fetchMoreOnBottomReached(e.target as HTMLDivElement)
-            }
-            spacing={4}
-            columns={[1, 2, 2, 4]}
-        >
-            {virtualRows.map((virtualRow: any) => {
-                const row = rows[virtualRow.index] as Row<Item>;
-                const networkId = row.getValue("networkId");
-                const address = row.getValue("address");
-                const title = row.getValue("title");
-                const isVerified = row.getValue("isVerified");
-                const description = row.getValue("description");
-                const assetAvatarSrc = row.getValue("assetAvatarSrc");
-                const assetPreviewSrc = row.getValue("assetPreviewSrc");
+        <>
+            <Filters
+                accessors={accessors}
+                globalFilter={globalFilter}
+                setGlobalFilter={setGlobalFilter}
+                tableSetSorting={table.setSorting}
+            />
+            <SimpleGrid
+                spacing={4}
+                columns={[1, 2, 2, 4]}
+                ref={tableContainerRef}
+                onScroll={(e) =>
+                    fetchMoreOnBottomReached(e.target as HTMLDivElement)
+                }
+            >
+                {virtualRows.map((virtualRow: any) => {
+                    const row = rows[virtualRow.index] as Row<Item>;
+                    const networkId = row.getValue("networkId");
+                    const address = row.getValue("address");
+                    const title = row.getValue("title");
+                    const isVerified = row.getValue("isVerified");
+                    const description = row.getValue("description");
+                    const assetAvatarSrc = row.getValue("assetAvatarSrc");
+                    const assetPreviewSrc = row.getValue("assetPreviewSrc");
 
-                const itemData = {
-                    networkId,
-                    address,
-                    title,
-                    isVerified,
-                    description,
-                    assetAvatarSrc,
-                    assetPreviewSrc,
-                };
+                    const itemData = {
+                        networkId,
+                        address,
+                        title,
+                        isVerified,
+                        description,
+                        assetAvatarSrc,
+                        assetPreviewSrc,
+                    };
 
-                return (
-                    <Box
-                        key={row.id}
-                        _hover={{ transform: "scale(1.05)" }}
-                        transition={"300ms ease-in-out"}
-                    >
-                        <a href={`/explore/${address}?networkId=${networkId}`}>
-                            <CollectionCardPresenter {...itemData} />
-                        </a>
-                    </Box>
-                );
-            })}
-        </SimpleGrid>
+                    return (
+                        <Box
+                            key={row.id}
+                            _hover={{ transform: "scale(1.05)" }}
+                            transition={"300ms ease-in-out"}
+                        >
+                            <a
+                                href={`/explore/${address}?networkId=${networkId}`}
+                            >
+                                <CollectionCardPresenter {...itemData} />
+                            </a>
+                        </Box>
+                    );
+                })}
+            </SimpleGrid>
+        </>
     );
 };
 
 const queryClient = new QueryClient();
 const NFTCollectionInfiniteGridPresenter = () => (
     <QueryClientProvider client={queryClient}>
-        <FiltersDrawer />
-
-        <br />
         <VirtualComponent />
     </QueryClientProvider>
 );

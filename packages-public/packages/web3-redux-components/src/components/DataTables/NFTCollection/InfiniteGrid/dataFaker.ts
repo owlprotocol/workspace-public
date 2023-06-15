@@ -54,7 +54,7 @@ export function makeData(...lens: number[]) {
     return makeDataLevel()
 }
 
-const data = makeData(500)
+const data = makeData(50)
 
 //simulates a backend api
 export const fetchData = (

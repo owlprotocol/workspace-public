@@ -10,14 +10,13 @@ export default {
     component: NFTCollectionTablePresenter,
 } as ComponentMeta<typeof NFTCollectionTablePresenter>;
 
-const TableTemplate: ComponentStory<
-    typeof NFTCollectionTablePresenter
-> = () => <NFTCollectionTablePresenter />;
+const TableTemplate: ComponentStory<typeof NFTCollectionTablePresenter> =
+    () => <NFTCollectionTablePresenter />;
 export const Table = TableTemplate.bind({});
 
 const GridTemplate: ComponentStory<typeof NFTCollectionGridPresenter> = () => (
     <Box h={"100vh"}>
-        <Heading>Simple list using TanStack Virtualize, 500 items</Heading>
+        <Heading>Simple list using TanStack Virtualize</Heading>
         <br />
         <br />
         <NFTCollectionGridPresenter />
@@ -30,7 +29,7 @@ const InfiniteGridTemplate: ComponentStory<
 > = () => (
     <Box h={"100vh"}>
         <Heading>
-            Filter/Sort list using TanStack Table + Infinite Scroll, 500 items
+            Filter/Sort list using TanStack Table + Infinite Scroll
         </Heading>
         <br />
         <br />
@@ -43,7 +42,7 @@ const InfiniteTableTemplate: ComponentStory<
     typeof NFTCollectionInfiniteTablePresenter
 > = () => (
     <Box h={"100vh"}>
-        <Heading>Infinite Table, 500 items</Heading>
+        <Heading>Infinite Table</Heading>
         <br />
         <br />
         <NFTCollectionInfiniteTablePresenter />
