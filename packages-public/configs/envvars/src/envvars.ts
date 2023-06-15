@@ -190,6 +190,12 @@ export const INFURA_IPFS_PROJECT_SECRET_PUBLIC = "8ffddfdc95f32ea7aa43ee3ba9d2d6
 export const PINATA_JWT_PUBLIC = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJlMzMxZDljZC05MDk4LTRkOTctOGI4Zi03ODY3NTFkZTQxYjgiLCJlbWFpbCI6Imxlby52aWduYUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNzZmYTgwY2I2ZWRmMTkxNTVjODUiLCJzY29wZWRLZXlTZWNyZXQiOiI2YTM1MTkxYThjOTMxMzU3MGFmOGU3NGEyZWQzZmVhYWYxYjFhZDUxY2FkY2ZkNGFhZTc1YjNjMmQ0YzQwMWI3IiwiaWF0IjoxNjgxMDk1ODM3fQ.As9jjfv7BoPF9pTY_Lqj67iMWZXp9EIoGs50zcXaF5Y"
 export const BEACON_ADMIN_PUBLIC = "0xad839Bc20a349b2502468c9d6ba47531f435491f"
 
+export const MAINNET_EXPLORER_API_KEY_PUBLIC = "BG78ZBIAH64QWA748MMNVVZEHW13JR4Z6I"
+export const GOERLI_EXPLORER_API_KEY_PUBLIC = "BG78ZBIAH64QWA748MMNVVZEHW13JR4Z6I"
+export const SEPOLIA_EXPLORER_API_KEY_PUBLIC = "BG78ZBIAH64QWA748MMNVVZEHW13JR4Z6I"
+export const POLYGON_EXPLORER_API_KEY_PUBLIC = "R6G9K1EKZGBYYG528576GS5A6J4YF1WS6I"
+export const POLYGON_MUMBAI_EXPLORER_API_KEY_PUBLIC = "R6G9K1EKZGBYYG528576GS5A6J4YF1WS6I"
+
 //Admin address for beacons used by proxies
 export const BEACON_ADMIN = (import.meta.env ? import.meta.env.VITE_BEACON_ADMIN : process.env.BEACON_ADMIN) ?? BEACON_ADMIN_PUBLIC
 //Private keys for programmatic deployment (NodeJS only)
@@ -230,32 +236,32 @@ export const MAINNET_RPC = (import.meta.env ? import.meta.env.VITE_MAINNET_RPC :
 export const MAINNET_WS = (import.meta.env ? import.meta.env.VITE_MAINNET_WS : process.env.MAINNET_WS) ?? `wss://mainnet.infura.io/ws/v3/${INFURA_API_KEY}`
 export const MAINNET_EXPLORER = (import.meta.env ? import.meta.env.VITE_MAINNET_EXPLORER : process.env.MAINNET_EXPLORER) ?? "https://etherscan.io/";
 export const MAINNET_EXPLORER_API = (import.meta.env ? import.meta.env.VITE_MAINNET_EXPLORER_API : process.env.MAINNET_EXPLORER_API) ?? "https://api.etherscan.io/api";
-export const MAINNET_EXPLORER_API_KEY = (import.meta.env ? import.meta.env.VITE_MAINNET_EXPLORER_API_KEY : process.env.MAINNET_EXPLORER_API_KEY);
+export const MAINNET_EXPLORER_API_KEY = (import.meta.env ? import.meta.env.VITE_MAINNET_EXPLORER_API_KEY : process.env.MAINNET_EXPLORER_API_KEY) ?? MAINNET_EXPLORER_API_KEY_PUBLIC;
 
 export const GOERLI_RPC = (import.meta.env ? import.meta.env.VITE_GOERLI_RPC : process.env.GOERLI_RPC) ?? `https://goerli.infura.io/v3/${INFURA_API_KEY}`
 export const GOERLI_WS = (import.meta.env ? import.meta.env.VITE_GOERLI_WS : process.env.GOERLI_WS) ?? `wss://goerli.infura.io/ws/v3/${INFURA_API_KEY}`
 export const GOERLI_EXPLORER = (import.meta.env ? import.meta.env.VITE_GOERLI_EXPLORER : process.env.GOERLI_EXPLORER) ?? "https://goerli.etherscan.io/";
 export const GOERLI_EXPLORER_API = (import.meta.env ? import.meta.env.VITE_GOERLI_EXPLORER_API : process.env.GOERLI_EXPLORER_API) ?? "https://api-goerli.etherscan.io/api";
-export const GOERLI_EXPLORER_API_KEY = (import.meta.env ? import.meta.env.VITE_GOERLI_EXPLORER_API_KEY : process.env.GOERLI_EXPLORER_API_KEY);
+export const GOERLI_EXPLORER_API_KEY = (import.meta.env ? import.meta.env.VITE_GOERLI_EXPLORER_API_KEY : process.env.GOERLI_EXPLORER_API_KEY) ?? GOERLI_EXPLORER_API_KEY_PUBLIC;
 
 
 export const SEPOLIA_RPC = (import.meta.env ? import.meta.env.VITE_SEPOLIA_RPC : process.env.SEPOLIA_RPC) ?? `https://sepolia.infura.io/v3/${INFURA_API_KEY}`
 export const SEPOLIA_WS = (import.meta.env ? import.meta.env.VITE_SEPOLIA_WS : process.env.SEPOLIA_WS) ?? `wss://sepolia.infura.io/ws/v3/${INFURA_API_KEY}`
 export const SEPOLIA_EXPLORER = (import.meta.env ? import.meta.env.VITE_SEPOLIA_EXPLORER : process.env.SEPOLIA_EXPLORER) ?? "https://sepolia.etherscan.io/";
 export const SEPOLIA_EXPLORER_API = (import.meta.env ? import.meta.env.VITE_SEPOLIA_EXPLORER_API : process.env.SEPOLIA_EXPLORER_API) ?? "https://api-sepolia.etherscan.io/api";
-export const SEPOLIA_EXPLORER_API_KEY = (import.meta.env ? import.meta.env.VITE_SEPOLIA_EXPLORER_API_KEY : process.env.SEPOLIA_EXPLORER_API_KEY);
+export const SEPOLIA_EXPLORER_API_KEY = (import.meta.env ? import.meta.env.VITE_SEPOLIA_EXPLORER_API_KEY : process.env.SEPOLIA_EXPLORER_API_KEY) ?? SEPOLIA_EXPLORER_API_KEY_PUBLIC;
 
-export const POLYGON_RPC = import.meta.env ? import.meta.env.VITE_POLYGON_RPC : process.env.POLYGON_RPC ?? `https://polygon-mainnet.infura.io/v3/${INFURA_API_KEY}`
+export const POLYGON_RPC = (import.meta.env ? import.meta.env.VITE_POLYGON_RPC : process.env.POLYGON_RPC) ?? `https://polygon-mainnet.infura.io/v3/${INFURA_API_KEY}`
 export const POLYGON_WS = import.meta.env ? import.meta.env.VITE_POLYGON_WS : process.env.POLYGON_WS ?? `wss://polygon-mainnet.infura.io/ws/v3/${INFURA_API_KEY}`
 export const POLYGON_EXPLORER = import.meta.env ? import.meta.env.VITE_POLYGON_EXPLORER : process.env.POLYGON_EXPLORER ?? "https://polygonscan.com/";
 export const POLYGON_EXPLORER_API = import.meta.env ? import.meta.env.VITE_POLYGON_EXPLORER_API : process.env.POLYGON_EXPLORER_API ?? "https://api.polygonscan.com/api";
-export const POLYGON_EXPLORER_API_KEY = (import.meta.env ? import.meta.env.VITE_POLYGON_EXPLORER_API_KEY : process.env.POLYGON_EXPLORER_API_KEY);
+export const POLYGON_EXPLORER_API_KEY = (import.meta.env ? import.meta.env.VITE_POLYGON_EXPLORER_API_KEY : process.env.POLYGON_EXPLORER_API_KEY) ?? POLYGON_EXPLORER_API_KEY_PUBLIC;
 
 export const POLYGON_MUMBAI_RPC = (import.meta.env ? import.meta.env.VITE_POLYGON_MUMBAI_RPC : process.env.POLYGON_MUMBAI_RPC) ?? `https://polygon-mumbai.infura.io/v3/${INFURA_API_KEY}`
 export const POLYGON_MUMBAI_WS = (import.meta.env ? import.meta.env.VITE_POLYGON_MUMBAI_WS : process.env.POLYGON_MUMBAI_WS) ?? `wss://polygon-mumbai.infura.io/ws/v3/${INFURA_API_KEY}`
 export const POLYGON_MUMBAI_EXPLORER = (import.meta.env ? import.meta.env.VITE_POLYGON_MUMBAI_EXPLORER : process.env.POLYGON_MUMBAI_EXPLORER) ?? "https://testnet.polygonscan.com/";
 export const POLYGON_MUMBAI_EXPLORER_API = (import.meta.env ? import.meta.env.VITE_POLYGON_MUMBAI_EXPLORER_API : process.env.POLYGON_MUMBAI_EXPLORER_API) ?? "https://api-testnet.polygonscan.com/api";
-export const POLYGON_MUMBAI_EXPLORER_API_KEY = (import.meta.env ? import.meta.env.VITE_POLYGON_MUMBAI_EXPLORER_API_KEY : process.env.POLYGON_MUMBAI_EXPLORER_API_KEY);
+export const POLYGON_MUMBAI_EXPLORER_API_KEY = (import.meta.env ? import.meta.env.VITE_POLYGON_MUMBAI_EXPLORER_API_KEY : process.env.POLYGON_MUMBAI_EXPLORER_API_KEY) ?? POLYGON_MUMBAI_EXPLORER_API_KEY_PUBLIC;
 
 export const ARBITRUM_RPC = (import.meta.env ? import.meta.env.VITE_ARBITRUM_RPC : process.env.ARBITRUM_RPC) ?? `https://arbitrum-mainnet.infura.io/v3/${INFURA_API_KEY}`
 export const ARBITRUM_WS = (import.meta.env ? import.meta.env.VITE_ARBITRUM_WS : process.env.ARBITRUM_WS) ?? `wss://arbitrum-mainnet.infura.io/ws/v3/${INFURA_API_KEY}`

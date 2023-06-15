@@ -1,5 +1,5 @@
 import composeHooks from "react-hooks-compose";
-import { NFTCollectionTablePresenter } from "./Presenter";
+import { NFTCollectionTablePresenter } from "./presenter";
 
 export const useTableHook = () => {
     // TBA

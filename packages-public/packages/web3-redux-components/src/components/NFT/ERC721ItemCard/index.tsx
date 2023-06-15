@@ -14,7 +14,7 @@ export const useERC721ItemCard = ({
     address,
     tokenId,
 }: useERC721ItemCardProps) => {
-    const [token] = ERC721.hooks.useERC721({networkId, address, tokenId});
+    const [token] = ERC721.hooks.useERC721({ networkId, address, tokenId });
     const metadata = token?.metadata
 
     return {

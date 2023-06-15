@@ -25,7 +25,7 @@ import {
     QueryClientProvider,
     useInfiniteQuery,
 } from "@tanstack/react-query";
-import { useVirtual } from "react-virtual";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import { ApiResponse, Item, fetchData } from "./dataFaker";
 import { AvatarCell } from "../Table/Cells/AvatarCell";
@@ -175,12 +175,14 @@ const VirtualComponent = () => {
     });
 
     const { rows } = table.getRowModel();
-    const rowVirtualizer = useVirtual({
-        parentRef: tableContainerRef,
+    const rowVirtualizer = useVirtualizer({
+        getScrollElement: () =>
+            // @ts-ignore
+            tableContainerRef,
         size: rows.length,
         overscan: 10,
     });
-    const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
+    const virtualRows = rowVirtualizer.getVirtualItems();
     const { themes } = useTheme();
 
     if (isLoading) {
