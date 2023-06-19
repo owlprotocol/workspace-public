@@ -1,18 +1,18 @@
 import { THEME_COLORS } from "../constants/index.js";
-import Button from "./Button";
-import Text from "./Text";
-import Link from "./Link";
-import Input from "./Input";
-import Textarea from "./Textarea";
-import Select from "./Select";
-import AccordionButton from "./AccordionButton";
-import FormLabel from "./FormLabel";
-import AccordionIcon from "./AccordionIcon";
-import Box from "./Box";
+import Button from "./Button.js";
+import Text from "./Text.js";
+import Link from "./Link.js";
+import Input from "./Input.js";
+import Textarea from "./Textarea.js";
+import Select from "./Select.js";
+import AccordionButton from "./AccordionButton.js";
+import FormLabel from "./FormLabel.js";
+import AccordionIcon from "./AccordionIcon.js";
+import Box from "./Box.js";
+import Tabs from "./Tabs.js";
 
 const components = (CURRENT_THEME: string) => {
-    // @ts-ignore
-    const { color6, color9 } = THEME_COLORS[CURRENT_THEME];
+    const { color6 }: any = THEME_COLORS[CURRENT_THEME];
 
     return {
         Box: Box(CURRENT_THEME),
@@ -25,6 +25,7 @@ const components = (CURRENT_THEME: string) => {
         AccordionButton: AccordionButton(CURRENT_THEME),
         FormLabel: FormLabel(CURRENT_THEME),
         AccordionIcon: AccordionIcon(CURRENT_THEME),
+        // Tabs: Tabs(CURRENT_THEME), --require chakra upgrade. see module.
 
         Container: {
             baseStyle: {
@@ -35,12 +36,6 @@ const components = (CURRENT_THEME: string) => {
         Divider: {
             baseStyle: {
                 borderColor: color6,
-            },
-        },
-        Tab: {
-            baseStyle: {
-                bg: color6,
-                color: color9,
             },
         },
     };
