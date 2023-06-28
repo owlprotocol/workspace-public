@@ -9,7 +9,7 @@ import AccordionButton from "./AccordionButton.js";
 import FormLabel from "./FormLabel.js";
 import AccordionIcon from "./AccordionIcon.js";
 import Box from "./Box.js";
-import Tabs from "./Tabs.js";
+// import Tabs from "./Tabs.js";
 
 const components = (CURRENT_THEME: string) => {
     const { color6 }: any = THEME_COLORS[CURRENT_THEME];
