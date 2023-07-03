@@ -1,5 +1,4 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types";
-import { IERC20Mintable } from "../../../artifacts.js";
 import { ERC20MintableDeploy } from "../../../deploy/assets/ERC20/ERC20Mintable.js";
 
 //https://github.com/wighawag/hardhat-deploy/blob/master/types.ts#L358
@@ -18,7 +17,7 @@ const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironmen
         Object.entries(results).map(async ([k, v]) => {
             const submission = await getOrNull(k);
             if (submission?.address != v.address) {
-                return save(k, { address: v.address, abi: IERC20Mintable.abi });
+                return save(k, { address: v.address, abi: [] });
             }
         }),
     );

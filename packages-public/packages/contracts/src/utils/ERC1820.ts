@@ -1,6 +1,5 @@
-import { ethers, utils } from "ethers";
-import { IERC1820Registry as IERC1820RegistryArtifact } from "../artifacts.js";
-import { IERC1820Registry } from "../ethers/types.js";
+import { utils } from "ethers";
+import { IERC1820RegistryUpgradeable__factory } from "../typechain/ethers/factories/@openzeppelin/contracts-upgradeable/utils/introspection/IERC1820RegistryUpgradeable__factory.js";
 import { IERC1820Interface } from "../ethers/interfaces.js";
 
 //Nick's method ERC1820
@@ -11,10 +10,10 @@ export const deploymentTx =
 
 export const deploymentCostLimit = utils.parseUnits("1002100000000000000", "wei");
 
-export const registry = new ethers.Contract(registryAddress, IERC1820RegistryArtifact.abi) as IERC1820Registry;
+//@ts-expect-error
+export const registry = IERC1820RegistryUpgradeable__factory.connect(registryAddress, undefined);
 
-export const InterfaceImplementerSetFragment =
-    IERC1820Interface.events["InterfaceImplementerSet(address,bytes32,address)"];
+export const InterfaceImplementerSetFragment = IERC1820Interface.getEvent("InterfaceImplementerSet");
 export const InterfaceImplementerSet = JSON.parse(InterfaceImplementerSetFragment.format(utils.FormatTypes.json));
 export const InterfaceImplementerSetSigHash = InterfaceImplementerSetFragment.format(utils.FormatTypes.sighash);
 export const InterfaceImplementerSetTopic = IERC1820Interface.getEventTopic("InterfaceImplementerSet");

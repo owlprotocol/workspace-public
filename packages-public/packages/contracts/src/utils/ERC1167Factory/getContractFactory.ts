@@ -4,16 +4,16 @@
 import { ContractFactory, Overrides } from "ethers";
 import type { BaseContract, Signer } from "ethers";
 
-import { cloneDeterministicAddress, deployDeterministicAddress, ERC1167FactoryAddress } from "./getAddress.js";
+import { cloneDeterministicAddress, deployDeterministicAddress } from "./getAddress.js";
 import { cloneDeterministic, deployDeterministic } from "./deploy.js";
 import { getInitData } from "./getInitData.js";
 import { ContractParameters, ContractParametersWithOverrides, CustomFactory } from "./factory.js";
 import { getFactories } from "../../ethers/factories.js";
-import { ERC1167Factory } from "../../ethers/types.js";
+import type { ERC1167Factory } from "../../typechain/ethers/contracts/proxy/ERC1167/ERC1167Factory.js";
 
-export const ERC1167FactoryImplementation = (ethers: Signer) => {
+export const ERC1167FactoryImplementation = (ethers: Signer, address: string) => {
     const factory = getFactories(ethers).ERC1167Factory;
-    return factory.attach(ERC1167FactoryAddress);
+    return factory.attach(address);
 };
 
 /***** Deterministic Deployment *****/

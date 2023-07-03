@@ -3,17 +3,15 @@
  */
 import { utils } from "ethers";
 import type { BytesLike, BaseContract } from "ethers";
+import { PUBLIC_ADDRESS_FACTORY_DEPLOYER } from "@owlprotocol/envvars";
 
 import { getInitData, GetInitDataArgs } from "./getInitData.js";
-import { getSalt, DEFAULT_SALT } from "./getSalt.js";
+import { getSalt } from "./getSalt.js";
 import * as Create2 from "../Create2.js";
 import * as Clones from "../Clones.js";
-import { ERC1167Factory as ERC1167FactoryArtifact } from "../../artifacts.js";
 
-import { proxyAddress } from "../DeployerDeterministic.js";
-
-const ERC1167FactoryBytecodeHash = utils.keccak256(ERC1167FactoryArtifact.bytecode);
-export const ERC1167FactoryAddress = Create2.computeAddress(DEFAULT_SALT, ERC1167FactoryBytecodeHash, proxyAddress);
+//ERC1167FactoryAddress is computed based on the factory deployer address and nonce = 0
+export const ERC1167FactoryAddress = utils.getContractAddress({ from: PUBLIC_ADDRESS_FACTORY_DEPLOYER, nonce: 0 });
 
 export interface GetAddressArgs<
     ContractTyped extends BaseContract = BaseContract,

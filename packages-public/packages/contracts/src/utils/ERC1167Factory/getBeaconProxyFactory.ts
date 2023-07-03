@@ -8,8 +8,8 @@ import { getInitDataEncoder } from "./getInitData.js";
 
 import { deterministicFactory, DeterministicFactoryArgs } from "./getContractFactory.js";
 import { ContractParameters, ContractParametersWithOverrides, CustomFactory } from "./factory.js";
-import { BeaconProxy as BeaconProxyArtifact } from "../../artifacts.js";
-import { BeaconProxy, BeaconProxy__factory } from "../../ethers/types.js";
+import { BeaconProxyFactory as BeaconProxyFactory } from "../../ethers/factories.js";
+import type { BeaconProxy, BeaconProxy__factory } from "../../typechain/ethers/index.js";
 
 /***** Beacon Proxy *****/
 interface BeaconProxyFactoryArgs<
@@ -32,10 +32,6 @@ export function beaconProxyFactory<
     const initFragment = initSignature ? contractInterface.getFunction(initSignature as string) : undefined;
     const initArgsLen = initFragment ? initFragment.inputs.length : 0;
 
-    const BeaconProxyFactory = new ContractFactory(
-        BeaconProxyArtifact.abi,
-        BeaconProxyArtifact.bytecode,
-    ) as BeaconProxy__factory;
     BeaconProxyFactory.connect(contractFactory.signer);
 
     const BeaconProxyDeterministicFactory = deterministicFactory<BeaconProxy__factory, BeaconProxy, "initialize">({

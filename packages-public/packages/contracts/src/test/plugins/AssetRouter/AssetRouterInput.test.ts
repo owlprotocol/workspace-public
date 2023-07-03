@@ -1,9 +1,16 @@
+//@ts-nocheck
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import hre, { ethers } from "hardhat";
 import "@nomicfoundation/hardhat-chai-matchers";
 import { expect } from "chai";
 
-import { AssetRouterInput, ERC20Mintable, ERC721Mintable, ERC1155Mintable, Fallback } from "../../../ethers/types.js";
+import {
+    AssetRouterInput,
+    ERC20Mintable,
+    ERC721Mintable,
+    ERC1155Mintable,
+    Fallback,
+} from "../../../typechain/ethers/index.js";
 import deployProxyNick from "../../../deploy-hre/common/DeterministicDeployer.js";
 import ProxyFactoryDeploy from "../../../deploy-hre/common/ProxyFactory.js";
 import { ERC20MintableInitializeArgs, flattenInitArgsERC20Mintable } from "../../../utils/ERC20Mintable.js";
@@ -40,8 +47,8 @@ describe("AssetRouterInput", function () {
         const signerAddress = signer.address;
 
         factories = getFactories(signer);
-        const cloneFactory = factories.ERC1167Factory.attach(ERC1167FactoryAddress);
-        const deterministicFactories = getDeterministicFactories(factories);
+        const cloneFactory = factories.ERC1167Factory.attach(ERC1167FactoryAddressLocal);
+        const deterministicFactories = getDeterministicFactories(factories, ERC1167FactoryAddressLocal);
         deterministicInitFactories = getDeterministicInitializeFactories(factories, cloneFactory, signerAddress);
 
         Fallback = await deterministicFactories.Fallback.deploy();

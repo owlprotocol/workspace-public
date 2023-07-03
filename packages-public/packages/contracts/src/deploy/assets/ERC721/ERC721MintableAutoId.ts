@@ -1,4 +1,6 @@
 import { TransactionReceipt } from "@ethersproject/providers";
+import log from "loglevel";
+import { ethers } from "ethers";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
 import { getFactories } from "../../../ethers/factories.js";
@@ -12,7 +14,6 @@ import {
 } from "../../../utils/ERC721MintableAutoId.js";
 import { getBeaconProxyFactories } from "../../../ethers/beaconProxyFactories.js";
 import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
-import log from "loglevel";
 
 interface Params extends RunTimeEnvironment {
     tokens: number;
@@ -20,13 +21,15 @@ interface Params extends RunTimeEnvironment {
 }
 export const ERC721MintableAutoIdDeploy = async ({ provider, signers, network, tokens, balanceTarget }: Params) => {
     const { awaitAllObj } = await import("@owlprotocol/utils");
+    const cloneFactoryAddress = ERC1167FactoryAddress;
+
     const signer = signers[0];
     const signerAddress = await signer.getAddress();
     let nonce = await provider.getTransactionCount(signerAddress);
 
     const factories = getFactories(signer);
-    const cloneFactory = factories.ERC1167Factory.attach(ERC1167FactoryAddress);
-    const deterministicFactories = getDeterministicFactories(factories);
+    const cloneFactory = factories.ERC1167Factory.attach(cloneFactoryAddress);
+    const deterministicFactories = getDeterministicFactories(factories, cloneFactoryAddress);
     const deterministicInitializeFactories = getDeterministicInitializeFactories(
         factories,
         cloneFactory,
@@ -52,8 +55,9 @@ export const ERC721MintableAutoIdDeploy = async ({ provider, signers, network, t
             admin: signerAddress,
             name,
             symbol: `NFT${i}`,
-            initBaseURI: getContractURIs({ chainId, name, tokenId: i }).tokenUri,
             contractUri: getContractURIs({ chainId, name }).contractUri,
+            tokenRoyaltyProvider: ethers.constants.AddressZero,
+            tokenUriProvider: ethers.constants.AddressZero,
         };
     }
 

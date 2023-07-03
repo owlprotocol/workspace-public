@@ -1,11 +1,14 @@
 import { utils } from "ethers";
 import type { HardhatRuntimeEnvironment } from "hardhat/types";
+import { PRIVATE_KEY_ANVIL } from "@owlprotocol/envvars";
 import { DeterministicDeployerDeploy } from "../../deploy/common/DeterministicDeployer.js";
-import { PRIVATE_KEY_0, PRIVATE_KEY_ANVIL } from "@owlprotocol/envvars";
 
 const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironment) => {
-    if (!PRIVATE_KEY_0) throw new Error(`PRIVATE_KEY_0 ${PRIVATE_KEY_0}`)
-    const wallet = new ethers.Wallet(PRIVATE_KEY_0, ethers.provider);
+    //@ts-expect-error
+    const pkey0 = network.config.accounts[0];
+    if (!pkey0) throw new Error(`pkey0 ${pkey0}`);
+
+    const wallet = new ethers.Wallet(pkey0, ethers.provider);
     const walletAddress = await wallet.getAddress();
 
     if (network.name == "anvil") {
@@ -17,7 +20,7 @@ const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironmen
                 to: walletAddress,
                 value: utils.parseEther("10.0").sub(balance),
                 gasLimit: 21000,
-                type: 2,
+                type: ((network.config as any).eip1559 as boolean) ? 2 : 0,
             });
             await tx.wait(1);
         }

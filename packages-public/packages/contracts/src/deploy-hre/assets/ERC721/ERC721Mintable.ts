@@ -1,5 +1,4 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types";
-import { IERC721Mintable } from "../../../artifacts.js";
 import { ERC721MintableDeploy } from "../../../deploy/assets/ERC721/ERC721Mintable.js";
 
 const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironment) => {
@@ -17,7 +16,7 @@ const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironmen
         Object.entries(results).map(async ([k, v]) => {
             const submission = await getOrNull(k);
             if (submission?.address != v.address) {
-                return save(k, { address: v.address, abi: IERC721Mintable.abi });
+                return save(k, { address: v.address, abi: [] });
             }
         }),
     );

@@ -1,7 +1,7 @@
 import { constants, utils } from "ethers";
 import { AssetBasketInput, validateAssetBasketInput } from "./AssetLib.js";
-import { AssetRouterInput as AssetRouterInputArtifact } from "../artifacts.js";
-import type { AssetRouterInput } from "../ethers/types.js";
+import { AssetRouterInput__factory } from "../typechain/ethers/factories/contracts/plugins/AssetRouter/AssetRouterInput__factory.js";
+import type { AssetRouterInput } from "../typechain/ethers/contracts/plugins/AssetRouter/AssetRouterInput.js";
 
 export interface AssetRouterInputInitializeArgs {
     admin: Parameters<AssetRouterInput["initialize"]>[0];
@@ -17,13 +17,18 @@ export function flattenInitArgsAssetRouterInput(args: AssetRouterInputInitialize
         contractUri ?? "",
         gsnForwarder ?? constants.AddressZero,
         inputBaskets.map(validateAssetBasketInput),
-    ] as Parameters<AssetRouterInput["initialize"]>;
+    ] as [
+            Parameters<AssetRouterInput["initialize"]>[0],
+            Parameters<AssetRouterInput["initialize"]>[1],
+            Parameters<AssetRouterInput["initialize"]>[2],
+            Parameters<AssetRouterInput["initialize"]>[3],
+        ]
 }
 
-export const SupportsInputAsset = AssetRouterInputArtifact.abi.find((a: any) => a.name === "SupportsInputAsset");
-export const SupportsInputAssetFragment = utils.EventFragment.from(SupportsInputAsset);
+export const AssetRouterInputInterface = AssetRouterInput__factory.createInterface();
+
+export const SupportsInputAssetFragment = AssetRouterInputInterface.getEvent("SupportsInputAsset");
 export const SupportsInputAssetTopic = SupportsInputAssetFragment.format(utils.FormatTypes.sighash);
 
-export const RouteBasket = AssetRouterInputArtifact.abi.find((a: any) => a.name === "RouteBasket");
-export const RouteBasketFragment = utils.EventFragment.from(RouteBasket);
+export const RouteBasketFragment = AssetRouterInputInterface.getEvent("RouteBasket");
 export const RouteBasketTopic = RouteBasketFragment.format(utils.FormatTypes.sighash);

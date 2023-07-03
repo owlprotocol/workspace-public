@@ -1,3 +1,4 @@
+import log from "loglevel";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
 import { getFactories } from "../../../ethers/factories.js";
@@ -10,21 +11,21 @@ import { getBeaconProxyFactories } from "../../../ethers/beaconProxyFactories.js
 import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
 import { validateAssetBasketInput, validateAssetBasketOutput } from "../../../utils/AssetLib.js";
 import { MINTER_ROLE } from "../../../utils/IAccessControl.js";
-import log from "loglevel";
 
 export interface AssetRouterCraftDeployParams extends RunTimeEnvironment {
     routers: Pick<AssetRouterCraftInitializeArgs, "inputBaskets" | "outputBaskets">[];
 }
 export const AssetRouterCraftDeploy = async ({ provider, signers, network, routers }: AssetRouterCraftDeployParams) => {
     const { awaitAllObj } = await import("@owlprotocol/utils");
+    const cloneFactoryAddress = ERC1167FactoryAddress;
 
     const signer = signers[0];
     const signerAddress = await signer.getAddress();
     let nonce = await provider.getTransactionCount(signerAddress);
 
     const factories = getFactories(signer);
-    const cloneFactory = factories.ERC1167Factory.attach(ERC1167FactoryAddress);
-    const deterministicFactories = getDeterministicFactories(factories);
+    const cloneFactory = factories.ERC1167Factory.attach(cloneFactoryAddress);
+    const deterministicFactories = getDeterministicFactories(factories, cloneFactoryAddress);
     const deterministicInitializeFactories = getDeterministicInitializeFactories(
         factories,
         cloneFactory,

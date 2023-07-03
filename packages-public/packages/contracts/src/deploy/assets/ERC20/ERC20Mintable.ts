@@ -1,4 +1,5 @@
 import { utils } from "ethers";
+import log from "loglevel";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
 import { getFactories } from "../../../ethers/factories.js";
@@ -9,7 +10,6 @@ import {
 import { ERC20MintableInitializeArgs, flattenInitArgsERC20Mintable } from "../../../utils/ERC20Mintable.js";
 import { getBeaconProxyFactories } from "../../../ethers/beaconProxyFactories.js";
 import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
-import log from "loglevel";
 
 interface Params extends RunTimeEnvironment {
     tokens: number;
@@ -17,6 +17,8 @@ interface Params extends RunTimeEnvironment {
 }
 export const ERC20MintableDeploy = async ({ provider, signers, network, tokens, balanceTarget }: Params) => {
     const { awaitAllObj } = await import("@owlprotocol/utils");
+    const cloneFactoryAddress = ERC1167FactoryAddress;
+
     const balanceTargetWei = utils.parseUnits(`${balanceTarget}`);
 
     const signer = signers[0];
@@ -24,8 +26,8 @@ export const ERC20MintableDeploy = async ({ provider, signers, network, tokens, 
     let nonce = await provider.getTransactionCount(signerAddress);
 
     const factories = getFactories(signer);
-    const cloneFactory = factories.ERC1167Factory.attach(ERC1167FactoryAddress);
-    const deterministicFactories = getDeterministicFactories(factories);
+    const cloneFactory = factories.ERC1167Factory.attach(cloneFactoryAddress);
+    const deterministicFactories = getDeterministicFactories(factories, cloneFactoryAddress);
     const deterministicInitializeFactories = getDeterministicInitializeFactories(
         factories,
         cloneFactory,

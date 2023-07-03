@@ -1,5 +1,5 @@
-import { InitializeFactories, NoInitFactories, ProxyInitializeFactories } from "./deterministicFactories.js";
-import { ERC1167Factory } from "./types.js";
+import type { InitializeFactories, NoInitFactories, ProxyInitializeFactories } from "./deterministicFactories.js";
+import type { ERC1167Factory } from "../typechain/ethers/contracts/proxy/ERC1167/ERC1167Factory.js";
 import { mapValues, omit } from "../lodash.js";
 import { beaconProxyFactory } from "../utils/ERC1167Factory/getBeaconProxyFactory.js";
 
@@ -15,12 +15,11 @@ export function getBeaconProxyFactories(
         "BeaconProxy",
         "UpgradeableBeacon",
         "Fallback",
-        "ERC721TopDownLib",
-        "ERC721TopDownDnaLib",
         "Multicall2",
+        "ERC1820Registry",
     ) as Omit<
         typeof deterministicFactories,
-        "ERC1167Factory" | "BeaconProxy" | "UpgradeableBeacon" | "Fallback" | "ERC721TopDownLib" | "ERC721TopDownDnaLib"
+        "ERC1167Factory" | "BeaconProxy" | "UpgradeableBeacon" | "Fallback" | "ERC1820Registry"
     >;
 
     return mapValues(factories2, (f: any) => {

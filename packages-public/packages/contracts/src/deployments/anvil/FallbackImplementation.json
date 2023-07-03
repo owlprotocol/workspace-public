@@ -1,10 +1,10 @@
 {
-  "address": "0x626b144912fA871d1A1e79611204344E66Be2D2B",
+  "address": "0x5B5165D128BF4B11231918cB073bd4A3c0C8758a",
   "abi": [
     {
       "stateMutability": "nonpayable",
       "type": "fallback"
     }
   ],
-  "numDeployments": 1
+  "numDeployments": 2
 }

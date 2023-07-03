@@ -4,14 +4,13 @@ async function verify() {
     const deployments = await hre.deployments.all();
 
     for (const [k, v] of Object.entries(deployments)) {
-        if (
-            k.endsWith("Implementation") &&
-            k != "ERC721TopDownDnaImplementation" &&
-            k != "ERC721TopDownDnaMintableImplementation" &&
-            k != "ERC721TopDownMintableAutoIdImplementation" &&
-            k != "ERC721TopDownMintableImplementation"
-        ) {
-            const name = k.replace("Implementation", "");
+        let name: string | undefined;
+        if (k.endsWith("Implementation")) {
+            name = k.replace("Implementation", "");
+        } else if (k === "ProxyFactory") {
+            name = "ERC1167Factory";
+        }
+        if (name) {
             const artifact = await hre.artifacts.readArtifact(name);
             const fqn = `${artifact.sourceName}:${name}`;
 

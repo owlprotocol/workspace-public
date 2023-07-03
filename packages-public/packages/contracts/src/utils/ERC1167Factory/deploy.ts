@@ -13,7 +13,7 @@ import {
 } from "./getAddress.js";
 import { getInitData } from "./getInitData.js";
 import { DEFAULT_SALT } from "./getSalt.js";
-import { ERC1167Factory } from "../../ethers/types.js";
+import type { ERC1167Factory } from "../../typechain/ethers/index.js";
 
 export interface DeployDeterministicInput<
     ContractTyped extends BaseContract = BaseContract,

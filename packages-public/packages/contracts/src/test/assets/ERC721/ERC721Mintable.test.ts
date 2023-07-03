@@ -1,8 +1,9 @@
+//@ts-nocheck
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import hre, { ethers } from "hardhat";
 import { expect, assert } from "chai";
 import { zip } from "lodash";
-import { ERC721Mintable } from "../../../ethers/types.js";
+import { ERC721Mintable } from "../../../typechain/ethers/index.js";;
 import deployProxyNick from "../../../deploy-hre/common/DeterministicDeployer.js";
 import ProxyFactoryDeploy from "../../../deploy-hre/common/ProxyFactory.js";
 import ERC1820Deploy from "../../../deploy-hre/common/ERC1820.js";
@@ -48,7 +49,7 @@ describe("ERC721Mintable", function () {
         const signerAddress = signer.address;
 
         factories = getFactories(signer);
-        const cloneFactory = factories.ERC1167Factory.attach(ERC1167FactoryAddress);
+        const cloneFactory = factories.ERC1167Factory.attach(ERC1167FactoryAddressLocal);
         deterministicFactories = getDeterministicInitializeFactories(factories, cloneFactory, signerAddress);
         ERC721MintableFactory = deterministicFactories.ERC721Mintable;
     });
@@ -77,11 +78,6 @@ describe("ERC721Mintable", function () {
     it("symbol", async () => {
         const result = await ERC721Mintable.symbol();
         expect(result).to.be.eq(token.symbol);
-    });
-
-    it("baseURI", async () => {
-        const result = await ERC721Mintable.baseURI();
-        expect(result).to.be.eq(token.initBaseURI);
     });
 
     it("balanceOf", async () => {

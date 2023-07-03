@@ -1,50 +1,6 @@
-import { ContractFactory } from "ethers";
 import type { Signer } from "ethers";
-import type { Artifact } from "hardhat/types/artifacts.js";
-import {
-    ERC1167Factory__factory,
-    ERC20Mintable__factory,
-    ERC721Mintable__factory,
-    ERC721MintableAutoId__factory,
-    ERC721Dna__factory,
-    ERC721TopDownMintable__factory,
-    ERC721TopDownMintableAutoId__factory,
-    ERC721TopDownDnaMintable__factory,
-    ERC721TopDownDna__factory,
-    ERC1155Mintable__factory,
-    ERC1155Dna__factory,
-    AssetRouterCraft__factory,
-    AssetRouterInput__factory,
-    AssetRouterOutput__factory,
-    BeaconProxy__factory,
-    UpgradeableBeacon__factory,
-    Multicall2__factory,
-    Fallback__factory,
-} from "./types.js";
 import { mapValues } from "../lodash.js";
-import {
-    ERC1167Factory as ERC1167FactoryArtifact,
-    ERC20Mintable as ERC20MintableArtifact,
-    ERC721Mintable as ERC721MintableArtifact,
-    ERC721MintableAutoId as ERC721MintableAutoIdArtifact,
-    ERC721Dna as ERC721DnaArtifact,
-    ERC721TopDownMintable as ERC721TopDownMintableArtifact,
-    ERC721TopDownMintableAutoId as ERC721TopDownMintableAutoIdArtifact,
-    ERC721TopDownDnaMintable as ERC721TopDownDnaMintableArtifact,
-    ERC721TopDownDna as ERC721TopDownDnaArtifact,
-    ERC721TopDownLib as ERC721TopDownLibArtifact,
-    ERC721TopDownDnaLib as ERC721TopDownDnaLibArtifact,
-    ERC1155Mintable as ERC1155MintableArtifact,
-    ERC1155Dna as ERC1155DnaArtifact,
-    AssetRouterCraft as AssetRouterCraftArtifact,
-    AssetRouterInput as AssetRouterInputArtifact,
-    AssetRouterOutput as AssetRouterOutputArtifact,
-    BeaconProxy as BeaconProxyArtifact,
-    UpgradeableBeacon as UpgradeableBeaconArtifact,
-    Multicall2 as Multicall2Artifact,
-    Fallback as FallbackArtifact,
-} from "../artifacts.js";
-import { deployDeterministicAddress, ERC1167FactoryAddress } from "../utils/ERC1167Factory/getAddress.js";
+import * as contracts from "../typechain/ethers/factories/contracts/index.js";
 
 export interface DeployedLinkReferences {
     [libraryFileName: string]: {
@@ -53,6 +9,7 @@ export interface DeployedLinkReferences {
 }
 
 //Replace placeholders with libraries, numbers are 2x as bytes are represented as hex, offset by 2 for initial 0x
+/*
 export function linkLibraryBytecode(artifact: Artifact, deployedLinkReferences: DeployedLinkReferences) {
     let bytecode = artifact.bytecode;
     Object.entries(artifact.linkReferences).forEach(([linkRefFile, linkRef]) => {
@@ -68,8 +25,10 @@ export function linkLibraryBytecode(artifact: Artifact, deployedLinkReferences: 
     });
     return bytecode;
 }
+*/
 
 //Static Libraries
+/*
 const ERC721TopDownLib = new ContractFactory(ERC721TopDownLibArtifact.abi, ERC721TopDownLibArtifact.bytecode);
 export const ERC721TopDownLibAddress = deployDeterministicAddress({
     contractInterface: ERC721TopDownLib.interface,
@@ -89,107 +48,62 @@ export const deployedLinkReferences: DeployedLinkReferences = {
     "contracts/assets/ERC721/ERC721TopDownDnaLib.sol": { ERC721TopDownDnaLib: ERC721TopDownDnaLibAddress },
 };
 
-//Proxies
-const ERC1167Factory = new ContractFactory(
-    ERC1167FactoryArtifact.abi,
-    ERC1167FactoryArtifact.bytecode,
-) as ERC1167Factory__factory;
-const BeaconProxy = new ContractFactory(BeaconProxyArtifact.abi, BeaconProxyArtifact.bytecode) as BeaconProxy__factory;
-const UpgradeableBeacon = new ContractFactory(
-    UpgradeableBeaconArtifact.abi,
-    UpgradeableBeaconArtifact.bytecode,
-) as UpgradeableBeacon__factory;
-const Fallback = new ContractFactory(FallbackArtifact.abi, FallbackArtifact.bytecode) as Fallback__factory;
-const Multicall2 = new ContractFactory(Multicall2Artifact.abi, Multicall2Artifact.bytecode) as Multicall2__factory;
-
-//Assets
-const ERC20Mintable = new ContractFactory(
-    ERC20MintableArtifact.abi,
-    ERC20MintableArtifact.bytecode,
-) as ERC20Mintable__factory;
-
-const ERC721Mintable = new ContractFactory(
-    ERC721MintableArtifact.abi,
-    ERC721MintableArtifact.bytecode,
-) as ERC721Mintable__factory;
-
-const ERC721MintableAutoId = new ContractFactory(
-    ERC721MintableAutoIdArtifact.abi,
-    ERC721MintableAutoIdArtifact.bytecode,
-) as ERC721MintableAutoId__factory;
-
-const ERC721Dna = new ContractFactory(ERC721DnaArtifact.abi, ERC721DnaArtifact.bytecode) as ERC721Dna__factory;
-
 const ERC721TopDownMintableBytecode = linkLibraryBytecode(ERC721TopDownMintableArtifact, deployedLinkReferences);
 const ERC721TopDownMintable = new ContractFactory(
     ERC721TopDownMintableArtifact.abi,
     ERC721TopDownMintableBytecode,
 ) as ERC721TopDownMintable__factory;
+*/
 
-const ERC721TopDownMintableAutoIdBytecode = linkLibraryBytecode(
-    ERC721TopDownMintableAutoIdArtifact,
-    deployedLinkReferences,
-);
-const ERC721TopDownMintableAutoId = new ContractFactory(
-    ERC721TopDownMintableAutoIdArtifact.abi,
-    ERC721TopDownMintableAutoIdBytecode,
-) as ERC721TopDownMintableAutoId__factory;
+//ERC1820 Registry
+export const ERC1820RegistryFactory = new contracts.common.erc1820.erc1820Sol.ERC1820Registry__factory();
+//Proxies
+export const ERC1167FactoryFactory = new contracts.proxy.erc1167.ERC1167Factory__factory();
+export const BeaconProxyFactory = new contracts.proxy.beacon.BeaconProxy__factory();
+export const UpgradeableBeaconFactory = new contracts.proxy.beacon.UpgradeableBeacon__factory();
+export const FallbackFactory = new contracts.utils.Fallback__factory();
+export const Multicall2Factory = new contracts.utils.Multicall2__factory();
 
-const ERC721TopDownDnaMintableBytecode = linkLibraryBytecode(ERC721TopDownDnaMintableArtifact, deployedLinkReferences);
-const ERC721TopDownDnaMintable = new ContractFactory(
-    ERC721TopDownDnaMintableArtifact.abi,
-    ERC721TopDownDnaMintableBytecode,
-) as ERC721TopDownDnaMintable__factory;
+//Assets
+export const ERC20MintableFactory = new contracts.assets.erc20.ERC20Mintable__factory();
+export const ERC721MintableFactory = new contracts.assets.erc721.ERC721Mintable__factory();
+export const ERC721MintableAutoIdFactory = new contracts.assets.erc721.ERC721MintableAutoId__factory();
+export const ERC1155MintableFactory = new contracts.assets.erc1155.ERC1155Mintable__factory();
 
-const ERC721TopDownDnaBytecode = linkLibraryBytecode(ERC721TopDownDnaArtifact, deployedLinkReferences);
-const ERC721TopDownDna = new ContractFactory(
-    ERC721TopDownDnaArtifact.abi,
-    ERC721TopDownDnaBytecode,
-) as ERC721TopDownDna__factory;
+//Metadata
+export const TokenURIFactory = new contracts.plugins.tokenUri.TokenURI__factory();
+export const TokenURIBaseURIFactory = new contracts.plugins.tokenUri.TokenURIBaseURI__factory();
+export const TokenURIDnaFactory = new contracts.plugins.tokenUri.TokenURIDna__factory();
 
-const ERC1155Mintable = new ContractFactory(
-    ERC1155MintableArtifact.abi,
-    ERC1155MintableArtifact.bytecode,
-) as ERC1155Mintable__factory;
+//Royalty
+export const ERC2981SetterFactory = new contracts.plugins.erc2981.ERC2981Setter__factory();
 
-const ERC1155Dna = new ContractFactory(ERC1155DnaArtifact.abi, ERC1155DnaArtifact.bytecode) as ERC1155Dna__factory;
+//Dna
+export const TokenDnaFactory = new contracts.plugins.tokenDna.TokenDna__factory();
 
-const AssetRouterCraft = new ContractFactory(
-    AssetRouterCraftArtifact.abi,
-    AssetRouterCraftArtifact.bytecode,
-) as AssetRouterCraft__factory;
-
-const AssetRouterInput = new ContractFactory(
-    AssetRouterInputArtifact.abi,
-    AssetRouterInputArtifact.bytecode,
-) as AssetRouterInput__factory;
-
-const AssetRouterOutput = new ContractFactory(
-    AssetRouterOutputArtifact.abi,
-    AssetRouterOutputArtifact.bytecode,
-) as AssetRouterOutput__factory;
+export const AssetRouterCraftFactory = new contracts.plugins.assetRouter.AssetRouterCraft__factory();
+export const AssetRouterInputFactory = new contracts.plugins.assetRouter.AssetRouterInput__factory();
+export const AssetRouterOutputFactory = new contracts.plugins.assetRouter.AssetRouterOutput__factory();
 
 export const factories = {
-    ERC1167Factory,
-    BeaconProxy,
-    UpgradeableBeacon,
-    Fallback,
-    Multicall2,
-    ERC20Mintable,
-    ERC721Mintable,
-    ERC721MintableAutoId,
-    ERC721Dna,
-    ERC721TopDownLib,
-    ERC721TopDownDnaLib,
-    ERC721TopDownMintable,
-    ERC721TopDownMintableAutoId,
-    ERC721TopDownDnaMintable,
-    ERC721TopDownDna,
-    ERC1155Mintable,
-    ERC1155Dna,
-    AssetRouterCraft,
-    AssetRouterInput,
-    AssetRouterOutput,
+    ERC1820Registry: ERC1820RegistryFactory,
+    ERC1167Factory: ERC1167FactoryFactory,
+    BeaconProxy: BeaconProxyFactory,
+    UpgradeableBeacon: UpgradeableBeaconFactory,
+    Fallback: FallbackFactory,
+    Multicall2: Multicall2Factory,
+    ERC20Mintable: ERC20MintableFactory,
+    ERC721Mintable: ERC721MintableFactory,
+    ERC721MintableAutoId: ERC721MintableAutoIdFactory,
+    ERC1155Mintable: ERC1155MintableFactory,
+    TokenURI: TokenURIFactory,
+    TokenURIBaseURI: TokenURIBaseURIFactory,
+    TokenURIDna: TokenURIDnaFactory,
+    ERC2981Setter: ERC2981SetterFactory,
+    TokenDna: TokenDnaFactory,
+    AssetRouterCraft: AssetRouterCraftFactory,
+    AssetRouterInput: AssetRouterInputFactory,
+    AssetRouterOutput: AssetRouterOutputFactory,
 };
 
 //export const implementationFactories = omit(factories, 'ERC1167Factory', 'BeaconProxy', 'UpgradeableBeacon')

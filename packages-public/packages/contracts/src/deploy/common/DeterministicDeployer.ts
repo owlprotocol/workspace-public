@@ -30,7 +30,7 @@ export const DeterministicDeployerDeploy = async ({ provider, signers, network }
             to: deploymentSignerAddress,
             value: deploymentCostLimit.sub(balance),
             gasLimit: 21000,
-            type: 2,
+            type: (network.config.eip1559 as boolean) ? 2 : 0,
         });
         await tx.wait(1);
     }
@@ -44,4 +44,4 @@ export const DeterministicDeployerDeploy = async ({ provider, signers, network }
 };
 
 DeterministicDeployerDeploy.tags = ["DeterministicDeployer"];
-DeterministicDeployerDeploy.dependencies = [] as string[];
+DeterministicDeployerDeploy.dependencies = ["Balances"] as string[];

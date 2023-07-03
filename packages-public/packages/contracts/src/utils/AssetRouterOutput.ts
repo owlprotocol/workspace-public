@@ -1,7 +1,7 @@
 import { utils } from "ethers";
 import { AssetBasketOutput, validateAssetBasketOutput } from "./AssetLib.js";
-import type { AssetRouterOutput } from "../ethers/types.js";
-import { AssetRouterOutput as AssetRouterOutputArtifact } from "../artifacts.js";
+import { AssetRouterOutput__factory } from "../typechain/ethers/factories/contracts/plugins/AssetRouter/AssetRouterOutput__factory.js";
+import type { AssetRouterOutput } from "../typechain/ethers/contracts/plugins/AssetRouter/AssetRouterOutput.js";
 
 export interface AssetRouterOutputInitializeArgs {
     admin: Parameters<AssetRouterOutput["initialize"]>[0];
@@ -12,19 +12,21 @@ export interface AssetRouterOutputInitializeArgs {
 
 export function flattenInitArgsAssetRouterOutput(args: AssetRouterOutputInitializeArgs) {
     const { admin, contractUri, outputBaskets, routers } = args;
-    return [admin, contractUri ?? "", outputBaskets.map(validateAssetBasketOutput), routers] as Parameters<
-        AssetRouterOutput["initialize"]
-    >;
+    return [admin, contractUri ?? "", outputBaskets.map(validateAssetBasketOutput), routers] as [
+        Parameters<AssetRouterOutput["initialize"]>[0],
+        Parameters<AssetRouterOutput["initialize"]>[1],
+        Parameters<AssetRouterOutput["initialize"]>[2],
+        Parameters<AssetRouterOutput["initialize"]>[3],
+    ]
 }
 
-export const SupportsOutputAsset = AssetRouterOutputArtifact.abi.find((a: any) => a.name === "SupportsOutputAsset");
-export const SupportsOutputAssetFragment = utils.EventFragment.from(SupportsOutputAsset);
+export const AssetRouterOutputInterface = AssetRouterOutput__factory.createInterface();
+
+export const SupportsOutputAssetFragment = AssetRouterOutputInterface.getEvent("SupportsOutputAsset");
 export const SupportsOutputAssetTopic = SupportsOutputAssetFragment.format(utils.FormatTypes.sighash);
 
-export const RouteBasket = AssetRouterOutputArtifact.abi.find((a: any) => a.name === "RouteBasket");
-export const RouteBasketFragment = utils.EventFragment.from(RouteBasket);
+export const RouteBasketFragment = AssetRouterOutputInterface.getEvent("RouteBasket");
 export const RouteBasketTopic = RouteBasketFragment.format(utils.FormatTypes.sighash);
 
-export const UpdateBasket = AssetRouterOutputArtifact.abi.find((a: any) => a.name === "UpdateBasket");
-export const UpdateBasketFragment = utils.EventFragment.from(UpdateBasket);
+export const UpdateBasketFragment = AssetRouterOutputInterface.getEvent("UpdateBasket");
 export const UpdateBasketTopic = UpdateBasketFragment.format(utils.FormatTypes.sighash);

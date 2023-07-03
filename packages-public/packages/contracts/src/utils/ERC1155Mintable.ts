@@ -1,5 +1,5 @@
 import { constants } from "ethers";
-import type { ERC1155Mintable } from "../ethers/types.js";
+import type { ERC1155Mintable } from "../typechain/ethers/contracts/assets/ERC1155/ERC1155Mintable.js";
 
 export interface ERC1155MintableInitializeArgs {
     admin: Parameters<ERC1155Mintable["initialize"]>[0];
@@ -19,5 +19,12 @@ export function flattenInitArgsERC1155Mintable(args: ERC1155MintableInitializeAr
         uri,
         feeReceiver ?? admin,
         feeNumerator ?? 0,
-    ] as Parameters<ERC1155Mintable["initialize"]>;
+    ] as [
+            Parameters<ERC1155Mintable["initialize"]>[0],
+            Parameters<ERC1155Mintable["initialize"]>[1],
+            Parameters<ERC1155Mintable["initialize"]>[2],
+            Parameters<ERC1155Mintable["initialize"]>[3],
+            Parameters<ERC1155Mintable["initialize"]>[4],
+            Parameters<ERC1155Mintable["initialize"]>[5],
+        ];
 }

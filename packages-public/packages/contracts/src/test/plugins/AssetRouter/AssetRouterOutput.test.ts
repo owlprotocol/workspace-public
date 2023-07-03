@@ -1,8 +1,14 @@
+//@ts-nocheck
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import hre, { ethers } from "hardhat";
 import { expect } from "chai";
-import { AssetRouterOutput, ERC20Mintable, ERC721MintableAutoId, ERC1155Mintable } from "../../../ethers/types.js";
+import {
+    AssetRouterOutput,
+    ERC20Mintable,
+    ERC721MintableAutoId,
+    ERC1155Mintable,
+} from "../../../typechain/ethers/index.js";
 import deployProxyNick from "../../../deploy-hre/common/DeterministicDeployer.js";
 import ProxyFactoryDeploy from "../../../deploy-hre/common/ProxyFactory.js";
 import { ERC20MintableInitializeArgs, flattenInitArgsERC20Mintable } from "../../../utils/ERC20Mintable.js";
@@ -17,7 +23,7 @@ import {
 } from "../../../utils/ERC721MintableAutoId.js";
 import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
 
-const cloneFactory = factories.ERC1167Factory.attach(ERC1167FactoryAddress);
+const cloneFactory = factories.ERC1167Factory.attach(ERC1167FactoryAddressLocal);
 describe("AssetRouterOutput", function () {
     let signers: SignerWithAddress[];
     let factories: Factories;

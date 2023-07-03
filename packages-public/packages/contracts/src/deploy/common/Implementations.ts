@@ -1,19 +1,22 @@
+import log from "loglevel";
 import { mapValues, zipObject } from "../../lodash.js";
 import { logDeployment, RunTimeEnvironment } from "../utils.js";
 import { getFactories } from "../../ethers/factories.js";
 import { getDeterministicFactories } from "../../ethers/deterministicFactories.js";
-import log from "loglevel";
+import { ERC1167FactoryAddress } from "../../utils/ERC1167Factory/getAddress.js";
 
 /**
  * Deployment is always the same regardless of contract.
  * We get the bytecode & name for a deterministic deployment from the Proxy Factory.
  */
 export const ImplementationsDeploy = async ({ provider, signers, network }: RunTimeEnvironment) => {
+    const cloneFactoryAddress = ERC1167FactoryAddress;
+
     const signer = signers[0];
     let nonce = await provider.getTransactionCount(await signer.getAddress());
 
     const factories = getFactories(signer);
-    const deterministicFactories = getDeterministicFactories(factories);
+    const deterministicFactories = getDeterministicFactories(factories, cloneFactoryAddress);
 
     const promises = mapValues(deterministicFactories, async (factory) => {
         const address = factory.getAddress();
@@ -29,7 +32,11 @@ export const ImplementationsDeploy = async ({ provider, signers, network }: RunT
             } else {
                 return {
                     address,
-                    contract: await factory.deploy({ nonce: nonce++, type: 2, gasLimit: 10e6 }),
+                    contract: await factory.deploy({
+                        nonce: nonce++,
+                        type: (network.config.eip1559 as boolean) ? 2 : 0,
+                        gasLimit: 10e6,
+                    }),
                     deployed: true,
                 };
             }
@@ -39,7 +46,7 @@ export const ImplementationsDeploy = async ({ provider, signers, network }: RunT
     });
 
     const results = zipObject(Object.keys(promises), await Promise.all(Object.values(promises))) as {
-        [K in keyof typeof promises]: Awaited<(typeof promises)[K]>;
+        [K in keyof typeof promises]: Awaited<typeof promises[K]>;
     };
 
     mapValues(results, ({ address, error, deployed }, name) => {

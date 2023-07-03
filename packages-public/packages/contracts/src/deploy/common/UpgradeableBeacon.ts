@@ -1,3 +1,5 @@
+import log from "loglevel";
+import { BEACON_ADMIN } from "@owlprotocol/envvars";
 import { mapValues, omit, zipObject } from "../../lodash.js";
 
 import { logDeployment, RunTimeEnvironment } from "../utils.js";
@@ -8,21 +10,21 @@ import {
     NoInitFactories,
 } from "../../ethers/deterministicFactories.js";
 import { ERC1167FactoryAddress } from "../../utils/ERC1167Factory/index.js";
-import log from "loglevel";
-import { BEACON_ADMIN } from "@owlprotocol/envvars";
 
 /**
  * Deployment is always the same regardless of contract.
  * We get the bytecode & name for a deterministic deployment from the Proxy Factory.
  */
 export const UpgradeableBeaconDeploy = async ({ provider, signers, network }: RunTimeEnvironment) => {
+    const cloneFactoryAddress = ERC1167FactoryAddress;
+
     const signer = signers[0];
     const signerAddress = await signer.getAddress();
     let nonce = await provider.getTransactionCount(signerAddress);
 
     const factories = getFactories(signer);
-    const cloneFactory = factories.ERC1167Factory.attach(ERC1167FactoryAddress);
-    const deterministicFactories = getDeterministicFactories(factories);
+    const cloneFactory = factories.ERC1167Factory.attach(cloneFactoryAddress);
+    const deterministicFactories = getDeterministicFactories(factories, cloneFactoryAddress);
     const deterministicInitializeFactories = getDeterministicInitializeFactories(
         factories,
         cloneFactory,
@@ -53,7 +55,7 @@ export const UpgradeableBeaconDeploy = async ({ provider, signers, network }: Ru
                     contract: await UpgradeableBeaconFactory.deploy(BEACON_ADMIN, implementationAddress, {
                         nonce: nonce++,
                         gasLimit: 10e6,
-                        type: 2,
+                        type: (network.config.eip1559 as boolean) ? 2 : 0,
                     }),
                     deployed: true,
                 };

@@ -24,7 +24,7 @@ export const ERC1820Deploy = async ({ provider, signers, network }: RunTimeEnvir
             nonce,
             to: deploymentSignerAddress,
             value: deploymentCostLimit.sub(balance),
-            type: 2,
+            type: (network.config.eip1559 as boolean) ? 2 : 0,
             gasLimit: 21000,
         });
         await tx.wait(1);

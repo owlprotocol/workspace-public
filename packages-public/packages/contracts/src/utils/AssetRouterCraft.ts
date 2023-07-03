@@ -5,8 +5,8 @@ import {
     validateAssetBasketInput,
     validateAssetBasketOutput,
 } from "./AssetLib.js";
-import { AssetRouterCraft as AssetRouterCraftArtifact } from "../artifacts.js";
-import type { AssetRouterCraft } from "../ethers/types.js";
+import { AssetRouterCraft__factory } from "../typechain/ethers/factories/contracts/plugins/AssetRouter/AssetRouterCraft__factory.js";
+import type { AssetRouterCraft } from "../typechain/ethers/contracts/plugins/AssetRouter/AssetRouterCraft.js";
 
 export interface AssetRouterCraftInitializeArgs {
     admin: Parameters<AssetRouterCraft["initialize"]>[0];
@@ -24,21 +24,25 @@ export function flattenInitArgsAssetRouterCraft(args: AssetRouterCraftInitialize
         gsnForwarder ?? constants.AddressZero,
         inputBaskets.map(validateAssetBasketInput),
         outputBaskets.map(validateAssetBasketOutput),
-    ] as Parameters<AssetRouterCraft["initialize"]>;
+    ] as [
+            Parameters<AssetRouterCraft["initialize"]>[0],
+            Parameters<AssetRouterCraft["initialize"]>[1],
+            Parameters<AssetRouterCraft["initialize"]>[2],
+            Parameters<AssetRouterCraft["initialize"]>[3],
+            Parameters<AssetRouterCraft["initialize"]>[4],
+        ]
 }
 
-export const SupportsInputAsset = AssetRouterCraftArtifact.abi.find((a: any) => a.name === "SupportsInputAsset");
-export const SupportsInputAssetFragment = utils.EventFragment.from(SupportsInputAsset);
+export const AssetRouterCraftInterface = AssetRouterCraft__factory.createInterface();
+
+export const SupportsInputAssetFragment = AssetRouterCraftInterface.getEvent("SupportsInputAsset");
 export const SupportsInputAssetTopic = SupportsInputAssetFragment.format(utils.FormatTypes.sighash);
 
-export const SupportsOutputAsset = AssetRouterCraftArtifact.abi.find((a: any) => a.name === "SupportsOutputAsset");
-export const SupportsOutputAssetFragment = utils.EventFragment.from(SupportsOutputAsset);
+export const SupportsOutputAssetFragment = AssetRouterCraftInterface.getEvent("SupportsOutputAsset");
 export const SupportsOutputAssetTopic = SupportsOutputAssetFragment.format(utils.FormatTypes.sighash);
 
-export const RouteBasket = AssetRouterCraftArtifact.abi.find((a: any) => a.name === "RouteBasket");
-export const RouteBasketFragment = utils.EventFragment.from(RouteBasket);
+export const RouteBasketFragment = AssetRouterCraftInterface.getEvent("RouteBasket");
 export const RouteBasketTopic = RouteBasketFragment.format(utils.FormatTypes.sighash);
 
-export const UpdateBasket = AssetRouterCraftArtifact.abi.find((a: any) => a.name === "UpdateBasket");
-export const UpdateBasketFragment = utils.EventFragment.from(UpdateBasket);
+export const UpdateBasketFragment = AssetRouterCraftInterface.getEvent("UpdateBasket");
 export const UpdateBasketTopic = UpdateBasketFragment.format(utils.FormatTypes.sighash);
