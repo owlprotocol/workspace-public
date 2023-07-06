@@ -6,7 +6,10 @@ import { deterministicFactory } from "../utils/ERC1167Factory/getContractFactory
 import { CustomFactory } from "../utils/ERC1167Factory/factory.js";
 import { ERC1167FactoryAddress } from "../utils/ERC1167Factory/getAddress.js";
 
-export type F_Initialize = Omit<Factories, "ERC1167Factory" | "Fallback" | "Multicall2" | "ERC1820Registry">;
+export type F_Initialize = Omit<
+    Factories,
+    "ERC1167Factory" | "Fallback" | "Multicall2" | "ERC1820Registry" | "BlockNumber"
+>;
 export type F_ProxyInitialize = Omit<F_Initialize, "UpgradeableBeacon" | "BeaconProxy">;
 
 export type NoInitFactories = {

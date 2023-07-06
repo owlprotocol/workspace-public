@@ -1,8 +1,6 @@
 import { assert } from "chai";
 import type { Contract as Web3Contract } from "web3-eth-contract";
-import * as Contracts from "@owlprotocol/contracts";
 import { sleep } from "@owlprotocol/utils";
-import type { AbiItem } from "web3-utils";
 
 import { EthCallName, validateIdPartialEthCall } from "@owlprotocol/web3-models";
 import { NetworkCRUDActions, web3CallAction } from "@owlprotocol/web3-actions";
@@ -11,6 +9,7 @@ import { EthCallDexie } from "@owlprotocol/web3-dexie";
 import { getTestNetwork } from "@owlprotocol/web3-test-utils";
 
 import { createStore, StoreType } from "../../store.js";
+import {TypechainEthers} from "@owlprotocol/contracts";
 
 const network1336 = getTestNetwork();
 const networkId = network1336.networkId;
@@ -29,9 +28,9 @@ describe(`${EthCallName}/sagas/call.ts`, () => {
 
     describe("store", () => {
         beforeEach(async () => {
-            web3Contract = await new web3.eth.Contract(Contracts.Artifacts.BlockNumber.abi as AbiItem[])
+            web3Contract = await new web3.eth.Contract(TypechainEthers.BlockNumber__factory.abi as any)
                 .deploy({
-                    data: Contracts.Artifacts.BlockNumber.bytecode,
+                    data: TypechainEthers.BlockNumber__factory.bytecode,
                 })
                 .send({ from: accounts[0], gas: 1000000, gasPrice: "875000000" });
             address = web3Contract.options.address.toLowerCase();

@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import * as Contracts from "@owlprotocol/contracts";
-import type { ERC721Mintable } from "@owlprotocol/contracts/lib/types/ethers/types.js";
+import type { ERC721Mintable } from "@owlprotocol/contracts/lib/types/typechain/ethers/index.js";
 import type { ERC721MintableInitializeArgs } from "@owlprotocol/contracts/lib/types/utils/ERC721Mintable.js";
 import ethers, { Signer } from "ethers";
 import Web3 from "web3";
@@ -62,9 +62,7 @@ describe(`${ERC165Name}/sagas/inferInterface.ts`, () => {
                 },
             },
         };
-        await Contracts.Deploy.DeterministicDeployerDeploy(hre);
         await Contracts.Deploy.ProxyFactoryDeploy(hre);
-        await Contracts.Deploy.ERC1820Deploy(hre);
         await Contracts.Deploy.ImplementationsDeploy(hre);
         await Contracts.Deploy.UpgradeableBeaconDeploy(hre);
 
@@ -98,9 +96,6 @@ describe(`${ERC165Name}/sagas/inferInterface.ts`, () => {
                 gsnForwarder: ethers.constants.AddressZero,
                 name: `Token ${tokenName}`,
                 symbol: `TK${tokenName}`,
-                initBaseURI: `token.${tokenName}.com/token`,
-                feeReceiver: from,
-                feeNumerator: 0,
             };
             ERC721MintableFactory = factoriesDeterministicInit.ERC721Mintable;
             tokenName++;

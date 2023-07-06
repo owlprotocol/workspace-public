@@ -3,7 +3,9 @@ import { ContractCustomActions } from "@owlprotocol/web3-actions";
 import { ERC1155CRUDActions } from "@owlprotocol/web3-actions";
 
 //Handle contract creation
-export function* dbCreatingSaga(action: ReturnType<typeof ERC1155CRUDActions.actions.dbCreating>): Generator<any, any> {
+export function* dbCreatingSaga(
+    action: ReturnType<typeof ERC1155CRUDActions.actions.dbCreating>
+): Generator<any, any> {
     const { payload } = action;
     const { networkId, address, id, uri, dna } = payload.obj;
 
@@ -13,17 +15,17 @@ export function* dbCreatingSaga(action: ReturnType<typeof ERC1155CRUDActions.act
                 networkId,
                 to: address,
                 args: [id],
-            }),
+            })
         );
     }
 
     if (!dna) {
         yield* put(
-            ContractCustomActions.IERC1155Dna.getDna({
+            ContractCustomActions.ITokenDna.getDna({
                 networkId,
                 to: address,
                 args: [id],
-            }),
+            })
         );
     }
 }

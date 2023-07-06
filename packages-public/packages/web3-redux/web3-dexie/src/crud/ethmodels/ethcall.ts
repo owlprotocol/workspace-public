@@ -1,7 +1,15 @@
 import { createCRUDDB } from "@owlprotocol/crud-dexie";
 import { utils } from "ethers";
-import { interfaceIdNames, InterfaceName, interfaces, Utils } from "@owlprotocol/contracts";
-import { AssetBasketInput, AssetBasketOutput } from "@owlprotocol/contracts/lib/types/utils/AssetLib.js";
+import {
+    interfaceIdNames,
+    InterfaceName,
+    interfaces,
+    Utils,
+} from "@owlprotocol/contracts";
+import {
+    AssetBasketInput,
+    AssetBasketOutput,
+} from "@owlprotocol/contracts/lib/types/utils/AssetLib.js";
 import {
     EthCall,
     EthCallName,
@@ -58,7 +66,9 @@ export function getEthCallDexie() {
 }
 export const EthCallDexie = getEthCallDexie();
 
-export async function preWriteBulkEthCall(items: EthCall[]): Promise<EthCall[]> {
+export async function preWriteBulkEthCall(
+    items: EthCall[]
+): Promise<EthCall[]> {
     return items.map((item) => {
         return { ...item, updatedAt: Date.now() };
     });
@@ -86,7 +96,7 @@ export async function postWriteBulkEthCall(items: EthCall[]): Promise<any> {
     zip(items, ifacesArr).map(([item, ifaces]) => {
         const { networkId, to, args, methodFormatFull, returnValue } = item!;
         const interfaceNames = new Set(
-            ifaces!.map(({ interfaceId }) => interfaceIdNames[interfaceId]),
+            ifaces!.map(({ interfaceId }) => interfaceIdNames[interfaceId])
         ) as Set<InterfaceName>;
 
         if (returnValue) {
@@ -110,7 +120,11 @@ export async function postWriteBulkEthCall(items: EthCall[]): Promise<any> {
                     //AssetRouterPath
                     if (interfaceName === "IAssetRouterCraft") {
                         //Self route path
-                        AssetRouterPathUpserts.push({ networkId, from: to, to });
+                        AssetRouterPathUpserts.push({
+                            networkId,
+                            from: to,
+                            to,
+                        });
                     }
                 }
             }
@@ -173,7 +187,7 @@ export async function postWriteBulkEthCall(items: EthCall[]): Promise<any> {
                     });
                 } else if (
                     methodFormatFull ===
-                    interfaces.IERC721Dna.interface
+                    interfaces.ITokenDna.interface
                         .getFunction("getDna")
                         .format(utils.FormatTypes.full)
                         .replace("function ", "")
@@ -209,8 +223,8 @@ export async function postWriteBulkEthCall(items: EthCall[]): Promise<any> {
                 ) {
                     const results = zip(
                         args[0] as string[],
-                        args[1] as any as string[],
-                        returnValue[0] as string[],
+                        (args[1] as any) as string[],
+                        returnValue[0] as string[]
                     ).map(([account, id, balance]) => {
                         return {
                             networkId,
@@ -236,7 +250,7 @@ export async function postWriteBulkEthCall(items: EthCall[]): Promise<any> {
                     });
                 } else if (
                     methodFormatFull ===
-                    interfaces.IERC1155Dna.interface
+                    interfaces.ITokenDna.interface
                         .getFunction("getDna")
                         .format(utils.FormatTypes.full)
                         .replace("function ", "")
@@ -260,7 +274,10 @@ export async function postWriteBulkEthCall(items: EthCall[]): Promise<any> {
                 ) {
                     const role = args[0] as string;
                     const target = args[1] as string;
-                    if (role === Utils.AccessControl.ASSET_ROUTER_INPUT && returnValue[0]) {
+                    if (
+                        role === Utils.AccessControl.ASSET_ROUTER_INPUT &&
+                        returnValue[0]
+                    ) {
                         //Set path
                         AssetRouterPathUpserts.push({
                             networkId,
@@ -271,7 +288,10 @@ export async function postWriteBulkEthCall(items: EthCall[]): Promise<any> {
                 }
             }
             //AssetRouter
-            else if (interfaceNames.has("IAssetRouterInput") || interfaceNames.has("IAssetRouterCraft")) {
+            else if (
+                interfaceNames.has("IAssetRouterInput") ||
+                interfaceNames.has("IAssetRouterCraft")
+            ) {
                 if (
                     methodFormatFull ===
                     interfaces.IAssetRouterInput.interface
@@ -283,10 +303,18 @@ export async function postWriteBulkEthCall(items: EthCall[]): Promise<any> {
                     const basketId = args[0] as string;
                     const basket = returnValue[0] as AssetBasketInput;
                     AssetRouterInputBasketUpserts.push(
-                        ...assetRouterInputBasketsFromSolidityBasket(networkId, address, basketId, basket),
+                        ...assetRouterInputBasketsFromSolidityBasket(
+                            networkId,
+                            address,
+                            basketId,
+                            basket
+                        )
                     );
                 }
-            } else if (interfaceNames.has("IAssetRouterOutput") || interfaceNames.has("IAssetRouterCraft")) {
+            } else if (
+                interfaceNames.has("IAssetRouterOutput") ||
+                interfaceNames.has("IAssetRouterCraft")
+            ) {
                 if (
                     methodFormatFull ===
                     interfaces.IAssetRouterOutput.interface
@@ -298,7 +326,12 @@ export async function postWriteBulkEthCall(items: EthCall[]): Promise<any> {
                     const basketId = args[0] as string;
                     const basket = returnValue[0] as AssetBasketOutput;
                     AssetRouterOutputBasketUpserts.push(
-                        ...assetRouterOutputBasketsFromSolidityBasket(networkId, address, basketId, basket),
+                        ...assetRouterOutputBasketsFromSolidityBasket(
+                            networkId,
+                            address,
+                            basketId,
+                            basket
+                        )
                     );
                 }
             }
@@ -312,8 +345,12 @@ export async function postWriteBulkEthCall(items: EthCall[]): Promise<any> {
         ERC721Dexie.bulkUpsertUnchained(ERC721Upserts),
         ERC1155Dexie.bulkUpsertUnchained(ERC1155Upserts),
         ERC1155BalanceDexie.bulkUpsertUnchained(ERC1155BalanceUpserts),
-        AssetRouterInputBasketDexie.bulkUpsertUnchained(AssetRouterInputBasketUpserts),
-        AssetRouterOutputBasketDexie.bulkUpsertUnchained(AssetRouterOutputBasketUpserts),
+        AssetRouterInputBasketDexie.bulkUpsertUnchained(
+            AssetRouterInputBasketUpserts
+        ),
+        AssetRouterOutputBasketDexie.bulkUpsertUnchained(
+            AssetRouterOutputBasketUpserts
+        ),
         AssetRouterPathDexie.bulkUpsertUnchained(AssetRouterPathUpserts),
     ]);
 }

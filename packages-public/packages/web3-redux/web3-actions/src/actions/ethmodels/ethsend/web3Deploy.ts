@@ -1,4 +1,4 @@
-import { Artifacts, Utils } from "@owlprotocol/contracts";
+import { Ethers, Utils } from "@owlprotocol/contracts";
 import { utils } from "ethers";
 import {
     getEthCallAbiAndFormatFull,
@@ -70,14 +70,29 @@ export function isWithDeployInputRegular(item: any): item is WithDeployInputRegu
     return (item as WithDeployInputRegular).deployType === Web3DeployType.REGULAR
 }
 */
-export function isWithDeployInputInitialize(item: any): item is WithDeployInputInitialize {
-    return (item as WithDeployInputInitialize).deployType === Web3DeployType.INITIALIZE;
+export function isWithDeployInputInitialize(
+    item: any
+): item is WithDeployInputInitialize {
+    return (
+        (item as WithDeployInputInitialize).deployType ===
+        Web3DeployType.INITIALIZE
+    );
 }
-export function isWithDeployInputProxy1167(item: any): item is WithDeployInputProxy1167 {
-    return (item as WithDeployInputProxy1167).deployType === Web3DeployType.INITIALIZE_PROXY_1167;
+export function isWithDeployInputProxy1167(
+    item: any
+): item is WithDeployInputProxy1167 {
+    return (
+        (item as WithDeployInputProxy1167).deployType ===
+        Web3DeployType.INITIALIZE_PROXY_1167
+    );
 }
-export function isWithDeployInputProxyBeacon(item: any): item is WithDeployInputProxyBeacon {
-    return (item as WithDeployInputProxyBeacon).deployType === Web3DeployType.INITIALIZE_BEACON;
+export function isWithDeployInputProxyBeacon(
+    item: any
+): item is WithDeployInputProxyBeacon {
+    return (
+        (item as WithDeployInputProxyBeacon).deployType ===
+        Web3DeployType.INITIALIZE_BEACON
+    );
 }
 
 export type Web3DeployActionInput<Args = any> =
@@ -85,10 +100,16 @@ export type Web3DeployActionInput<Args = any> =
     //WithDeployInputRegular |
     //Initialize singature assumed initialize(bytes data)
     Web3DeployActionInputBase &
-        (WithDeployInputInitialize | WithDeployInputProxy1167 | WithDeployInputProxyBeacon) &
+        (
+            | WithDeployInputInitialize
+            | WithDeployInputProxy1167
+            | WithDeployInputProxyBeacon
+        ) &
         (WithData | (WithArgs<Args> & (WithMethodAbi | WithMethodFormat)));
 
-export function validateWeb3DeployActionInput<Args = any>(payload: Web3DeployActionInput<Args>) {
+export function validateWeb3DeployActionInput<Args = any>(
+    payload: Web3DeployActionInput<Args>
+) {
     //Interface
     let results: ReturnType<typeof getEthCallAbiAndFormatFull> | undefined;
     if (isWithMethodAbi(payload)) {
@@ -105,7 +126,10 @@ export function validateWeb3DeployActionInput<Args = any>(payload: Web3DeployAct
         data = payload.data;
     } else {
         //Interface MUST be defined if Args
-        data = methodIface!.encodeFunctionData(methodFragment!, payload.args as any);
+        data = methodIface!.encodeFunctionData(
+            methodFragment!,
+            payload.args as any
+        );
     }
 
     const initializeFormat = "initialize(bytes data)";
@@ -117,7 +141,8 @@ export function validateWeb3DeployActionInput<Args = any>(payload: Web3DeployAct
     const cloneDeterministicFormat =
         "cloneDeterministic(address implementation, bytes32 salt, bytes initData, address msgSender) returns (address)";
     //Beacon
-    const beaconInitializeFormat = "initialize(address _admin, address _beaconAddress, bytes memory data)";
+    const beaconInitializeFormat =
+        "initialize(address _admin, address _beaconAddress, bytes memory data)";
     const initializeIface = new utils.Interface([
         initializeFormat,
         proxyInitializeFormat,
@@ -131,59 +156,74 @@ export function validateWeb3DeployActionInput<Args = any>(payload: Web3DeployAct
     const from = payload.from.toLowerCase();
     if (payload.deployType === Web3DeployType.INITIALIZE) {
         methodFormatFull = deployDeterministicFormat;
-        const initData = initializeIface.encodeFunctionData(initializeFormat, [data]);
+        const initData = initializeIface.encodeFunctionData(initializeFormat, [
+            data,
+        ]);
         if (payload.deploySaltSenderDeterministic === false) {
-            data = initializeIface.encodeFunctionData(deployDeterministicFormat, [
-                payload.deploySalt,
-                payload.bytecode,
-                initData,
-            ]);
+            data = initializeIface.encodeFunctionData(
+                deployDeterministicFormat,
+                [payload.deploySalt, payload.bytecode, initData]
+            );
         } else {
-            data = initializeIface.encodeFunctionData(deployDeterministicFormat, [
-                payload.deploySalt,
-                payload.bytecode,
-                initData,
-                from,
-            ]);
+            data = initializeIface.encodeFunctionData(
+                deployDeterministicFormat,
+                [payload.deploySalt, payload.bytecode, initData, from]
+            );
         }
     } else if (payload.deployType === Web3DeployType.INITIALIZE_PROXY_1167) {
         methodFormatFull = cloneDeterministicFormat;
-        const initData = initializeIface.encodeFunctionData(initializeFormat, [data]);
+        const initData = initializeIface.encodeFunctionData(initializeFormat, [
+            data,
+        ]);
         if (payload.deploySaltSenderDeterministic === false) {
-            data = initializeIface.encodeFunctionData(cloneDeterministicFormat, [
-                payload.deployImplementationAddress,
-                payload.deploySalt,
-                initData,
-            ]);
+            data = initializeIface.encodeFunctionData(
+                cloneDeterministicFormat,
+                [
+                    payload.deployImplementationAddress,
+                    payload.deploySalt,
+                    initData,
+                ]
+            );
         } else {
-            data = initializeIface.encodeFunctionData(cloneDeterministicFormat, [
-                payload.deployImplementationAddress,
-                payload.deploySalt,
-                initData,
-                from,
-            ]);
+            data = initializeIface.encodeFunctionData(
+                cloneDeterministicFormat,
+                [
+                    payload.deployImplementationAddress,
+                    payload.deploySalt,
+                    initData,
+                    from,
+                ]
+            );
         }
     } else {
         methodFormatFull = deployDeterministicFormat;
-        const proxyInitData = initializeIface.encodeFunctionData(proxyInitializeFormat, [data]);
-        const initData = initializeIface.encodeFunctionData(beaconInitializeFormat, [
-            from,
-            payload.deployBeaconAddress,
-            proxyInitData,
-        ]);
+        const proxyInitData = initializeIface.encodeFunctionData(
+            proxyInitializeFormat,
+            [data]
+        );
+        const initData = initializeIface.encodeFunctionData(
+            beaconInitializeFormat,
+            [from, payload.deployBeaconAddress, proxyInitData]
+        );
         if (payload.deploySaltSenderDeterministic === false) {
-            data = initializeIface.encodeFunctionData(deployDeterministicFormat, [
-                payload.deploySalt,
-                Artifacts.BeaconProxy.bytecode,
-                initData,
-            ]);
+            data = initializeIface.encodeFunctionData(
+                deployDeterministicFormat,
+                [
+                    payload.deploySalt,
+                    Ethers.BeaconProxyFactory.bytecode,
+                    initData,
+                ]
+            );
         } else {
-            data = initializeIface.encodeFunctionData(deployDeterministicFormat, [
-                payload.deploySalt,
-                Artifacts.BeaconProxy.bytecode,
-                initData,
-                from,
-            ]);
+            data = initializeIface.encodeFunctionData(
+                deployDeterministicFormat,
+                [
+                    payload.deploySalt,
+                    Ethers.BeaconProxyFactory.bytecode,
+                    initData,
+                    from,
+                ]
+            );
         }
     }
 
@@ -205,7 +245,7 @@ export function validateWeb3DeployActionInput<Args = any>(payload: Web3DeployAct
 export function web3DeployAction<Args = any>(
     payload: Web3DeployActionInput<Args>,
     uuid?: string | undefined,
-    ts?: number | undefined,
+    ts?: number | undefined
 ) {
     const payload2 = validateWeb3DeployActionInput(payload);
     return web3SendAction(payload2, uuid, ts);

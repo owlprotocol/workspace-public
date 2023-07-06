@@ -1,6 +1,6 @@
 import { interfaces } from "@owlprotocol/contracts";
 import { BaseContract, ContractFunction, ContractTransaction, utils } from "ethers";
-import { mapValues, pick } from "lodash-es";
+import { mapValues, pick, values } from "lodash-es";
 import { getEthCallFactory } from "./ethcall.js";
 import { getERC165 } from "./erc165.js";
 
@@ -50,8 +50,12 @@ export function contractDexieHelpersFactory<C extends BaseContract>(contract: C,
     };
 }
 
-export const ContractCustomDexie = mapValues(interfaces, (iface) => {
-    return contractDexieHelpersFactory(iface.contract, iface.interfaceId);
-}) as {
-        [K in keyof typeof interfaces]: ReturnType<typeof contractDexieHelpersFactory<(typeof interfaces)[K]["contract"]>>;
-    };
+export type ContractCustomDexieType = {
+    [K in keyof typeof interfaces]: ReturnType<
+        typeof contractDexieHelpersFactory<(typeof interfaces)[K]["contract"]>
+    >;
+};
+
+export const ContractCustomDexie = mapValues(interfaces, (v) => {
+    return contractDexieHelpersFactory(v.contract, v.interfaceId);
+}) as ContractCustomDexieType;

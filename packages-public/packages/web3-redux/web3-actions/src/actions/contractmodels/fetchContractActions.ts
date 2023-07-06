@@ -12,7 +12,8 @@ import { fetchERC20Metadata } from "./fetchERC20Metadata.js";
 import { fetchERC2981 } from "./fetchERC2981.js";
 import { fetchERC721 } from "./fetchERC721.js";
 import { fetchERC721Metadata } from "./fetchERC721Metadata.js";
-import { fetchERC721TopDown } from "./fetchERC721TopDown.js";
+// TODO: Add back when IERC721TopDown is back
+// import { fetchERC721TopDown } from "./fetchERC721TopDown.js";
 
 //TODO: fetchContractActions Background / Specific
 //Handle contract creation
@@ -48,8 +49,9 @@ export function fetchContractActions(
         actions.push(...fetchERC721(networkId, address, account));
     } else if (interfaceName === "IERC721Metadata") {
         actions.push(...fetchERC721Metadata(networkId, address));
-    } else if (interfaceName === "IERC721TopDown") {
-        actions.push(...fetchERC721TopDown(networkId, address));
+    // TODO: Add back when IERC721TopDown is back
+    // } else if (interfaceName === "IERC721TopDown") {
+    //     actions.push(...fetchERC721TopDown(networkId, address));
     } else if (interfaceName === "IAssetRouterCraft") {
         actions.push(...fetchAssetRouterCraft(networkId, address, account));
     } else if (interfaceName === "IAssetRouterInput") {

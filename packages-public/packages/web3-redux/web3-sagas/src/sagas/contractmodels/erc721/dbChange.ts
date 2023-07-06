@@ -1,10 +1,23 @@
 import { put } from "typed-redux-saga";
-import { ContractCustomActions, ERC721CRUDActions } from "@owlprotocol/web3-actions";
+import {
+    ContractCustomActions,
+    ERC721CRUDActions,
+} from "@owlprotocol/web3-actions";
 
 //Handle contract creation
-export function* dbCreatingSaga(action: ReturnType<typeof ERC721CRUDActions.actions.dbCreating>): Generator<any, any> {
+export function* dbCreatingSaga(
+    action: ReturnType<typeof ERC721CRUDActions.actions.dbCreating>
+): Generator<any, any> {
     const { payload } = action;
-    const { networkId, address, tokenId, owner, approved, tokenURI, dna } = payload.obj;
+    const {
+        networkId,
+        address,
+        tokenId,
+        owner,
+        approved,
+        tokenURI,
+        dna,
+    } = payload.obj;
 
     if (!owner) {
         yield* put(
@@ -12,7 +25,7 @@ export function* dbCreatingSaga(action: ReturnType<typeof ERC721CRUDActions.acti
                 networkId,
                 to: address,
                 args: [tokenId],
-            }),
+            })
         );
     }
     if (!approved) {
@@ -21,7 +34,7 @@ export function* dbCreatingSaga(action: ReturnType<typeof ERC721CRUDActions.acti
                 networkId,
                 to: address,
                 args: [tokenId],
-            }),
+            })
         );
     }
     if (!tokenURI) {
@@ -30,16 +43,16 @@ export function* dbCreatingSaga(action: ReturnType<typeof ERC721CRUDActions.acti
                 networkId,
                 to: address,
                 args: [tokenId],
-            }),
+            })
         );
     }
     if (!dna) {
         yield* put(
-            ContractCustomActions.IERC721Dna.getDna({
+            ContractCustomActions.ITokenDna.getDna({
                 networkId,
                 to: address,
                 args: [tokenId],
-            }),
+            })
         );
     }
 }

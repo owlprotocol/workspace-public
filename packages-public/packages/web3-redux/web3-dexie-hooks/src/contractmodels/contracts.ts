@@ -113,12 +113,12 @@ export function contractDexieHookHelpersFactory<C extends BaseContract>(contract
     };
 }
 
-export const ContractCustomDexieHooks = mapValues(interfaces, (iface) => {
-    return contractDexieHookHelpersFactory(iface.contract, iface.interfaceId);
-}) as {
-        [K in keyof typeof interfaces]: ReturnType<
-            typeof contractDexieHookHelpersFactory<(typeof interfaces)[K]["contract"]>
-        >;
-    };
+export type ContractCustomDexieHooksType = {
+    [K in keyof typeof interfaces]: ReturnType<
+        typeof contractDexieHookHelpersFactory<(typeof interfaces)[K]["contract"]>
+    >;
+};
 
-//console.debug(ContractHelpers.IERC20);
+export const ContractCustomDexieHooks = mapValues(interfaces, (v) => {
+    return contractDexieHookHelpersFactory(v.contract, v.interfaceId);
+}) as ContractCustomDexieHooksType;

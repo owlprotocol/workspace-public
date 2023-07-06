@@ -1,13 +1,11 @@
 import { assert } from "chai";
 import Web3 from "web3";
 import type { Contract as Web3Contract } from "web3-eth-contract";
-import * as Contracts from "@owlprotocol/contracts";
 import log from "loglevel"
 
 import { utils } from "ethers";
 import { sleep } from "@owlprotocol/utils";
 import { isUndefined, omitBy } from "lodash-es";
-import type { AbiItem } from "web3-utils";
 
 import { EthLogSubscribeName, mapDeepBigNumberToString } from "@owlprotocol/web3-models";
 import { web3SubscribeLogsAction, NetworkCRUDActions } from "@owlprotocol/web3-actions";
@@ -15,6 +13,7 @@ import { EthLogDexie } from "@owlprotocol/web3-dexie";
 import { getTestWeb3Provider } from "@owlprotocol/web3-test-utils";
 
 import { createStore, StoreType } from "../../store.js";
+import {TypechainEthers} from "@owlprotocol/contracts";
 
 const networkId = "1336";
 describe(`${EthLogSubscribeName}/sagas/web3SubscribeLogs.test.ts`, () => {
@@ -39,9 +38,9 @@ describe(`${EthLogSubscribeName}/sagas/web3SubscribeLogs.test.ts`, () => {
         let store: StoreType;
 
         beforeEach(async () => {
-            web3Contract = await new web3.eth.Contract(Contracts.Artifacts.BlockNumber.abi as AbiItem[])
+            web3Contract = await new web3.eth.Contract(TypechainEthers.BlockNumber__factory.abi as any)
                 .deploy({
-                    data: Contracts.Artifacts.BlockNumber.bytecode,
+                    data: TypechainEthers.BlockNumber__factory.bytecode,
                 })
                 .send({
                     from: accounts[0],

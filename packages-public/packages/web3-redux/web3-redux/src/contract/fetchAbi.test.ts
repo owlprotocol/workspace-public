@@ -1,11 +1,14 @@
 import { assert } from "chai";
 import axios from "axios";
 import moxios from "moxios";
-import * as Contracts from "@owlprotocol/contracts";
 import { sleep } from "@owlprotocol/utils";
-import { fetchAbi as fetchAbiAction, NetworkCRUDActions } from "@owlprotocol/web3-actions";
+import {
+    fetchAbi as fetchAbiAction,
+    NetworkCRUDActions,
+} from "@owlprotocol/web3-actions";
 import { ContractDexie } from "@owlprotocol/web3-dexie";
 import { createStore, StoreType } from "../store.js";
+import { TypechainEthers } from "@owlprotocol/contracts";
 
 const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".toLowerCase();
 const networkId = "1336";
@@ -29,7 +32,7 @@ describe("contract/sagas/fetchAbi.test.ts", () => {
             NetworkCRUDActions.actions.reduxUpsert({
                 networkId,
                 explorerApiClient: client,
-            }),
+            })
         );
     });
 
@@ -39,10 +42,10 @@ describe("contract/sagas/fetchAbi.test.ts", () => {
                 fetchAbiAction({
                     networkId,
                     address,
-                }),
+                })
             );
 
-            await moxios.wait(() => {
+            moxios.wait(() => {
                 const request = moxios.requests.mostRecent();
                 assert.deepEqual(request.config.params, {
                     module: "contract",
@@ -52,7 +55,9 @@ describe("contract/sagas/fetchAbi.test.ts", () => {
                 request.respondWith({
                     status: 200,
                     response: {
-                        result: JSON.stringify(Contracts.Artifacts.IERC20.abi),
+                        result: JSON.stringify(
+                            TypechainEthers.IERC20Upgradeable__factory.abi
+                        ),
                     },
                 });
             });
@@ -62,8 +67,8 @@ describe("contract/sagas/fetchAbi.test.ts", () => {
             const contract = await ContractDexie.get({ networkId, address });
             assert.deepEqual(
                 contract?.abi,
-                Contracts.Artifacts.IERC20.abi as any,
-                "contract.abi != Contracts.Artifacts.IERC20.abi",
+                TypechainEthers.IERC20Upgradeable__factory.abi as any,
+                "contract.abi != IERC20Upgradeable__factory.abi"
             );
         });
     });

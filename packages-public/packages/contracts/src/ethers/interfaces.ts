@@ -1,3 +1,5 @@
+import { utils } from "ethers";
+
 import { Interface } from "@ethersproject/abi";
 import { constants } from "ethers";
 import * as contracts from "../typechain/ethers/factories/contracts/index.js";
@@ -9,7 +11,7 @@ export const IERC1167FactoryInterface = contracts.proxy.erc1167.IERC1167Factory_
 export const IERC1167FactoryInterfaceId = interfaceId(IERC1167FactoryInterface.fragments);
 
 export const IMulticall2Interface = contracts.utils.IMulticall2__factory.createInterface();
-export const IMulticall2InterfaceInterfaceId = interfaceId(IMulticall2Interface.fragments);
+export const IMulticall2InterfaceId = interfaceId(IMulticall2Interface.fragments);
 
 // ERC165
 export const IERC165Interface = oz.utils.introspection.IERC165Upgradeable__factory.createInterface();
@@ -124,6 +126,12 @@ export const IAssetRouterInputInterfaceId = interfaceId(IAssetRouterInputInterfa
 export const IAssetRouterOutputInterface = contracts.plugins.assetRouter.IAssetRouterOutput__factory.createInterface();
 export const IAssetRouterOutputInterfaceId = interfaceId(IAssetRouterOutputInterface.fragments);
 
+export const ITokenDnaInterface = contracts.plugins.tokenDna.ITokenDna__factory.createInterface();
+export const ITokenDnaInterfaceId = interfaceId(ITokenDnaInterface.fragments);
+
+export const ITokenConsumerInterface = contracts.plugins.tokenConsumer.ITokenConsumer__factory.createInterface();
+export const ITokenConsumerInterfaceId = interfaceId(ITokenConsumerInterface.fragments);
+
 export const interfaceIds = {
     [IERC1167FactoryInterfaceId]: contracts.proxy.erc1167.IERC1167Factory__factory.abi,
     [IERC165InterfaceId]: oz.utils.introspection.IERC165Upgradeable__factory.abi,
@@ -149,11 +157,14 @@ export const interfaceIds = {
     [IAssetRouterCraftInterfaceId]: contracts.plugins.assetRouter.IAssetRouterCraft__factory.abi,
     [IAssetRouterInputInterfaceId]: contracts.plugins.assetRouter.IAssetRouterInput__factory.abi,
     [IAssetRouterOutputInterfaceId]: contracts.plugins.assetRouter.IAssetRouterOutput__factory.abi,
+    [ITokenDnaInterfaceId]: contracts.plugins.tokenDna.ITokenDna__factory.abi,
+    [ITokenConsumerInterfaceId]: contracts.plugins.tokenConsumer.ITokenConsumer__factory.abi,
 } as const;
 
 export type InterfaceName = keyof typeof interfaces;
 export const interfaceIdNames = {
     [IERC1167FactoryInterfaceId]: "IERC1167Factory",
+    [IMulticall2InterfaceId]: "IMulticall2",
     [IERC165InterfaceId]: "IERC165",
     [IERC1820InterfaceId]: "IERC1820",
     [IAccessControlInterfaceId]: "IAccessControl",
@@ -177,6 +188,8 @@ export const interfaceIdNames = {
     [IAssetRouterCraftInterfaceId]: "IAssetRouterCraft",
     [IAssetRouterInputInterfaceId]: "IAssetRouterInput",
     [IAssetRouterOutputInterfaceId]: "IAssetRouterOutput",
+    [ITokenDnaInterfaceId]: "ITokenDna",
+    [ITokenConsumerInterfaceId]: "ITokenConsumer",
 } as const;
 
 export const interfaces = {
@@ -187,8 +200,8 @@ export const interfaces = {
     },
     IMulticall2: {
         interface: IMulticall2Interface,
-        interfaceId: IMulticall2InterfaceInterfaceId,
         contract: contracts.utils.IMulticall2__factory.connect(constants.AddressZero, null as any),
+        interfaceId: IMulticall2InterfaceId,
     },
     IERC165: {
         interface: IERC165Interface,
@@ -236,7 +249,10 @@ export const interfaces = {
     IERC20Metadata: {
         interface: IERC20MetadataInterface,
         interfaceId: IERC20MetadataInterfaceId,
-        contract: oz.token.erc20.extensions.IERC20MetadataUpgradeable__factory.connect(constants.AddressZero, null as any),
+        contract: oz.token.erc20.extensions.IERC20MetadataUpgradeable__factory.connect(
+            constants.AddressZero,
+            null as any,
+        ),
     },
     IERC20Mintable: {
         interface: IERC20MintableInterface,
@@ -251,12 +267,18 @@ export const interfaces = {
     IERC721Metadata: {
         interface: IERC721MetadataInterface,
         interfaceId: IERC721MetadataInterfaceId,
-        contract: oz.token.erc721.extensions.IERC721MetadataUpgradeable__factory.connect(constants.AddressZero, null as any),
+        contract: oz.token.erc721.extensions.IERC721MetadataUpgradeable__factory.connect(
+            constants.AddressZero,
+            null as any,
+        ),
     },
     IERC721Enumerable: {
         interface: IERC721EnumerableInterface,
         interfaceId: IERC721EnumerableInterfaceId,
-        contract: oz.token.erc721.extensions.IERC721EnumerableUpgradeable__factory.connect(constants.AddressZero, null as any),
+        contract: oz.token.erc721.extensions.IERC721EnumerableUpgradeable__factory.connect(
+            constants.AddressZero,
+            null as any,
+        ),
     },
     IERC721Mintable: {
         interface: IERC721MintableInterface,
@@ -281,7 +303,10 @@ export const interfaces = {
     IERC1155MetadataURI: {
         interface: IERC1155MetadataURIInterface,
         interfaceId: IERC1155MetadataURIInterfaceId,
-        contract: oz.token.erc1155.extensions.IERC1155MetadataURIUpgradeable__factory.connect(constants.AddressZero, null as any),
+        contract: oz.token.erc1155.extensions.IERC1155MetadataURIUpgradeable__factory.connect(
+            constants.AddressZero,
+            null as any,
+        ),
     },
     IERC1155Mintable: {
         interface: IERC1155MintableInterface,
@@ -307,5 +332,15 @@ export const interfaces = {
         interface: IAssetRouterOutputInterface,
         interfaceId: IAssetRouterOutputInterfaceId,
         contract: contracts.plugins.assetRouter.IAssetRouterOutput__factory.connect(constants.AddressZero, null as any),
+    },
+    ITokenDna: {
+        interface: ITokenDnaInterface,
+        interfaceId: ITokenDnaInterfaceId,
+        contract: contracts.plugins.tokenDna.ITokenDna__factory.connect(constants.AddressZero, null as any)
+    },
+    ITokenConsumer: {
+        interface: ITokenConsumerInterface,
+        interfaceId: ITokenConsumerInterfaceId,
+        contract: contracts.plugins.tokenConsumer.ITokenConsumer__factory.connect(constants.AddressZero, null as any)
     },
 };

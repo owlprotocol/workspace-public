@@ -85,6 +85,9 @@ export const AssetRouterCraftFactory = new contracts.plugins.assetRouter.AssetRo
 export const AssetRouterInputFactory = new contracts.plugins.assetRouter.AssetRouterInput__factory();
 export const AssetRouterOutputFactory = new contracts.plugins.assetRouter.AssetRouterOutput__factory();
 
+//Utils
+export const BlockNumberFactory = new contracts.utils.BlockNumber__factory();
+
 export const factories = {
     ERC1820Registry: ERC1820RegistryFactory,
     ERC1167Factory: ERC1167FactoryFactory,
@@ -104,6 +107,7 @@ export const factories = {
     AssetRouterCraft: AssetRouterCraftFactory,
     AssetRouterInput: AssetRouterInputFactory,
     AssetRouterOutput: AssetRouterOutputFactory,
+    BlockNumber: BlockNumberFactory,
 };
 
 //export const implementationFactories = omit(factories, 'ERC1167Factory', 'BeaconProxy', 'UpgradeableBeacon')

@@ -1,15 +1,13 @@
 import { assert } from "chai";
 import type Web3 from "web3";
 import type { Contract as Web3Contract } from "web3-eth-contract";
-import { cloneDeep } from "lodash-es";
-import * as Contracts from "@owlprotocol/contracts";
 import { sleep } from "@owlprotocol/utils";
-import type { AbiItem } from "web3-utils";
 
 import { getTestNetwork } from "@owlprotocol/web3-test-utils";
 import { ContractName } from "@owlprotocol/web3-models";
 import { NetworkCRUDActions, contractSendAction, ContractCRUDActions } from "@owlprotocol/web3-actions";
 import { createStore, StoreType } from "../store.js";
+import {TypechainEthers} from "@owlprotocol/contracts";
 
 describe(`${ContractName}/contractSend.test.ts`, () => {
     let networkId: string;
@@ -33,8 +31,8 @@ describe(`${ContractName}/contractSend.test.ts`, () => {
         store = createStore();
         store.dispatch(NetworkCRUDActions.actions.reduxUpsert({ networkId, web3, web3Sender }));
 
-        const tx = new web3.eth.Contract(cloneDeep(Contracts.Artifacts.BlockNumber.abi) as AbiItem[]).deploy({
-            data: Contracts.Artifacts.BlockNumber.bytecode,
+        const tx = new web3.eth.Contract(TypechainEthers.BlockNumber__factory.abi as any).deploy({
+            data: TypechainEthers.BlockNumber__factory.bytecode,
         });
         const gas = await tx.estimateGas();
         web3Contract = await tx.send({
@@ -48,7 +46,7 @@ describe(`${ContractName}/contractSend.test.ts`, () => {
             ContractCRUDActions.actions.create({
                 networkId,
                 address,
-                abi: cloneDeep(Contracts.Artifacts.BlockNumber.abi) as AbiItem[],
+                abi: TypechainEthers.BlockNumber__factory.abi as any,
             }),
         );
     });
