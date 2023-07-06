@@ -57,6 +57,7 @@ export function beaconProxyFactory<
         }
         //Compute init data, deploy beacon proxy
         const initData = encoder(...initArgs);
+        //msgSender assumed to be same as beacon admin
         const initArgsBeaconProxy = [msgSender, beaconAddress, initData] as [string, string, string];
         const beacon = await BeaconProxyDeterministicFactory.deploy(...initArgsBeaconProxy, overrides);
         return contractFactory.attach(beacon.address) as ContractTyped;

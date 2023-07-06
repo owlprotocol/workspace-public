@@ -8,6 +8,7 @@ export function getBeaconProxyFactories(
     cloneFactory: ERC1167Factory,
     beaconFactory: InitializeFactories["UpgradeableBeacon"],
     msgSender: string,
+    beaconAdmin: string,
 ) {
     const factories2 = omit(
         deterministicFactories,
@@ -24,7 +25,7 @@ export function getBeaconProxyFactories(
 
     return mapValues(factories2, (f: any) => {
         const implementationAddress = f.getAddress() as string;
-        const beaconAddress = beaconFactory.getAddress(msgSender, implementationAddress);
+        const beaconAddress = beaconFactory.getAddress(beaconAdmin, implementationAddress);
 
         return beaconProxyFactory({
             contractFactory: f,

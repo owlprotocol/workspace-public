@@ -1,4 +1,5 @@
 import log from "loglevel";
+import { BEACON_ADMIN } from "@owlprotocol/envvars";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
 import { getFactories } from "../../../ethers/factories.js";
@@ -37,13 +38,14 @@ export const AssetRouterOutputDeploy = async ({
         signerAddress,
     );
     const beaconFactory = deterministicInitializeFactories.UpgradeableBeacon;
-    const beconProxyFactories = getBeaconProxyFactories(
+    const beaconProxyFactories = getBeaconProxyFactories(
         deterministicFactories,
         cloneFactory,
         beaconFactory,
         signerAddress,
+        BEACON_ADMIN,
     );
-    const AssetRouterOutputFactory = beconProxyFactories.AssetRouterOutput;
+    const AssetRouterOutputFactory = beaconProxyFactories.AssetRouterOutput;
 
     const { chainId } = network.config;
 

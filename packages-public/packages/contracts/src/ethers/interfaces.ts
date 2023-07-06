@@ -1,4 +1,5 @@
 import { Interface } from "@ethersproject/abi";
+import { constants } from "ethers";
 import * as contracts from "../typechain/ethers/factories/contracts/index.js";
 import * as oz from "../typechain/ethers/factories/@openzeppelin/contracts-upgradeable/index.js";
 import { interfaceId } from "../utils/IERC165.js";
@@ -57,13 +58,15 @@ export const IERC721InterfaceId = interfaceId(
     IERC721Interface.fragments.filter((f) => !IERC165Sighashes.has(Interface.getSighash(f))),
 );
 
-export const IERC721MetadataInterface = oz.token.erc721.extensions.IERC721MetadataUpgradeable__factory.createInterface();
+export const IERC721MetadataInterface =
+    oz.token.erc721.extensions.IERC721MetadataUpgradeable__factory.createInterface();
 //const IERC721MetadataSighashes = new Set(IERC721MetadataInterface.fragments.map(Interface.getSighash));
 export const IERC721MetadataInterfaceId = interfaceId(
     IERC721MetadataInterface.fragments.filter((f) => !IERC721Sighashes.has(Interface.getSighash(f))),
 );
 
-export const IERC721EnumerableInterface = oz.token.erc721.extensions.IERC721EnumerableUpgradeable__factory.createInterface();
+export const IERC721EnumerableInterface =
+    oz.token.erc721.extensions.IERC721EnumerableUpgradeable__factory.createInterface();
 //const IERC721EnumerableSighashes = new Set(IERC721EnumerableInterface.fragments.map(Interface.getSighash));
 export const IERC721EnumerableInterfaceId = interfaceId(
     IERC721EnumerableInterface.fragments.filter((f) => !IERC721Sighashes.has(Interface.getSighash(f))),
@@ -88,7 +91,8 @@ export const IERC1155InterfaceId = interfaceId(
     IERC1155Interface.fragments.filter((f) => !IERC165Sighashes.has(Interface.getSighash(f))),
 );
 
-export const IERC1155MetadataURIInterface = oz.token.erc1155.extensions.IERC1155MetadataURIUpgradeable__factory.createInterface();
+export const IERC1155MetadataURIInterface =
+    oz.token.erc1155.extensions.IERC1155MetadataURIUpgradeable__factory.createInterface();
 export const IERC1155MetadataURIInterfaceId = interfaceId(
     IERC1155MetadataURIInterface.fragments.filter((f) => !IERC1155Sighashes.has(Interface.getSighash(f))),
 );
@@ -179,101 +183,129 @@ export const interfaces = {
     IERC1167Factory: {
         interface: IERC1167FactoryInterface,
         interfaceId: IERC1167FactoryInterfaceId,
+        contract: contracts.proxy.erc1167.IERC1167Factory__factory.connect(constants.AddressZero, null as any),
     },
     IMulticall2: {
         interface: IMulticall2Interface,
         interfaceId: IMulticall2InterfaceInterfaceId,
+        contract: contracts.utils.IMulticall2__factory.connect(constants.AddressZero, null as any),
     },
     IERC165: {
         interface: IERC165Interface,
         interfaceId: IERC165InterfaceId,
+        contract: oz.utils.introspection.IERC165Upgradeable__factory.connect(constants.AddressZero, null as any),
     },
     IERC1820: {
         interface: IERC1820Interface,
         interfaceId: IERC1820InterfaceId,
+        contract: oz.utils.introspection.IERC1820RegistryUpgradeable__factory.connect(
+            constants.AddressZero,
+            null as any,
+        ),
     },
     IAccessControl: {
         interface: IAccessControlInterface,
         interfaceId: IAccessControlInterfaceId,
+        contract: oz.access.IAccessControlUpgradeable__factory.connect(constants.AddressZero, null as any),
     },
     IRouterReceiver: {
         interface: IRouterReceiverInterface,
         interfaceId: IRouterReceiverInterfaceId,
+        contract: contracts.common.IRouterReceiver__factory.connect(constants.AddressZero, null as any),
     },
     IContractURI: {
         interface: IContractURIInterface,
         interfaceId: IContractURIInterfaceId,
+        contract: contracts.common.IContractURI__factory.connect(constants.AddressZero, null as any),
     },
     IERC2981: {
         interface: IERC2981Interface,
         interfaceId: IERC2981InterfaceId,
+        contract: oz.interfaces.IERC2981Upgradeable__factory.connect(constants.AddressZero, null as any),
     },
     IERC2981Setter: {
         interface: IERC2981SetterInterface,
         interfaceId: IERC2981SetterInterfaceId,
+        contract: contracts.plugins.erc2981.IERC2981Setter__factory.connect(constants.AddressZero, null as any),
     },
     IERC20: {
         interface: IERC20Interface,
         interfaceId: IERC20InterfaceId,
+        contract: oz.token.erc20.IERC20Upgradeable__factory.connect(constants.AddressZero, null as any),
     },
     IERC20Metadata: {
         interface: IERC20MetadataInterface,
         interfaceId: IERC20MetadataInterfaceId,
+        contract: oz.token.erc20.extensions.IERC20MetadataUpgradeable__factory.connect(constants.AddressZero, null as any),
     },
     IERC20Mintable: {
         interface: IERC20MintableInterface,
         interfaceId: IERC20MintableInterfaceId,
+        contract: contracts.assets.erc20.IERC20Mintable__factory.connect(constants.AddressZero, null as any),
     },
     IERC721: {
         interface: IERC721Interface,
         interfaceId: IERC721InterfaceId,
+        contract: oz.token.erc721.IERC721Upgradeable__factory.connect(constants.AddressZero, null as any),
     },
     IERC721Metadata: {
         interface: IERC721MetadataInterface,
         interfaceId: IERC721MetadataInterfaceId,
+        contract: oz.token.erc721.extensions.IERC721MetadataUpgradeable__factory.connect(constants.AddressZero, null as any),
     },
     IERC721Enumerable: {
         interface: IERC721EnumerableInterface,
         interfaceId: IERC721EnumerableInterfaceId,
+        contract: oz.token.erc721.extensions.IERC721EnumerableUpgradeable__factory.connect(constants.AddressZero, null as any),
     },
     IERC721Mintable: {
         interface: IERC721MintableInterface,
         interfaceId: IERC721MintableInterfaceId,
+        contract: contracts.assets.erc721.IERC721Mintable__factory.connect(constants.AddressZero, null as any),
     },
     IERC721MintableAutoId: {
         interface: IERC721MintableAutoIdInterface,
         interfaceId: IERC721MintableAutoIdInterfaceId,
+        contract: contracts.assets.erc721.IERC721MintableAutoId__factory.connect(constants.AddressZero, null as any),
     },
     IERC721Receiver: {
         interface: IERC721ReceiverInterface,
         interfaceId: IERC721ReceiverInterfaceId,
+        contract: oz.token.erc721.IERC721ReceiverUpgradeable__factory.connect(constants.AddressZero, null as any),
     },
     IERC1155: {
         interface: IERC1155Interface,
         interfaceId: IERC1155InterfaceId,
+        contract: oz.token.erc1155.IERC1155Upgradeable__factory.connect(constants.AddressZero, null as any),
     },
     IERC1155MetadataURI: {
         interface: IERC1155MetadataURIInterface,
         interfaceId: IERC1155MetadataURIInterfaceId,
+        contract: oz.token.erc1155.extensions.IERC1155MetadataURIUpgradeable__factory.connect(constants.AddressZero, null as any),
     },
     IERC1155Mintable: {
         interface: IERC1155MintableInterface,
         interfaceId: IERC1155MintableInterfaceId,
+        contract: contracts.assets.erc1155.IERC1155Mintable__factory.connect(constants.AddressZero, null as any),
     },
     IERC1155Receiver: {
         interface: IERC1155ReceiverInterface,
         interfaceId: IERC1155ReceiverInterfaceId,
+        contract: oz.token.erc1155.IERC1155ReceiverUpgradeable__factory.connect(constants.AddressZero, null as any),
     },
     IAssetRouterCraft: {
         interface: IAssetRouterCraftInterface,
         interfaceId: IAssetRouterCraftInterfaceId,
+        contract: contracts.plugins.assetRouter.IAssetRouterCraft__factory.connect(constants.AddressZero, null as any),
     },
     IAssetRouterInput: {
         interface: IAssetRouterInputInterface,
         interfaceId: IAssetRouterInputInterfaceId,
+        contract: contracts.plugins.assetRouter.IAssetRouterInput__factory.connect(constants.AddressZero, null as any),
     },
     IAssetRouterOutput: {
         interface: IAssetRouterOutputInterface,
         interfaceId: IAssetRouterOutputInterfaceId,
+        contract: contracts.plugins.assetRouter.IAssetRouterOutput__factory.connect(constants.AddressZero, null as any),
     },
 };

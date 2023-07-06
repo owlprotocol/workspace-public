@@ -1,4 +1,5 @@
 import log from "loglevel";
+import { BEACON_ADMIN } from "@owlprotocol/envvars";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
 import { getFactories } from "../../../ethers/factories.js";
@@ -11,10 +12,10 @@ import { getBeaconProxyFactories } from "../../../ethers/beaconProxyFactories.js
 import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
 
 interface Params extends RunTimeEnvironment {
-    tokens: number;
+    instances: Omit<ERC1155MintableInitializeArgs, "admin">[],
     balanceTarget: number;
 }
-export const ERC1155MintableDeploy = async ({ provider, signers, network, tokens, balanceTarget }: Params) => {
+export const ERC1155MintableDeploy = async ({ provider, signers, network, instances, balanceTarget }: Params) => {
     const { awaitAllObj } = await import("@owlprotocol/utils");
     const cloneFactoryAddress = ERC1167FactoryAddress;
 
@@ -31,25 +32,26 @@ export const ERC1155MintableDeploy = async ({ provider, signers, network, tokens
         signerAddress,
     );
     const beaconFactory = deterministicInitializeFactories.UpgradeableBeacon;
-    const beconProxyFactories = getBeaconProxyFactories(
+    const beaconProxyFactories = getBeaconProxyFactories(
         deterministicFactories,
         cloneFactory,
         beaconFactory,
         signerAddress,
+        BEACON_ADMIN,
     );
-    const ERC1155MintableFactory = beconProxyFactories.ERC1155Mintable;
+    const ERC1155MintableFactory = beaconProxyFactories.ERC1155Mintable;
 
     const { chainId } = network.config;
 
     //Contracts
     const deployments: { [key: string]: ERC1155MintableInitializeArgs } = {};
-    for (let i = 0; i < tokens; i++) {
+    for (let i = 0; i < instances.length; i++) {
         const name = `ERC1155Mintable-${i}`;
 
         deployments[name] = {
             admin: signerAddress,
-            uri: `${getContractURIs({ chainId, name, tokenId: i }).tokenUri}/{id}`,
             contractUri: getContractURIs({ chainId, name }).contractUri,
+            ...instances[i],
         };
     }
 
@@ -105,4 +107,11 @@ export const ERC1155MintableDeploy = async ({ provider, signers, network, tokens
 };
 
 ERC1155MintableDeploy.tags = ["ERC1155Mintable"];
-ERC1155MintableDeploy.dependencies = ["Implementations", "ERC1820", "UpgradeableBeacon"];
+ERC1155MintableDeploy.dependencies = [
+    "Implementations",
+    "UpgradeableBeacon",
+    "ERC2981Setter",
+    "TokenURI",
+    "TokenURIBaseURI",
+    "TokenURIDna",
+];

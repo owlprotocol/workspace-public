@@ -36,6 +36,9 @@ export const UpgradeableBeaconDeploy = async ({ provider, signers, network }: Ru
         "UpgradeableBeacon",
         "BeaconProxy",
         "Multicall2",
+        "ERC1167Factory",
+        "Fallback",
+        "ERC1820Registry",
     ) as NoInitFactories;
 
     const promises = mapValues(implementationFactories, async (factory) => {

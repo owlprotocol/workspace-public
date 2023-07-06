@@ -61,6 +61,7 @@
     "deploy": "npm-run-all to:commonjs deploy:all to:module",
     "deploy:all": "hardhat deploy --tags All",
     "deploy:implementations": "hardhat deploy --tags Implementations",
+    "deploy:beacons": "hardhat deploy --tags UpgradeableBeacon",
     "verify": "hardhat run src/scripts/verify.ts",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",

@@ -1,6 +1,6 @@
 import { TransactionReceipt } from "@ethersproject/providers";
 import log from "loglevel";
-import { ethers } from "ethers";
+import { BEACON_ADMIN } from "@owlprotocol/envvars";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
 import { getFactories } from "../../../ethers/factories.js";
@@ -13,12 +13,12 @@ import { getBeaconProxyFactories } from "../../../ethers/beaconProxyFactories.js
 import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
 
 interface Params extends RunTimeEnvironment {
-    tokens: number;
+    instances: Omit<ERC721MintableInitializeArgs, "admin" | "name" | "symbol">[];
     balanceTarget: number;
 }
-export const ERC721MintableDeploy = async ({ provider, signers, network, tokens, balanceTarget }: Params) => {
+export const ERC721MintableDeploy = async ({ provider, signers, network, instances, balanceTarget }: Params) => {
     const { awaitAllObj } = await import("@owlprotocol/utils");
-    const cloneFactoryAddress = network.config.local ? ERC1167FactoryAddress : ERC1167FactoryAddress;
+    const cloneFactoryAddress = ERC1167FactoryAddress;
 
     const signer = signers[0];
     const signerAddress = await signer.getAddress();
@@ -33,19 +33,20 @@ export const ERC721MintableDeploy = async ({ provider, signers, network, tokens,
         signerAddress,
     );
     const beaconFactory = deterministicInitializeFactories.UpgradeableBeacon;
-    const beconProxyFactories = getBeaconProxyFactories(
+    const beaconProxyFactories = getBeaconProxyFactories(
         deterministicFactories,
         cloneFactory,
         beaconFactory,
         signerAddress,
+        BEACON_ADMIN,
     );
-    const ERC721MintableFactory = beconProxyFactories.ERC721Mintable;
+    const ERC721MintableFactory = beaconProxyFactories.ERC721Mintable;
 
     const { chainId } = network.config;
 
     //Contracts
     const deployments: { [key: string]: ERC721MintableInitializeArgs } = {};
-    for (let i = 0; i < tokens; i++) {
+    for (let i = 0; i < instances.length; i++) {
         const name = `ERC721Mintable-${i}`;
 
         deployments[name] = {
@@ -53,8 +54,7 @@ export const ERC721MintableDeploy = async ({ provider, signers, network, tokens,
             name,
             symbol: `NFT${i}`,
             contractUri: getContractURIs({ chainId, name }).contractUri,
-            tokenRoyaltyProvider: ethers.constants.AddressZero,
-            tokenUriProvider: ethers.constants.AddressZero,
+            ...instances[i],
         };
     }
 
@@ -123,4 +123,11 @@ export const ERC721MintableDeploy = async ({ provider, signers, network, tokens,
 };
 
 ERC721MintableDeploy.tags = ["ERC721Mintable"];
-ERC721MintableDeploy.dependencies = ["Implementations", "ERC1820", "UpgradeableBeacon"];
+ERC721MintableDeploy.dependencies = [
+    "Implementations",
+    "UpgradeableBeacon",
+    "ERC2981Setter",
+    "TokenURI",
+    "TokenURIBaseURI",
+    "TokenURIDna",
+];

@@ -1,5 +1,6 @@
 import { utils } from "ethers";
 import log from "loglevel";
+import { BEACON_ADMIN } from "@owlprotocol/envvars";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
 import { getFactories } from "../../../ethers/factories.js";
@@ -40,6 +41,7 @@ export const ERC20MintableDeploy = async ({ provider, signers, network, tokens, 
         cloneFactory,
         beaconFactory,
         signerAddress,
+        BEACON_ADMIN,
     );
     const ERC20MintableFactory = beaconProxyFactories.ERC20Mintable;
 
@@ -110,4 +112,4 @@ export const ERC20MintableDeploy = async ({ provider, signers, network, tokens, 
 };
 
 ERC20MintableDeploy.tags = ["ERC20Mintable"];
-ERC20MintableDeploy.dependencies = ["Implementations", "ERC1820", "UpgradeableBeacon"];
+ERC20MintableDeploy.dependencies = ["Implementations", "UpgradeableBeacon"];

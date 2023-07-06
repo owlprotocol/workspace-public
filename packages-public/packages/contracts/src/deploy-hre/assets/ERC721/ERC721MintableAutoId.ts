@@ -2,21 +2,29 @@ import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import { ERC721MintableAutoIdDeploy } from "../../../deploy/assets/ERC721/ERC721MintableAutoId.js";
 
 const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironment) => {
+    const { save, getOrNull, get } = deployments;
+    const tokenRoyaltyProvider = (await get(`ERC2981Setter-${0}`)).address;
+    const tokenUriProvider = (await get(`TokenURIDna-${0}`)).address;
+
     const results = await ERC721MintableAutoIdDeploy({
         provider: ethers.provider,
         signers: await ethers.getSigners(),
         network,
-        tokens: 10,
+        instances: [
+            {
+                tokenRoyaltyProvider,
+                tokenUriProvider,
+            },
+        ],
         balanceTarget: 10,
     });
-
-    const { save, getOrNull } = deployments;
 
     await Promise.all(
         Object.entries(results).map(async ([k, v]) => {
             const submission = await getOrNull(k);
-            if (submission?.address != v.address) {
-                return save(k, { address: v.address, abi: [] });
+            if (!!submission) deployments.delete(k);
+            if (!v.error && v.address) {
+                await save(k, { address: v.address, abi: [] });
             }
         }),
     );

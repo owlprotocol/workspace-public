@@ -41,7 +41,7 @@ export function getDeterministicInitializeFactories(
     cloneFactory: ERC1167Factory,
     msgSender: string,
 ): InitializeFactories {
-    const factories2 = omit(factories, "ERC1167Factory", "Fallback", "Multicall2") as F_Initialize;
+    const factories2 = omit(factories, "ERC1167Factory", "Fallback", "Multicall2", "ERC1820Registry") as F_Initialize;
 
     return mapValues(factories2, (f: any) => {
         return deterministicFactory({
