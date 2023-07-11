@@ -14,7 +14,7 @@ const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironmen
     await Promise.all(
         Object.entries(results).map(async ([k, v]) => {
             const submission = await getOrNull(k);
-            if (!!submission) deployments.delete(k);
+            if (!!submission) await deployments.delete(k);
             if (!v.error && v.address) {
                 await save(k, { address: v.address, abi: [] });
             }

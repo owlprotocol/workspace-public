@@ -1,48 +1,21 @@
 import log from "loglevel";
+import { getFactoriesWithSigner } from "@owlprotocol/contracts-proxy";
+import { factories } from "../../../ethers/factories.js";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
-import { getFactories } from "../../../ethers/factories.js";
-import {
-    getDeterministicFactories,
-    getDeterministicInitializeFactories,
-} from "../../../ethers/deterministicFactories.js";
 import { ERC2981SetterInitializeArgs, flattenInitArgsERC2981Setter } from "../../../utils/ERC2981Setter.js";
-import { getBeaconProxyFactories } from "../../../ethers/beaconProxyFactories.js";
-import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
-import { BEACON_ADMIN } from "@owlprotocol/envvars";
 
 interface Params extends RunTimeEnvironment {
     instances: number;
 }
 export const ERC2981SetterDeploy = async ({ provider, signers, network, instances }: Params) => {
     const { awaitAllObj } = await import("@owlprotocol/utils");
-    const cloneFactoryAddress = ERC1167FactoryAddress;
 
     const signer = signers[0];
     const signerAddress = await signer.getAddress();
     let nonce = await provider.getTransactionCount(signerAddress);
 
-    const factories = getFactories(signer);
-    const cloneFactory = factories.ERC1167Factory.attach(cloneFactoryAddress);
-    const deterministicFactories = getDeterministicFactories(factories, cloneFactoryAddress);
-    const deterministicInitializeFactories = getDeterministicInitializeFactories(
-        factories,
-        cloneFactory,
-        signerAddress,
-    );
-    const beaconFactory = deterministicInitializeFactories.UpgradeableBeacon;
-
-    //ERRORs out bc beacon is assumed to use same signer
-    //TODO: Refactor
-    const beaconProxyFactories = getBeaconProxyFactories(
-        deterministicFactories,
-        cloneFactory,
-        beaconFactory,
-        signerAddress,
-        BEACON_ADMIN
-    );
-    const ERC2981SetterFactory = beaconProxyFactories.ERC2981Setter;
-
+    const ERC2981SetterFactory = getFactoriesWithSigner(factories, signer).factoriesBeaconProxies.ERC2981Setter;
 
     const { chainId } = network.config;
 

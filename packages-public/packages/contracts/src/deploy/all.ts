@@ -1,4 +1,4 @@
-import * as Assets from "./assets/index.js";
+//import * as Assets from "./assets/index.js";
 import * as Common from "./common/index.js";
 import * as Plugins from "./plugins/index.js";
 
@@ -6,7 +6,6 @@ import * as Plugins from "./plugins/index.js";
 export const AllDeploy = async () => { };
 AllDeploy.tags = ["All"];
 AllDeploy.dependencies = [
-    ...Common.ProxyFactoryDeploy.tags,
     ...Common.ImplementationsDeploy.tags,
     ...Common.UpgradeableBeaconDeploy.tags,
     ...Plugins.ERC2981SetterDeploy.tags,

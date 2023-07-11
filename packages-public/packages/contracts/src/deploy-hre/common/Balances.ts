@@ -1,12 +1,4 @@
-import type { HardhatRuntimeEnvironment } from "hardhat/types";
-import { BalancesDeploy } from "../../deploy/common/Balances.js";
+import { DeployHRE } from "@owlprotocol/contracts-proxy";
 
-const deploy = async ({ ethers, network }: HardhatRuntimeEnvironment) => {
-    await BalancesDeploy({ provider: ethers.provider, network, signers: [] });
-    return;
-};
-
-deploy.tags = BalancesDeploy.tags;
-deploy.dependencies = BalancesDeploy.dependencies;
 // eslint-disable-next-line import/no-default-export
-export default deploy;
+export default DeployHRE.BalancesDeploy;

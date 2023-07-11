@@ -1,5 +1,4 @@
-import type { Signer } from "ethers";
-import { mapValues } from "../lodash.js";
+import { getFactoriesWithSigner, Utils } from "@owlprotocol/contracts-proxy";
 import * as contracts from "../typechain/ethers/factories/contracts/index.js";
 
 export interface DeployedLinkReferences {
@@ -58,9 +57,6 @@ const ERC721TopDownMintable = new ContractFactory(
 //ERC1820 Registry
 export const ERC1820RegistryFactory = new contracts.common.erc1820.erc1820Sol.ERC1820Registry__factory();
 //Proxies
-export const ERC1167FactoryFactory = new contracts.proxy.erc1167.ERC1167Factory__factory();
-export const BeaconProxyFactory = new contracts.proxy.beacon.BeaconProxy__factory();
-export const UpgradeableBeaconFactory = new contracts.proxy.beacon.UpgradeableBeacon__factory();
 export const FallbackFactory = new contracts.utils.Fallback__factory();
 export const Multicall2Factory = new contracts.utils.Multicall2__factory();
 
@@ -88,13 +84,8 @@ export const AssetRouterOutputFactory = new contracts.plugins.assetRouter.AssetR
 //Utils
 export const BlockNumberFactory = new contracts.utils.BlockNumber__factory();
 
+//WARNING: ONLY add contracts that support initialize pattern
 export const factories = {
-    ERC1820Registry: ERC1820RegistryFactory,
-    ERC1167Factory: ERC1167FactoryFactory,
-    BeaconProxy: BeaconProxyFactory,
-    UpgradeableBeacon: UpgradeableBeaconFactory,
-    Fallback: FallbackFactory,
-    Multicall2: Multicall2Factory,
     ERC20Mintable: ERC20MintableFactory,
     ERC721Mintable: ERC721MintableFactory,
     ERC721MintableAutoId: ERC721MintableAutoIdFactory,
@@ -107,13 +98,20 @@ export const factories = {
     AssetRouterCraft: AssetRouterCraftFactory,
     AssetRouterInput: AssetRouterInputFactory,
     AssetRouterOutput: AssetRouterOutputFactory,
-    BlockNumber: BlockNumberFactory,
 };
 
-//export const implementationFactories = omit(factories, 'ERC1167Factory', 'BeaconProxy', 'UpgradeableBeacon')
+//Can't deploy with these but useful for getting addresses
+const factories2 = getFactoriesWithSigner(factories);
+const factoriesImplementationsBase = factories2.factoriesImplementations;
+export const factoriesDeterministic = factories2.factoriesDeterministic;
+export const factoriesClone = factories2.factoriesClone;
+export const factoriesBeacons = factories2.factoriesBeacons;
+export const factoriesBeaconProxies = factories2.factoriesBeaconProxies;
 
-export function getFactories(signer: Signer) {
-    return mapValues(factories, (f) => f.connect(signer)) as typeof factories;
-}
-
-export type Factories = ReturnType<typeof getFactories>;
+//Add non-initializable contract implementations
+export const factoriesImplementations = {
+    ...factoriesImplementationsBase,
+    ERC1820Registry: Utils.deployDeterministicFactory({ contractFactory: ERC1820RegistryFactory }),
+    Multicall2: Utils.deployDeterministicFactory({ contractFactory: Multicall2Factory }),
+    BlockNumber: Utils.deployDeterministicFactory({ contractFactory: BlockNumberFactory }),
+};

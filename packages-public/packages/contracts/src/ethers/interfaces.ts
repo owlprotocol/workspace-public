@@ -1,5 +1,3 @@
-import { utils } from "ethers";
-
 import { Interface } from "@ethersproject/abi";
 import { constants } from "ethers";
 import * as contracts from "../typechain/ethers/factories/contracts/index.js";
@@ -7,9 +5,6 @@ import * as oz from "../typechain/ethers/factories/@openzeppelin/contracts-upgra
 import { interfaceId } from "../utils/IERC165.js";
 
 // ERC1667Factory
-export const IERC1167FactoryInterface = contracts.proxy.erc1167.IERC1167Factory__factory.createInterface();
-export const IERC1167FactoryInterfaceId = interfaceId(IERC1167FactoryInterface.fragments);
-
 export const IMulticall2Interface = contracts.utils.IMulticall2__factory.createInterface();
 export const IMulticall2InterfaceId = interfaceId(IMulticall2Interface.fragments);
 
@@ -133,7 +128,6 @@ export const ITokenConsumerInterface = contracts.plugins.tokenConsumer.ITokenCon
 export const ITokenConsumerInterfaceId = interfaceId(ITokenConsumerInterface.fragments);
 
 export const interfaceIds = {
-    [IERC1167FactoryInterfaceId]: contracts.proxy.erc1167.IERC1167Factory__factory.abi,
     [IERC165InterfaceId]: oz.utils.introspection.IERC165Upgradeable__factory.abi,
     [IERC1820InterfaceId]: oz.utils.introspection.IERC1820RegistryUpgradeable__factory.abi,
     [IAccessControlInterfaceId]: oz.access.IAccessControlUpgradeable__factory.abi,
@@ -163,7 +157,6 @@ export const interfaceIds = {
 
 export type InterfaceName = keyof typeof interfaces;
 export const interfaceIdNames = {
-    [IERC1167FactoryInterfaceId]: "IERC1167Factory",
     [IMulticall2InterfaceId]: "IMulticall2",
     [IERC165InterfaceId]: "IERC165",
     [IERC1820InterfaceId]: "IERC1820",
@@ -193,11 +186,6 @@ export const interfaceIdNames = {
 } as const;
 
 export const interfaces = {
-    IERC1167Factory: {
-        interface: IERC1167FactoryInterface,
-        interfaceId: IERC1167FactoryInterfaceId,
-        contract: contracts.proxy.erc1167.IERC1167Factory__factory.connect(constants.AddressZero, null as any),
-    },
     IMulticall2: {
         interface: IMulticall2Interface,
         contract: contracts.utils.IMulticall2__factory.connect(constants.AddressZero, null as any),
@@ -336,11 +324,11 @@ export const interfaces = {
     ITokenDna: {
         interface: ITokenDnaInterface,
         interfaceId: ITokenDnaInterfaceId,
-        contract: contracts.plugins.tokenDna.ITokenDna__factory.connect(constants.AddressZero, null as any)
+        contract: contracts.plugins.tokenDna.ITokenDna__factory.connect(constants.AddressZero, null as any),
     },
     ITokenConsumer: {
         interface: ITokenConsumerInterface,
         interfaceId: ITokenConsumerInterfaceId,
-        contract: contracts.plugins.tokenConsumer.ITokenConsumer__factory.connect(constants.AddressZero, null as any)
+        contract: contracts.plugins.tokenConsumer.ITokenConsumer__factory.connect(constants.AddressZero, null as any),
     },
 };

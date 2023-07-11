@@ -1,15 +1,9 @@
 import log from "loglevel";
-import { BEACON_ADMIN } from "@owlprotocol/envvars";
+import { getFactoriesWithSigner } from "@owlprotocol/contracts-proxy";
+import { factories } from "../../../ethers/factories.js";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
-import { getFactories } from "../../../ethers/factories.js";
-import {
-    getDeterministicFactories,
-    getDeterministicInitializeFactories,
-} from "../../../ethers/deterministicFactories.js";
 import { AssetRouterInputInitializeArgs, flattenInitArgsAssetRouterInput } from "../../../utils/AssetRouterInput.js";
-import { getBeaconProxyFactories } from "../../../ethers/beaconProxyFactories.js";
-import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
 import { validateAssetBasketInput } from "../../../utils/AssetLib.js";
 
 export interface AssetRouterInputDeployParams extends RunTimeEnvironment {
@@ -17,29 +11,12 @@ export interface AssetRouterInputDeployParams extends RunTimeEnvironment {
 }
 export const AssetRouterInputDeploy = async ({ provider, signers, network, routers }: AssetRouterInputDeployParams) => {
     const { awaitAllObj } = await import("@owlprotocol/utils");
-    const cloneFactoryAddress = ERC1167FactoryAddress;
 
     const signer = signers[0];
     const signerAddress = await signer.getAddress();
     let nonce = await provider.getTransactionCount(signerAddress);
 
-    const factories = getFactories(signer);
-    const cloneFactory = factories.ERC1167Factory.attach(cloneFactoryAddress);
-    const deterministicFactories = getDeterministicFactories(factories, cloneFactoryAddress);
-    const deterministicInitializeFactories = getDeterministicInitializeFactories(
-        factories,
-        cloneFactory,
-        signerAddress,
-    );
-    const beaconFactory = deterministicInitializeFactories.UpgradeableBeacon;
-    const beaconProxyFactories = getBeaconProxyFactories(
-        deterministicFactories,
-        cloneFactory,
-        beaconFactory,
-        signerAddress,
-        BEACON_ADMIN,
-    );
-    const AssetRouterInputFactory = beaconProxyFactories.AssetRouterInput;
+    const AssetRouterInputFactory = getFactoriesWithSigner(factories, signer).factoriesBeaconProxies.AssetRouterInput;
 
     const { chainId } = network.config;
 

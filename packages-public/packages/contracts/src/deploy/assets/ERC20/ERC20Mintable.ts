@@ -1,16 +1,10 @@
 import { utils } from "ethers";
 import log from "loglevel";
-import { BEACON_ADMIN } from "@owlprotocol/envvars";
+import { getFactoriesWithSigner } from "@owlprotocol/contracts-proxy";
+import { factories } from "../../../ethers/factories.js";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
-import { getFactories } from "../../../ethers/factories.js";
-import {
-    getDeterministicFactories,
-    getDeterministicInitializeFactories,
-} from "../../../ethers/deterministicFactories.js";
 import { ERC20MintableInitializeArgs, flattenInitArgsERC20Mintable } from "../../../utils/ERC20Mintable.js";
-import { getBeaconProxyFactories } from "../../../ethers/beaconProxyFactories.js";
-import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
 
 interface Params extends RunTimeEnvironment {
     tokens: number;
@@ -18,32 +12,12 @@ interface Params extends RunTimeEnvironment {
 }
 export const ERC20MintableDeploy = async ({ provider, signers, network, tokens, balanceTarget }: Params) => {
     const { awaitAllObj } = await import("@owlprotocol/utils");
-    const cloneFactoryAddress = ERC1167FactoryAddress;
-
-    const balanceTargetWei = utils.parseUnits(`${balanceTarget}`);
 
     const signer = signers[0];
     const signerAddress = await signer.getAddress();
     let nonce = await provider.getTransactionCount(signerAddress);
 
-    const factories = getFactories(signer);
-    const cloneFactory = factories.ERC1167Factory.attach(cloneFactoryAddress);
-    const deterministicFactories = getDeterministicFactories(factories, cloneFactoryAddress);
-    const deterministicInitializeFactories = getDeterministicInitializeFactories(
-        factories,
-        cloneFactory,
-        signerAddress,
-    );
-    const beaconFactory = deterministicInitializeFactories.UpgradeableBeacon;
-    //ERROR HERE
-    const beaconProxyFactories = getBeaconProxyFactories(
-        deterministicFactories,
-        cloneFactory,
-        beaconFactory,
-        signerAddress,
-        BEACON_ADMIN,
-    );
-    const ERC20MintableFactory = beaconProxyFactories.ERC20Mintable;
+    const ERC20MintableFactory = getFactoriesWithSigner(factories, signer).factoriesBeaconProxies.ERC20Mintable;
 
     const { chainId } = network.config;
 
@@ -87,6 +61,7 @@ export const ERC20MintableDeploy = async ({ provider, signers, network, tokens, 
     const results = await awaitAllObj(promises);
 
     //Mint to balanceTarget
+    const balanceTargetWei = utils.parseUnits(`${balanceTarget}`);
     const promisesMint = mapValues(results, async (r) => {
         if (!r.error) {
             const contract = r.contract!;

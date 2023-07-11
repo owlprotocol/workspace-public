@@ -1,44 +1,22 @@
 import log from "loglevel";
-import { BEACON_ADMIN } from "@owlprotocol/envvars";
+import { getFactoriesWithSigner } from "@owlprotocol/contracts-proxy";
+import { factories } from "../../../ethers/factories.js";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
-import { getFactories } from "../../../ethers/factories.js";
-import {
-    getDeterministicFactories,
-    getDeterministicInitializeFactories,
-} from "../../../ethers/deterministicFactories.js";
 import { TokenURIBaseURIInitializeArgs, flattenInitArgsTokenURIBaseURI } from "../../../utils/TokenURIBaseURI.js";
-import { getBeaconProxyFactories } from "../../../ethers/beaconProxyFactories.js";
-import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
+
 
 interface Params extends RunTimeEnvironment {
     instances: number;
 }
 export const TokenURIBaseURIDeploy = async ({ provider, signers, network, instances }: Params) => {
     const { awaitAllObj } = await import("@owlprotocol/utils");
-    const cloneFactoryAddress = ERC1167FactoryAddress;
 
     const signer = signers[0];
     const signerAddress = await signer.getAddress();
     let nonce = await provider.getTransactionCount(signerAddress);
 
-    const factories = getFactories(signer);
-    const cloneFactory = factories.ERC1167Factory.attach(cloneFactoryAddress);
-    const deterministicFactories = getDeterministicFactories(factories, cloneFactoryAddress);
-    const deterministicInitializeFactories = getDeterministicInitializeFactories(
-        factories,
-        cloneFactory,
-        signerAddress,
-    );
-    const beaconFactory = deterministicInitializeFactories.UpgradeableBeacon;
-    const beaconProxyFactories = getBeaconProxyFactories(
-        deterministicFactories,
-        cloneFactory,
-        beaconFactory,
-        signerAddress,
-        BEACON_ADMIN,
-    );
-    const TokenURIBaseURIFactory = beaconProxyFactories.TokenURIBaseURI;
+    const TokenURIBaseURIFactory = getFactoriesWithSigner(factories, signer).factoriesBeaconProxies.TokenURIBaseURI;
 
     const { chainId } = network.config;
 

@@ -10,7 +10,6 @@ export * as ERC20Mintable from "./ERC20Mintable.js";
 export * as ERC721Mintable from "./ERC721Mintable.js";
 export * as ERC721MintableAutoId from "./ERC721MintableAutoId.js";
 export * as ERC1155Mintable from "./ERC1155Mintable.js";
-export * as ERC1167Factory from "./ERC1167Factory/index.js";
 export * as ERC1820 from "./ERC1820.js";
 export * as IERC20 from "./IERC20.js";
 export * as IERC721 from "./IERC721.js";
