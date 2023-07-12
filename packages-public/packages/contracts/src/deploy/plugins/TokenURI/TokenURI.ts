@@ -4,7 +4,7 @@ import { factories } from "../../../ethers/factories.js";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
 
-import { TokenURIInitializeArgs, flattenInitArgsTokenURI } from "../../../utils/TokenURI.js";
+import { TokenURIInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/TokenURI.js";
 
 
 interface Params extends RunTimeEnvironment {
@@ -33,7 +33,7 @@ export const TokenURIDeploy = async ({ provider, signers, network, instances }: 
     }
 
     const promises = mapValues(deployments, async (initArgs) => {
-        const args = flattenInitArgsTokenURI(initArgs);
+        const args = initializeUtil(initArgs);
         const address = TokenURIFactory.getAddress(...args);
 
         try {

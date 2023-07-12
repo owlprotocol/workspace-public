@@ -1,46 +1,42 @@
-import { UnsignedTransaction, providers } from "ethers";
-import { Ethers } from "@owlprotocol/contracts"
+import { Signer } from "ethers";
+import { factoriesAll } from "@owlprotocol/contracts"
+import { DeploymentMethod } from "@owlprotocol/contracts-proxy"
 
 export enum TokenRoyaltyContractType {
     ERC2981 = "ERC2981",
 }
 
-export enum DeploymentMethod {
-    REGULAR = "REGULAR",
-    BEACON_OWL = "BEACON_OWL",
-    BEACON_EXISTING = "BEACON_EXISTING",
-    BEACON_NEW = "BEACON_NEW"
-}
-
-export interface DeployTokenRoyaltyContractArgs {
-    /** Deployment Method (default to BEACON_OWL) */
-    readonly deploymentMethod?: DeploymentMethod
-    /** Beacon Address (required if BEACON_EXISTING) */
-    readonly beaconAddress?: string
+export interface DeployContractArgs {
     /** Admin address */
     readonly admin: string
+    /** Contract Uri */
+    readonly contractUri?: string,
+    /** GSN Forwarder */
+    readonly gsnForwarder?: string,
+}
+
+export interface DeployTokenRoyaltyContractArgs extends DeployContractArgs {
     /** TokenRoyalty Contract Type (default: ERC2981) */
     readonly tokenRoyaltyContractType?: TokenRoyaltyContractType
-    /** ERC2981 TokenRoyalty amount as % */
-    readonly royaltyAmount?: number,
+    /** Custom royalty setter role (default: admin) */
+    readonly royaltyRole?: string;
     /** ERC2981 TokenRoyalty receiver */
-    readonly royaltyAddress?: string,
+    readonly royaltyReceiver?: string,
+    /** ERC2981 TokenRoyalty amount as % */
+    readonly feeNumerator?: number,
     /** NFT Contract to configure */
     readonly nftContractAddress?: string,
 }
 
-export async function deployTokenRoyaltyContract(provider: providers.Provider, {
-    admin,
-    tokenRoyaltyContractType,
-    royaltyAmount,
-    royaltyAddress,
-    nftContractAddress,
-}: DeployTokenRoyaltyContractArgs): Promise<UnsignedTransaction[]> {
+function example() {
+    factoriesAll.ERC2981Setter.deploy({ admin: "" }, { deploymentMethod: DeploymentMethod.BEACON_OWL }, undefined as any as Signer)
+    type T = Parameters<typeof factoriesAll.ERC2981Setter.deploy>[0]
 
-    Ethers.factories
-    Ethers.ERC2981SetterFactory.getDeployTransaction
-
-    throw new Error("Unimplemented")
-
-    return []
+    const routes = {
+        ERC2981: {
+            factory: factoriesAll.ERC2981Setter,
+            meta: { openapi: "" },
+            zod: {}
+        }
+    }
 }

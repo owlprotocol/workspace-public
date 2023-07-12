@@ -1,5 +1,5 @@
-import { Overrides, constants } from "ethers";
-import type { ERC721MintableAutoId } from "../typechain/ethers/contracts/assets/ERC721/ERC721MintableAutoId.js";
+import { constants } from "ethers";
+import type { ERC721MintableAutoId } from "../../typechain/ethers/contracts/assets/ERC721/ERC721MintableAutoId.js";
 
 export interface ERC721MintableAutoIdInitializeArgs {
     admin: Parameters<ERC721MintableAutoId["initialize"]>[0];
@@ -11,7 +11,7 @@ export interface ERC721MintableAutoIdInitializeArgs {
     tokenRoyaltyProvider?: Parameters<ERC721MintableAutoId["initialize"]>[6];
 }
 
-export function flattenInitArgsERC721MintableAutoId(args: ERC721MintableAutoIdInitializeArgs) {
+export function initializeUtil(args: ERC721MintableAutoIdInitializeArgs) {
     const { admin, contractUri, gsnForwarder, name, symbol, tokenUriProvider, tokenRoyaltyProvider } = args;
     return [
         admin,

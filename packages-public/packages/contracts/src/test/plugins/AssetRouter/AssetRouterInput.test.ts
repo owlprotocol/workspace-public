@@ -13,16 +13,16 @@ import {
 } from "../../../typechain/ethers/index.js";
 import deployProxyNick from "../../../deploy-hre/common/DeterministicDeployer.js";
 import ProxyFactoryDeploy from "../../../deploy-hre/common/ProxyFactory.js";
-import { ERC20MintableInitializeArgs, flattenInitArgsERC20Mintable } from "../../../utils/ERC20Mintable.js";
-import { ERC721MintableInitializeArgs, flattenInitArgsERC721Mintable } from "../../../utils/ERC721Mintable.js";
-import { ERC1155MintableInitializeArgs, flattenInitArgsERC1155Mintable } from "../../../utils/ERC1155Mintable.js";
+import { ERC20MintableInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC20Mintable.js";
+import { ERC721MintableInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC721Mintable.js";
+import { ERC1155MintableInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC1155Mintable.js";
 import { Factories, getFactories } from "../../../ethers/factories.js";
 import {
     getDeterministicFactories,
     getDeterministicInitializeFactories,
     InitializeFactories,
 } from "../../../ethers/deterministicFactories.js";
-import { AssetRouterInputInitializeArgs, flattenInitArgsAssetRouterInput } from "../../../utils/AssetRouterInput.js";
+import { AssetRouterInputInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/AssetRouterInput.js";
 import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
 
 describe("AssetRouterInput", function () {
@@ -76,7 +76,7 @@ describe("AssetRouterInput", function () {
                 ],
             };
             assetRouterInputName++;
-            const assetRouterInitArgs = flattenInitArgsAssetRouterInput(assetRouterInput);
+            const assetRouterInitArgs = initializeUtil(assetRouterInput);
             AssetRouterInput = await AssetRouterInputFactory.deploy(...assetRouterInitArgs);
         });
 
@@ -101,7 +101,7 @@ describe("AssetRouterInput", function () {
                 name: `Token ${tokenName}`,
                 symbol: `TK${tokenName}`,
             };
-            const tokenInitArgs = flattenInitArgsERC20Mintable(token);
+            const tokenInitArgs = initializeUtil(token);
             ERC20Mintable = await ERC20MintableFactory.deploy(...tokenInitArgs);
             tokenName++;
         });
@@ -127,7 +127,7 @@ describe("AssetRouterInput", function () {
                     ],
                 };
                 assetRouterInputName++;
-                const assetRouterInitArgs = flattenInitArgsAssetRouterInput(assetRouterInput);
+                const assetRouterInitArgs = initializeUtil(assetRouterInput);
                 AssetRouterInput = await AssetRouterInputFactory.deploy(...assetRouterInitArgs);
             });
 
@@ -165,7 +165,7 @@ describe("AssetRouterInput", function () {
                     ],
                 };
                 assetRouterInputName++;
-                const assetRouterInitArgs = flattenInitArgsAssetRouterInput(assetRouterInput);
+                const assetRouterInitArgs = initializeUtil(assetRouterInput);
                 AssetRouterInput = await AssetRouterInputFactory.deploy(...assetRouterInitArgs);
             });
 
@@ -203,7 +203,7 @@ describe("AssetRouterInput", function () {
                 initBaseURI: `token.${tokenName}.com/token`,
                 feeReceiver: signers[0].address,
             };
-            const tokenInitArgs = flattenInitArgsERC721Mintable(token);
+            const tokenInitArgs = initializeUtil(token);
             ERC721Mintable = await ERC721MintableFactory.deploy(...tokenInitArgs);
             tokenName++;
         });
@@ -229,7 +229,7 @@ describe("AssetRouterInput", function () {
                     ],
                 };
                 assetRouterInputName++;
-                const assetRouterInitArgs = flattenInitArgsAssetRouterInput(assetRouterInput);
+                const assetRouterInitArgs = initializeUtil(assetRouterInput);
                 AssetRouterInput = await AssetRouterInputFactory.deploy(...assetRouterInitArgs);
             });
 
@@ -270,7 +270,7 @@ describe("AssetRouterInput", function () {
                     ],
                 };
                 assetRouterInputName++;
-                const assetRouterInitArgs = flattenInitArgsAssetRouterInput(assetRouterInput);
+                const assetRouterInitArgs = initializeUtil(assetRouterInput);
                 AssetRouterInput = await AssetRouterInputFactory.deploy(...assetRouterInitArgs);
             });
 
@@ -313,7 +313,7 @@ describe("AssetRouterInput", function () {
                     ],
                 };
                 assetRouterInputName++;
-                const assetRouterInitArgs = flattenInitArgsAssetRouterInput(assetRouterInput);
+                const assetRouterInitArgs = initializeUtil(assetRouterInput);
                 AssetRouterInput = await AssetRouterInputFactory.deploy(...assetRouterInitArgs);
             });
 
@@ -356,7 +356,7 @@ describe("AssetRouterInput", function () {
                 uri: `token.${tokenName}.com/token`,
                 feeReceiver: signers[0].address,
             };
-            const tokenInitArgs = flattenInitArgsERC1155Mintable(token);
+            const tokenInitArgs = initializeUtil(token);
             ERC1155Mintable = await ERC1155MintableFactory.deploy(...tokenInitArgs);
             tokenName++;
         });
@@ -382,7 +382,7 @@ describe("AssetRouterInput", function () {
                     ],
                 };
                 assetRouterInputName++;
-                const assetRouterInitArgs = flattenInitArgsAssetRouterInput(assetRouterInput);
+                const assetRouterInitArgs = initializeUtil(assetRouterInput);
                 AssetRouterInput = await AssetRouterInputFactory.deploy(...assetRouterInitArgs);
             });
 
@@ -423,7 +423,7 @@ describe("AssetRouterInput", function () {
                     ],
                 };
                 assetRouterInputName++;
-                const assetRouterInitArgs = flattenInitArgsAssetRouterInput(assetRouterInput);
+                const assetRouterInitArgs = initializeUtil(assetRouterInput);
                 AssetRouterInput = await AssetRouterInputFactory.deploy(...assetRouterInitArgs);
             });
 

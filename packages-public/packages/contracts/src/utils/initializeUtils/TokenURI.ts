@@ -1,5 +1,5 @@
 import { constants } from "ethers";
-import type { TokenURI } from "../typechain/ethers/contracts/plugins/TokenURI/TokenURI.js";
+import type { TokenURI } from "../../typechain/ethers/contracts/plugins/TokenURI/TokenURI.js";
 
 export interface TokenURIInitializeArgs {
     admin: Parameters<TokenURI["initialize"]>[0];
@@ -9,7 +9,7 @@ export interface TokenURIInitializeArgs {
     uri?: Parameters<TokenURI["initialize"]>[4];
 }
 
-export function flattenInitArgsTokenURI(args: TokenURIInitializeArgs) {
+export function initializeUtil(args: TokenURIInitializeArgs) {
     const { admin, contractUri, gsnForwarder, uriRole, uri } = args;
     return [admin, contractUri ?? "", gsnForwarder ?? constants.AddressZero, uriRole ?? admin, uri ?? ""] as [
         Parameters<TokenURI["initialize"]>[0],

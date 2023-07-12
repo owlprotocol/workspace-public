@@ -1,5 +1,5 @@
 import { PUBLIC_ADDRESS_FACTORY_DEPLOYER } from "@owlprotocol/envvars";
-import { ERC1167FactoryFactory, getFactoriesWithSigner } from "../ethers/factories.js";
+import { ERC1167FactoryFactory } from "../ethers/index.js";
 import { ERC1167FactoryAddress } from "../utils/ERC1167Factory/getAddress.js";
 import { logDeployment, RunTimeEnvironment } from "../utils.js";
 

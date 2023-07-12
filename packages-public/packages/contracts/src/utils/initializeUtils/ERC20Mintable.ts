@@ -1,5 +1,5 @@
 import { constants } from "ethers";
-import type { ERC20Mintable } from "../typechain/ethers/contracts/assets/ERC20/ERC20Mintable.js";
+import type { ERC20Mintable } from "../../typechain/ethers/contracts/assets/ERC20/ERC20Mintable.js";
 
 export interface ERC20MintableInitializeArgs {
     admin: Parameters<ERC20Mintable["initialize"]>[0];
@@ -9,7 +9,7 @@ export interface ERC20MintableInitializeArgs {
     symbol: Parameters<ERC20Mintable["initialize"]>[4];
 }
 
-export function flattenInitArgsERC20Mintable(args: ERC20MintableInitializeArgs) {
+export function initializeUtil(args: ERC20MintableInitializeArgs) {
     const { admin, contractUri, gsnForwarder, name, symbol } = args;
     return [admin, contractUri ?? "", gsnForwarder ?? constants.AddressZero, name, symbol] as [
         Parameters<ERC20Mintable["initialize"]>[0],

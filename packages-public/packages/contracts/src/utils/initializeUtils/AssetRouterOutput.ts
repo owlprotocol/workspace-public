@@ -1,7 +1,7 @@
 import { utils } from "ethers";
-import { AssetBasketOutput, validateAssetBasketOutput } from "./AssetLib.js";
-import { AssetRouterOutput__factory } from "../typechain/ethers/factories/contracts/plugins/AssetRouter/AssetRouterOutput__factory.js";
-import type { AssetRouterOutput } from "../typechain/ethers/contracts/plugins/AssetRouter/AssetRouterOutput.js";
+import { AssetBasketOutput, validateAssetBasketOutput } from "../AssetLib.js";
+import { AssetRouterOutput__factory } from "../../typechain/ethers/factories/contracts/plugins/AssetRouter/AssetRouterOutput__factory.js";
+import type { AssetRouterOutput } from "../../typechain/ethers/contracts/plugins/AssetRouter/AssetRouterOutput.js";
 
 export interface AssetRouterOutputInitializeArgs {
     admin: Parameters<AssetRouterOutput["initialize"]>[0];
@@ -10,7 +10,7 @@ export interface AssetRouterOutputInitializeArgs {
     routers: Parameters<AssetRouterOutput["initialize"]>[3];
 }
 
-export function flattenInitArgsAssetRouterOutput(args: AssetRouterOutputInitializeArgs) {
+export function initializeUtil(args: AssetRouterOutputInitializeArgs) {
     const { admin, contractUri, outputBaskets, routers } = args;
     return [admin, contractUri ?? "", outputBaskets.map(validateAssetBasketOutput), routers] as [
         Parameters<AssetRouterOutput["initialize"]>[0],

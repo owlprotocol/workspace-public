@@ -1,5 +1,5 @@
 import { constants } from "ethers";
-import type { TokenURIDna } from "../typechain/ethers/contracts/plugins/TokenURI/TokenURIDna.js";
+import type { TokenURIDna } from "../../typechain/ethers/contracts/plugins/TokenURI/TokenURIDna.js";
 
 export interface TokenURIDnaInitializeArgs {
     admin: Parameters<TokenURIDna["initialize"]>[0];
@@ -11,7 +11,7 @@ export interface TokenURIDnaInitializeArgs {
     dnaProvider?: Parameters<TokenURIDna["initialize"]>[6];
 }
 
-export function flattenInitArgsTokenURIDna(args: TokenURIDnaInitializeArgs) {
+export function initializeUtil(args: TokenURIDnaInitializeArgs) {
     const { admin, contractUri, gsnForwarder, baseUriRole, baseUri, dnaProviderRole, dnaProvider } = args;
     return [
         admin,

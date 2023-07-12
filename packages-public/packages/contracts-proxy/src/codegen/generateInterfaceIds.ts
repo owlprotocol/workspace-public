@@ -1,10 +1,9 @@
 import { FormatTypes } from "@ethersproject/abi";
 import { writeFileSync, existsSync, mkdirSync } from "fs";
+import { interfaceId } from "../utils/IERC165.js";
+import type { ContractFactory } from "ethers";
 
-import { interfaceId } from "./IERC165.js";
-import { factories } from "../ethers/factories.js";
-
-export function generateInterfaceIds() {
+export function generateInterfaceIds(factories: { [k: string]: ContractFactory }) {
     const interfaceIdFolder = "interfaceId";
     if (!existsSync(interfaceIdFolder)) {
         mkdirSync(interfaceIdFolder);
@@ -12,6 +11,7 @@ export function generateInterfaceIds() {
 
     const ifaceIds: string[] = [];
     Object.entries(factories).forEach(([factoryName, factory]) => {
+        //Only record ifaceId of I* contracts (not implementations with bytecode)
         if (!(factory as any).bytecode) {
             const name = factoryName.replace("__factory", "");
 
@@ -31,9 +31,3 @@ export function generateInterfaceIds() {
 export function generateInterfaceId(interfaceId: string, name: string, abi: any[]) {
     writeFileSync(`./interfaceId/${interfaceId}`, JSON.stringify({ name, interfaceId, abi }));
 }
-
-function main() {
-    generateInterfaceIds();
-}
-
-main();

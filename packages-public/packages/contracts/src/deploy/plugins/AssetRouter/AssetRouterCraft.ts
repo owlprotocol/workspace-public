@@ -3,7 +3,7 @@ import { getFactoriesWithSigner } from "@owlprotocol/contracts-proxy";
 import { factories } from "../../../ethers/factories.js";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
-import { AssetRouterCraftInitializeArgs, flattenInitArgsAssetRouterCraft } from "../../../utils/AssetRouterCraft.js";
+import { AssetRouterCraftInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/AssetRouterCraft.js";
 import { validateAssetBasketInput, validateAssetBasketOutput } from "../../../utils/AssetLib.js";
 import { MINTER_ROLE } from "../../../utils/IAccessControl.js";
 
@@ -35,7 +35,7 @@ export const AssetRouterCraftDeploy = async ({ provider, signers, network, route
     });
 
     const promises = mapValues(deployments, async (initArgs) => {
-        const args = flattenInitArgsAssetRouterCraft(initArgs);
+        const args = initializeUtil(initArgs);
         const address = AssetRouterCraftFactory.getAddress(...args);
 
         try {
@@ -62,7 +62,7 @@ export const AssetRouterCraftDeploy = async ({ provider, signers, network, route
 
     //Mint Permissions
     const outputPermissionsAndTransfers = mapValues(deployments, async (d) => {
-        const args = flattenInitArgsAssetRouterCraft(d);
+        const args = initializeUtil(d);
         const address = AssetRouterCraftFactory.getAddress(...args);
         return Promise.all(
             d.outputBaskets.map((b) => {

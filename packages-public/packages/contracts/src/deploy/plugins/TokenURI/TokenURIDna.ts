@@ -4,7 +4,7 @@ import { factories } from "../../../ethers/factories.js";
 
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
-import { TokenURIDnaInitializeArgs, flattenInitArgsTokenURIDna } from "../../../utils/TokenURIDna.js";
+import { TokenURIDnaInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/TokenURIDna.js";
 
 interface Params extends RunTimeEnvironment {
     instances: Omit<TokenURIDnaInitializeArgs, "admin">[];
@@ -33,7 +33,7 @@ export const TokenURIDnaDeploy = async ({ provider, signers, network, instances 
     }
 
     const promises = mapValues(deployments, async (initArgs) => {
-        const args = flattenInitArgsTokenURIDna(initArgs);
+        const args = initializeUtil(initArgs);
         const address = TokenURIDnaFactory.getAddress(...args);
 
         try {

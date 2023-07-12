@@ -4,9 +4,9 @@ import {
     AssetBasketOutput,
     validateAssetBasketInput,
     validateAssetBasketOutput,
-} from "./AssetLib.js";
-import { AssetRouterCraft__factory } from "../typechain/ethers/factories/contracts/plugins/AssetRouter/AssetRouterCraft__factory.js";
-import type { AssetRouterCraft } from "../typechain/ethers/contracts/plugins/AssetRouter/AssetRouterCraft.js";
+} from "../AssetLib.js";
+import { AssetRouterCraft__factory } from "../../typechain/ethers/factories/contracts/plugins/AssetRouter/AssetRouterCraft__factory.js";
+import type { AssetRouterCraft } from "../../typechain/ethers/contracts/plugins/AssetRouter/AssetRouterCraft.js";
 
 export interface AssetRouterCraftInitializeArgs {
     admin: Parameters<AssetRouterCraft["initialize"]>[0];
@@ -16,7 +16,7 @@ export interface AssetRouterCraftInitializeArgs {
     outputBaskets: AssetBasketOutput[];
 }
 
-export function flattenInitArgsAssetRouterCraft(args: AssetRouterCraftInitializeArgs) {
+export function initializeUtil(args: AssetRouterCraftInitializeArgs) {
     const { admin, contractUri, gsnForwarder, inputBaskets, outputBaskets } = args;
     return [
         admin,

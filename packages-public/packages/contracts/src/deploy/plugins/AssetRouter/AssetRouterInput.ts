@@ -3,7 +3,7 @@ import { getFactoriesWithSigner } from "@owlprotocol/contracts-proxy";
 import { factories } from "../../../ethers/factories.js";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
-import { AssetRouterInputInitializeArgs, flattenInitArgsAssetRouterInput } from "../../../utils/AssetRouterInput.js";
+import { AssetRouterInputInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/AssetRouterInput.js";
 import { validateAssetBasketInput } from "../../../utils/AssetLib.js";
 
 export interface AssetRouterInputDeployParams extends RunTimeEnvironment {
@@ -33,7 +33,7 @@ export const AssetRouterInputDeploy = async ({ provider, signers, network, route
     });
 
     const promises = mapValues(deployments, async (initArgs) => {
-        const args = flattenInitArgsAssetRouterInput(initArgs);
+        const args = initializeUtil(initArgs);
         const address = AssetRouterInputFactory.getAddress(...args);
 
         try {

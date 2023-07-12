@@ -1,5 +1,5 @@
 import { constants } from "ethers";
-import type { ERC2981Setter } from "../typechain/ethers/contracts/plugins/ERC2981/ERC2981Setter.js";
+import type { ERC2981Setter } from "../../typechain/ethers/contracts/plugins/ERC2981/ERC2981Setter.js";
 
 export interface ERC2981SetterInitializeArgs {
     admin: Parameters<ERC2981Setter["initialize"]>[0];
@@ -10,7 +10,7 @@ export interface ERC2981SetterInitializeArgs {
     feeNumerator?: Parameters<ERC2981Setter["initialize"]>[5];
 }
 
-export function flattenInitArgsERC2981Setter(args: ERC2981SetterInitializeArgs) {
+export function initializeUtil(args: ERC2981SetterInitializeArgs) {
     const { admin, contractUri, gsnForwarder, royaltyRole, royaltyReceiver, feeNumerator } = args;
     return [
         admin,

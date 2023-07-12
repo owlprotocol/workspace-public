@@ -6,8 +6,8 @@ import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.
 import { mapValues } from "../../../lodash.js";
 import {
     ERC721MintableAutoIdInitializeArgs,
-    flattenInitArgsERC721MintableAutoId,
-} from "../../../utils/ERC721MintableAutoId.js";
+    initializeUtil,
+} from "../../../utils/initializeUtils/ERC721MintableAutoId.js";
 
 interface Params extends RunTimeEnvironment {
     instances: Omit<ERC721MintableAutoIdInitializeArgs, "admin" | "name" | "symbol">[];
@@ -40,7 +40,7 @@ export const ERC721MintableAutoIdDeploy = async ({ provider, signers, network, i
     }
 
     const promises = mapValues(deployments, async (initArgs) => {
-        const args = flattenInitArgsERC721MintableAutoId(initArgs);
+        const args = initializeUtil(initArgs);
         const address = ERC721MintableAutoIdFactory.getAddress(...args);
 
         try {

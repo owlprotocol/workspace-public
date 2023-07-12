@@ -11,7 +11,7 @@ import { CustomFactory } from "./factory.js";
 import { BEACON_ADMIN } from "@owlprotocol/envvars";
 import { UpgradeableBeaconFactory } from "../../ethers/factories.js";
 import { deployDeterministicFactory } from "./deployDeterministic.js";
-import { UpgradeableBeacon, UpgradeableBeacon__factory } from "../../typechain/ethers/index.js";
+import { UpgradeableBeacon } from "../../typechain/ethers/index.js";
 
 
 /***** Beacon *****/

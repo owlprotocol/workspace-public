@@ -3,7 +3,7 @@ import { getFactoriesWithSigner } from "@owlprotocol/contracts-proxy";
 import { factories } from "../../../ethers/factories.js";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
-import { ERC1155MintableInitializeArgs, flattenInitArgsERC1155Mintable } from "../../../utils/ERC1155Mintable.js";
+import { ERC1155MintableInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC1155Mintable.js";
 
 interface Params extends RunTimeEnvironment {
     instances: Omit<ERC1155MintableInitializeArgs, "admin">[],
@@ -34,7 +34,7 @@ export const ERC1155MintableDeploy = async ({ provider, signers, network, instan
     }
 
     const promises = mapValues(deployments, async (initArgs) => {
-        const args = flattenInitArgsERC1155Mintable(initArgs);
+        const args = initializeUtil(initArgs);
         const address = ERC1155MintableFactory.getAddress(...args);
 
         try {

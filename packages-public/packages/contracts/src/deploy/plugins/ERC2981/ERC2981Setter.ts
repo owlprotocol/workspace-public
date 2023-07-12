@@ -3,7 +3,7 @@ import { getFactoriesWithSigner } from "@owlprotocol/contracts-proxy";
 import { factories } from "../../../ethers/factories.js";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
-import { ERC2981SetterInitializeArgs, flattenInitArgsERC2981Setter } from "../../../utils/ERC2981Setter.js";
+import { ERC2981SetterInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC2981Setter.js";
 
 interface Params extends RunTimeEnvironment {
     instances: number;
@@ -31,7 +31,7 @@ export const ERC2981SetterDeploy = async ({ provider, signers, network, instance
     }
 
     const promises = mapValues(deployments, async (initArgs) => {
-        const args = flattenInitArgsERC2981Setter(initArgs);
+        const args = initializeUtil(initArgs);
         const address = ERC2981SetterFactory.getAddress(...args);
 
         try {

@@ -1,5 +1,7 @@
-import { getFactoriesWithSigner, Utils } from "@owlprotocol/contracts-proxy";
+import { getFactoriesWithSigner, getFactory, getFactoryWithInitializeUtil, Utils as ProxyUtils } from "@owlprotocol/contracts-proxy";
 import * as contracts from "../typechain/ethers/factories/contracts/index.js";
+import * as Utils from "../utils/initializeUtils/index.js";
+import { mapValues } from "../lodash.js"
 
 export interface DeployedLinkReferences {
     [libraryFileName: string]: {
@@ -98,7 +100,7 @@ export const factories = {
     AssetRouterCraft: AssetRouterCraftFactory,
     AssetRouterInput: AssetRouterInputFactory,
     AssetRouterOutput: AssetRouterOutputFactory,
-};
+} as const;
 
 //Can't deploy with these but useful for getting addresses
 const factories2 = getFactoriesWithSigner(factories);
@@ -108,10 +110,36 @@ export const factoriesClone = factories2.factoriesClone;
 export const factoriesBeacons = factories2.factoriesBeacons;
 export const factoriesBeaconProxies = factories2.factoriesBeaconProxies;
 
+//Factories
 //Add non-initializable contract implementations
 export const factoriesImplementations = {
     ...factoriesImplementationsBase,
-    ERC1820Registry: Utils.deployDeterministicFactory({ contractFactory: ERC1820RegistryFactory }),
-    Multicall2: Utils.deployDeterministicFactory({ contractFactory: Multicall2Factory }),
-    BlockNumber: Utils.deployDeterministicFactory({ contractFactory: BlockNumberFactory }),
-};
+    ERC1820Registry: ProxyUtils.deployDeterministicFactory({ contractFactory: ERC1820RegistryFactory }),
+    Multicall2: ProxyUtils.deployDeterministicFactory({ contractFactory: Multicall2Factory }),
+    BlockNumber: ProxyUtils.deployDeterministicFactory({ contractFactory: BlockNumberFactory }),
+} as const;
+
+const factoriesWithInitializeUtils = {
+    ERC20Mintable: { factory: ERC20MintableFactory, initializeUtil: Utils.ERC20Mintable.initializeUtil },
+    ERC721Mintable: { factory: ERC721MintableFactory, initializeUtil: Utils.ERC721Mintable.initializeUtil },
+    ERC721MintableAutoId: { factory: ERC721MintableAutoIdFactory, initializeUtil: Utils.ERC721MintableAutoId.initializeUtil },
+    ERC1155Mintable: { factory: ERC1155MintableFactory, initializeUtil: Utils.ERC1155Mintable.initializeUtil },
+    TokenURI: { factory: TokenURIFactory, initializeUtil: Utils.TokenURI.initializeUtil },
+    TokenURIBaseURI: { factory: TokenURIBaseURIFactory, initializeUtil: Utils.TokenURIBaseURI.initializeUtil },
+    TokenURIDna: { factory: TokenURIDnaFactory, initializeUtil: Utils.TokenURIDna.initializeUtil },
+    ERC2981Setter: { factory: ERC2981SetterFactory, initializeUtil: Utils.ERC2981Setter.initializeUtil },
+    TokenDna: { factory: TokenDnaFactory, initializeUtil: Utils.TokenDna.initializeUtil },
+    AssetRouterCraft: { factory: AssetRouterCraftFactory, initializeUtil: Utils.AssetRouterCraft.initializeUtil },
+    AssetRouterInput: { factory: AssetRouterInputFactory, initializeUtil: Utils.AssetRouterInput.initializeUtil },
+    AssetRouterOutput: { factory: AssetRouterOutputFactory, initializeUtil: Utils.AssetRouterOutput.initializeUtil },
+} as const;
+
+export const factoriesAll = mapValues(factoriesWithInitializeUtils, ({ factory, initializeUtil }) => {
+    return getFactoryWithInitializeUtil(getFactory(factory), initializeUtil as any)
+}) as {
+        [K in keyof typeof factoriesWithInitializeUtils]:
+        ReturnType<typeof getFactoryWithInitializeUtil<
+            typeof factoriesWithInitializeUtils[K]["factory"],
+            Parameters<typeof factoriesWithInitializeUtils[K]["initializeUtil"]>[0]
+        >>
+    }

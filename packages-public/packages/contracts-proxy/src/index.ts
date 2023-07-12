@@ -5,4 +5,7 @@ export * as Deployments from "./deployments/index.js";
 export * as TypechainEthers from "./typechain/ethers/index.js";
 export * as TypechainWeb3 from "./typechain/web3/index.js";
 
-export * from "./ethers/factories.js";
+export * from "./ethers/index.js";
+export * from "./utils/ERC1167Factory/index.js";
+
+export * from "./codegen/index.js";

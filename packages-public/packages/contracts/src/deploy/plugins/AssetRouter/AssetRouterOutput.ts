@@ -3,7 +3,7 @@ import { getFactoriesWithSigner } from "@owlprotocol/contracts-proxy";
 import { factories } from "../../../ethers/factories.js";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
-import { AssetRouterOutputInitializeArgs, flattenInitArgsAssetRouterOutput } from "../../../utils/AssetRouterOutput.js";
+import { AssetRouterOutputInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/AssetRouterOutput.js";
 import { MINTER_ROLE } from "../../../utils/IAccessControl.js";
 import { validateAssetBasketOutput } from "../../../utils/AssetLib.js";
 
@@ -41,7 +41,7 @@ export const AssetRouterOutputDeploy = async ({
 
     //Deploy
     const promises = mapValues(deployments, async (initArgs) => {
-        const args = flattenInitArgsAssetRouterOutput(initArgs);
+        const args = initializeUtil(initArgs);
         const address = AssetRouterOutputFactory.getAddress(...args);
 
         try {
@@ -68,7 +68,7 @@ export const AssetRouterOutputDeploy = async ({
 
     //Mint Permissions
     const outputPermissionsAndTransfers = mapValues(deployments, async (d) => {
-        const args = flattenInitArgsAssetRouterOutput(d);
+        const args = initializeUtil(d);
         const address = AssetRouterOutputFactory.getAddress(...args);
         return Promise.all(
             d.outputBaskets.map((b) => {

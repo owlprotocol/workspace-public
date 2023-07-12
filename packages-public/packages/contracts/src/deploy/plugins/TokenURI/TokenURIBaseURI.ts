@@ -3,7 +3,7 @@ import { getFactoriesWithSigner } from "@owlprotocol/contracts-proxy";
 import { factories } from "../../../ethers/factories.js";
 import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.js";
 import { mapValues } from "../../../lodash.js";
-import { TokenURIBaseURIInitializeArgs, flattenInitArgsTokenURIBaseURI } from "../../../utils/TokenURIBaseURI.js";
+import { TokenURIBaseURIInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/TokenURIBaseURI.js";
 
 
 interface Params extends RunTimeEnvironment {
@@ -32,7 +32,7 @@ export const TokenURIBaseURIDeploy = async ({ provider, signers, network, instan
     }
 
     const promises = mapValues(deployments, async (initArgs) => {
-        const args = flattenInitArgsTokenURIBaseURI(initArgs);
+        const args = initializeUtil(initArgs);
         const address = TokenURIBaseURIFactory.getAddress(...args);
 
         try {

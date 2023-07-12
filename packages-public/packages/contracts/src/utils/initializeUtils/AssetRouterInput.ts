@@ -1,7 +1,7 @@
 import { constants, utils } from "ethers";
-import { AssetBasketInput, validateAssetBasketInput } from "./AssetLib.js";
-import { AssetRouterInput__factory } from "../typechain/ethers/factories/contracts/plugins/AssetRouter/AssetRouterInput__factory.js";
-import type { AssetRouterInput } from "../typechain/ethers/contracts/plugins/AssetRouter/AssetRouterInput.js";
+import { AssetBasketInput, validateAssetBasketInput } from "../AssetLib.js";
+import { AssetRouterInput__factory } from "../../typechain/ethers/factories/contracts/plugins/AssetRouter/AssetRouterInput__factory.js";
+import type { AssetRouterInput } from "../../typechain/ethers/contracts/plugins/AssetRouter/AssetRouterInput.js";
 
 export interface AssetRouterInputInitializeArgs {
     admin: Parameters<AssetRouterInput["initialize"]>[0];
@@ -10,7 +10,7 @@ export interface AssetRouterInputInitializeArgs {
     inputBaskets: AssetBasketInput[];
 }
 
-export function flattenInitArgsAssetRouterInput(args: AssetRouterInputInitializeArgs) {
+export function initializeUtil(args: AssetRouterInputInitializeArgs) {
     const { admin, contractUri, gsnForwarder, inputBaskets } = args;
     return [
         admin,

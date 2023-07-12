@@ -1,11 +1,10 @@
 import { readdirSync, writeFileSync, readFileSync, existsSync, mkdirSync } from "fs";
 
-function generateDeploymentsExport() {
+export function generateDeploymentsExport() {
     const deploymentsFolder = "src/deployments";
     if (!existsSync(deploymentsFolder)) {
         mkdirSync(deploymentsFolder)
     }
-
 
     const networks = readdirSync(deploymentsFolder);
     let networksExport = "";
@@ -37,9 +36,3 @@ function generateDeploymentsExport() {
         writeFileSync(`${deploymentsFolder}/index.ts`, `export {};`);
     }
 }
-
-function main() {
-    generateDeploymentsExport()
-}
-
-main();

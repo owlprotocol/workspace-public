@@ -1,5 +1,5 @@
 import { constants } from "ethers";
-import type { ERC1155Mintable } from "../typechain/ethers/contracts/assets/ERC1155/ERC1155Mintable.js";
+import type { ERC1155Mintable } from "../../typechain/ethers/contracts/assets/ERC1155/ERC1155Mintable.js";
 
 export interface ERC1155MintableInitializeArgs {
     admin: Parameters<ERC1155Mintable["initialize"]>[0];
@@ -9,7 +9,7 @@ export interface ERC1155MintableInitializeArgs {
     tokenRoyaltyProvider?: Parameters<ERC1155Mintable["initialize"]>[4];
 }
 
-export function flattenInitArgsERC1155Mintable(args: ERC1155MintableInitializeArgs) {
+export function initializeUtil(args: ERC1155MintableInitializeArgs) {
     const { admin, contractUri, gsnForwarder, tokenUriProvider, tokenRoyaltyProvider } = args;
     return [
         admin,

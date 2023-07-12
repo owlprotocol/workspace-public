@@ -51,7 +51,8 @@
     "lint:fix": "eslint --fix 'src/**/*.ts'"
   },
   "dependencies": {
-    "@owlprotocol/contracts": "workspace:*"
+    "@owlprotocol/contracts": "workspace:*",
+    "@owlprotocol/contracts-proxy": "workspace:*"
   },
   "peerDependencies": {
     "ethers": "5.7.2"

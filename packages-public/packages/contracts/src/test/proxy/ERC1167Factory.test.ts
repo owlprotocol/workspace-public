@@ -61,7 +61,7 @@ describe("ERC1167Factory.sol", function () {
     });
 
     it("cloneDeterministicAddress - Typescript", async () => {
-        const initializerArgs = ERC721MintableAutoIdUtils.flattenInitArgsERC721MintableAutoId(token);
+        const initializerArgs = ERC721MintableAutoIdUtils.initializeUtil(token);
         const implementationAddress = proxyFactories.ERC721MintableAutoId.getAddress(...initializerArgs);
 
         const initData = ERC721MintableAutoIdInterface.encodeFunctionData("initialize", initializerArgs);
@@ -88,7 +88,7 @@ describe("ERC1167Factory.sol", function () {
     });
 
     it("proxyFactory", async () => {
-        const initializerArgs = ERC721MintableAutoIdUtils.flattenInitArgsERC721MintableAutoId(token);
+        const initializerArgs = ERC721MintableAutoIdUtils.initializeUtil(token);
         const implementationAddress = proxyFactories.ERC721MintableAutoId.getAddress(...initializerArgs);
         const contractFactory = factories.ERC721MintableAutoId;
 
