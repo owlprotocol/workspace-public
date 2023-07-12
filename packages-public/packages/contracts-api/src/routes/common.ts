@@ -57,15 +57,15 @@ export const transactionResponseObject = z.object({
     to: addressParameter.describe("The to address").optional(),
     from: addressParameter.describe("The from address").optional(),
     nonce: z
-        .bigint()
+        .number()
         .describe("The transaction nonce")
         .optional(),
     gasLimit: z
-        .bigint()
+        .string()
         .describe("The gas limit")
         .optional(),
     gasPrice: z
-        .bigint()
+        .string()
         .describe("The gas price")
         .optional(),
     data: z

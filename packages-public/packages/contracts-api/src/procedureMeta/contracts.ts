@@ -41,7 +41,7 @@ const exampleContractMetadata = {
 };
 
 export const exampleDeploymentArgs = {
-    msgSender: "0x9df4c3ee56eff5a4d5ff5bc8d0c6a6c96c3fecb0",
+    msgSender: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
     salt: "0x1",
     deploymentMethod: "DETERMINISTIC",
     beaconAddress: "0xedc97f90eb5ad5722106feeca86cca08ed62787d",
@@ -49,7 +49,7 @@ export const exampleDeploymentArgs = {
 };
 
 export const exampleERC2981SetterContractArgs = {
-    admin: "0x3fa04ffa6accf2cd08efef6b3af34a2e0a9abdf7",
+    admin: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
     contractUri: "example.com/contract",
     gsnForwarder: "0xe1775adad7221d55ca3dcbbbcffcde9b0aade737",
     royaltyReceiver: "0xf8b9eec568dbfb4ad01e108322461a9f2f4bc35c",

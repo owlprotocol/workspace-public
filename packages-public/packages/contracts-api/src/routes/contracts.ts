@@ -1,6 +1,7 @@
 import { factoriesAll } from "@owlprotocol/contracts";
 import { DeploymentArgs } from "@owlprotocol/contracts-proxy";
 import { TRPCError } from "@trpc/server";
+import { keys, pick } from "lodash-es";
 import { z } from "zod";
 import {
     getContractMeta,
@@ -16,6 +17,7 @@ import {
     deploymentResultObject,
     networkIdAndAddressObject,
     networkIdParameter,
+    transactionResponseObject,
 } from "./common.js";
 
 // TODO: add parameters to contract
@@ -122,11 +124,48 @@ export const postERC2981SetterProcedure = t.procedure
             });
         }
 
+        const networkIdInt = parseInt(input.networkId);
+
+        const { contractTx, beaconTx } = deployment;
+        let wrappedBeaconTx;
+        if (beaconTx) {
+            wrappedBeaconTx = {
+                chainId: networkIdInt,
+                hash: beaconTx.hash,
+                to: beaconTx.to,
+                from: beaconTx.from,
+                nonce: beaconTx.nonce,
+                // TODO: consider returning this, need to figure out casting
+                // gasLimit: beaconTx.gasLimit,
+                // gasPrice: beaconTx.gasPrice,
+                // data: beaconTx.data,
+                // value: beaconTx.value,
+            };
+        }
+
+        const wrappedContractTx = {
+            chainId: networkIdInt,
+            hash: contractTx.hash,
+            to: contractTx.to,
+            from: contractTx.from,
+            nonce: contractTx.nonce,
+            // TODO: consider returning this, need to figure out casting
+            // gasLimit: contractTx.gasLimit,
+            // gasPrice: contractTx.gasPrice,
+            // data: contractTx.data,
+            // value: contractTx.value,
+        };
+
         return {
             contractArgs: input.contractArgs,
             deploymentArgs: input.deploymentArgs,
             // TODO: don't be an any idiot
-            deploymentResult: deployment as any,
+            deploymentResult: {
+                beaconAddress: deployment.beaconAddress,
+                beaconTx: wrappedBeaconTx,
+                contractAddress: deployment.contractAddress,
+                contractTx: wrappedContractTx,
+            },
         };
     });
 
