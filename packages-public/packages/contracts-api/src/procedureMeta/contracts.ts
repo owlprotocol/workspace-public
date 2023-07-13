@@ -1,7 +1,9 @@
 import { OpenApiMeta } from "trpc-openapi";
 import { exampleNetworkIdAndAddressParameters } from "../routes/common.js";
-import { mapValues } from "lodash-es";
+import lodash from "lodash";
 import { Ethers } from "@owlprotocol/contracts";
+
+const { mapValues } = lodash;
 
 const exampleContractParameters = {
     contractType: "ERC721",

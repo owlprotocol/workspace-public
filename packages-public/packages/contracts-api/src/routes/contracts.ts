@@ -1,7 +1,6 @@
 import { factoriesAll } from "@owlprotocol/contracts";
 import { DeploymentArgs } from "@owlprotocol/contracts-proxy";
 import { TRPCError } from "@trpc/server";
-import { keys, pick } from "lodash-es";
 import { z } from "zod";
 import {
     getContractMeta,
