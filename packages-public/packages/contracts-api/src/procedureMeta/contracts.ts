@@ -58,6 +58,13 @@ export const exampleERC2981SetterContractArgs = {
     feeNumerator: "0",
 };
 
+export const exampleERC721MintableAutoIdContractArgs = {
+    admin: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    contractUri: "example.com/contract",
+    gsnForwarder: "0xe1775adad7221d55ca3dcbbbcffcde9b0aade737",
+    name: "My ERC721MintableAutoId contract",
+};
+
 export const interfaceExamples = {
     ERC2981Setter: {
         request: {
@@ -72,8 +79,12 @@ export const interfaceExamples = {
     ERC721Mintable: {
         request: { networkId: "1", deploymentArgs: exampleDeploymentArgs },
     },
-    ERC721MintableAuto: {
-        request: { networkId: "1", deploymentArgs: exampleDeploymentArgs },
+    ERC721MintableAutoId: {
+        request: {
+            networkId: "1",
+            deploymentArgs: exampleDeploymentArgs,
+            contractArgs: exampleERC721MintableAutoIdContractArgs,
+        },
     },
     ERC1155Mintable: {
         request: { networkId: "1", deploymentArgs: exampleDeploymentArgs },

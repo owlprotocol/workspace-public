@@ -16,7 +16,6 @@ import {
     deploymentResultObject,
     networkIdAndAddressObject,
     networkIdParameter,
-    transactionResponseObject,
 } from "./common.js";
 
 // TODO: add parameters to contract
@@ -46,6 +45,7 @@ const erc2981SetterContractArgs = z.object({
         .describe("The fee numerator")
         .optional(),
 });
+
 const postERC2981SetterInput = z.object({
     ...networkIdParameter,
     contractArgs: erc2981SetterContractArgs,
@@ -54,6 +54,36 @@ const postERC2981SetterInput = z.object({
 
 const postERC2981SetterOutput = z.object({
     contractArgs: erc2981SetterContractArgs,
+    deploymentArgs: deploymentArgsParameters,
+    deploymentResult: deploymentResultObject,
+});
+
+const erc721MintableAutoIdContractArgs = z.object({
+    admin: addressParameter.describe("The admin address of the collection"),
+    contractUri: z.string().optional(),
+    gsnForwarder: addressParameter
+        .describe("The GSN forwarder address")
+        .optional(),
+    name: z
+        .string()
+        .describe("The name of the contract")
+        .optional(),
+    tokenUriProvider: addressParameter
+        .describe("The contract that provides the token URIs")
+        .optional(),
+    tokenRoyaltyProvider: addressParameter
+        .describe("The contract that provides the token royalties")
+        .optional(),
+});
+
+const postERC721MintableAutoIdInput = z.object({
+    ...networkIdParameter,
+    contractArgs: erc721MintableAutoIdContractArgs,
+    deploymentArgs: deploymentArgsParameters,
+});
+
+const postERC721MintableAutoIdOutput = z.object({
+    contractArgs: erc721MintableAutoIdContractArgs,
     deploymentArgs: deploymentArgsParameters,
     deploymentResult: deploymentResultObject,
 });
@@ -112,6 +142,70 @@ export const postERC2981SetterProcedure = t.procedure
     .output(postERC2981SetterOutput)
     .mutation(async ({ input }) => {
         const deployment = await factoriesAll.ERC2981Setter.deploy(
+            input.contractArgs,
+            input.deploymentArgs as DeploymentArgs,
+            getProvider(input.networkId).getSigner()
+        );
+        if (!deployment.contractTx) {
+            throw new TRPCError({
+                message: "Error deploying contract",
+                code: "INTERNAL_SERVER_ERROR",
+            });
+        }
+
+        const networkIdInt = parseInt(input.networkId);
+
+        const { contractTx, beaconTx } = deployment;
+        let wrappedBeaconTx;
+        if (beaconTx) {
+            wrappedBeaconTx = {
+                chainId: networkIdInt,
+                hash: beaconTx.hash,
+                to: beaconTx.to,
+                from: beaconTx.from,
+                nonce: beaconTx.nonce,
+                // TODO: consider returning this, need to figure out casting
+                // gasLimit: beaconTx.gasLimit,
+                // gasPrice: beaconTx.gasPrice,
+                // data: beaconTx.data,
+                // value: beaconTx.value,
+            };
+        }
+
+        const wrappedContractTx = {
+            chainId: networkIdInt,
+            hash: contractTx.hash,
+            to: contractTx.to,
+            from: contractTx.from,
+            nonce: contractTx.nonce,
+            // TODO: consider returning this, need to figure out casting
+            // gasLimit: contractTx.gasLimit,
+            // gasPrice: contractTx.gasPrice,
+            // data: contractTx.data,
+            // value: contractTx.value,
+        };
+
+        return {
+            contractArgs: input.contractArgs,
+            deploymentArgs: input.deploymentArgs,
+            deploymentResult: {
+                beaconAddress: deployment.beaconAddress,
+                beaconTx: wrappedBeaconTx,
+                contractAddress: deployment.contractAddress,
+                contractTx: wrappedContractTx,
+            },
+        };
+    });
+
+const postERC721MintableAutoIdMeta = postInterfacesMeta.ERC721MintableAutoId;
+postERC721MintableAutoIdMeta.openapi!.example =
+    interfaceExamples.ERC721MintableAutoId;
+export const postERC721MintableAutoIdProcedure = t.procedure
+    .meta(postInterfacesMeta.ERC721MintableAutoId)
+    .input(postERC721MintableAutoIdInput)
+    .output(postERC721MintableAutoIdOutput)
+    .mutation(async ({ input }) => {
+        const deployment = await factoriesAll.ERC721MintableAutoId.deploy(
             input.contractArgs,
             input.deploymentArgs as DeploymentArgs,
             getProvider(input.networkId).getSigner()
