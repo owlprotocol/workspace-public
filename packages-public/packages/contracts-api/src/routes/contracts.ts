@@ -8,7 +8,7 @@ import {
     postContractMeta,
     postInterfacesMeta,
 } from "../procedureMeta/contracts.js";
-import { getProvider } from "../providers.js";
+import { getProvider, getSigner } from "../providers.js";
 import { t } from "../trpc.js";
 import {
     addressParameter,
@@ -68,6 +68,7 @@ const erc721MintableAutoIdContractArgs = z.object({
         .string()
         .describe("The name of the contract")
         .optional(),
+    symbol: z.string().describe("The token symbol"),
     tokenUriProvider: addressParameter
         .describe("The contract that provides the token URIs")
         .optional(),
@@ -144,7 +145,71 @@ export const postERC2981SetterProcedure = t.procedure
         const deployment = await factoriesAll.ERC2981Setter.deploy(
             input.contractArgs,
             input.deploymentArgs as DeploymentArgs,
-            getProvider(input.networkId).getSigner()
+            getSigner(input.networkId)
+        );
+        if (!deployment.contractTx) {
+            throw new TRPCError({
+                message: "Error deploying contract",
+                code: "INTERNAL_SERVER_ERROR",
+            });
+        }
+
+        const networkIdInt = parseInt(input.networkId);
+
+        const { contractTx, beaconTx } = deployment;
+        let wrappedBeaconTx;
+        if (beaconTx) {
+            wrappedBeaconTx = {
+                chainId: networkIdInt,
+                hash: beaconTx.hash,
+                to: beaconTx.to,
+                from: beaconTx.from,
+                nonce: beaconTx.nonce,
+                // TODO: consider returning this, need to figure out casting
+                // gasLimit: beaconTx.gasLimit,
+                // gasPrice: beaconTx.gasPrice,
+                // data: beaconTx.data,
+                // value: beaconTx.value,
+            };
+        }
+
+        const wrappedContractTx = {
+            chainId: networkIdInt,
+            hash: contractTx.hash,
+            to: contractTx.to,
+            from: contractTx.from,
+            nonce: contractTx.nonce,
+            // TODO: consider returning this, need to figure out casting
+            // gasLimit: contractTx.gasLimit,
+            // gasPrice: contractTx.gasPrice,
+            // data: contractTx.data,
+            // value: contractTx.value,
+        };
+
+        return {
+            contractArgs: input.contractArgs,
+            deploymentArgs: input.deploymentArgs,
+            deploymentResult: {
+                beaconAddress: deployment.beaconAddress,
+                beaconTx: wrappedBeaconTx,
+                contractAddress: deployment.contractAddress,
+                contractTx: wrappedContractTx,
+            },
+        };
+    });
+
+const postERC721MintableAutoIdMeta = postInterfacesMeta.ERC721MintableAutoId;
+postERC721MintableAutoIdMeta.openapi!.example =
+    interfaceExamples.ERC721MintableAutoId;
+export const postERC721MintableAutoIdProcedure = t.procedure
+    .meta(postInterfacesMeta.ERC721MintableAutoId)
+    .input(postERC721MintableAutoIdInput)
+    .output(postERC721MintableAutoIdOutput)
+    .mutation(async ({ input }) => {
+        const deployment = await factoriesAll.ERC721MintableAutoId.deploy(
+            input.contractArgs,
+            input.deploymentArgs as DeploymentArgs,
+            getSigner(input.networkId)
         );
         if (!deployment.contractTx) {
             throw new TRPCError({

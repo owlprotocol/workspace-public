@@ -60,9 +60,11 @@ export const exampleERC2981SetterContractArgs = {
 
 export const exampleERC721MintableAutoIdContractArgs = {
     admin: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-    contractUri: "example.com/contract",
+    contractUri:
+        "https://leovigna.mypinata.cloud/ipfs/QmbUcD2MRhHYVwEw3YEX3izMzVvZfT49CGfLhqdVRVcnZd",
     gsnForwarder: "0xe1775adad7221d55ca3dcbbbcffcde9b0aade737",
     name: "My ERC721MintableAutoId contract",
+    symbol: "EG",
 };
 
 export const interfaceExamples = {
