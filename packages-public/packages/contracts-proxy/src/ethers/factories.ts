@@ -9,7 +9,3 @@ export const factories = {
     BeaconProxy: BeaconProxyFactory,
     UpgradeableBeacon: UpgradeableBeaconFactory,
 } as const;
-
-
-
-

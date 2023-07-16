@@ -7,5 +7,4 @@ export * as TypechainWeb3 from "./typechain/web3/index.js";
 
 export * from "./ethers/index.js";
 export * from "./utils/ERC1167Factory/index.js";
-
 export * from "./codegen/index.js";

@@ -14,7 +14,7 @@
     "url": "https://github.com/owlprotocol"
   },
   "license": "MIT",
-  "type": "commonjs",
+  "type": "module",
   "main": "./lib/cjs/index.cjs",
   "module": "./lib/esm/index.mjs",
   "types": "./lib/types/index.d.ts",
@@ -65,8 +65,11 @@
   "dependencies": {
     "@openzeppelin/contracts-upgradeable": "4.8.3",
     "@owlprotocol/envvars": "workspace:*",
+    "@owlprotocol/utils": "workspace:*",
+    "@owlprotocol/zod-sol": "workspace:*",
     "lodash": "4.17.21",
-    "loglevel": "^1.8.1"
+    "loglevel": "^1.8.1",
+    "zod": "3.21.4"
   },
   "peerDependencies": {
     "@ethersproject/abi": "^5.4.0",
@@ -75,7 +78,6 @@
     "ethers": "5.7.2"
   },
   "devDependencies": {
-    "@types/bn.js": "^5.1.1",
     "@ethersproject/abi": "^5.4.0",
     "@ethersproject/contracts": "^5.4.1",
     "@ethersproject/providers": "^5.4.3",
@@ -85,8 +87,10 @@
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
-    "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/hardhat-config": "workspace:*",
+    "@owlprotocol/prettier-config": "workspace:*",
+    "@typechain/ethers-v5": "11.0.0",
+    "@types/bn.js": "^5.1.1",
     "@types/chai": "^4.3.3",
     "@types/dotenv": "^8.2.0",
     "@types/mocha": "^9.1.1",
@@ -107,7 +111,6 @@
     "solidity-docgen": "^0.6.0-beta.29",
     "ts-node": "^10.7.0",
     "typechain": "npm:@owlprotocol/typechain@8.2.0",
-    "@typechain/ethers-v5": "11.0.0",
     "typescript": "4.9.5"
   }
 }
