@@ -3,47 +3,35 @@ import { DeploymentArgs } from "@owlprotocol/contracts-proxy";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
-    getContractMeta,
-    interfaceExamples,
-    postContractMeta,
-    postInterfacesMeta,
-} from "../procedureMeta/contracts.js";
-import { getProvider, getSigner } from "../providers.js";
-import { t } from "../trpc.js";
-import {
     addressParameter,
     deploymentArgsParameters,
     deploymentResultObject,
     networkIdAndAddressObject,
     networkIdParameter,
 } from "./common.js";
+import {
+    getContractMeta,
+    interfaceExamples,
+    postContractMeta,
+    postInterfacesMeta,
+} from "../procedureMeta/contracts.js";
+import { getSigner } from "../providers.js";
+import { t } from "../trpc.js";
 
 // TODO: add parameters to contract
-const contractParameters = z.object({
+const contractParams = z.object({
     contractType: z.string(),
 });
 
-const contractOutput = contractParameters.extend({ address: addressParameter });
+const contractOutput = contractParams.extend({ address: addressParameter });
 
 const erc2981SetterContractArgs = z.object({
     admin: addressParameter.describe("The admin address of the collection"),
     contractUri: z.string().optional(),
-    gsnForwarder: addressParameter
-        .describe("The GSN forwarder address")
-        .optional(),
-    royaltyRole: z
-        .string()
-        .describe("The write role for royalties")
-        .optional(),
-    royaltyReceiver: addressParameter
-        .describe("The address of the original royalty receiver")
-        .optional(),
-    feeNumerator: z
-        .string()
-        .regex(/^\d+$/)
-        .default("0")
-        .describe("The fee numerator")
-        .optional(),
+    gsnForwarder: addressParameter.describe("The GSN forwarder address").optional(),
+    royaltyRole: z.string().describe("The write role for royalties").optional(),
+    royaltyReceiver: addressParameter.describe("The address of the original royalty receiver").optional(),
+    feeNumerator: z.string().regex(/^\d+$/).default("0").describe("The fee numerator").optional(),
 });
 
 const postERC2981SetterInput = z.object({
@@ -58,36 +46,17 @@ const postERC2981SetterOutput = z.object({
     deploymentResult: deploymentResultObject,
 });
 
+/*
 const erc721MintableAutoIdContractArgs = z.object({
     admin: addressParameter.describe("The admin address of the collection"),
     contractUri: z.string().optional(),
-    gsnForwarder: addressParameter
-        .describe("The GSN forwarder address")
-        .optional(),
-    name: z
-        .string()
-        .describe("The name of the contract")
-        .optional(),
+    gsnForwarder: addressParameter.describe("The GSN forwarder address").optional(),
+    name: z.string().describe("The name of the contract").optional(),
     symbol: z.string().describe("The token symbol"),
-    tokenUriProvider: addressParameter
-        .describe("The contract that provides the token URIs")
-        .optional(),
-    tokenRoyaltyProvider: addressParameter
-        .describe("The contract that provides the token royalties")
-        .optional(),
+    tokenUriProvider: addressParameter.describe("The contract that provides the token URIs").optional(),
+    tokenRoyaltyProvider: addressParameter.describe("The contract that provides the token royalties").optional(),
 });
-
-const postERC721MintableAutoIdInput = z.object({
-    ...networkIdParameter,
-    contractArgs: erc721MintableAutoIdContractArgs,
-    deploymentArgs: deploymentArgsParameters,
-});
-
-const postERC721MintableAutoIdOutput = z.object({
-    contractArgs: erc721MintableAutoIdContractArgs,
-    deploymentArgs: deploymentArgsParameters,
-    deploymentResult: deploymentResultObject,
-});
+*/
 
 const getContractProcedure = t.procedure
     .meta(getContractMeta)
@@ -96,7 +65,7 @@ const getContractProcedure = t.procedure
         z.object({
             address: z.string(),
             contractType: z.string().optional(),
-        })
+        }),
     )
     .query(({ input }) => {
         // TODO: look for contract
@@ -112,7 +81,7 @@ const getContractProcedure = t.procedure
 
 const postContractProcedure = t.procedure
     .meta(postContractMeta)
-    .input(contractParameters.extend(networkIdParameter))
+    .input(contractParams.extend(networkIdParameter))
     .output(contractOutput)
     .mutation(({ input }) => {
         // TODO: deploy contract
@@ -124,13 +93,9 @@ const postContractProcedure = t.procedure
     });
 
 export type Deployment = {
-    contractTx:
-        | import("@ethersproject/providers").TransactionResponse
-        | undefined;
+    contractTx: import("@ethersproject/providers").TransactionResponse | undefined;
     contractAddress: string;
-    beaconTx:
-        | import("@ethersproject/providers").TransactionResponse
-        | undefined;
+    beaconTx: import("@ethersproject/providers").TransactionResponse | undefined;
     beaconAddress: string | undefined;
 };
 
@@ -145,71 +110,7 @@ export const postERC2981SetterProcedure = t.procedure
         const deployment = await factoriesAll.ERC2981Setter.deploy(
             input.contractArgs,
             input.deploymentArgs as DeploymentArgs,
-            getSigner(input.networkId)
-        );
-        if (!deployment.contractTx) {
-            throw new TRPCError({
-                message: "Error deploying contract",
-                code: "INTERNAL_SERVER_ERROR",
-            });
-        }
-
-        const networkIdInt = parseInt(input.networkId);
-
-        const { contractTx, beaconTx } = deployment;
-        let wrappedBeaconTx;
-        if (beaconTx) {
-            wrappedBeaconTx = {
-                chainId: networkIdInt,
-                hash: beaconTx.hash,
-                to: beaconTx.to,
-                from: beaconTx.from,
-                nonce: beaconTx.nonce,
-                // TODO: consider returning this, need to figure out casting
-                // gasLimit: beaconTx.gasLimit,
-                // gasPrice: beaconTx.gasPrice,
-                // data: beaconTx.data,
-                // value: beaconTx.value,
-            };
-        }
-
-        const wrappedContractTx = {
-            chainId: networkIdInt,
-            hash: contractTx.hash,
-            to: contractTx.to,
-            from: contractTx.from,
-            nonce: contractTx.nonce,
-            // TODO: consider returning this, need to figure out casting
-            // gasLimit: contractTx.gasLimit,
-            // gasPrice: contractTx.gasPrice,
-            // data: contractTx.data,
-            // value: contractTx.value,
-        };
-
-        return {
-            contractArgs: input.contractArgs,
-            deploymentArgs: input.deploymentArgs,
-            deploymentResult: {
-                beaconAddress: deployment.beaconAddress,
-                beaconTx: wrappedBeaconTx,
-                contractAddress: deployment.contractAddress,
-                contractTx: wrappedContractTx,
-            },
-        };
-    });
-
-const postERC721MintableAutoIdMeta = postInterfacesMeta.ERC721MintableAutoId;
-postERC721MintableAutoIdMeta.openapi!.example =
-    interfaceExamples.ERC721MintableAutoId;
-export const postERC721MintableAutoIdProcedure = t.procedure
-    .meta(postInterfacesMeta.ERC721MintableAutoId)
-    .input(postERC721MintableAutoIdInput)
-    .output(postERC721MintableAutoIdOutput)
-    .mutation(async ({ input }) => {
-        const deployment = await factoriesAll.ERC721MintableAutoId.deploy(
-            input.contractArgs,
-            input.deploymentArgs as DeploymentArgs,
-            getSigner(input.networkId)
+            getSigner(input.networkId),
         );
         if (!deployment.contractTx) {
             throw new TRPCError({

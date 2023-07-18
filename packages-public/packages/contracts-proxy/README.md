@@ -1,6 +1,9 @@
-# Typescript Starter
+# Contracts Proxy
 
-Typescript starter project.
+Proxy code for contracts.
+
+## Dev
+To start, copy `.env.example` to `.env`, and optionally use your own values
 
 ## package.json
 Exports are defined as below

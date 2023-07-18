@@ -172,7 +172,7 @@ const config = {
             local: false,
             testnet: false,
             eip1559: true,
-            maxFeePerGas: ethers.utils.parseUnits("0", "gwei").toNumber(),
+            maxFeePerGas: ethers.utils.parseUnits("80", "gwei").toNumber(),
             maxPriorityFeePerGas: ethers.utils.parseUnits("80", "gwei").toNumber(),
         },
         mumbai: {
@@ -181,7 +181,7 @@ const config = {
             local: false,
             testnet: true,
             eip1559: true,
-            maxFeePerGas: ethers.utils.parseUnits("0", "gwei").toNumber(),
+            maxFeePerGas: ethers.utils.parseUnits("80", "gwei").toNumber(),
             maxPriorityFeePerGas: ethers.utils.parseUnits("80", "gwei").toNumber(),
         },
         bnb: {

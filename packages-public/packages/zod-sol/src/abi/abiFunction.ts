@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { ZodEffects, z } from "zod";
 import type { AbiParam, ZodForAbiParam } from "./abiParam.js";
 import { zodForAbiParam } from "./abiParam.js"
 import { TupleIndices } from "../types/TupleIndices.js";
@@ -45,17 +45,15 @@ z.ZodObject<z.objectUtil.extendShape<
 //TODO: Test this with named, unnamed, mixed params
 export function zodForAbiParams<T extends readonly AbiParam[]>(params: T): AbiParamsToZod<T> {
     const named = z.object(fromPairs(map(params, (a) => {
-        return [a.name, zodForAbiParam(a)]
+        return [a.name, zodForAbiParam(a).optional()]
     })))
 
-    /*
     const indexed = z.object(fromPairs(map(params, (a, idx) => {
         return [idx, zodForAbiParam(a).optional()]
     })))
-    */
 
-    return named as any;
-    //return named.extend(indexed.shape) as any;
+    //return named as any;
+    return named.extend(indexed.shape) as any;
     //return z.union([named, indexed]) as any
 }
 
@@ -71,7 +69,7 @@ export function zodForAbiFunction<T extends AbiFunction>(item: T): ZodForAbiFunc
     const stateMutabilityZod = z.literal(item.stateMutability).describe("function mutability")
 
     // TODO: use zodForInputAbiParams
-    const inputsZod = zodForAbiParams<T["inputs"]>(item.inputs);
+    const inputsZod = zodForAbiParams<T["inputs"]>(item.inputs)
     const outputsZod = zodForAbiParams<T["outputs"]>(item.outputs);
 
     return { nameZod, stateMutabilityZod, inputsZod, outputsZod }

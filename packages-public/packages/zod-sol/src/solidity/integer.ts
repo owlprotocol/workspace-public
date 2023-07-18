@@ -9,7 +9,14 @@ export function integerZod(name: string) {
 
     const max = signed ? 2n ** (bitLen - 1n) : 2n ** bitLen - 1n
     const min = signed ? 0n - 2n ** (bitLen - 1n) : 0n
-    return z.string()
+    /*z.preprocess((p) => {
+            if (typeof p === "string") return p;
+            else if (typeof p === "number") return `${p}`;
+            else if ((p as any).toString) return (p as any).toString();
+            else throw new Error(`${p} cannot be converted to string`);
+        }, z.string())
+        */
+    return z.coerce.string()
         .transform((s) => BigInt(s))
         .refine((x) => {
             return min <= x && x <= max;

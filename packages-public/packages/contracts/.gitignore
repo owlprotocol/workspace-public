@@ -15,7 +15,6 @@ factory
 traceOutputDir
 
 # local hardhat
-src/deployments/mumbai
 src/deployments/hardhat
 src/deployments/ganache
 src/deployments/index.ts

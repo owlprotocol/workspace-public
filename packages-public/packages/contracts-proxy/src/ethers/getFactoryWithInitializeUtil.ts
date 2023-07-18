@@ -2,7 +2,7 @@ import type { ContractFactory, Overrides, Signer, UnsignedTransaction } from "et
 import { constants, ethers, utils } from "ethers";
 import { DeploymentArgs, isDeploymentArgsBeaconExisting, isDeploymentArgsBeaconNew, isDeploymentArgsBeaconOwl, isDeploymentArgsDeterministic, isDeploymentArgsERC1167 } from "./deploymentArgs.js";
 import { ContractParameters } from "../utils/ERC1167Factory/factory.js";
-import type { getFactory } from "./getFactory.js";
+import type { getDeployFactories } from "./getFactory.js";
 import { TransactionResponse } from "@ethersproject/providers";
 
 /**
@@ -13,7 +13,7 @@ import { TransactionResponse } from "@ethersproject/providers";
  * @returns
  */
 export function getFactoryWithInitializeUtil<F extends ContractFactory, K extends Record<string, any>>(
-    contractFactory: ReturnType<typeof getFactory<F>>,
+    contractFactory: ReturnType<typeof getDeployFactories<F>>,
     initializeUtil: (args: K) => ContractParameters<ReturnType<F["attach"]>, "initialize">
 ) {
 
@@ -36,7 +36,7 @@ export function getFactoryWithInitializeUtil<F extends ContractFactory, K extend
             beaconTxUnsigned = await beacon.getDeployTransaction();
         }
 
-        const factory = contractFactory.factory(deployParams)
+        const factory = contractFactory.getDeployFactory(deployParams)
         const deployArgs = initializeUtil(args)
         const contractAddress = factory.getAddress(...deployArgs);
         const contractTxUnsigned = await factory.getDeployTransaction(...deployArgs)
@@ -93,3 +93,6 @@ export function getFactoryWithInitializeUtil<F extends ContractFactory, K extend
         initializeUtil,
     } as const
 }
+
+export type FactoryWithInitializeUtil<F extends ContractFactory = ContractFactory, K extends Record<string, any> = Record<string, any>> =
+    ReturnType<typeof getFactoryWithInitializeUtil<F, K>>

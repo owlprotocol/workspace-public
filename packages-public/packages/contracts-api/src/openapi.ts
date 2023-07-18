@@ -11,7 +11,7 @@ export const openApiDocument: OpenAPIV3.Document = generateOpenApiDocument(
         description:
             "Specification for our API focused on contract interactions",
         version: "0.0.1",
-        baseUrl: "http://localhost:3000/api",
+        baseUrl: process.env.BASE_URL || "http://localhost:3000/api",
         docsUrl: "https://dev.owlprotocol.xyz",
         tags: ["contract", "deployment"],
     }

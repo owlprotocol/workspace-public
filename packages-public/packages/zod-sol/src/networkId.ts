@@ -9,3 +9,4 @@ export const networkIdZod = z.object({
 });
 
 export const contractAddressZod = networkIdZod.extend({ address: addressZod })
+

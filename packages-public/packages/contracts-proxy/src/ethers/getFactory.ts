@@ -6,7 +6,7 @@ import { beaconProxyFactory } from "../utils/ERC1167Factory/beaconProxyFactory.j
 import { beaconFactory } from "../utils/ERC1167Factory/beaconFactory.js";
 import { DeploymentArgs, isDeploymentArgsBeaconExisting, isDeploymentArgsBeaconNew, isDeploymentArgsBeaconOwl, isDeploymentArgsDeterministic, isDeploymentArgsERC1167 } from "./deploymentArgs.js";
 
-export function getFactory<F extends ContractFactory>(
+export function getDeployFactories<F extends ContractFactory>(
     contractFactory: F,
     signer?: Signer | undefined,
 ) {
@@ -64,7 +64,7 @@ export function getFactory<F extends ContractFactory>(
         }, signer);
     }
 
-    function factory(args: DeploymentArgs) {
+    function getDeployFactory(args: DeploymentArgs) {
         const msgSender = args.msgSender;
         const salt = args.salt;
 
@@ -88,7 +88,7 @@ export function getFactory<F extends ContractFactory>(
 
     //Create new factory with new signer
     const connect = (signer: Signer) => {
-        return getFactory(contractFactory, signer)
+        return getDeployFactories(contractFactory, signer)
     }
 
     return {
@@ -99,7 +99,7 @@ export function getFactory<F extends ContractFactory>(
         beacon,
         beaconProxy,
         connect,
-        factory,
+        getDeployFactory,
         signer
     } as const
 }

@@ -1,9 +1,9 @@
 import express from "express";
 import swaggerUi from "swagger-ui-express";
-import { appRouter } from "../router.js";
 import cors from "cors";
 import { createOpenApiExpressMiddleware } from "trpc-openapi";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
+import { appRouter } from "../router.js";
 import { openApiDocument } from "../openapi.js";
 
 export function runExpress() {
@@ -31,6 +31,13 @@ export function runExpress() {
     });
 }
 
+/*
+//Common-JS
 if (require.main === module) {
     runExpress();
 }
+*/
+
+//ES-Module
+
+runExpress();

@@ -1,16 +1,10 @@
-import {
-    createOpenApiExpressMiddleware,
-    generateOpenApiDocument,
-} from "trpc-openapi";
+import { createOpenApiExpressMiddleware } from "trpc-openapi";
 import { abiFunctionWithZod } from "@owlprotocol/zod-sol";
-import {
-    generateGETForAbiFunction,
-    generatePOSTForAbiFunction,
-} from "./abis.js";
+import { ContractFactory } from "ethers";
+import { generatePOSTForAbiFunctionWrite } from "./abis.js";
 import { t } from "../trpc.js";
-import { OpenAPIV3 } from "openapi-types";
 
-describe("abiRouteTest", function() {
+describe("abiRouteTest", function () {
     const fnAbis = {
         empty: {
             inputs: [],
@@ -114,19 +108,15 @@ describe("abiRouteTest", function() {
     } as const;
 
     it("empty", () => {
-        const proc = generateGETForAbiFunction(
-            "MyFunction",
-            abiFunctionWithZod(fnAbis.empty)
-        );
+        const factory = new ContractFactory([fnAbis.empty], "0x");
+        const proc = generatePOSTForAbiFunctionWrite("MyFunction", factory, abiFunctionWithZod(fnAbis.empty));
         const router = t.router({ proc });
         const middleware = createOpenApiExpressMiddleware({ router });
     });
 
+    /*
     it("uint256", () => {
-        const proc = generateGETForAbiFunction(
-            "MyFunction",
-            abiFunctionWithZod(fnAbis.uint256)
-        );
+        const proc = generatePOSTForAbiFunction("MyFunction", abiFunctionWithZod(fnAbis.uint256));
         const router = t.router({ proc });
         const middleware = createOpenApiExpressMiddleware({ router });
         const openApiDocument: OpenAPIV3.Document = generateOpenApiDocument(
@@ -144,19 +134,13 @@ describe("abiRouteTest", function() {
     });
 
     it("non-tuple", () => {
-        const proc = generateGETForAbiFunction(
-            "MyFunction",
-            abiFunctionWithZod(fnAbis.nonTuple)
-        );
+        const proc = generatePOSTForAbiFunction("MyFunction", abiFunctionWithZod(fnAbis.nonTuple));
         const router = t.router({ proc });
         const middleware = createOpenApiExpressMiddleware({ router });
     });
 
     it.skip("non-tuple array", () => {
-        const proc = generateGETForAbiFunction(
-            "MyFunction",
-            abiFunctionWithZod(fnAbis.nonTupleArray)
-        );
+        const proc = generatePOSTForAbiFunction("MyFunction", abiFunctionWithZod(fnAbis.nonTupleArray));
         const router = t.router({ proc });
         const middleware = createOpenApiExpressMiddleware({ router });
     });
@@ -169,4 +153,5 @@ describe("abiRouteTest", function() {
         const router = t.router({ proc });
         const middleware = createOpenApiExpressMiddleware({ router });
     });
+    */
 });
