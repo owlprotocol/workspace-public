@@ -13,23 +13,11 @@ import {
 } from "./common.js";
 import { Collection } from "@owlprotocol/contracts-sdk";
 
-export enum NFTContractType {
-    ERC721 = "ERC721",
-    ERC721AutoId = "ERC721AutoId",
-    ERC1155 = "ERC1155",
-}
-
 const nftContractTypeZ = z
-    .nativeEnum(NFTContractType)
+    .nativeEnum(Collection.NFTContractType)
     .describe("The type of contract");
 
-export enum DNAType {
-    NONE = "NONE",
-    DNA = "DNA",
-    DNA_6651 = "DNA_6651",
-}
-
-const dnaTypeZ = z.nativeEnum(DNAType);
+const dnaTypeZ = z.nativeEnum(Collection.DNAType);
 
 const collectionParameters = z.object({
     admin: addressParameter.describe("The admin address of the collection"),
@@ -53,6 +41,11 @@ const collectionParameters = z.object({
         .catchall(z.any())
         .describe("DNA schema. Required if using the DNA standard")
         .optional(),
+    dnaSchemaUrl: z
+        .string()
+        .describe(
+            "DNA schema URL. Required is using the DNA standard, and no `dnaSchema` is passed"
+        ),
 });
 
 const collectionObject = z.object({
