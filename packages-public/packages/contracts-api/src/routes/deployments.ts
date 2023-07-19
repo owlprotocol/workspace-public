@@ -1,17 +1,17 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { Collection } from "@owlprotocol/contracts-sdk";
+import {
+    addressParameter,
+    networkIdAndAddressObject,
+    networkIdParameter,
+} from "./common.js";
 import {
     getCollectionDependentsMeta,
     getCollectionMeta,
     postCollectionMeta,
 } from "../procedureMeta/deployments.js";
 import { t } from "../trpc.js";
-import {
-    addressParameter,
-    networkIdAndAddressObject,
-    networkIdParameter,
-} from "./common.js";
-import { Collection } from "@owlprotocol/contracts-sdk";
 
 const nftContractTypeZ = z
     .nativeEnum(Collection.NFTContractType)

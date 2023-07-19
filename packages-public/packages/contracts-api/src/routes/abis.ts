@@ -57,7 +57,6 @@ export function generatePOSTForAbiFunctionRead<
                 //Call contract
                 const resultArr: Result = await contract.functions[method.name](...parameters)
                 const result = functionParamsTupleToObj(resultArr, method.outputs);
-                console.log({result, resultArr})
                 //4.a Return data
                 return {
                     contractParams: input.contractParams,
@@ -107,21 +106,24 @@ export function generatePOSTForAbiFunctionWrite<
 
                 //value
                 //TODO: Read parameter
-                const value = 0
+                // const value = 0
                 //wallet address
                 const from = await signer.getAddress()
-
-                //get gas estimate, get gas price (params or default), send tx
-                const gasLimit = await contract.estimateGas[method.name](...parameters, {value, from})
+                //
+                // //get gas estimate, get gas price (params or default), send tx
+                const gasLimit = await contract.estimateGas[method.name](...parameters, {from})
                 //nonce
                 //TODO: Read parameter
                 const nonce = await signer.provider!.getTransactionCount(from)
-                //TODO: Custom gas oracle?
-                const gasPrice = utils.formatUnits("100", "gwei")
+                // //TODO: Custom gas oracle?
+                // const gasPrice = utils.formatUnits("100", "gwei")
 
                 //returns <Result> type
                 //https://docs.ethers.org/v5/api/utils/abi/interface/#Result
-                const tx: TransactionResponse = await contract[method.name](...parameters, {  value, from, nonce, gasLimit, gasPrice})
+               
+               // TODO: fix overrides. Value is an issue
+                // const tx: TransactionResponse = await contract[method.name](...parameters, {  value, from, nonce, gasLimit, gasPrice})
+                const tx: TransactionResponse = await contract[method.name](...parameters, {from, nonce, gasLimit})
                 //4.b Return tx hash, and receipt
                 const txHash = tx.hash;
 

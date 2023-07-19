@@ -13,7 +13,6 @@ export function runExpress() {
     app.use(cors());
 
     app.get("/api/openapi.json", (req, res) => {
-        console.log(JSON.stringify(openApiDocument));
         res.json(openApiDocument);
     });
 

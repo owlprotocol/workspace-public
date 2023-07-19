@@ -1,8 +1,8 @@
 import { ethers, providers, Signer, Wallet } from "ethers";
 import { ANVIL_RPC, PRIVATE_KEY_0 } from "@owlprotocol/envvars";
 
-let providersMap = new Map<string, providers.JsonRpcProvider>();
-let networksSet = new Set<string>();
+const providersMap = new Map<string, providers.JsonRpcProvider>();
+const networksSet = new Set<string>();
 
 const testProvider = new providers.JsonRpcProvider(ANVIL_RPC);
 const maticProvider = new providers.JsonRpcProvider(

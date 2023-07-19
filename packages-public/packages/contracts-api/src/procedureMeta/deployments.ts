@@ -1,10 +1,10 @@
 import { OpenApiMeta } from "trpc-openapi";
+import { exampleTokenObject } from "./common.js";
 import {
     exampleAddressParameter,
     exampleNetworkIdAndAddressParameters,
     exampleNetworkIdParameter,
 } from "../routes/common.js";
-import { exampleTokenObject } from "./common.js";
 
 const exampleCollectionParameters = {
     contractType: "ERC721",
