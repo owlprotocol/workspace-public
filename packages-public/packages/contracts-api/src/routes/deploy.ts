@@ -22,6 +22,9 @@ export function generatePOSTForDeploy<
             description: `Deploys an instance of \`${contractName}\``,
             summary: `Deploy ${contractName}`,
             tags: ["Deploy"],
+            example: {
+                request: {contractParams: {_admin: "0x434c7df2f06d6cd172a28cb71e2afe6e1b974dbc"}}
+            }
         },
         })
         //.input(method.inputsZod.extend(ZodSol.contractAddressZod.shape))
