@@ -1,3 +1,4 @@
+import { DeploymentMethod } from "@owlprotocol/contracts-proxy";
 import { Collection } from "@owlprotocol/contracts-sdk";
 import { appRouter } from "../router";
 
@@ -5,15 +6,17 @@ import { appRouter } from "../router";
 //     const router = appRouter.createCaller({});
 //     let contractAddress: string;
 //     try {
-//         const deployResult = await router.collection.postCollection({
-//             symbol: "MY",
-//             name: "My collection",
+//         // const deployResult = await router.collection.postCollection({
+//         const deployResult = await router.deploy.ERC721MintableAutoId({
 //             networkId: "80001",
-//             admin: "0x434C7df2f06D6CD172a28cb71e2AFE6E1b974DBC",
-//             contractType: "ERC721AutoId" as Collection.NFTContractType,
-//             dnaType: "NONE" as Collection.DNAType,
-//             dnaSchemaUrl:
-//                 "https://leovigna.mypinata.cloud/ipfs/QmbUcD2MRhHYVwEw3YEX3izMzVvZfT49CGfLhqdVRVcnZd",
+//             deployParams: {
+//                 deploymentMethod: "DETERMINISTIC" as DeploymentMethod,
+//             },
+//             contractParams: {
+//                 symbol: "MY",
+//                 name: "My collection",
+//                 _admin: "0x434C7df2f06D6CD172a28cb71e2AFE6E1b974DBC",
+//             },
 //         });
 //         contractAddress = deployResult.contractAddress;
 //     } catch (e) {
@@ -27,10 +30,10 @@ import { appRouter } from "../router";
 //     }
 //
 //     try {
-//         const mintResult = await router.abi.ERC721MintableAutoId.safeMint({
+//         const mintResult = await router.abi.ERC721MintableAutoId.mint({
 //             networkId: "80001",
 //             address: contractAddress,
-//             contractParameters: {
+//             contractParams: {
 //                 to: "0x434C7df2f06D6CD172a28cb71e2AFE6E1b974DBC",
 //             },
 //         });
@@ -40,15 +43,74 @@ import { appRouter } from "../router";
 //         throw e;
 //     }
 //
+//     // TODO: deploy tokenURI provider
+//     // try {
+//     //     const result = await router.abi.ERC721MintableAutoId.tokenURI({
+//     //         networkId: "80001",
+//     //         address: contractAddress,
+//     //         contractParameters: {
+//     //             tokenId: "1",
+//     //         },
+//     //     });
+//     //     console.log(result.result);
+//     // } catch (e) {
+//     //     console.log(e);
+//     //     throw e;
+//     // }
+// }
+
+// async function deployERC20() {
+//     const router = appRouter.createCaller({});
+//     let contractAddress: string;
 //     try {
-//         const result = await router.abi.ERC721MintableAutoId.tokenURI({
+//         // const deployResult = await router.collection.postCollection({
+//         const deployResult = await router.deploy.ERC20Mintable({
 //             networkId: "80001",
-//             address: contractAddress,
-//             contractParameters: {
-//                 tokenId: "1",
+//             deployParams: {
+//                 deploymentMethod: "DETERMINISTIC" as DeploymentMethod,
+//             },
+//             contractParams: {
+//                 symbol: "MY",
+//                 name: "My Token",
+//                 _admin: "0x434C7df2f06D6CD172a28cb71e2AFE6E1b974DBC",
 //             },
 //         });
-//         console.log(result.result);
+//         contractAddress = deployResult.contractAddress;
+//     } catch (e) {
+//         console.log(e);
+//         throw e;
+//     }
+//
+//     if (!contractAddress) {
+//         console.log("No contract address");
+//         return;
+//     }
+//
+//     try {
+//         const mintResult = await router.abi.ERC20Mintable.mint({
+//             networkId: "80001",
+//             address: contractAddress,
+//             contractParams: {
+//                 to: "0x434C7df2f06D6CD172a28cb71e2AFE6E1b974DBC",
+//                 amount: "100",
+//             },
+//         });
+//         console.log(mintResult.result);
+//     } catch (e) {
+//         console.log(e);
+//         throw e;
+//     }
+//
+//     try {
+//         const mintResult = await router.abi.ERC20Mintable.balanceOf({
+//             networkId: "80001",
+//             address: contractAddress,
+//             contractParams: {
+//                 to: "0x434C7df2f06D6CD172a28cb71e2AFE6E1b974DBC",
+//                 amount: "100",
+//             },
+//         });
+//         console.log(mintResult.result);
 //     } catch (e) {
 //         console.log(e);
 //         throw e;
