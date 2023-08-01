@@ -1,44 +1,28 @@
-import { ethers, providers, Signer, Wallet } from "ethers";
+import { ethers, providers, Signer } from "ethers";
 import { ANVIL_RPC, PRIVATE_KEY_0 } from "@owlprotocol/envvars";
-
-const providersMap = new Map<string, providers.JsonRpcProvider>();
-const networksSet = new Set<string>();
+import { getChainByChainId, getChainWithData } from "@owlprotocol/chains";
 
 const testProvider = new providers.JsonRpcProvider(ANVIL_RPC);
-const maticProvider = new providers.JsonRpcProvider(
-    "https://rpc.ankr.com/polygon_mumbai"
-);
-
-// TODO: call setup
-export async function setupProviders() {
-    // Check if networksSet has already been generated
-    if (networksSet.size > 0) return;
-
-    networksSet.add("1");
-    providersMap.set("1", testProvider);
-}
 
 export function getProvider(networkId: string): providers.JsonRpcProvider {
-    // TODO: pick from providersMap
-    let provider = providersMap.get(networkId);
-
-    if (networkId == "80001" || networkId == "0x13881") {
-        return maticProvider;
+    if (networkId == "1337") {
+        return testProvider;
     }
 
-    // TODO: replace when done
-    provider = testProvider;
+    const chain = getChainWithData(getChainByChainId(parseInt(networkId)));
+    const provider = new providers.JsonRpcProvider(chain.wsDefault ?? chain.rpcDefault);
     return provider;
 }
 
 export function getSigner(networkId: string): Signer {
-    if (networkId == "80001" || networkId == "0x13881") {
-        if (!PRIVATE_KEY_0) {
-            throw new Error("missing PRIVATE_KEY_0");
-        }
-        const signer = new ethers.Wallet(PRIVATE_KEY_0, maticProvider);
-        return signer;
+    if (networkId == "1337") {
+        return testProvider.getSigner();
     }
 
-    return testProvider.getSigner();
+    const provider = getProvider(networkId);
+    if (!PRIVATE_KEY_0) {
+        throw new Error("missing PRIVATE_KEY_0");
+    }
+    const signer = new ethers.Wallet(PRIVATE_KEY_0, provider);
+    return signer;
 }
