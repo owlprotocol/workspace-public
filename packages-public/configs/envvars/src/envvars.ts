@@ -123,6 +123,13 @@ declare global {
             readonly MOONBEAM_EXPLORER?: string;
             readonly MOONBEAM_EXPLORER_API?: string;
             readonly MOONBEAM_EXPLORER_API_KEY?: string;
+            readonly README_SECRET?: string;
+            readonly FIREBASE_API_KEY?: string;
+            readonly FIREBASE_AUTH_DOMAIN?: string;
+            readonly FIREBASE_DATABASE_URL?: string;
+            readonly FIREBASE_PROJECT_ID?: string;
+            readonly FIREBASE_APP_ID?: string;
+            readonly FIREBASE_MEASUREMENT_ID?: string;
         }
     }
 }
@@ -241,6 +248,13 @@ declare global {
         readonly VITE_MOONBEAM_EXPLORER?: string;
         readonly VITE_MOONBEAM_EXPLORER_API?: string;
         readonly VITE_MOONBEAM_EXPLORER_API_KEY?: string;
+        readonly VITE_README_SECRET?: string;
+        readonly VITE_FIREBASE_API_KEY?: string;
+        readonly VITE_FIREBASE_AUTH_DOMAIN?: string;
+        readonly VITE_FIREBASE_DATABASE_URL?: string;
+        readonly VITE_FIREBASE_PROJECT_ID?: string;
+        readonly VITE_FIREBASE_APP_ID?: string;
+        readonly VITE_FIREBASE_MEASUREMENT_ID?: string;
     }
 }
 
@@ -398,7 +412,7 @@ export const BSC_TESTNET_EXPLORER = (import.meta.env ? import.meta.env.VITE_BSC_
 export const BSC_TESTNET_EXPLORER_API = (import.meta.env ? import.meta.env.VITE_BSC_TESTNET_EXPLORER_API : process.env.BSC_TESTNET_EXPLORER_API) ?? "https://api-testnet.bscscan.com/api";
 export const BSC_TESTNET_EXPLORER_API_KEY = (import.meta.env ? import.meta.env.VITE_BSC_TESTNET_EXPLORER_API_KEY : process.env.BSC_TESTNET_EXPLORER_API_KEY) ?? BSC_TESTNET_EXPLORER_API_KEY_PUBLIC;
 
-export const BSC_OP_TESTNET_RPC = (import.meta.env ? import.meta.env.VITE_BSC_OP_TESTNET_RPC : process.env.BSC_OP_TESTNET_RPC) ?? "	https://opbnb-testnet-rpc.bnbchain.org"
+export const BSC_OP_TESTNET_RPC = (import.meta.env ? import.meta.env.VITE_BSC_OP_TESTNET_RPC : process.env.BSC_OP_TESTNET_RPC) ?? " https://opbnb-testnet-rpc.bnbchain.org"
 export const BSC_OP_TESTNET_WS = import.meta.env ? import.meta.env.VITE_BSC_OP_TESTNET_WS : process.env.BSC_OP_TESTNET_WS
 export const BSC_OP_TESTNET_EXPLORER = (import.meta.env ? import.meta.env.VITE_BSC_OP_TESTNET_EXPLORER : process.env.BSC_OP_TESTNET_EXPLORER) ?? "https://opbnbscan.com/";
 export const BSC_OP_TESTNET_EXPLORER_API = (import.meta.env ? import.meta.env.VITE_BSC_OP_TESTNET_EXPLORER_API : process.env.BSC_OP_TESTNET_EXPLORER_API);
@@ -440,3 +454,14 @@ export const MOONBEAM_EXPLORER_API_KEY = (import.meta.env ? import.meta.env.VITE
 export const IPFS_URL = (import.meta.env ? import.meta.env.VITE_IPFS_URL : process.env.IPFS_URL) ?? "http://localhost:5001";
 /** 4byte.directory API */
 export const BYTE4_URL = (import.meta.env ? import.meta.env.VITE_BYTE4_URL : process.env.BYTE4_URL) ?? "https://www.4byte.directory/api/v1";
+
+//README_SECRET
+export const README_SECRET = import.meta.env ? import.meta.env.VITE_README_SECRET : process.env.README_SECRET
+
+//FIREBASE
+export const FIREBASE_API_KEY = import.meta.env ? import.meta.env.VITE_FIREBASE_API_KEY : process.env.FIREBASE_API_KEY
+export const FIREBASE_AUTH_DOMAIN = import.meta.env ? import.meta.env.VITE_FIREBASE_AUTH_DOMAIN : process.env.FIREBASE_AUTH_DOMAIN
+export const FIREBASE_DATABASE_URL = import.meta.env ? import.meta.env.VITE_FIREBASE_DATABASE_URL : process.env.FIREBASE_DATABASE_URL
+export const FIREBASE_PROJECT_ID = import.meta.env ? import.meta.env.VITE_FIREBASE_PROJECT_ID : process.env.FIREBASE_PROJECT_ID
+export const FIREBASE_APP_ID = import.meta.env ? import.meta.env.VITE_FIREBASE_APP_ID : process.env.FIREBASE_APP_ID
+export const FIREBASE_MEASUREMENT_ID = import.meta.env ? import.meta.env.VITE_FIREBASE_MEASUREMENT_ID : process.env.FIREBASE_MEASUREMENT_ID

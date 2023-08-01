@@ -1,24 +1,24 @@
-import { abisWithZod as abisWithZodContracts } from "@owlprotocol/contracts";
-import { FactoryWithInitializeUtil, abisWithZod as abisWithZodProxiesContracts, DeploymentArgs } from "@owlprotocol/contracts-proxy";
-import { utils } from "ethers";
+import {abisWithZod as abisWithZodContracts} from "@owlprotocol/contracts";
+import {abisWithZod as abisWithZodProxiesContracts, DeploymentArgs, FactoryWithInitializeUtil} from "@owlprotocol/contracts-proxy";
+import type {AbiFunctionWithZod, TypechainFactoryWithZod} from "@owlprotocol/zod-sol";
 import * as ZodSol from "@owlprotocol/zod-sol";
-import type { AbiFunctionWithZod,  TypechainFactoryWithZod} from "@owlprotocol/zod-sol"
-import { mapKeys, mapValues, pickBy } from "lodash-es"
-import {z} from "zod"
-import { t } from "../trpc.js";
-import {  getSigner } from "../providers.js";
-import { deployParamsZod } from "../zodValidators/deploymentMethod.js";
+import {mapKeys, mapValues, pickBy} from "lodash-es";
+import {z} from "zod";
+import {getSigner} from "../providers.js";
+import {protectedProcedure, t} from "../trpc.js";
+import {deployParamsZod} from "../zodValidators/deploymentMethod.js";
 
 export function generatePOSTForDeploy<
     Factory extends FactoryWithInitializeUtil,
     Method extends AbiFunctionWithZod
 >
 (contractName: string, factory: Factory, method: Method) {
-    return t.procedure
+    return protectedProcedure
         .meta({
             openapi: {
             method: "POST" as const,
             path: `/{networkId}/deploy/${contractName}` as const,
+            protect: true,
             description: `Deploys an instance of \`${contractName}\``,
             summary: `Deploy ${contractName}`,
             tags: ["Deploy"],

@@ -1,15 +1,15 @@
-import { abisWithZod as abisWithZodContracts } from "@owlprotocol/contracts";
-import { abisWithZod as abisWithZodProxiesContracts } from "@owlprotocol/contracts-proxy";
-import { ContractFactory, utils } from "ethers";
-import { TransactionResponse } from "@ethersproject/abstract-provider";
-import { z } from "zod";
+import {TransactionResponse} from "@ethersproject/abstract-provider";
+import {abisWithZod as abisWithZodContracts} from "@owlprotocol/contracts";
+import {abisWithZod as abisWithZodProxiesContracts} from "@owlprotocol/contracts-proxy";
+import type {AbiFunctionWithZod, TypechainFactoryWithZod} from "@owlprotocol/zod-sol";
 import * as ZodSol from "@owlprotocol/zod-sol";
-import type { AbiFunctionWithZod,  TypechainFactoryWithZod} from "@owlprotocol/zod-sol"
-import { functionParamsObjToTuple, functionParamsTupleToObj } from "@owlprotocol/zod-sol"
-import { mapValues, omit } from "lodash-es"
-import type { Result } from "ethers/lib/utils.js";
-import { t } from "../trpc.js";
-import { getProvider, getSigner } from "../providers.js";
+import {functionParamsObjToTuple, functionParamsTupleToObj} from "@owlprotocol/zod-sol";
+import {ContractFactory} from "ethers";
+import type {Result} from "ethers/lib/utils.js";
+import {mapValues, omit} from "lodash-es";
+import {z} from "zod";
+import {getProvider, getSigner} from "../providers.js";
+import {protectedProcedure, t} from "../trpc.js";
 
 /**
  * 2. Additional ideas
@@ -24,11 +24,12 @@ export function generatePOSTForAbiFunctionRead<
 (contractName: string, factory: Factory, method: Method) {
     const methodParametersJoined = method.inputs.map(input => input.name).join(",")
 
-    return t.procedure
+    return protectedProcedure
         .meta({
             openapi: {
                 method: "POST" as const,
                 path: `/{networkId}/abi/${contractName}/{address}/${method.name}` as const,
+                protect: true,
                 description: `Read \`${method.name}(${methodParametersJoined})\` on an instance of \`${contractName}\``,
                 summary: `${contractName}.${method.name}`,
                 tags: [contractName],
@@ -46,7 +47,6 @@ export function generatePOSTForAbiFunctionRead<
         .mutation(async ({ input }) => {
             //Parse parameters obj to tuple
             const parameters = functionParamsObjToTuple(input.contractParams, method.inputs)
-            console.debug(factory)
 
             if (method.stateMutability === "pure" || method.stateMutability === "view") {
                 //Get provider
@@ -76,11 +76,12 @@ export function generatePOSTForAbiFunctionWrite<
 (contractName: string, factory: Factory, method: Method) {
     const methodParametersJoined = method.inputs.map(input => input.name).join(",")
 
-    return t.procedure
+    return protectedProcedure
         .meta({
             openapi: {
                 method: "POST" as const,
                 path: `/{networkId}/abi/${contractName}/{address}/${method.name}` as const,
+                protect: true,
                 description: `Write \`${method.name}(${methodParametersJoined})\` on an instance of \`${contractName}\``,
                 summary: `${contractName}.${method.name}`,
                 tags: [contractName],
