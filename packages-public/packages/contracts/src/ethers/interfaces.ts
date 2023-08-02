@@ -108,9 +108,6 @@ export const IAccessControlInterfaceId = interfaceId(IAccessControlInterface.fra
 export const IContractURIInterface = contracts.common.IContractURI__factory.createInterface();
 export const IContractURIInterfaceId = interfaceId(IContractURIInterface.fragments);
 
-export const IRouterReceiverInterface = contracts.common.IRouterReceiver__factory.createInterface();
-export const IRouterReceiverInterfaceId = interfaceId(IRouterReceiverInterface.fragments);
-
 export const IAssetRouterCraftInterface = contracts.plugins.assetRouter.IAssetRouterCraft__factory.createInterface();
 export const IAssetRouterCraftInterfaceId = interfaceId(IAssetRouterCraftInterface.fragments);
 
@@ -138,7 +135,6 @@ export const interfaceIds = {
     [IERC165InterfaceId]: oz.utils.introspection.IERC165Upgradeable__factory.abi,
     [IERC1820InterfaceId]: oz.utils.introspection.IERC1820RegistryUpgradeable__factory.abi,
     [IAccessControlInterfaceId]: oz.access.IAccessControlUpgradeable__factory.abi,
-    [IRouterReceiverInterfaceId]: contracts.common.IRouterReceiver__factory.abi,
     [IContractURIInterfaceId]: contracts.common.IContractURI__factory.abi,
     [IERC2981InterfaceId]: oz.interfaces.IERC2981Upgradeable__factory.abi,
     [IERC2981SetterInterfaceId]: contracts.plugins.erc2981.ERC2981Setter__factory.abi,
@@ -170,7 +166,6 @@ export const interfaceIdNames = {
     [IERC165InterfaceId]: "IERC165",
     [IERC1820InterfaceId]: "IERC1820",
     [IAccessControlInterfaceId]: "IAccessControl",
-    [IRouterReceiverInterfaceId]: "IRouterReceiver",
     [IContractURIInterfaceId]: "IContractURI",
     [IERC2981InterfaceId]: "IERC2981",
     [IERC2981SetterInterfaceId]: "IERC2981Setter",
@@ -219,11 +214,6 @@ export const interfaces = {
         interface: IAccessControlInterface,
         interfaceId: IAccessControlInterfaceId,
         contract: oz.access.IAccessControlUpgradeable__factory.connect(constants.AddressZero, null as any),
-    },
-    IRouterReceiver: {
-        interface: IRouterReceiverInterface,
-        interfaceId: IRouterReceiverInterfaceId,
-        contract: contracts.common.IRouterReceiver__factory.connect(constants.AddressZero, null as any),
     },
     IContractURI: {
         interface: IContractURIInterface,

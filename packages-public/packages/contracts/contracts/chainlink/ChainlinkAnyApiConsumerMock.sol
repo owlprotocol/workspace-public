@@ -62,20 +62,6 @@ contract ChainlinkApiConsumerMock is OwlBase, ChainlinkAnyApiConsumerAbstract {
         emit ChainlinkResponseFulfilled(prefixNo, prefixString, responseNo, responseString);
     }
 
-    /**
-     * inheritdoc OwlBase
-     */
-    function _msgSender() internal view override(OwlBase, ContextUpgradeable) returns (address) {
-        return OwlBase._msgSender();
-    }
-
-    /**
-     * inheritdoc OwlBase
-     */
-    function _msgData() internal view override(OwlBase, ContextUpgradeable) returns (bytes calldata) {
-        return OwlBase._msgData();
-    }
-
     function supportsInterface(
         bytes4 interfaceId
     ) public view virtual override(ChainlinkAnyApiConsumerAbstract, OwlBase) returns (bool) {
