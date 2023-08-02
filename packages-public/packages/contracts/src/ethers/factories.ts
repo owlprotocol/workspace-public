@@ -1,5 +1,6 @@
 import { getFactoriesWithSigner, getDeployFactories, getFactoryWithInitializeUtil, Utils as ProxyUtils } from "@owlprotocol/contracts-proxy";
 import * as contracts from "../typechain/ethers/factories/contracts/index.js";
+import * as oz from "../typechain/ethers/factories/@openzeppelin/contracts-upgradeable/index.js";
 import * as Utils from "../utils/initializeUtils/index.js";
 import { mapValues } from "../lodash.js"
 
@@ -12,6 +13,7 @@ export const Multicall2Factory = new contracts.utils.Multicall2__factory();
 export const BlockNumberFactory = new contracts.utils.BlockNumber__factory();
 
 //WARNING: ONLY add contracts that support initialize pattern
+//Implementations
 export const factoryClasses =  {
     ERC20Mintable: contracts.assets.erc20.ERC20Mintable__factory,
     ERC721Mintable: contracts.assets.erc721.ERC721Mintable__factory,
@@ -30,6 +32,43 @@ export const factoryClasses =  {
 
 export const factories = mapValues(factoryClasses, (f) => new f()) as {
     [K in keyof typeof factoryClasses]: InstanceType<typeof factoryClasses[K]>
+}
+
+//Interfaces
+export const factoryInterfaceClasses =  {
+    IERC165: oz.utils.introspection.IERC165Upgradeable__factory,
+    IERC1820: oz.utils.introspection.IERC1820RegistryUpgradeable__factory,
+    IAccessControl: oz.access.IAccessControlUpgradeable__factory,
+    IContractURI: contracts.common.IContractURI__factory,
+    IERC20: oz.token.erc20.IERC20Upgradeable__factory,
+    IERC20Metadata: oz.token.erc20.extensions.IERC20MetadataUpgradeable__factory,
+    IERC20Mintable: contracts.assets.erc20.IERC20Mintable__factory,
+    IERC721: oz.token.erc721.IERC721Upgradeable__factory,
+    IERC721Mintable: contracts.assets.erc721.IERC721Mintable__factory,
+    IERC721Metadata: oz.token.erc721.extensions.IERC721MetadataUpgradeable__factory,
+    IERC721Enumerable: oz.token.erc721.extensions.IERC721EnumerableUpgradeable__factory,
+    IERC721MintableAutoId: contracts.assets.erc721.IERC721MintableAutoId__factory,
+    IERC1155: oz.token.erc1155.IERC1155Upgradeable__factory,
+    IERC1155MetadataURI: oz.token.erc1155.extensions.IERC1155MetadataURIUpgradeable__factory,
+    IERC1155Mintable: contracts.assets.erc1155.IERC1155Mintable__factory,
+    ITokenURI: contracts.plugins.tokenUri.ITokenURI__factory,
+    ITokenURIBaseURI: contracts.plugins.tokenUri.ITokenURIBaseURI__factory,
+    IERC2981: oz.interfaces.IERC2981Upgradeable__factory,
+    IERC2981Setter: contracts.plugins.erc2981.IERC2981Setter__factory,
+    ITokenDna: contracts.plugins.tokenDna.ITokenDna__factory,
+    IAssetRouterCraft: contracts.plugins.assetRouter.IAssetRouterCraft__factory,
+    IAssetRouterInput: contracts.plugins.assetRouter.IAssetRouterInput__factory,
+    IAssetRouterOutput: contracts.plugins.assetRouter.IAssetRouterOutput__factory,
+    IChainlinkAnyApiClient: contracts.chainlink.ChainlinkAnyApiClient__factory,
+    IChainlinkAnyApiConsumer: contracts.chainlink.IChainlinkAnyApiConsumer__factory
+} as const
+
+export const factoriesInterface = mapValues(factoryInterfaceClasses, (f) => new f()) as {
+    [K in keyof typeof factoryInterfaceClasses]: InstanceType<typeof factoryInterfaceClasses[K]>
+}
+
+export const abisInterface = mapValues(factoryInterfaceClasses, (f) =>  f.abi) as {
+    [K in keyof typeof factoryInterfaceClasses]: typeof factoryInterfaceClasses[K]["abi"]
 }
 
 //Assets

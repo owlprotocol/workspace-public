@@ -1,5 +1,5 @@
-import { contractFactoriesWithZod } from "@owlprotocol/zod-sol";
-import { factoryClasses, factoriesAll } from "./factories.js";
+import { contractFactoriesWithZod, contractFactoriesWithZod2 } from "@owlprotocol/zod-sol";
+import { factoryClasses, factoryInterfaceClasses, factoriesAll } from "./factories.js";
 import { omit, merge } from "../lodash.js";
 
 const abisWithZodBase = contractFactoriesWithZod(
@@ -9,4 +9,8 @@ const abisWithZodBase = contractFactoriesWithZod(
 export const abisWithZod = merge(
     abisWithZodBase,
     omit(factoriesAll, "AssetRouterCraft", "AssetRouterInput", "AssetRouterOutput"),
+);
+
+export const factoriesInterfaceWithZod = contractFactoriesWithZod2(
+    omit(factoryInterfaceClasses, "IAssetRouterCraft", "IAssetRouterInput", "IAssetRouterOutput"),
 );
