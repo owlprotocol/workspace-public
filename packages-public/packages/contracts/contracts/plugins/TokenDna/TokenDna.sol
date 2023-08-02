@@ -4,12 +4,15 @@ pragma solidity ^0.8.9;
 import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
 import {OwlBase} from "../../common/OwlBase.sol";
+import {ITokenDna} from "./ITokenDna.sol";
 import {TokenDnaAbstract} from "./TokenDnaAbstract.sol";
+import {ChainlinkAnyApiConsumerAbstract, InvalidSelector} from "../../chainlink/ChainlinkAnyApiConsumerAbstract.sol";
+import {IChainlinkAnyApiConsumer} from "../../chainlink/IChainlinkAnyApiConsumer.sol";
 
 /**
  * @dev TokenDna storage contract
  */
-contract TokenDna is TokenDnaAbstract, OwlBase {
+contract TokenDna is ChainlinkAnyApiConsumerAbstract, TokenDnaAbstract, OwlBase {
     function initialize(
         address _admin,
         string memory _contractUri,
@@ -33,17 +36,39 @@ contract TokenDna is TokenDnaAbstract, OwlBase {
         __OwlBase_init_unchained(_admin);
 
         __TokenDnaAbstract_init_unchained(_dnaRole);
+        __ChainlinkAnyApiConsumer_init_unchained(_dnaRole);
     }
 
     /**
-     * @inheritdoc OwlBase
+     * inheritdoc IChainlinkAnyApiConsumer
+     */
+    function fulfill(
+        bytes calldata fulfillPrefixData,
+        bytes calldata fulfillResponseData
+    ) external virtual onlyRole(FULFILL_ROLE) {
+        bytes4 selector = bytes4(fulfillPrefixData[:4]);
+        if (selector == ITokenDna.setDna.selector) {
+            (, uint256 tokenId) = abi.decode(fulfillPrefixData, (bytes4, uint256));
+            bytes memory dna = abi.decode(fulfillResponseData, (bytes));
+            setDna(tokenId, dna);
+        } else if (selector == ITokenDna.setDnaBatch.selector) {
+            (, uint256[] memory tokenId) = abi.decode(fulfillPrefixData, (bytes4, uint256[]));
+            bytes[] memory dna = abi.decode(fulfillResponseData, (bytes[]));
+            setDnaBatch(tokenId, dna);
+        } else {
+            revert InvalidSelector(selector);
+        }
+    }
+
+    /**
+     * inheritdoc OwlBase
      */
     function _msgSender() internal view override(OwlBase, ContextUpgradeable) returns (address) {
         return OwlBase._msgSender();
     }
 
     /**
-     * @inheritdoc OwlBase
+     * inheritdoc OwlBase
      */
     function _msgData() internal view override(OwlBase, ContextUpgradeable) returns (bytes calldata) {
         return OwlBase._msgData();
@@ -51,7 +76,7 @@ contract TokenDna is TokenDnaAbstract, OwlBase {
 
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(TokenDnaAbstract, OwlBase) returns (bool) {
+    ) public view virtual override(ChainlinkAnyApiConsumerAbstract, TokenDnaAbstract, OwlBase) returns (bool) {
         return OwlBase.supportsInterface(interfaceId);
     }
 }

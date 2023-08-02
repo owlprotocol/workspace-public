@@ -127,6 +127,13 @@ export const ITokenDnaInterfaceId = interfaceId(ITokenDnaInterface.fragments);
 export const ITokenConsumerInterface = contracts.plugins.tokenConsumer.ITokenConsumer__factory.createInterface();
 export const ITokenConsumerInterfaceId = interfaceId(ITokenConsumerInterface.fragments);
 
+//Chainlink
+export const IChainlinkAnyApiClientInterface = contracts.chainlink.IChainlinkAnyApiClient__factory.createInterface();
+export const IChainlinkAnyApiClientInterfaceId = interfaceId(IChainlinkAnyApiClientInterface.fragments);
+
+export const IChainlinkAnyApiConsumerInterface = contracts.chainlink.IChainlinkAnyApiConsumer__factory.createInterface();
+export const IChainlinkAnyApiConsumerInterfaceId = interfaceId(IChainlinkAnyApiConsumerInterface.fragments);
+
 export const interfaceIds = {
     [IERC165InterfaceId]: oz.utils.introspection.IERC165Upgradeable__factory.abi,
     [IERC1820InterfaceId]: oz.utils.introspection.IERC1820RegistryUpgradeable__factory.abi,
@@ -153,6 +160,8 @@ export const interfaceIds = {
     [IAssetRouterOutputInterfaceId]: contracts.plugins.assetRouter.IAssetRouterOutput__factory.abi,
     [ITokenDnaInterfaceId]: contracts.plugins.tokenDna.ITokenDna__factory.abi,
     [ITokenConsumerInterfaceId]: contracts.plugins.tokenConsumer.ITokenConsumer__factory.abi,
+    [IChainlinkAnyApiClientInterfaceId]: contracts.chainlink.IChainlinkAnyApiClient__factory.abi,
+    [IChainlinkAnyApiConsumerInterfaceId]: contracts.chainlink.IChainlinkAnyApiConsumer__factory.abi,
 } as const;
 
 export type InterfaceName = keyof typeof interfaces;
@@ -183,6 +192,8 @@ export const interfaceIdNames = {
     [IAssetRouterOutputInterfaceId]: "IAssetRouterOutput",
     [ITokenDnaInterfaceId]: "ITokenDna",
     [ITokenConsumerInterfaceId]: "ITokenConsumer",
+    [IChainlinkAnyApiClientInterfaceId]: "IChainlinkAnyApiClient",
+    [IChainlinkAnyApiConsumerInterfaceId]: "IChainlinkAnyApiConsumer",
 } as const;
 
 export const interfaces = {
@@ -330,5 +341,15 @@ export const interfaces = {
         interface: ITokenConsumerInterface,
         interfaceId: ITokenConsumerInterfaceId,
         contract: contracts.plugins.tokenConsumer.ITokenConsumer__factory.connect(constants.AddressZero, null as any),
+    },
+    IChainlinkAnyApiClient: {
+        interface: IChainlinkAnyApiClientInterface,
+        interfaceId: IChainlinkAnyApiClientInterfaceId,
+        contract: contracts.chainlink.IChainlinkAnyApiClient__factory.connect(constants.AddressZero, null as any),
+    },
+    IChainlinkAnyApiConsumer: {
+        interface: IChainlinkAnyApiConsumerInterface,
+        interfaceId: IChainlinkAnyApiConsumerInterfaceId,
+        contract: contracts.chainlink.IChainlinkAnyApiConsumer__factory.connect(constants.AddressZero, null as any),
     },
 };
