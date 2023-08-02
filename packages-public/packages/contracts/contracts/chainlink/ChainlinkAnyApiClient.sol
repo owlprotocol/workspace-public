@@ -22,8 +22,8 @@ contract ChainlinkAnyApiClient is OwlBase, ChainlinkClient, IChainlinkAnyApiClie
     using Chainlink for Chainlink.Request;
     using AddressUpgradeable for address;
 
-    bytes32 private constant REQUEST_ROLE = keccak256("REQUEST_ROLE");
-    bytes32 private constant WITHDRAW_ROLE = keccak256("WITHDRAW_ROLE");
+    bytes32 internal constant REQUEST_ROLE = keccak256("REQUEST_ROLE");
+    bytes32 internal constant WITHDRAW_ROLE = keccak256("WITHDRAW_ROLE");
 
     mapping(bytes32 => ChainlinkReq) public requests;
     event RequestFulfilled(

@@ -49,9 +49,10 @@ contract TokenDna is ChainlinkAnyApiConsumerAbstract, TokenDnaAbstract, OwlBase 
         bytes4 selector = bytes4(fulfillPrefixData[:4]);
         if (selector == ITokenDna.setDna.selector) {
             (, uint256 tokenId) = abi.decode(fulfillPrefixData, (bytes4, uint256));
-            bytes memory dna = abi.decode(fulfillResponseData, (bytes));
+            bytes memory dna = fulfillResponseData;
             setDna(tokenId, dna);
         } else if (selector == ITokenDna.setDnaBatch.selector) {
+            //TODO: Test out if it works
             (, uint256[] memory tokenId) = abi.decode(fulfillPrefixData, (bytes4, uint256[]));
             bytes[] memory dna = abi.decode(fulfillResponseData, (bytes[]));
             setDnaBatch(tokenId, dna);
