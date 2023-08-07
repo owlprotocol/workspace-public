@@ -8,8 +8,18 @@ declare global {
         interface ProcessEnv {
             readonly NODE_ENV?: 'development' | 'production' | 'test';
             readonly LOG_LEVEL?: "trace" | "debug" | "info" | "warn" | "error";
+            //Web App Metadata
             readonly TITLE?: string;
+            //CORS proxy
             readonly CORS_PROXY?: string;
+            //DFNS
+            readonly DFNS_PRIVATE_KEY?: string;
+            readonly DFNS_AUTH_TOKEN?: string;
+            readonly DFNS_CRED_ID?: string;
+            readonly DFNS_APP_ORIGIN?: string;
+            readonly DFNS_APP_ID?: string;
+            readonly DFNS_API_URL?: string;
+            //Script keys
             readonly BEACON_ADMIN?: string;
             readonly PRIVATE_KEY_ANVIL?: string;
             readonly PRIVATE_KEY_0?: string;
@@ -23,15 +33,19 @@ declare global {
             readonly PUBLIC_ADDRESS_0_LOCAL?: string;
             readonly PUBLIC_ADDRESS_1_LOCAL?: string;
             readonly PINATA_JWT?: string;
+            //RPC Api Keys
             readonly INFURA_API_KEY?: string;
             readonly THIRDWEB_API_KEY?: string;
             readonly ANKR_API_KEY?: string;
             readonly INFURA_IPFS_PROJECT_ID?: string;
             readonly INFURA_IPFS_PROJECT_SECRET?: string;
+            //IPFS
             readonly IPFS_URL?: string;
+            //4bytes.directory
             readonly BYTE4_URL?: string;
             readonly ETHERSCAN_API_KEY?: string;
             readonly LOG_REDUX_ACTIONS?: string;
+            //RPCs
             readonly GANACHE_RPC?: string;
             readonly GANACHE_WS?: string;
             readonly ANVIL_RPC?: string;
@@ -299,6 +313,14 @@ export const POLYGON_EXPLORER_API_KEY_PUBLIC = "R6G9K1EKZGBYYG528576GS5A6J4YF1WS
 export const POLYGON_MUMBAI_EXPLORER_API_KEY_PUBLIC = "R6G9K1EKZGBYYG528576GS5A6J4YF1WS6I"
 export const BSC_EXPLORER_API_KEY_PUBLIC = "9TRND69HZABV4HU73SPTECP72S94Q8K5B7"
 export const BSC_TESTNET_EXPLORER_API_KEY_PUBLIC = "9TRND69HZABV4HU73SPTECP72S94Q8K5B7"
+
+//DFNS Configs, no public keys due to security
+export const DFNS_PRIVATE_KEY = process.env.DFNS_PRIVATE_KEY;
+export const DFNS_AUTH_TOKEN = process.env.DFNS_AUTH_TOKEN;
+export const DFNS_CRED_ID = process.env.DFNS_CRED_ID;
+export const DFNS_APP_ORIGIN = process.env.DFNS_APP_ORIGIN;
+export const DFNS_APP_ID = process.env.DFNS_APP_ID;
+export const DFNS_API_URL = process.env.DFNS_API_URL ?? "https://api.dfns.io"
 
 //Admin address for beacons used by proxies
 export const BEACON_ADMIN = (import.meta.env ? import.meta.env.VITE_BEACON_ADMIN : process.env.BEACON_ADMIN) ?? BEACON_ADMIN_PUBLIC
