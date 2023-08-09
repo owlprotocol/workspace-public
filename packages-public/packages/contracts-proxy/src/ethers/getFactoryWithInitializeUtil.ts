@@ -1,6 +1,6 @@
 import type { ContractFactory, Overrides, Signer, UnsignedTransaction } from "ethers";
 import { constants, ethers, utils } from "ethers";
-import { DeploymentArgs, isDeploymentArgsBeaconExisting, isDeploymentArgsBeaconNew, isDeploymentArgsBeaconOwl, isDeploymentArgsDeterministic, isDeploymentArgsERC1167 } from "./deploymentArgs.js";
+import { DeploymentArgs, isDeploymentArgsBeaconExisting, isDeploymentArgsBeaconNew, isDeploymentArgsBeaconOwl } from "./deploymentArgs.js";
 import { ContractParameters } from "../utils/ERC1167Factory/factory.js";
 import type { getDeployFactories } from "./getFactory.js";
 import { TransactionResponse } from "@ethersproject/providers";
