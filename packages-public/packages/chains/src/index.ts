@@ -221,6 +221,7 @@ import c520 from "../chains/520.js";
 import c529 from "../chains/529.js";
 import c530 from "../chains/530.js";
 import c534 from "../chains/534.js";
+import c542 from "../chains/542.js";
 import c555 from "../chains/555.js";
 import c558 from "../chains/558.js";
 import c568 from "../chains/568.js";
@@ -377,6 +378,7 @@ import c1807 from "../chains/1807.js";
 import c1818 from "../chains/1818.js";
 import c1819 from "../chains/1819.js";
 import c1856 from "../chains/1856.js";
+import c1875 from "../chains/1875.js";
 import c1881 from "../chains/1881.js";
 import c1890 from "../chains/1890.js";
 import c1891 from "../chains/1891.js";
@@ -614,6 +616,7 @@ import c9999 from "../chains/9999.js";
 import c10000 from "../chains/10000.js";
 import c10001 from "../chains/10001.js";
 import c10024 from "../chains/10024.js";
+import c10081 from "../chains/10081.js";
 import c10086 from "../chains/10086.js";
 import c10101 from "../chains/10101.js";
 import c10200 from "../chains/10200.js";
@@ -641,9 +644,11 @@ import c12345 from "../chains/12345.js";
 import c12715 from "../chains/12715.js";
 import c13000 from "../chains/13000.js";
 import c13308 from "../chains/13308.js";
+import c13337 from "../chains/13337.js";
 import c13381 from "../chains/13381.js";
 import c13812 from "../chains/13812.js";
 import c14000 from "../chains/14000.js";
+import c14853 from "../chains/14853.js";
 import c15551 from "../chains/15551.js";
 import c15555 from "../chains/15555.js";
 import c15557 from "../chains/15557.js";
@@ -860,13 +865,13 @@ import c512512 from "../chains/512512.js";
 import c513100 from "../chains/513100.js";
 import c534351 from "../chains/534351.js";
 import c534352 from "../chains/534352.js";
-import c534353 from "../chains/534353.js";
 import c534849 from "../chains/534849.js";
 import c535037 from "../chains/535037.js";
 import c641230 from "../chains/641230.js";
 import c651940 from "../chains/651940.js";
 import c666666 from "../chains/666666.js";
 import c751230 from "../chains/751230.js";
+import c761412 from "../chains/761412.js";
 import c800001 from "../chains/800001.js";
 import c827431 from "../chains/827431.js";
 import c846000 from "../chains/846000.js";
@@ -885,6 +890,7 @@ import c1337803 from "../chains/1337803.js";
 import c2099156 from "../chains/2099156.js";
 import c2206132 from "../chains/2206132.js";
 import c3141592 from "../chains/3141592.js";
+import c3441005 from "../chains/3441005.js";
 import c4000003 from "../chains/4000003.js";
 import c4281033 from "../chains/4281033.js";
 import c5167003 from "../chains/5167003.js";
@@ -1200,6 +1206,7 @@ export { default as XtSmartChain } from "../chains/520.js"
 export { default as Firechain } from "../chains/529.js"
 export { default as FXCoreNetwork } from "../chains/530.js"
 export { default as Candle } from "../chains/534.js"
+export { default as PawchainTestnet } from "../chains/542.js"
 export { default as Vela1Chain } from "../chains/555.js"
 export { default as TaoNetwork } from "../chains/558.js"
 export { default as DogechainTestnet } from "../chains/568.js"
@@ -1356,6 +1363,7 @@ export { default as RabbitAnalogTestnetChain } from "../chains/1807.js"
 export { default as CubeChain } from "../chains/1818.js"
 export { default as CubeChainTestnet } from "../chains/1819.js"
 export { default as Teslafunds } from "../chains/1856.js"
+export { default as WhitebitNetwork } from "../chains/1875.js"
 export { default as GitshockCartenzTestnet } from "../chains/1881.js"
 export { default as LightlinkPhoenix } from "../chains/1890.js"
 export { default as LightlinkPegasusTestnet } from "../chains/1891.js"
@@ -1593,6 +1601,7 @@ export { default as MyownTestnet } from "../chains/9999.js"
 export { default as SmartBitcoinCash } from "../chains/10000.js"
 export { default as SmartBitcoinCashTestnet } from "../chains/10001.js"
 export { default as GonChain } from "../chains/10024.js"
+export { default as JapanOpenChainTestnet } from "../chains/10081.js"
 export { default as Sjatsh } from "../chains/10086.js"
 export { default as BlockchainGenesis } from "../chains/10101.js"
 export { default as GnosisChiadoTestnet } from "../chains/10200.js"
@@ -1619,10 +1628,12 @@ export { default as BlgTestnet } from "../chains/12321.js"
 export { default as StepTestnet } from "../chains/12345.js"
 export { default as RikezaNetworkTestnet } from "../chains/12715.js"
 export { default as Sps } from "../chains/13000.js"
-export { default as CreditSmartchain } from "../chains/13308.js"
+export { default as CreditSmartChain } from "../chains/13308.js"
+export { default as BeamTestnet } from "../chains/13337.js"
 export { default as Phoenix } from "../chains/13381.js"
 export { default as Susono } from "../chains/13812.js"
 export { default as SpsTestnet } from "../chains/14000.js"
+export { default as HumanodeTestnet5Israfel } from "../chains/14853.js"
 export { default as Loopnetwork } from "../chains/15551.js"
 export { default as TrustEvmTestnet } from "../chains/15555.js"
 export { default as EosEvmNetworkTestnet } from "../chains/15557.js"
@@ -1839,13 +1850,13 @@ export { default as CmpTestnet } from "../chains/512512.js"
 export { default as EthereumFair } from "../chains/513100.js"
 export { default as ScrollSepoliaTestnet } from "../chains/534351.js"
 export { default as Scroll } from "../chains/534352.js"
-export { default as ScrollAlphaTestnet } from "../chains/534353.js"
 export { default as ShinariumBeta } from "../chains/534849.js"
 export { default as BeanecoSmartchain } from "../chains/535037.js"
 export { default as BearNetworkChain } from "../chains/641230.js"
 export { default as All } from "../chains/651940.js"
 export { default as VisionVpioneerTestChain } from "../chains/666666.js"
 export { default as BearNetworkChainTestnet } from "../chains/751230.js"
+export { default as MiexsSmartchain } from "../chains/761412.js"
 export { default as Octaspace } from "../chains/800001.js"
 export { default as Curve } from "../chains/827431.js"
 export { default as _4goodnetwork } from "../chains/846000.js"
@@ -1864,6 +1875,7 @@ export { default as Zhejiang } from "../chains/1337803.js"
 export { default as PlianMain } from "../chains/2099156.js"
 export { default as PlatonDevTestnet2 } from "../chains/2206132.js"
 export { default as FilecoinButterflyTestnet } from "../chains/3141592.js"
+export { default as MantaPacificTestnet } from "../chains/3441005.js"
 export { default as AltlayerZeroGasNetwork } from "../chains/4000003.js"
 export { default as WorldsCaldera } from "../chains/4281033.js"
 export { default as MxcWannseeZkevmTestnet } from "../chains/5167003.js"
@@ -1957,7 +1969,7 @@ export { default as ZoraTestnet } from "../chains/999.js"
 export * from "./types.js";
 export * from "./utils.js";
 export const defaultChains = [c1, c5, c8453, c84531, c137, c80001, c42161, c421613, c10, c420, c56, c97, c250, c4002, c43114, c43113, c1337];
-export const allChains: Chain[] = [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20, c21, c22, c23, c24, c25, c26, c27, c28, c29, c30, c31, c32, c33, c34, c35, c36, c37, c38, c39, c40, c41, c42, c43, c44, c45, c46, c47, c48, c49, c50, c51, c52, c53, c54, c55, c56, c57, c58, c60, c61, c62, c63, c64, c65, c66, c67, c68, c69, c70, c71, c72, c73, c74, c75, c76, c77, c78, c79, c80, c81, c82, c83, c84, c85, c86, c87, c88, c89, c90, c91, c92, c93, c94, c95, c96, c97, c98, c99, c100, c101, c102, c104, c105, c106, c107, c108, c110, c111, c112, c113, c114, c115, c116, c117, c118, c119, c120, c121, c122, c123, c124, c125, c126, c127, c128, c134, c135, c136, c137, c138, c139, c141, c142, c144, c150, c155, c156, c160, c161, c162, c163, c165, c167, c168, c170, c172, c180, c186, c188, c189, c193, c195, c196, c197, c199, c200, c201, c208, c210, c211, c212, c217, c225, c226, c230, c236, c242, c246, c248, c250, c256, c258, c259, c262, c269, c271, c274, c280, c288, c295, c296, c297, c298, c301, c303, c311, c313, c314, c321, c322, c324, c333, c335, c336, c338, c361, c363, c364, c365, c369, c371, c385, c400, c401, c411, c416, c418, c420, c424, c427, c443, c444, c456, c499, c500, c501, c512, c513, c516, c520, c529, c530, c534, c555, c558, c568, c570, c592, c595, c596, c597, c599, c600, c601, c614, c634, c647, c648, c666, c686, c700, c707, c708, c719, c721, c741, c742, c766, c776, c777, c786, c787, c788, c789, c800, c803, c808, c813, c818, c820, c841, c842, c859, c868, c876, c877, c880, c888, c900, c901, c902, c903, c909, c910, c917, c942, c943, c956, c970, c971, c972, c977, c980, c985, c989, c990, c997, c998, c1000, c1001, c1004, c1007, c1008, c1010, c1012, c1022, c1023, c1024, c1028, c1030, c1031, c1038, c1039, c1072, c1079, c1080, c1088, c1099, c1101, c1111, c1112, c1115, c1116, c1117, c1130, c1131, c1138, c1139, c1140, c1149, c1170, c1177, c1197, c1201, c1202, c1213, c1214, c1229, c1230, c1231, c1234, c1243, c1244, c1246, c1252, c1280, c1284, c1285, c1287, c1288, c1294, c1297, c1311, c1314, c1319, c1320, c1338, c1339, c1353, c1369, c1379, c1388, c1392, c1433, c1440, c1442, c1452, c1455, c1501, c1506, c1507, c1515, c1559, c1618, c1620, c1657, c1663, c1688, c1701, c1707, c1708, c1718, c1773, c1777, c1804, c1807, c1818, c1819, c1856, c1881, c1890, c1891, c1898, c1907, c1908, c1945, c1951, c1954, c1967, c1969, c1970, c1971, c1975, c1984, c1987, c1994, c1995, c2000, c2001, c2002, c2008, c2009, c2016, c2018, c2019, c2020, c2021, c2022, c2023, c2025, c2043, c2044, c2047, c2048, c2077, c2100, c2101, c2109, c2122, c2124, c2138, c2151, c2152, c2153, c2154, c2199, c2202, c2203, c2213, c2221, c2222, c2223, c2300, c2309, c2323, c2330, c2332, c2358, c2399, c2400, c2415, c2559, c2569, c2606, c2611, c2612, c2613, c2625, c2888, c2999, c3000, c3001, c3003, c3011, c3031, c3068, c3306, c3331, c3333, c3334, c3400, c3434, c3500, c3501, c3601, c3602, c3636, c3637, c3666, c3690, c3693, c3698, c3699, c3737, c3797, c3912, c3939, c3966, c3967, c3999, c4000, c4001, c4002, c4051, c4061, c4062, c4090, c4096, c4099, c4102, c4141, c4181, c4201, c4242, c4328, c4444, c4689, c4690, c4759, c4777, c4918, c4919, c4999, c5000, c5001, c5002, c5005, c5165, c5177, c5197, c5234, c5315, c5551, c5553, c5555, c5616, c5700, c5729, c5758, c5777, c5851, c5869, c6065, c6066, c6102, c6118, c6119, c6502, c6552, c6565, c6626, c6688, c6789, c6969, c6999, c7000, c7001, c7027, c7070, c7171, c7331, c7332, c7341, c7484, c7518, c7575, c7576, c7668, c7672, c7700, c7701, c7771, c7777, c7878, c7895, c7979, c8000, c8001, c8029, c8080, c8082, c8086, c8098, c8131, c8132, c8133, c8134, c8135, c8136, c8181, c8217, c8272, c8285, c8387, c8453, c8654, c8655, c8723, c8724, c8738, c8768, c8848, c8880, c8881, c8882, c8883, c8888, c8889, c8898, c8899, c8989, c8995, c9000, c9001, c9012, c9100, c9223, c9339, c9527, c9528, c9559, c9700, c9728, c9768, c9779, c9790, c9792, c9818, c9819, c9977, c9996, c9997, c9999, c10000, c10001, c10024, c10086, c10101, c10200, c10248, c10507, c10508, c10823, c10946, c10947, c11110, c11111, c11115, c11119, c11235, c11437, c11612, c11888, c12009, c12051, c12052, c12123, c12306, c12321, c12345, c12715, c13000, c13308, c13381, c13812, c14000, c15551, c15555, c15557, c16000, c16001, c16507, c16688, c16718, c16888, c17180, c17777, c18000, c18122, c18159, c18686, c19011, c19845, c20001, c20729, c20736, c21337, c21816, c22023, c22040, c22776, c23006, c23118, c23294, c23295, c24484, c24734, c25888, c25925, c26026, c26600, c26863, c28528, c30067, c31102, c31223, c31224, c31337, c32520, c32659, c32769, c33101, c33333, c35011, c35441, c35443, c39797, c39815, c41500, c42069, c42161, c42170, c42220, c42261, c42262, c42888, c43110, c43113, c43114, c43288, c44444, c44787, c45000, c46688, c47805, c49049, c49088, c49797, c50001, c50021, c51178, c51712, c53935, c54211, c54321, c55004, c55555, c55556, c56288, c57000, c58008, c59140, c60000, c60001, c60002, c60103, c61800, c61803, c61916, c62320, c62621, c63000, c63001, c65450, c67588, c69420, c70000, c70001, c70002, c70103, c71111, c71393, c71401, c71402, c73799, c73927, c75000, c77612, c77777, c78110, c78281, c79879, c80001, c81341, c81342, c81343, c81351, c81352, c81353, c81361, c81362, c81363, c84531, c85449, c88880, c90210, c91002, c92001, c96970, c99099, c99998, c99999, c100000, c100001, c100002, c100003, c100004, c100005, c100006, c100007, c100008, c100009, c100010, c101010, c103090, c108801, c110000, c110001, c110002, c110003, c110004, c110005, c110006, c110007, c110008, c111000, c111111, c112358, c123456, c131419, c142857, c167005, c167006, c188881, c200101, c200202, c200625, c201018, c201030, c201804, c202020, c202624, c210425, c220315, c221230, c221231, c224168, c230315, c234666, c246529, c246785, c247253, c256256, c266256, c271271, c281121, c314159, c330844, c333331, c333777, c333888, c333999, c355113, c373737, c381931, c381932, c404040, c420420, c420666, c421611, c421613, c424242, c431140, c432201, c432204, c444900, c471100, c474142, c512512, c513100, c534351, c534352, c534353, c534849, c535037, c641230, c651940, c666666, c751230, c800001, c827431, c846000, c888888, c900000, c910000, c920000, c920001, c923018, c955305, c1313114, c1313500, c1337702, c1337802, c1337803, c2099156, c2206132, c3141592, c4000003, c4281033, c5167003, c5555555, c5555558, c7225878, c7355310, c7668378, c7762959, c7777777, c8007736, c8794598, c8888881, c8888888, c10067275, c10101010, c11155111, c13371337, c14288640, c16658437, c18289463, c20180430, c20181205, c20201022, c22052002, c27082017, c27082022, c28945486, c29032022, c31415926, c35855456, c43214913, c61717561, c65010000, c65100000, c88888888, c99415706, c192837465, c222000222, c245022926, c245022934, c245022940, c278611351, c311752642, c333000333, c344106930, c356256156, c486217935, c503129905, c1122334455, c1146703430, c1273227453, c1313161554, c1313161555, c1313161556, c1351057110, c1380996178, c1482601649, c1564830818, c1666600000, c1666600001, c1666600002, c1666600003, c1666700000, c1666700001, c1666900000, c1666900001, c2021121117, c2046399126, c3125659152, c4216137055, c11297108099, c11297108109, c111222333444, c197710212030, c197710212031, c383414847825, c666301171999, c6022140761023, c1337, c1440001, c1582, c331769, c408, c5611, c59144, c8081, c88888, c919, c999];
+export const allChains: Chain[] = [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20, c21, c22, c23, c24, c25, c26, c27, c28, c29, c30, c31, c32, c33, c34, c35, c36, c37, c38, c39, c40, c41, c42, c43, c44, c45, c46, c47, c48, c49, c50, c51, c52, c53, c54, c55, c56, c57, c58, c60, c61, c62, c63, c64, c65, c66, c67, c68, c69, c70, c71, c72, c73, c74, c75, c76, c77, c78, c79, c80, c81, c82, c83, c84, c85, c86, c87, c88, c89, c90, c91, c92, c93, c94, c95, c96, c97, c98, c99, c100, c101, c102, c104, c105, c106, c107, c108, c110, c111, c112, c113, c114, c115, c116, c117, c118, c119, c120, c121, c122, c123, c124, c125, c126, c127, c128, c134, c135, c136, c137, c138, c139, c141, c142, c144, c150, c155, c156, c160, c161, c162, c163, c165, c167, c168, c170, c172, c180, c186, c188, c189, c193, c195, c196, c197, c199, c200, c201, c208, c210, c211, c212, c217, c225, c226, c230, c236, c242, c246, c248, c250, c256, c258, c259, c262, c269, c271, c274, c280, c288, c295, c296, c297, c298, c301, c303, c311, c313, c314, c321, c322, c324, c333, c335, c336, c338, c361, c363, c364, c365, c369, c371, c385, c400, c401, c411, c416, c418, c420, c424, c427, c443, c444, c456, c499, c500, c501, c512, c513, c516, c520, c529, c530, c534, c542, c555, c558, c568, c570, c592, c595, c596, c597, c599, c600, c601, c614, c634, c647, c648, c666, c686, c700, c707, c708, c719, c721, c741, c742, c766, c776, c777, c786, c787, c788, c789, c800, c803, c808, c813, c818, c820, c841, c842, c859, c868, c876, c877, c880, c888, c900, c901, c902, c903, c909, c910, c917, c942, c943, c956, c970, c971, c972, c977, c980, c985, c989, c990, c997, c998, c1000, c1001, c1004, c1007, c1008, c1010, c1012, c1022, c1023, c1024, c1028, c1030, c1031, c1038, c1039, c1072, c1079, c1080, c1088, c1099, c1101, c1111, c1112, c1115, c1116, c1117, c1130, c1131, c1138, c1139, c1140, c1149, c1170, c1177, c1197, c1201, c1202, c1213, c1214, c1229, c1230, c1231, c1234, c1243, c1244, c1246, c1252, c1280, c1284, c1285, c1287, c1288, c1294, c1297, c1311, c1314, c1319, c1320, c1338, c1339, c1353, c1369, c1379, c1388, c1392, c1433, c1440, c1442, c1452, c1455, c1501, c1506, c1507, c1515, c1559, c1618, c1620, c1657, c1663, c1688, c1701, c1707, c1708, c1718, c1773, c1777, c1804, c1807, c1818, c1819, c1856, c1875, c1881, c1890, c1891, c1898, c1907, c1908, c1945, c1951, c1954, c1967, c1969, c1970, c1971, c1975, c1984, c1987, c1994, c1995, c2000, c2001, c2002, c2008, c2009, c2016, c2018, c2019, c2020, c2021, c2022, c2023, c2025, c2043, c2044, c2047, c2048, c2077, c2100, c2101, c2109, c2122, c2124, c2138, c2151, c2152, c2153, c2154, c2199, c2202, c2203, c2213, c2221, c2222, c2223, c2300, c2309, c2323, c2330, c2332, c2358, c2399, c2400, c2415, c2559, c2569, c2606, c2611, c2612, c2613, c2625, c2888, c2999, c3000, c3001, c3003, c3011, c3031, c3068, c3306, c3331, c3333, c3334, c3400, c3434, c3500, c3501, c3601, c3602, c3636, c3637, c3666, c3690, c3693, c3698, c3699, c3737, c3797, c3912, c3939, c3966, c3967, c3999, c4000, c4001, c4002, c4051, c4061, c4062, c4090, c4096, c4099, c4102, c4141, c4181, c4201, c4242, c4328, c4444, c4689, c4690, c4759, c4777, c4918, c4919, c4999, c5000, c5001, c5002, c5005, c5165, c5177, c5197, c5234, c5315, c5551, c5553, c5555, c5616, c5700, c5729, c5758, c5777, c5851, c5869, c6065, c6066, c6102, c6118, c6119, c6502, c6552, c6565, c6626, c6688, c6789, c6969, c6999, c7000, c7001, c7027, c7070, c7171, c7331, c7332, c7341, c7484, c7518, c7575, c7576, c7668, c7672, c7700, c7701, c7771, c7777, c7878, c7895, c7979, c8000, c8001, c8029, c8080, c8082, c8086, c8098, c8131, c8132, c8133, c8134, c8135, c8136, c8181, c8217, c8272, c8285, c8387, c8453, c8654, c8655, c8723, c8724, c8738, c8768, c8848, c8880, c8881, c8882, c8883, c8888, c8889, c8898, c8899, c8989, c8995, c9000, c9001, c9012, c9100, c9223, c9339, c9527, c9528, c9559, c9700, c9728, c9768, c9779, c9790, c9792, c9818, c9819, c9977, c9996, c9997, c9999, c10000, c10001, c10024, c10081, c10086, c10101, c10200, c10248, c10507, c10508, c10823, c10946, c10947, c11110, c11111, c11115, c11119, c11235, c11437, c11612, c11888, c12009, c12051, c12052, c12123, c12306, c12321, c12345, c12715, c13000, c13308, c13337, c13381, c13812, c14000, c14853, c15551, c15555, c15557, c16000, c16001, c16507, c16688, c16718, c16888, c17180, c17777, c18000, c18122, c18159, c18686, c19011, c19845, c20001, c20729, c20736, c21337, c21816, c22023, c22040, c22776, c23006, c23118, c23294, c23295, c24484, c24734, c25888, c25925, c26026, c26600, c26863, c28528, c30067, c31102, c31223, c31224, c31337, c32520, c32659, c32769, c33101, c33333, c35011, c35441, c35443, c39797, c39815, c41500, c42069, c42161, c42170, c42220, c42261, c42262, c42888, c43110, c43113, c43114, c43288, c44444, c44787, c45000, c46688, c47805, c49049, c49088, c49797, c50001, c50021, c51178, c51712, c53935, c54211, c54321, c55004, c55555, c55556, c56288, c57000, c58008, c59140, c60000, c60001, c60002, c60103, c61800, c61803, c61916, c62320, c62621, c63000, c63001, c65450, c67588, c69420, c70000, c70001, c70002, c70103, c71111, c71393, c71401, c71402, c73799, c73927, c75000, c77612, c77777, c78110, c78281, c79879, c80001, c81341, c81342, c81343, c81351, c81352, c81353, c81361, c81362, c81363, c84531, c85449, c88880, c90210, c91002, c92001, c96970, c99099, c99998, c99999, c100000, c100001, c100002, c100003, c100004, c100005, c100006, c100007, c100008, c100009, c100010, c101010, c103090, c108801, c110000, c110001, c110002, c110003, c110004, c110005, c110006, c110007, c110008, c111000, c111111, c112358, c123456, c131419, c142857, c167005, c167006, c188881, c200101, c200202, c200625, c201018, c201030, c201804, c202020, c202624, c210425, c220315, c221230, c221231, c224168, c230315, c234666, c246529, c246785, c247253, c256256, c266256, c271271, c281121, c314159, c330844, c333331, c333777, c333888, c333999, c355113, c373737, c381931, c381932, c404040, c420420, c420666, c421611, c421613, c424242, c431140, c432201, c432204, c444900, c471100, c474142, c512512, c513100, c534351, c534352, c534849, c535037, c641230, c651940, c666666, c751230, c761412, c800001, c827431, c846000, c888888, c900000, c910000, c920000, c920001, c923018, c955305, c1313114, c1313500, c1337702, c1337802, c1337803, c2099156, c2206132, c3141592, c3441005, c4000003, c4281033, c5167003, c5555555, c5555558, c7225878, c7355310, c7668378, c7762959, c7777777, c8007736, c8794598, c8888881, c8888888, c10067275, c10101010, c11155111, c13371337, c14288640, c16658437, c18289463, c20180430, c20181205, c20201022, c22052002, c27082017, c27082022, c28945486, c29032022, c31415926, c35855456, c43214913, c61717561, c65010000, c65100000, c88888888, c99415706, c192837465, c222000222, c245022926, c245022934, c245022940, c278611351, c311752642, c333000333, c344106930, c356256156, c486217935, c503129905, c1122334455, c1146703430, c1273227453, c1313161554, c1313161555, c1313161556, c1351057110, c1380996178, c1482601649, c1564830818, c1666600000, c1666600001, c1666600002, c1666600003, c1666700000, c1666700001, c1666900000, c1666900001, c2021121117, c2046399126, c3125659152, c4216137055, c11297108099, c11297108109, c111222333444, c197710212030, c197710212031, c383414847825, c666301171999, c6022140761023, c1337, c1440001, c1582, c331769, c408, c5611, c59144, c8081, c88888, c919, c999];
 export * from "./chainWithData.js";
 
 type ChainsById = {
@@ -2184,6 +2196,7 @@ type ChainsById = {
 529: typeof c529,
 530: typeof c530,
 534: typeof c534,
+542: typeof c542,
 555: typeof c555,
 558: typeof c558,
 568: typeof c568,
@@ -2340,6 +2353,7 @@ type ChainsById = {
 1818: typeof c1818,
 1819: typeof c1819,
 1856: typeof c1856,
+1875: typeof c1875,
 1881: typeof c1881,
 1890: typeof c1890,
 1891: typeof c1891,
@@ -2577,6 +2591,7 @@ type ChainsById = {
 10000: typeof c10000,
 10001: typeof c10001,
 10024: typeof c10024,
+10081: typeof c10081,
 10086: typeof c10086,
 10101: typeof c10101,
 10200: typeof c10200,
@@ -2604,9 +2619,11 @@ type ChainsById = {
 12715: typeof c12715,
 13000: typeof c13000,
 13308: typeof c13308,
+13337: typeof c13337,
 13381: typeof c13381,
 13812: typeof c13812,
 14000: typeof c14000,
+14853: typeof c14853,
 15551: typeof c15551,
 15555: typeof c15555,
 15557: typeof c15557,
@@ -2823,13 +2840,13 @@ type ChainsById = {
 513100: typeof c513100,
 534351: typeof c534351,
 534352: typeof c534352,
-534353: typeof c534353,
 534849: typeof c534849,
 535037: typeof c535037,
 641230: typeof c641230,
 651940: typeof c651940,
 666666: typeof c666666,
 751230: typeof c751230,
+761412: typeof c761412,
 800001: typeof c800001,
 827431: typeof c827431,
 846000: typeof c846000,
@@ -2848,6 +2865,7 @@ type ChainsById = {
 2099156: typeof c2099156,
 2206132: typeof c2206132,
 3141592: typeof c3141592,
+3441005: typeof c3441005,
 4000003: typeof c4000003,
 4281033: typeof c4281033,
 5167003: typeof c5167003,
@@ -3164,6 +3182,7 @@ type ChainIdsBySlug = {
 "firechain": 529,
 "f-x-core-network": 530,
 "candle": 534,
+"pawchain-testnet": 542,
 "vela1-chain": 555,
 "tao-network": 558,
 "dogechain-testnet": 568,
@@ -3320,6 +3339,7 @@ type ChainIdsBySlug = {
 "cube-chain": 1818,
 "cube-chain-testnet": 1819,
 "teslafunds": 1856,
+"whitebit-network": 1875,
 "gitshock-cartenz-testnet": 1881,
 "lightlink-phoenix": 1890,
 "lightlink-pegasus-testnet": 1891,
@@ -3557,6 +3577,7 @@ type ChainIdsBySlug = {
 "smart-bitcoin-cash": 10000,
 "smart-bitcoin-cash-testnet": 10001,
 "gon-chain": 10024,
+"japan-open-chain-testnet": 10081,
 "sjatsh": 10086,
 "blockchain-genesis": 10101,
 "gnosis-chiado-testnet": 10200,
@@ -3583,10 +3604,12 @@ type ChainIdsBySlug = {
 "step-testnet": 12345,
 "rikeza-network-testnet": 12715,
 "sps": 13000,
-"credit-smartchain": 13308,
+"credit-smart-chain": 13308,
+"beam-testnet": 13337,
 "phoenix": 13381,
 "susono": 13812,
 "sps-testnet": 14000,
+"humanode-testnet-5-israfel": 14853,
 "loopnetwork": 15551,
 "trust-evm-testnet": 15555,
 "eos-evm-network-testnet": 15557,
@@ -3803,13 +3826,13 @@ type ChainIdsBySlug = {
 "ethereum-fair": 513100,
 "scroll-sepolia-testnet": 534351,
 "scroll": 534352,
-"scroll-alpha-testnet": 534353,
 "shinarium-beta": 534849,
 "beaneco-smartchain": 535037,
 "bear-network-chain": 641230,
 "all": 651940,
 "vision-vpioneer-test-chain": 666666,
 "bear-network-chain-testnet": 751230,
+"miexs-smartchain": 761412,
 "octaspace": 800001,
 "curve": 827431,
 "4goodnetwork": 846000,
@@ -3828,6 +3851,7 @@ type ChainIdsBySlug = {
 "plian-main": 2099156,
 "platon-dev-testnet2": 2206132,
 "filecoin-butterfly-testnet": 3141592,
+"manta-pacific-testnet": 3441005,
 "altlayer-zero-gas-network": 4000003,
 "worlds-caldera": 4281033,
 "mxc-wannsee-zkevm-testnet": 5167003,
