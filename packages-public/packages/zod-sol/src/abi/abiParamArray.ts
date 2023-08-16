@@ -14,7 +14,7 @@ export type ArrayType<T extends NonTupleType = NonTupleType> = |
     ArrayTypeN<T, 5>
 export interface AbiParamArray {
     /** name */
-    readonly name: string;
+    readonly name?: string;
     /** solidity type */
     readonly type: ArrayType
     /** same as solidity type for non-tuples */

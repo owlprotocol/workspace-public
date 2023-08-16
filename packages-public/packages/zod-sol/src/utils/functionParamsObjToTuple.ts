@@ -22,7 +22,8 @@ export function functionParamsTupleToObj<T extends readonly AbiParam[]>(params: 
     //loop abi by index, pick by name or (idx not implemented yet regardless)
     paramsAbi.forEach((param, idx) => {
         const paramByKey = params[param.name as keyof typeof params];
-        if (paramByKey != undefined) return paramsObj[param.name] = paramByKey;
+        //TODO: This seems like weird bug introduced by making param names optional
+        if (paramByKey != undefined) return paramsObj[param.name ?? idx] = paramByKey;
 
         const paramByIdx = params[`${idx}` as keyof typeof params];
         if (paramByIdx != undefined) return paramsObj[idx] = paramByIdx;
@@ -31,7 +32,7 @@ export function functionParamsTupleToObj<T extends readonly AbiParam[]>(params: 
         throw Error(`Parameter params.${param.name} and params[${idx}] undefined`);
     });
 
-    console.debug({ params, paramsObj, paramsAbi})
+    console.debug({ params, paramsObj, paramsAbi })
 
     return paramsObj;
 }

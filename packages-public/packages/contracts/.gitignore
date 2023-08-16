@@ -3,6 +3,7 @@
 .env.*
 
 #hardhat
+zsol
 typechain
 cache
 factory

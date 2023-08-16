@@ -25,7 +25,7 @@ export type NonTupleType = |
     BytesFixedType
 export interface AbiParamNonTuple {
     /** name */
-    readonly name: string;
+    readonly name?: string;
     /** solidity type */
     readonly type: NonTupleType
     /** same as solidity type for non-tuples */

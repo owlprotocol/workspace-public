@@ -55,6 +55,7 @@ logs
 .datastore_s3
 
 # hardhat
+zsol
 typechain
 cache
 factory

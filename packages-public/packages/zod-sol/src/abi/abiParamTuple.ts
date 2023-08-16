@@ -8,7 +8,7 @@ export type TupleType = "tuple"
 export type TupleComponents = readonly (AbiParamNonTuple | AbiParamArray)[]
 export interface AbiParamTuple<T extends TupleComponents = TupleComponents> {
     /** name */
-    readonly name: string;
+    readonly name?: string;
     /** solidity type */
     readonly type: TupleType;
     /** for tuples */

@@ -14,7 +14,7 @@ export type TupleArrayType = |
     TupleArrayTypeN<5>
 export interface AbiParamTupleArray<N extends TupleArrayType = TupleArrayType, T extends TupleComponents = TupleComponents> {
     /** name */
-    readonly name: string;
+    readonly name?: string;
     /** solidity type */
     readonly type: N;
     /** for tuples */

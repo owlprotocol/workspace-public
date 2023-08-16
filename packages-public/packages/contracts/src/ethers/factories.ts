@@ -14,7 +14,7 @@ export const BlockNumberFactory = new contracts.utils.BlockNumber__factory();
 
 //WARNING: ONLY add contracts that support initialize pattern
 //Implementations
-export const factoryClasses =  {
+export const factoryClasses = {
     ERC20Mintable: contracts.assets.erc20.ERC20Mintable__factory,
     ERC721Mintable: contracts.assets.erc721.ERC721Mintable__factory,
     ERC721MintableAutoId: contracts.assets.erc721.ERC721MintableAutoId__factory,
@@ -30,12 +30,16 @@ export const factoryClasses =  {
     ChainlinkAnyApiClient: contracts.chainlink.ChainlinkAnyApiClient__factory
 } as const
 
+export const abis = mapValues(factoryClasses, (f) => f.abi) as {
+    [K in keyof typeof factoryClasses]: typeof factoryClasses[K]["abi"]
+}
+
 export const factories = mapValues(factoryClasses, (f) => new f()) as {
     [K in keyof typeof factoryClasses]: InstanceType<typeof factoryClasses[K]>
 }
 
 //Interfaces
-export const factoryInterfaceClasses =  {
+export const factoryInterfaceClasses = {
     IERC165: oz.utils.introspection.IERC165Upgradeable__factory,
     IERC1820: oz.utils.introspection.IERC1820RegistryUpgradeable__factory,
     IAccessControl: oz.access.IAccessControlUpgradeable__factory,
@@ -67,7 +71,7 @@ export const factoriesInterface = mapValues(factoryInterfaceClasses, (f) => new 
     [K in keyof typeof factoryInterfaceClasses]: InstanceType<typeof factoryInterfaceClasses[K]>
 }
 
-export const abisInterface = mapValues(factoryInterfaceClasses, (f) =>  f.abi) as {
+export const abisInterface = mapValues(factoryInterfaceClasses, (f) => f.abi) as {
     [K in keyof typeof factoryInterfaceClasses]: typeof factoryInterfaceClasses[K]["abi"]
 }
 

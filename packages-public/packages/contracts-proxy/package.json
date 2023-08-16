@@ -51,6 +51,7 @@
     "build:tsc": "tsc --project tsconfig.build.json",
     "build:tsc:watch": "mkdir -p lib/types && cp -r src/typechain lib/types && tsc --project tsconfig.build.json -w",
     "build:hardhat": "hardhat compile",
+    "build:zsol": "node lib/esm/codegen/runGenerateZodValidators.js",
     "clean": "rimraf lib cache src/artifacts src/typechain",
     "node": "npm run node:anvil",
     "node:anvil": "anvil",

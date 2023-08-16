@@ -44,6 +44,7 @@
     "build:tsc": "tsc --project tsconfig.build.json",
     "build:tsc:watch": "mkdir -p lib/types && cp -r src/typechain lib/types && tsc --project tsconfig.build.json -w",
     "build:hardhat": "hardhat compile",
+    "build:zsol": "node lib/esm/codegen/runGenerateZodValidators.js",
     "clean": "rimraf lib cache src/artifacts src/typechain",
     "node": "npm run node:anvil",
     "node:anvil": "anvil",
@@ -75,7 +76,8 @@
     "@owlprotocol/zod-sol": "workspace:*",
     "@chainlink/contracts": "^0.4.1",
     "lodash": "4.17.21",
-    "loglevel": "^1.8.1"
+    "loglevel": "^1.8.1",
+    "zod": "3.21.4"
   },
   "peerDependencies": {
     "@chainlink/contracts": "^0.4.1",
