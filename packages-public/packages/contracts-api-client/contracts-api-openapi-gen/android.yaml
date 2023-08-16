@@ -1,0 +1,5 @@
+'!include': 'shared/common.yaml'
+outputDir: contracts-api-client-android
+generatorName: android
+additionalProperties:
+  '!include': 'shared/nested.yaml'
