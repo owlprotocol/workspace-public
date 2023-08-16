@@ -27,11 +27,11 @@ abstract contract TokenURIBaseURIAbstract is
 
     /**
      * @dev TokenURIBaseURIAbstract unchained initialization.
-     * @param _baseUriRole write role
+     * @param baseUriRole write role
      * @param _baseUri initial contract base uri
      */
-    function __TokenURIBaseURIAbstract_init_unchained(address _baseUriRole, string memory _baseUri) internal {
-        _grantRole(TOKEN_URI_BASE_URI_ROLE, _baseUriRole);
+    function __TokenURIBaseURIAbstract_init_unchained(address baseUriRole, string memory _baseUri) internal {
+        _grantRole(TOKEN_URI_BASE_URI_ROLE, baseUriRole);
         _setTokenURIBaseURI(_baseUri);
 
         if (_registryExists()) {

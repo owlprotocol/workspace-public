@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 
 /**
  * @dev This abstract contract provides a fallback function that delegates all calls to another contract using the EVM
- * instruction `delegatecall`. We refer to the second contract as the _implementation_ behind the proxy, and it has to
+ * instruction `delegatecall`. We refer to the second contract as the _implementation behind the proxy, and it has to
  * be specified by overriding the virtual {_implementation} function.
  *
  * Additionally, delegation to the implementation can be triggered manually through the {_fallback} function, or to a

@@ -13,19 +13,19 @@ import {IChainlinkAnyApiConsumer} from "../../chainlink/IChainlinkAnyApiConsumer
  * @dev TokenDna storage contract
  */
 contract TokenDna is ChainlinkAnyApiConsumerAbstract, TokenDnaAbstract, OwlBase {
-    function initialize(address _admin, string memory _contractUri, address _dnaRole) external initializer {
-        __TokenDna_init(_admin, _contractUri, _dnaRole);
+    function initialize(address admin, string memory _contractUri, address dnaRole) external initializer {
+        __TokenDna_init(admin, _contractUri, dnaRole);
     }
 
     /**
      * @dev TokenDna chained initialization
      */
-    function __TokenDna_init(address _admin, string memory _contractUri, address _dnaRole) internal {
-        __ContractURI_init_unchained(_admin, _contractUri);
-        __OwlBase_init_unchained(_admin);
+    function __TokenDna_init(address admin, string memory _contractUri, address dnaRole) internal {
+        __ContractURI_init_unchained(admin, _contractUri);
+        __OwlBase_init_unchained(admin);
 
-        __TokenDnaAbstract_init_unchained(_dnaRole);
-        __ChainlinkAnyApiConsumer_init_unchained(_dnaRole);
+        __TokenDnaAbstract_init_unchained(dnaRole);
+        __ChainlinkAnyApiConsumer_init_unchained(dnaRole);
     }
 
     /**

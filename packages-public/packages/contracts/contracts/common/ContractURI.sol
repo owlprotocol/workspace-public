@@ -15,21 +15,21 @@ contract ContractURI is AccessControlUpgradeable, ERC1820RegistryConsumer, ICont
 
     /**
      * @dev ContractURI chained initialization
-     * @param _contractUriRole write role
-     * @param _initContractURI initial contract uri
+     * @param contractUriRole write role
+     * @param contractUri initial contract uri
      */
-    function __ContractURI_init(address _contractUriRole, string memory _initContractURI) internal {
-        __ContractURI_init_unchained(_contractUriRole, _initContractURI);
+    function __ContractURI_init(address contractUriRole, string memory contractUri) internal {
+        __ContractURI_init_unchained(contractUriRole, contractUri);
     }
 
     /**
      * @dev ContractURI unchained initialization.
-     * @param _contractUriRole write role
-     * @param _initContractURI initial contract uri
+     * @param contractUriRole write role
+     * @param contractUri initial contract uri
      */
-    function __ContractURI_init_unchained(address _contractUriRole, string memory _initContractURI) internal {
-        _grantRole(CONTRACT_URI_ROLE, _contractUriRole);
-        _setContractURI(_initContractURI);
+    function __ContractURI_init_unchained(address contractUriRole, string memory contractUri) internal {
+        _grantRole(CONTRACT_URI_ROLE, contractUriRole);
+        _setContractURI(contractUri);
 
         if (_registryExists()) {
             _registerInterface(type(IContractURI).interfaceId);

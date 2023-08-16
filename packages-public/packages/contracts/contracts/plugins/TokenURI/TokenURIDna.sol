@@ -24,32 +24,32 @@ contract TokenURIDna is TokenURIBaseURIAbstract, TokenDnaConsumerAbstract, OwlBa
      *      Protected with `initializer` modifier.
      */
     function initialize(
-        address _admin,
+        address admin,
         string memory _contractUri,
-        address _baseUriRole,
+        address baseUriRole,
         string memory _baseUri,
-        address _dnaProviderRole,
-        address _dnaProvider
+        address dnaProviderRole,
+        address dnaProvider
     ) external initializer {
-        __TokenURIDna_init(_admin, _contractUri, _baseUriRole, _baseUri, _dnaProviderRole, _dnaProvider);
+        __TokenURIDna_init(admin, _contractUri, baseUriRole, _baseUri, dnaProviderRole, dnaProvider);
     }
 
     /**
      * @dev TokenURIDna chained initialization
      */
     function __TokenURIDna_init(
-        address _admin,
+        address admin,
         string memory _contractUri,
-        address _baseUriRole,
+        address baseUriRole,
         string memory _baseUri,
-        address _dnaProviderRole,
-        address _dnaProvider
+        address dnaProviderRole,
+        address dnaProvider
     ) internal {
-        __ContractURI_init_unchained(_admin, _contractUri);
-        __OwlBase_init_unchained(_admin);
+        __ContractURI_init_unchained(admin, _contractUri);
+        __OwlBase_init_unchained(admin);
 
-        __TokenURIBaseURIAbstract_init_unchained(_baseUriRole, _baseUri);
-        __TokenDnaConsumerAbstract_init_unchained(_dnaProviderRole, _dnaProvider);
+        __TokenURIBaseURIAbstract_init_unchained(baseUriRole, _baseUri);
+        __TokenDnaConsumerAbstract_init_unchained(dnaProviderRole, dnaProvider);
     }
 
     function tokenURI(uint256 tokenId) external view override returns (string memory) {

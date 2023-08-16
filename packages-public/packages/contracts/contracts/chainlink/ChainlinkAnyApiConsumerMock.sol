@@ -24,19 +24,19 @@ contract ChainlinkApiConsumerMock is OwlBase, ChainlinkAnyApiConsumerAbstract {
 
     /**
      * @dev Initialize the consumer.
-     * @param _admin AccessControl admin
-     * @param _initContractURI URI for storing metadata
-     * @param _fulfillRole ChainlinkAnyApiClient address
+     * @param admin AccessControl admin
+     * @param contractUri URI for storing metadata
+     * @param fulfillRole ChainlinkAnyApiClient address
      */
-    function initialize(address _admin, string calldata _initContractURI, address _fulfillRole) external initializer {
-        __ContractURI_init_unchained(_admin, _initContractURI);
-        __OwlBase_init_unchained(_admin);
+    function initialize(address admin, string calldata contractUri, address fulfillRole) external initializer {
+        __ContractURI_init_unchained(admin, contractUri);
+        __OwlBase_init_unchained(admin);
 
-        __ChainlinkAnyApiConsumerMock_init(_fulfillRole);
+        __ChainlinkAnyApiConsumerMock_init(fulfillRole);
     }
 
-    function __ChainlinkAnyApiConsumerMock_init(address _fulfillRole) internal {
-        __ChainlinkAnyApiConsumer_init_unchained(_fulfillRole);
+    function __ChainlinkAnyApiConsumerMock_init(address fulfillRole) internal {
+        __ChainlinkAnyApiConsumer_init_unchained(fulfillRole);
         __ChainlinkAnyApiConsumerMock_init_unchained();
     }
 

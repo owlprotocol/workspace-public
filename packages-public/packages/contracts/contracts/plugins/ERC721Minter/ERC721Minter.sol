@@ -14,25 +14,25 @@ import {ERC721MinterAbstract} from "./ERC721MinterAbstract.sol";
  */
 contract ERC721Minter is ERC721MinterAbstract, OwlBase, IERC721Minter {
     function initialize(
-        address _admin,
+        address admin,
         string memory _contractUri,
-        address _minterRole,
-        address _token
+        address minterRole,
+        address token
     ) external initializer {
-        __ERC721Minter_init(_admin, _contractUri, _minterRole, _token);
+        __ERC721Minter_init(admin, _contractUri, minterRole, token);
     }
 
     function __ERC721Minter_init(
-        address _admin,
+        address admin,
         string memory _contractUri,
-        address _minterRole,
-        address _token
+        address minterRole,
+        address token
     ) internal {
-        __ContractURI_init_unchained(_admin, _contractUri);
-        __OwlBase_init_unchained(_admin);
+        __ContractURI_init_unchained(admin, _contractUri);
+        __OwlBase_init_unchained(admin);
 
-        __TokenConsumerAbstract_init_unchained(_admin, _token);
-        __ERC721MinterAbstract_init_unchained(_minterRole);
+        __TokenConsumerAbstract_init_unchained(admin, token);
+        __ERC721MinterAbstract_init_unchained(minterRole);
         __ERC721Minter_init_unchained();
     }
 

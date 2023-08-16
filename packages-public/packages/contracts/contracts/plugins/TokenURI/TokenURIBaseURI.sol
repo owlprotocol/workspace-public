@@ -16,27 +16,27 @@ contract TokenURIBaseURI is TokenURIBaseURIAbstract, OwlBase {
      *      Protected with `initializer` modifier.
      */
     function initialize(
-        address _admin,
+        address admin,
         string memory _contractUri,
-        address _baseUriRole,
+        address baseUriRole,
         string memory _baseUri
     ) external initializer {
-        __TokenURIBaseURI_init(_admin, _contractUri, _baseUriRole, _baseUri);
+        __TokenURIBaseURI_init(admin, _contractUri, baseUriRole, _baseUri);
     }
 
     /**
      * @dev TokenURIBaseURI chained initialization
      */
     function __TokenURIBaseURI_init(
-        address _admin,
+        address admin,
         string memory _contractUri,
-        address _baseUriRole,
+        address baseUriRole,
         string memory _baseUri
     ) internal {
-        __ContractURI_init_unchained(_admin, _contractUri);
-        __OwlBase_init_unchained(_admin);
+        __ContractURI_init_unchained(admin, _contractUri);
+        __OwlBase_init_unchained(admin);
 
-        __TokenURIBaseURIAbstract_init_unchained(_baseUriRole, _baseUri);
+        __TokenURIBaseURIAbstract_init_unchained(baseUriRole, _baseUri);
     }
 
     function supportsInterface(

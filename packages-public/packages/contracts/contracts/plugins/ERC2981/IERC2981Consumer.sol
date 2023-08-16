@@ -6,5 +6,5 @@ import {IERC2981Upgradeable} from "@openzeppelin/contracts-upgradeable/interface
 interface IERC2981Consumer is IERC2981Upgradeable {
     function royaltyProvider() external view returns (address);
 
-    function setRoyaltyProvider(address _royaltyProvider) external;
+    function setRoyaltyProvider(address royaltyProvider) external;
 }

@@ -16,9 +16,9 @@ abstract contract TokenConsumerAbstract is AccessControlUpgradeable, ERC1820Regi
     bytes32 internal constant TOKEN_ROLE = keccak256("TOKEN_ROLE");
     bytes32 internal constant _TOKEN_SLOT = keccak256("TOKEN");
 
-    function __TokenConsumerAbstract_init_unchained(address _tokenRole, address _token) internal {
-        _grantRole(TOKEN_ROLE, _tokenRole);
-        _setToken(_token);
+    function __TokenConsumerAbstract_init_unchained(address tokenRole, address token) internal {
+        _grantRole(TOKEN_ROLE, tokenRole);
+        _setToken(token);
 
         if (_registryExists()) {
             _registerInterface(type(ITokenConsumer).interfaceId);
@@ -29,12 +29,12 @@ abstract contract TokenConsumerAbstract is AccessControlUpgradeable, ERC1820Regi
         return _TOKEN_SLOT.getAddressSlot().value;
     }
 
-    function setToken(address _token) external onlyRole(TOKEN_ROLE) {
-        _setToken(_token);
+    function setToken(address token) external onlyRole(TOKEN_ROLE) {
+        _setToken(token);
     }
 
-    function _setToken(address _token) internal {
-        _TOKEN_SLOT.getAddressSlot().value = _token;
+    function _setToken(address token) internal {
+        _TOKEN_SLOT.getAddressSlot().value = token;
     }
 
     function supportsInterface(

@@ -19,24 +19,24 @@ abstract contract ERC2981ConsumerAbstract is AccessControlUpgradeable, ERC1820Re
         return StorageSlotUpgradeable.getAddressSlot(_TOKEN_ROYALTY_PROVIDER_SLOT).value;
     }
 
-    function setRoyaltyProvider(address _royaltyProvider) external onlyRole(TOKEN_ROYALTY_PROVIDER_ROLE) {
-        _setRoyaltyProvider(_royaltyProvider);
+    function setRoyaltyProvider(address royaltyProvider) external onlyRole(TOKEN_ROYALTY_PROVIDER_ROLE) {
+        _setRoyaltyProvider(royaltyProvider);
     }
 
-    function _setRoyaltyProvider(address _royaltyProvider) internal {
-        _TOKEN_ROYALTY_PROVIDER_SLOT.getAddressSlot().value = _royaltyProvider;
+    function _setRoyaltyProvider(address royaltyProvider) internal {
+        _TOKEN_ROYALTY_PROVIDER_SLOT.getAddressSlot().value = royaltyProvider;
     }
 
     function royaltyInfo(
-        uint256 _tokenId,
-        uint256 _salePrice
+        uint256 tokenId,
+        uint256 salePrice
     ) public view virtual returns (address receiver, uint256 royaltyAmount) {
-        return IERC2981Upgradeable(royaltyProvider()).royaltyInfo(_tokenId, _salePrice);
+        return IERC2981Upgradeable(royaltyProvider()).royaltyInfo(tokenId, salePrice);
     }
 
-    function __ERC2981ConsumerAbstract_init_unchained(address _royaltyProviderRole, address _royaltyProvider) internal {
-        _grantRole(TOKEN_ROYALTY_PROVIDER_ROLE, _royaltyProviderRole);
-        _setRoyaltyProvider(_royaltyProvider);
+    function __ERC2981ConsumerAbstract_init_unchained(address royaltyProviderRole, address royaltyProvider) internal {
+        _grantRole(TOKEN_ROYALTY_PROVIDER_ROLE, royaltyProviderRole);
+        _setRoyaltyProvider(royaltyProvider);
 
         if (_registryExists()) {
             _registerInterface(type(IERC2981Upgradeable).interfaceId);

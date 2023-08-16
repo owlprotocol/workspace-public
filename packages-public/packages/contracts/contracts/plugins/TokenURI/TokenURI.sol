@@ -19,31 +19,26 @@ contract TokenURI is OwlBase, ITokenURI {
      *      Protected with `initializer` modifier.
      */
     function initialize(
-        address _admin,
+        address admin,
         string memory _contractUri,
-        address _uriRole,
+        address uriRole,
         string memory _uri
     ) external initializer {
-        __TokenURI_init(_admin, _contractUri, _uriRole, _uri);
+        __TokenURI_init(admin, _contractUri, uriRole, _uri);
     }
 
     /**
      * @dev TokenURI chained initialization
      */
-    function __TokenURI_init(
-        address _admin,
-        string memory _contractUri,
-        address _uriRole,
-        string memory _uri
-    ) internal {
-        __ContractURI_init_unchained(_admin, _contractUri);
-        __OwlBase_init_unchained(_admin);
+    function __TokenURI_init(address admin, string memory _contractUri, address uriRole, string memory _uri) internal {
+        __ContractURI_init_unchained(admin, _contractUri);
+        __OwlBase_init_unchained(admin);
 
-        __TokenURI_init_unchained(_uriRole, _uri);
+        __TokenURI_init_unchained(uriRole, _uri);
     }
 
-    function __TokenURI_init_unchained(address _uriRole, string memory _uri) internal {
-        _grantRole(TOKEN_URI_ROLE, _uriRole);
+    function __TokenURI_init_unchained(address uriRole, string memory _uri) internal {
+        _grantRole(TOKEN_URI_ROLE, uriRole);
         StorageSlotString.getStringSlot(_TOKEN_URI_SLOT).value = _uri;
 
         if (_registryExists()) {

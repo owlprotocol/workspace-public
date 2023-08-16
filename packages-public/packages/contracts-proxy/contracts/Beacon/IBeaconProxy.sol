@@ -21,5 +21,5 @@ interface IBeaconProxy {
      * - `beacon` must be a contract.
      * - The implementation returned by `beacon` must be a contract.
      */
-    function setBeacon(address _beaconAddress, bytes memory data) external;
+    function setBeacon(address beaconAddress, bytes memory data) external;
 }

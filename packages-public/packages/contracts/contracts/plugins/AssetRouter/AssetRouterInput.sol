@@ -29,16 +29,16 @@ contract AssetRouterInput is OwlBase, IAssetRouterInput, IERC721ReceiverUpgradea
 
     /**
      * @dev Initializes contract (replaces constructor in proxy pattern)
-     * @param _admin owner, can control outputs on contract
-     * @param _initContractURI contract uri
+     * @param admin owner, can control outputs on contract
+     * @param contractUri contract uri
      * @param _inputBaskets input baskets
      */
     function initialize(
-        address _admin,
-        string memory _initContractURI,
+        address admin,
+        string memory contractUri,
         AssetBasketInput[] calldata _inputBaskets
     ) external initializer {
-        __AssetRouterInput_init(_admin, _initContractURI, _inputBaskets);
+        __AssetRouterInput_init(admin, contractUri, _inputBaskets);
     }
 
     /**
@@ -46,12 +46,12 @@ contract AssetRouterInput is OwlBase, IAssetRouterInput, IERC721ReceiverUpgradea
      * creates the configuration
      */
     function __AssetRouterInput_init(
-        address _admin,
-        string memory _initContractURI,
+        address admin,
+        string memory contractUri,
         AssetBasketInput[] memory _inputBaskets
     ) internal {
-        __ContractURI_init_unchained(_admin, _initContractURI);
-        __OwlBase_init_unchained(_admin);
+        __ContractURI_init_unchained(admin, contractUri);
+        __OwlBase_init_unchained(admin);
 
         __AssetRouterInput_init_unchained(_inputBaskets);
     }

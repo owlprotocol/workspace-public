@@ -31,9 +31,9 @@ contract UpgradeableBeacon is Initializable, IBeacon, OwnableUpgradeable {
      * @dev Sets the address of the initial implementation, and the deployer account as the owner who can upgrade the
      * beacon.
      */
-    function initialize(address _admin, address implementation_) external initializer {
-        _setImplementation(implementation_);
-        _transferOwnership(_admin);
+    function initialize(address admin, address implementation) external initializer {
+        _setImplementation(implementation);
+        _transferOwnership(admin);
     }
 
     /**

@@ -19,10 +19,10 @@ abstract contract TokenDnaAbstract is AccessControlUpgradeable, ERC1820RegistryC
 
     /**
      * @dev TokenDnaAbstract unchained initialization
-     * @param _dnaRole writer role
+     * @param dnaRole writer role
      */
-    function __TokenDnaAbstract_init_unchained(address _dnaRole) internal {
-        _grantRole(DNA_ROLE, _dnaRole);
+    function __TokenDnaAbstract_init_unchained(address dnaRole) internal {
+        _grantRole(DNA_ROLE, dnaRole);
 
         if (_registryExists()) {
             _registerInterface(type(ITokenDna).interfaceId);

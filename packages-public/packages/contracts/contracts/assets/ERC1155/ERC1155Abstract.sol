@@ -30,16 +30,16 @@ abstract contract ERC1155Abstract is
     uint256[50] private __gap;
 
     function __ERC1155Abstract_init(
-        address _admin,
-        string memory _initContractURI,
-        address _tokenUriProvider,
-        address _tokenRoyaltyProvider
+        address admin,
+        string memory contractUri,
+        address tokenUriProvider,
+        address tokenRoyaltyProvider
     ) internal {
-        __ContractURI_init_unchained(_admin, _initContractURI);
-        __OwlBase_init_unchained(_admin);
+        __ContractURI_init_unchained(admin, contractUri);
+        __OwlBase_init_unchained(admin);
 
-        __TokenURIConsumerAbstract_init_unchained(_admin, _tokenUriProvider);
-        __ERC2981ConsumerAbstract_init_unchained(_admin, _tokenRoyaltyProvider);
+        __TokenURIConsumerAbstract_init_unchained(admin, tokenUriProvider);
+        __ERC2981ConsumerAbstract_init_unchained(admin, tokenRoyaltyProvider);
         __ERC1155Abstract_init_unchained();
     }
 

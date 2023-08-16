@@ -18,36 +18,36 @@ contract ERC721Mintable is ERC721Abstract, IERC721Mintable {
     **********************/
 
     function initialize(
-        address _admin,
-        string memory _initContractURI,
-        string memory _name,
-        string memory _symbol,
-        address _tokenUriProvider,
-        address _tokenRoyaltyProvider
+        address admin,
+        string memory contractUri,
+        string memory name,
+        string memory symbol,
+        address tokenUriProvider,
+        address tokenRoyaltyProvider
     ) external virtual initializer {
-        __ERC721Mintable_init(_admin, _initContractURI, _name, _symbol, _tokenUriProvider, _tokenRoyaltyProvider);
+        __ERC721Mintable_init(admin, contractUri, name, symbol, tokenUriProvider, tokenRoyaltyProvider);
     }
 
     function __ERC721Mintable_init(
-        address _admin,
-        string memory _initContractURI,
-        string memory _name,
-        string memory _symbol,
-        address _tokenUriProvider,
-        address _tokenRoyaltyProvider
+        address admin,
+        string memory contractUri,
+        string memory name,
+        string memory symbol,
+        address tokenUriProvider,
+        address tokenRoyaltyProvider
     ) internal {
-        __ContractURI_init_unchained(_admin, _initContractURI);
-        __OwlBase_init_unchained(_admin);
+        __ContractURI_init_unchained(admin, contractUri);
+        __OwlBase_init_unchained(admin);
 
-        __ERC721_init_unchained(_name, _symbol);
-        __TokenURIConsumerAbstract_init_unchained(_admin, _tokenUriProvider);
-        __ERC2981ConsumerAbstract_init_unchained(_admin, _tokenRoyaltyProvider);
+        __ERC721_init_unchained(name, symbol);
+        __TokenURIConsumerAbstract_init_unchained(admin, tokenUriProvider);
+        __ERC2981ConsumerAbstract_init_unchained(admin, tokenRoyaltyProvider);
         __ERC721Abstract_init_unchained();
-        __ERC721Mintable_init_unchained(_admin);
+        __ERC721Mintable_init_unchained(admin);
     }
 
-    function __ERC721Mintable_init_unchained(address _minterRole) internal {
-        _grantRole(MINTER_ROLE, _minterRole);
+    function __ERC721Mintable_init_unchained(address minterRole) internal {
+        _grantRole(MINTER_ROLE, minterRole);
         if (_registryExists()) {
             _registerInterface(type(IERC721Mintable).interfaceId);
         }

@@ -18,21 +18,21 @@ abstract contract TokenURIConsumerAbstract is AccessControlUpgradeable, ERC1820R
         return StorageSlotUpgradeable.getAddressSlot(_TOKEN_URI_PROVIDER_SLOT).value;
     }
 
-    function setUriProvider(address _uriProvider) external onlyRole(TOKEN_URI_PROVIDER_ROLE) {
-        _setUriProvider(_uriProvider);
+    function setUriProvider(address uriProvider) external onlyRole(TOKEN_URI_PROVIDER_ROLE) {
+        _setUriProvider(uriProvider);
     }
 
-    function _setUriProvider(address _uriProvider) internal {
-        _TOKEN_URI_PROVIDER_SLOT.getAddressSlot().value = _uriProvider;
+    function _setUriProvider(address uriProvider) internal {
+        _TOKEN_URI_PROVIDER_SLOT.getAddressSlot().value = uriProvider;
     }
 
     function _tokenURI(uint256 tokenId) internal view returns (string memory) {
         return ITokenURI(uriProvider()).tokenURI(tokenId);
     }
 
-    function __TokenURIConsumerAbstract_init_unchained(address _uriProviderRole, address _uriProvider) internal {
-        _grantRole(TOKEN_URI_PROVIDER_ROLE, _uriProviderRole);
-        _setUriProvider(_uriProvider);
+    function __TokenURIConsumerAbstract_init_unchained(address uriProviderRole, address uriProvider) internal {
+        _grantRole(TOKEN_URI_PROVIDER_ROLE, uriProviderRole);
+        _setUriProvider(uriProvider);
 
         if (_registryExists()) {
             _registerInterface(type(ITokenURIConsumer).interfaceId);

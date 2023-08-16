@@ -41,40 +41,40 @@ contract ChainlinkAnyApiClient is OwlBase, ChainlinkClient, IChainlinkAnyApiClie
     /**
      * @notice Initialize the link token and target oracle
      * @dev The oracle address must be an Operator contract for multiword response
-     * @param _admin AccessControl admin
-     * @param _initContractURI URI for storing metadata
+     * @param admin AccessControl admin
+     * @param contractUri URI for storing metadata
      * @param token Chainlink token address
      * @param oracle Chainlink oracle address
      */
     function initialize(
-        address _admin,
-        string calldata _initContractURI,
+        address admin,
+        string calldata contractUri,
         address token,
         address oracle
     ) external initializer {
-        __ChainlinkAnyApiClient_init(_admin, _initContractURI, token, oracle);
+        __ChainlinkAnyApiClient_init(admin, contractUri, token, oracle);
     }
 
     function __ChainlinkAnyApiClient_init(
-        address _admin,
-        string memory _initContractURI,
+        address admin,
+        string memory contractUri,
         address token,
         address oracle
     ) internal {
-        __ContractURI_init_unchained(_admin, _initContractURI);
-        __OwlBase_init_unchained(_admin);
+        __ContractURI_init_unchained(admin, contractUri);
+        __OwlBase_init_unchained(admin);
 
-        __ChainlinkAnyApiClient_init_unchained(_admin, _admin, token, oracle);
+        __ChainlinkAnyApiClient_init_unchained(admin, admin, token, oracle);
     }
 
     function __ChainlinkAnyApiClient_init_unchained(
-        address _requestRole,
-        address _withdrawRole,
+        address requestRole,
+        address withdrawRole,
         address token,
         address oracle
     ) internal {
-        _grantRole(REQUEST_ROLE, _requestRole);
-        _grantRole(WITHDRAW_ROLE, _withdrawRole);
+        _grantRole(REQUEST_ROLE, requestRole);
+        _grantRole(WITHDRAW_ROLE, withdrawRole);
 
         if (_registryExists()) {
             _registerInterface(type(IChainlinkAnyApiClient).interfaceId);

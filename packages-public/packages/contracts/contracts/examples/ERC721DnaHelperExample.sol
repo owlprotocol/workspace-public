@@ -5,10 +5,10 @@ import {OwlBase} from "../common/OwlBase.sol";
 import {ERC721DnaHelperLib} from "../helpers/ERC721DnaHelperLib.sol";
 
 contract ERC721DnaHelperExample is OwlBase {
-    function __ERC721DnaHelperExample_init(address _admin, string memory _initContractURI) internal {
-        __ContractURI_init_unchained(_admin, _initContractURI);
+    function __ERC721DnaHelperExample_init(address admin, string memory contractUri) internal {
+        __ContractURI_init_unchained(admin, contractUri);
 
-        __OwlBase_init_unchained(_admin);
+        __OwlBase_init_unchained(admin);
     }
 
     function getHelloWorld() external view returns (string memory str) {

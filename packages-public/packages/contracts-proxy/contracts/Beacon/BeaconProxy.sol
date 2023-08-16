@@ -34,11 +34,11 @@ contract BeaconProxy is ProxyUpgradeable, ERC1967UpgradeUpgradeable, OwnableUpgr
      * - `beacon` must be a contract with the interface {IBeacon}.
      * - `data` must set initialized to > 1
      */
-    function initialize(address _admin, address _beaconAddress, bytes memory data) external {
+    function initialize(address admin, address beaconAddress, bytes memory data) external {
         assert(_BEACON_SLOT == bytes32(uint256(keccak256("eip1967.proxy.beacon")) - 1));
         require(_getInitializedVersion() < 1, "Initializable: contract is already initialized");
-        _transferOwnership(_admin);
-        _upgradeBeaconToAndCall(_beaconAddress, data, true);
+        _transferOwnership(admin);
+        _upgradeBeaconToAndCall(beaconAddress, data, true);
         require(_getInitializedVersion() > 0, "Initializable: contract is not initialized");
     }
 
@@ -70,11 +70,11 @@ contract BeaconProxy is ProxyUpgradeable, ERC1967UpgradeUpgradeable, OwnableUpgr
      * - `beacon` must be a contract.
      * - The implementation returned by `beacon` must be a contract.
      */
-    function _setBeacon(address _beaconAddress, bytes memory data) internal virtual {
-        _upgradeBeaconToAndCall(_beaconAddress, data, false);
+    function _setBeacon(address beaconAddress, bytes memory data) internal virtual {
+        _upgradeBeaconToAndCall(beaconAddress, data, false);
     }
 
-    function setBeacon(address _beaconAddress, bytes memory data) external onlyOwner {
-        _setBeacon(_beaconAddress, data);
+    function setBeacon(address beaconAddress, bytes memory data) external onlyOwner {
+        _setBeacon(beaconAddress, data);
     }
 }

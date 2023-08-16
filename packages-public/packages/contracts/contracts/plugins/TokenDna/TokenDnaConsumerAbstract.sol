@@ -14,9 +14,9 @@ abstract contract TokenDnaConsumerAbstract is AccessControlUpgradeable, ERC1820R
     bytes32 internal constant TOKEN_DNA_PROVIDER_ROLE = keccak256("TOKEN_DNA_PROVIDER_ROLE");
     bytes32 internal constant _TOKEN_DNA_PROVIDER_SLOT = keccak256("TOKEN_DNA_PROVIDER");
 
-    function __TokenDnaConsumerAbstract_init_unchained(address _dnaProviderRole, address _dnaProvider) internal {
-        _grantRole(TOKEN_DNA_PROVIDER_ROLE, _dnaProviderRole);
-        _setDnaProvider(_dnaProvider);
+    function __TokenDnaConsumerAbstract_init_unchained(address dnaProviderRole, address dnaProvider) internal {
+        _grantRole(TOKEN_DNA_PROVIDER_ROLE, dnaProviderRole);
+        _setDnaProvider(dnaProvider);
 
         if (_registryExists()) {
             _registerInterface(type(ITokenDnaConsumer).interfaceId);
@@ -27,12 +27,12 @@ abstract contract TokenDnaConsumerAbstract is AccessControlUpgradeable, ERC1820R
         return _TOKEN_DNA_PROVIDER_SLOT.getAddressSlot().value;
     }
 
-    function setDnaProvider(address _dnaProvider) external onlyRole(TOKEN_DNA_PROVIDER_ROLE) {
-        _setDnaProvider(_dnaProvider);
+    function setDnaProvider(address dnaProvider) external onlyRole(TOKEN_DNA_PROVIDER_ROLE) {
+        _setDnaProvider(dnaProvider);
     }
 
-    function _setDnaProvider(address _dnaProvider) internal {
-        _TOKEN_DNA_PROVIDER_SLOT.getAddressSlot().value = _dnaProvider;
+    function _setDnaProvider(address dnaProvider) internal {
+        _TOKEN_DNA_PROVIDER_SLOT.getAddressSlot().value = dnaProvider;
     }
 
     function getDna(uint256 tokenId) public view virtual returns (bytes memory) {

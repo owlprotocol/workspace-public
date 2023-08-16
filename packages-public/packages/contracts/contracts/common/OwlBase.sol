@@ -38,21 +38,21 @@ contract OwlBase is AccessControlUpgradeable, ERC1820RegistryConsumer, ContractU
      */
     /**
      * @dev OwlBase chained initialization
-     * @param _admin address to assign owner rights
-     * @param _initContractURI URI for storing metadata
+     * @param admin address to assign owner rights
+     * @param contractUri URI for storing metadata
      */
-    function __OwlBase_init(address _admin, string memory _initContractURI) internal {
-        __ContractURI_init_unchained(_admin, _initContractURI);
+    function __OwlBase_init(address admin, string memory contractUri) internal {
+        __ContractURI_init_unchained(admin, contractUri);
 
-        __OwlBase_init_unchained(_admin);
+        __OwlBase_init_unchained(admin);
     }
 
     /**
      * @dev OwlBase unchained initialization.
-     * @param _admin address to assign owner rights
+     * @param admin address to assign owner rights
      */
-    function __OwlBase_init_unchained(address _admin) internal {
-        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+    function __OwlBase_init_unchained(address admin) internal {
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
         if (_registryExists()) {
             _registerInterface(type(IERC165Upgradeable).interfaceId);
             _registerInterface(type(IAccessControlUpgradeable).interfaceId);

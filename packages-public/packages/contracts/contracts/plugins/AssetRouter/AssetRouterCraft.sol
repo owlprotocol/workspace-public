@@ -36,17 +36,17 @@ contract AssetRouterCraft is ERC721HolderUpgradeable, ERC1155HolderUpgradeable, 
 
     /**
      * @dev Initializes contract (replaces constructor in proxy pattern)
-     * @param _admin owner, can control outputs on contract
-     * @param _initContractURI contract uri
+     * @param admin owner, can control outputs on contract
+     * @param contractUri contract uri
      * @param _inputBaskets input baskets
      */
     function initialize(
-        address _admin,
-        string memory _initContractURI,
+        address admin,
+        string memory contractUri,
         AssetBasketInput[] calldata _inputBaskets,
         AssetBasketOutput[] calldata _outputBaskets
     ) external initializer {
-        __AssetRouterCraft_init(_admin, _initContractURI, _inputBaskets, _outputBaskets);
+        __AssetRouterCraft_init(admin, contractUri, _inputBaskets, _outputBaskets);
     }
 
     /**
@@ -54,25 +54,25 @@ contract AssetRouterCraft is ERC721HolderUpgradeable, ERC1155HolderUpgradeable, 
      * creates the configuration
      */
     function __AssetRouterCraft_init(
-        address _admin,
-        string memory _initContractURI,
+        address admin,
+        string memory contractUri,
         AssetBasketInput[] memory _inputBaskets,
         AssetBasketOutput[] memory _outputBaskets
     ) internal {
-        __ContractURI_init_unchained(_admin, _initContractURI);
-        __OwlBase_init_unchained(_admin);
+        __ContractURI_init_unchained(admin, contractUri);
+        __OwlBase_init_unchained(admin);
 
-        __AssetRouterCraft_init_unchained(_inputBaskets, _outputBaskets, _admin, _admin);
+        __AssetRouterCraft_init_unchained(_inputBaskets, _outputBaskets, admin, admin);
     }
 
     function __AssetRouterCraft_init_unchained(
         AssetBasketInput[] memory _inputBaskets,
         AssetBasketOutput[] memory _outputBaskets,
-        address _depositRole,
-        address _withdrawRole
+        address depositRole,
+        address withdrawRole
     ) internal {
-        _grantRole(DEPOSIT_ROLE, _depositRole);
-        _grantRole(WITHDRAW_ROLE, _withdrawRole);
+        _grantRole(DEPOSIT_ROLE, depositRole);
+        _grantRole(WITHDRAW_ROLE, withdrawRole);
 
         //Registry
         if (_registryExists()) {

@@ -13,7 +13,7 @@ contract ERC721TopDownMintable is ERC721MintableAbstract, ERC721TopDownBase {
     /**
      * @dev Initializes an ERC721MintableAutoId contract.
      *      Protected with `initializer` modifier.
-     * @param _admin admin for contract
+     * @param admin admin for contract
      * @param _initContractURI uri for contract metadata description
      * @param _name name for contract
      * @param _symbol symbol for contract
@@ -24,7 +24,7 @@ contract ERC721TopDownMintable is ERC721MintableAbstract, ERC721TopDownBase {
      * @param _childContracts1155 child ERC1155DNA contracts
      */
     function initialize(
-        address _admin,
+        address admin,
         string calldata _initContractURI,
         string calldata _name,
         string calldata _symbol,
@@ -35,7 +35,7 @@ contract ERC721TopDownMintable is ERC721MintableAbstract, ERC721TopDownBase {
         address[] calldata _childContracts1155
     ) external initializer {
         __ERC721TopDownMintable_init(
-            _admin,
+            admin,
             _initContractURI,
             _name,
             _symbol,
@@ -51,7 +51,7 @@ contract ERC721TopDownMintable is ERC721MintableAbstract, ERC721TopDownBase {
      * @dev Initialize ERC721TopDownMintable + dependencies
      */
     function __ERC721TopDownMintable_init(
-        address _admin,
+        address admin,
         string memory _initContractURI,
         string memory _name,
         string memory _symbol,
@@ -61,15 +61,15 @@ contract ERC721TopDownMintable is ERC721MintableAbstract, ERC721TopDownBase {
         address[] memory _childContracts721,
         address[] memory _childContract1155
     ) internal {
-        __ContractURI_init_unchained(_admin, _initContractURI);
-        __OwlBase_init_unchained(_admin);
+        __ContractURI_init_unchained(admin, _initContractURI);
+        __OwlBase_init_unchained(admin);
 
         __ERC721_init_unchained(_name, _symbol);
-        __BaseURI_init_unchained(_admin, _initBaseURI);
-        __ERC2981Setter_init_unchained(_admin, _feeReceiver, _feeNumerator);
+        __BaseURI_init_unchained(admin, _initBaseURI);
+        __ERC2981Setter_init_unchained(admin, _feeReceiver, _feeNumerator);
         __ERC721Abstract_init_unchained();
 
-        __ERC721MintableAbstract_init_unchained(_admin);
+        __ERC721MintableAbstract_init_unchained(admin);
         __ERC721TopDown_init_unchained(_childContracts721, _childContract1155);
     }
 }

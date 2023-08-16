@@ -33,41 +33,41 @@ contract AssetRouterOutput is ERC721HolderUpgradeable, ERC1155HolderUpgradeable,
 
     /**
      * @dev Initializes contract (replaces constructor in proxy pattern)
-     * @param _admin owner, can control outputs on contract
-     * @param _initContractURI contract uri
+     * @param admin owner, can control outputs on contract
+     * @param contractUri contract uri
      * @param _outputBaskets outputs for configuration
      * @param _routers trusted routers that can call the output function
      */
     function initialize(
-        address _admin,
-        string calldata _initContractURI,
+        address admin,
+        string calldata contractUri,
         AssetBasketOutput[] calldata _outputBaskets,
         address[] calldata _routers
     ) external initializer {
-        __AssetRouterOutput_init(_admin, _initContractURI, _outputBaskets, _routers);
+        __AssetRouterOutput_init(admin, contractUri, _outputBaskets, _routers);
     }
 
     function __AssetRouterOutput_init(
-        address _admin,
-        string calldata _initContractURI,
+        address admin,
+        string calldata contractUri,
         AssetBasketOutput[] calldata _outputBaskets,
         address[] calldata _routers
     ) internal {
-        __ContractURI_init_unchained(_admin, _initContractURI);
+        __ContractURI_init_unchained(admin, contractUri);
         //No GSN router initialized as calls are not using GSN
-        __OwlBase_init_unchained(_admin);
+        __OwlBase_init_unchained(admin);
 
-        __AssetRouterOutput_init_unchained(_outputBaskets, _admin, _admin, _routers);
+        __AssetRouterOutput_init_unchained(_outputBaskets, admin, admin, _routers);
     }
 
     function __AssetRouterOutput_init_unchained(
         AssetBasketOutput[] calldata _outputBaskets,
-        address _depositRole,
-        address _withdrawRole,
+        address depositRole,
+        address withdrawRole,
         address[] memory _routers
     ) internal onlyInitializing {
-        _grantRole(DEPOSIT_ROLE, _depositRole);
-        _grantRole(WITHDRAW_ROLE, _withdrawRole);
+        _grantRole(DEPOSIT_ROLE, depositRole);
+        _grantRole(WITHDRAW_ROLE, withdrawRole);
 
         //Roles
         for (uint256 i = 0; i < _routers.length; i++) {

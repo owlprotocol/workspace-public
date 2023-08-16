@@ -8,5 +8,5 @@ interface ITokenDnaConsumer {
 
     function dnaProvider() external view returns (address);
 
-    function setDnaProvider(address _dnaProvider) external;
+    function setDnaProvider(address dnaProvider) external;
 }

@@ -22,29 +22,29 @@ contract ERC20Mintable is OwlBase, ERC20BurnableUpgradeable, IERC20Mintable {
     constructor() {}
 
     function initialize(
-        address _admin,
-        string calldata _initContractURI,
-        string calldata _name,
-        string calldata _symbol
+        address admin,
+        string calldata contractUri,
+        string calldata name,
+        string calldata symbol
     ) external initializer {
-        __ERC20Mintable_init(_admin, _initContractURI, _name, _symbol);
+        __ERC20Mintable_init(admin, contractUri, name, symbol);
     }
 
     function __ERC20Mintable_init(
-        address _admin,
-        string memory _initContractURI,
-        string calldata _name,
-        string calldata _symbol
+        address admin,
+        string memory contractUri,
+        string calldata name,
+        string calldata symbol
     ) internal {
-        __ContractURI_init_unchained(_admin, _initContractURI);
-        __OwlBase_init_unchained(_admin);
+        __ContractURI_init_unchained(admin, contractUri);
+        __OwlBase_init_unchained(admin);
 
-        __ERC20_init_unchained(_name, _symbol);
-        __ERC20Mintable_init_unchained(_admin);
+        __ERC20_init_unchained(name, symbol);
+        __ERC20Mintable_init_unchained(admin);
     }
 
-    function __ERC20Mintable_init_unchained(address _minterRole) internal {
-        _grantRole(MINTER_ROLE, _minterRole);
+    function __ERC20Mintable_init_unchained(address minterRole) internal {
+        _grantRole(MINTER_ROLE, minterRole);
         if (_registryExists()) {
             _registerInterface(type(IERC20Upgradeable).interfaceId);
             _registerInterface(type(IERC20Mintable).interfaceId);

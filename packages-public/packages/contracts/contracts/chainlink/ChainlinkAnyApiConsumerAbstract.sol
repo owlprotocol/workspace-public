@@ -14,8 +14,8 @@ abstract contract ChainlinkAnyApiConsumerAbstract is
 {
     bytes32 internal constant FULFILL_ROLE = keccak256("FULFILL_ROLE");
 
-    function __ChainlinkAnyApiConsumer_init_unchained(address _fulfillRole) internal {
-        _grantRole(FULFILL_ROLE, _fulfillRole);
+    function __ChainlinkAnyApiConsumer_init_unchained(address fulfillRole) internal {
+        _grantRole(FULFILL_ROLE, fulfillRole);
 
         if (_registryExists()) {
             _registerInterface(type(IChainlinkAnyApiConsumer).interfaceId);

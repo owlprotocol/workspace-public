@@ -15,8 +15,8 @@ abstract contract ERC721MinterAbstract is TokenConsumerAbstract {
 
     bytes32 internal constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
-    function __ERC721MinterAbstract_init_unchained(address _minterRole) internal {
-        _grantRole(MINTER_ROLE, _minterRole);
+    function __ERC721MinterAbstract_init_unchained(address minterRole) internal {
+        _grantRole(MINTER_ROLE, minterRole);
     }
 
     function _mint(address to, uint256 tokenId) internal {

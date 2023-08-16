@@ -13,31 +13,31 @@ contract ERC1155Mintable is ERC1155Abstract, IERC1155Mintable {
     constructor() {}
 
     function initialize(
-        address _admin,
-        string memory _initContractURI,
-        address _tokenUriProvider,
-        address _tokenRoyaltyProvider
+        address admin,
+        string memory contractUri,
+        address tokenUriProvider,
+        address tokenRoyaltyProvider
     ) external virtual initializer {
-        __ERC1155Mintable_init(_admin, _initContractURI, _tokenUriProvider, _tokenRoyaltyProvider);
+        __ERC1155Mintable_init(admin, contractUri, tokenUriProvider, tokenRoyaltyProvider);
     }
 
     function __ERC1155Mintable_init(
-        address _admin,
-        string memory _initContractURI,
-        address _tokenUriProvider,
-        address _tokenRoyaltyProvider
+        address admin,
+        string memory contractUri,
+        address tokenUriProvider,
+        address tokenRoyaltyProvider
     ) internal {
-        __ContractURI_init_unchained(_admin, _initContractURI);
-        __OwlBase_init_unchained(_admin);
+        __ContractURI_init_unchained(admin, contractUri);
+        __OwlBase_init_unchained(admin);
 
-        __TokenURIConsumerAbstract_init_unchained(_admin, _tokenUriProvider);
-        __ERC2981ConsumerAbstract_init_unchained(_admin, _tokenRoyaltyProvider);
+        __TokenURIConsumerAbstract_init_unchained(admin, tokenUriProvider);
+        __ERC2981ConsumerAbstract_init_unchained(admin, tokenRoyaltyProvider);
         __ERC1155Abstract_init_unchained();
-        __ERC1155Mintable_init_unchained(_admin);
+        __ERC1155Mintable_init_unchained(admin);
     }
 
-    function __ERC1155Mintable_init_unchained(address _minterRole) internal {
-        _grantRole(MINTER_ROLE, _minterRole);
+    function __ERC1155Mintable_init_unchained(address minterRole) internal {
+        _grantRole(MINTER_ROLE, minterRole);
         if (_registryExists()) {
             _registerInterface(type(IERC1155Mintable).interfaceId);
         }
