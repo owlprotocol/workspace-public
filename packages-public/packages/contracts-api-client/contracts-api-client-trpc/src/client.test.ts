@@ -22,10 +22,8 @@ describe("trpc client", () => {
         const erc20Mintable = await client.deploy.ERC20Mintable.mutate({
             networkId: "1",
             contractParams: {
-                _admin: "",
-                _initContractURI: "",
-                _name: "",
-                _symbol: ""
+                name: "",
+                symbol: ""
             }
         })
     })

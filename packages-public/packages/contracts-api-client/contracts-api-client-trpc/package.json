@@ -53,6 +53,8 @@
   "dependencies": {
     "@ethersproject/providers": "5.7.2",
     "@owlprotocol/contracts-api": "workspace:",
+    "@owlprotocol/contracts": "workspace:*",
+    "@owlprotocol/contracts-proxy": "workspace:*",
     "@trpc/client": "10.36",
     "@trpc/server": "10.36",
     "trpc-openapi": "^1.2.0"

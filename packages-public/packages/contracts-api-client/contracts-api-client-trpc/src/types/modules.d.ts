@@ -3,3 +3,5 @@
 /// <reference types="@ethersproject/providers" />
 /// <reference types="@trpc/server" />
 /// <reference types="@trpc/client" />
+/// <reference types="@owlprotocol/contracts" />
+/// <reference types="@owlprotocol/contracts-proxy" />

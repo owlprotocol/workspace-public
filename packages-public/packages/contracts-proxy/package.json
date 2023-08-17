@@ -28,31 +28,32 @@
   "files": [
     "dist/*",
     "lib/*",
+    "!lib/forge-std",
     "src/*",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "contracts/*"
   ],
   "engines": {
     "node": "^16.0.0"
   },
   "scripts": {
-    "build": "npm-run-all to:commonjs build:hardhat build:typechain build:esm build:zsol build:deployments-export build:esm build:interfaceIds build:docs to:module",
+    "build": "npm-run-all to:commonjs build:hardhat build:docs build:typechain to:module build:zsol build:deployments-export build:interfaceIds build:esm",
     "build:esm": "npm-run-all build:esbuild build:tsc ",
     "build:watch": "npm-run-all -p build:tsc:watch build:esbuild:watch",
-    "build:interfaceIds": "rm -f interfaceId/* && node lib/cjs/codegen/runGenerateInterfaceIds.js",
-    "build:deployments-export": "node lib/cjs/codegen/runGenerateDeploymentsExports.js",
+    "build:interfaceIds": "rm -f interfaceId/* && tsx src/codegen/runGenerateInterfaceIds.ts",
+    "build:deployments-export": "tsx src/codegen/runGenerateDeploymentsExports.ts",
     "build:typechain": "npm-run-all build:typechain:web3 build:typechain:ethers",
     "build:typechain:web3": "typechain --target web3-v1 --node16-modules --out-dir=src/typechain/web3 'src/artifacts/+(contracts|@openzeppelin|@chainlink|@opengsn)/**/+([a-zA-Z0-9_]).json'",
     "build:typechain:ethers": "typechain --target=ethers-v5 --node16-modules --show-stack-traces --out-dir=src/typechain/ethers 'src/artifacts/+(contracts|@openzeppelin|@chainlink|@opengsn)/**/+([a-zA-Z0-9_]).json'",
-    "build:typechain:version": "typechain --help",
     "build:docs": "hardhat docgen",
     "build:esbuild": "node esbuild.config.mjs",
     "build:esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "build:tsc": "tsc --project tsconfig.build.json",
     "build:tsc:watch": "mkdir -p lib/types && cp -r src/typechain lib/types && tsc --project tsconfig.build.json -w",
     "build:hardhat": "hardhat compile",
-    "build:zsol": "node lib/esm/codegen/runGenerateZodValidators.js",
-    "clean": "rimraf lib cache src/artifacts src/typechain",
+    "build:zsol": "tsx src/codegen/runGenerateZodValidators.ts",
+    "clean": "rimraf lib cache src/artifacts src/typechain src/zsol",
     "node": "npm run node:anvil",
     "node:anvil": "anvil",
     "deploy": "npm-run-all to:commonjs deploy:all to:module",
@@ -111,6 +112,7 @@
     "solidity-coverage": "^0.7.21",
     "solidity-docgen": "^0.6.0-beta.29",
     "ts-node": "^10.9.1",
+    "tsx": "^3.12.7",
     "typechain": "npm:@owlprotocol/typechain@8.2.0",
     "typescript": "4.9.5"
   }

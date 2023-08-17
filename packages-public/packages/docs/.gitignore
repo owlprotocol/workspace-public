@@ -3,8 +3,8 @@
 /docs-crud-redux/reference
 /docs-contracts/reference/**/*
 /docs-contracts/reference-js
-/docs-contracts/reference-solidity
-
+/docs-contracts-proxy/reference/**/*
+/docs-contracts-proxy/reference-js
 # Dependencies
 /node_modules
 
