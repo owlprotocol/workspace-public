@@ -36,7 +36,7 @@
     "node": "^16.0.0"
   },
   "scripts": {
-    "build": "npm-run-all to:commonjs build:hardhat build:typechain build:esm build:deployments-export build:esm build:interfaceIds build:docs to:module",
+    "build": "npm-run-all to:commonjs build:hardhat build:typechain build:esm build:zsol build:deployments-export build:esm build:interfaceIds build:docs to:module",
     "build:esm": "npm-run-all build:esbuild build:tsc ",
     "build:watch": "npm-run-all -p build:tsc:watch build:esbuild:watch",
     "build:interfaceIds": "rm -f interfaceId/* && node lib/cjs/codegen/runGenerateInterfaceIds.js",

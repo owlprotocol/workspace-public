@@ -30,7 +30,7 @@
     "contracts/*"
   ],
   "scripts": {
-    "build": "npm-run-all to:commonjs build:hardhat build:typechain build:deployments-export build:esm build:interfaceIds build:docs to:module",
+    "build": "npm-run-all to:commonjs build:hardhat build:typechain build:deployments-export build:esm build:zsol build:interfaceIds build:docs to:module",
     "build:esm": "npm-run-all build:esbuild build:tsc ",
     "build:watch": "npm-run-all -p build:tsc:watch build:esbuild:watch",
     "build:interfaceIds": "rm -f interfaceId/* && node lib/cjs/codegen/runGenerateInterfaceIds.js",

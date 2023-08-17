@@ -9,6 +9,7 @@ import { Abi, abiWithFunctionsOnly } from "../abi/abi.js";
 import { mapValues, mapKeys } from "../lodash.js";
 import { join } from "path";
 import { genBarrelFile } from "./genBarrelFile.js";
+import { zodExampleForFunction } from "./zodExample.js";
 
 /**
  * From non-array type to zod validator name (`${type}Zod`)
@@ -43,7 +44,7 @@ export function genZodForAbiParamArray<T extends ArrayType>(t: T): string {
 export function genZodForAbiParamTuple<T extends AbiParamTuple>(t: T): string {
     //Tuple or tuple array
     const internals = t.components.map((p, idx) => {
-        const key = p.name && p.name.length > 0 ? p.name : `${idx}`
+        const key = p.name && p.name.length > 0 ? p.name : `"${idx}"`
         let val: string;
         if (p.type.endsWith("[]")) val = genZodForAbiParamArray(p.type as ArrayType)
         else val = genZodForAbiParamNonTuple(p.type as NonTupleType)
@@ -89,26 +90,46 @@ export function genZodForAbiParam<T extends AbiParam>(t: T): string {
 }
 
 /**
+ * From abi param type to zod validator hard-coded values code (`...`)
+ * @param t
+ * @returns
+ */
+export function genZodForAbiParamOverrides<T extends AbiParam>(t: T): string | undefined {
+    if (t.type === "address") {
+        if (t.name === "admin") {
+            return `zSol.${t.type}Zod.optional().describe("Admin address")`
+        }
+    } else if (t.type === "string") {
+        if (t.name === "contractUri") {
+            return `zSol.${t.type}Zod.optional().describe("Contract metadata")`
+        }
+    }
+}
+
+/**
  * From function inputs and outputs to zod validators code (`z.object(${...})`)
  * @param t
  * @returns
  */
 export function genZodValidatorForFunction(inputs: AbiFunction["inputs"], outputs: AbiFunction["outputs"]) {
     const inputInternals = inputs.map((p, idx) => {
-        const key = p.name && p.name.length > 0 ? p.name : `${idx}`
-        const val = genZodForAbiParam(p);
+        const key = p.name && p.name.length > 0 ? p.name : `"${idx}"`
+        //Overrides only apply to function inputs
+        const val = genZodForAbiParamOverrides(p) ?? genZodForAbiParam(p);
         return `${key}: ${val}`
     }).join(", ")
     const inputZod = `z.object({ ${inputInternals} })`;
 
     const outputInternals = outputs.map((p, idx) => {
-        const key = p.name && p.name.length > 0 ? p.name : `${idx}`
+        const key = p.name && p.name.length > 0 ? p.name : `"${idx}"`
         const val = genZodForAbiParam(p);
         return `${key}: ${val}`
     }).join(", ")
     const outputZod = `z.object({ ${outputInternals} })`;
 
-    return `{ inputs: ${inputZod}, outputs: ${outputZod} }`
+    const { inputsExample, outputsExample } = zodExampleForFunction(inputs, outputs);
+
+    return `{ inputs: ${inputZod}, inputsExample: ${JSON.stringify(inputsExample)}, outputs: ${outputZod}, outputsExample: ${JSON.stringify(outputsExample)} }`
 }
 
 /**
@@ -127,7 +148,7 @@ export function genZodValidatorForAbi(abi: readonly AbiFunction[]): string {
         if (dup) {
             //Compute signature
             const fn = ethers.utils.FunctionFragment.from(abiFn);
-            const signature = fn.format(ethers.utils.FormatTypes.minimal);
+            const signature = fn.format(ethers.utils.FormatTypes.minimal).replace("function ", "");
             //safety wrap in quotes
             name = `"${signature}"`;
         } else {

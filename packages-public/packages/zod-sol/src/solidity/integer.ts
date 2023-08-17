@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-const baseZod = z.string().transform((s) => BigInt(s))
-
 export function integerZod(name: string) {
     const signed = name.startsWith("int");
     const bitLenStr = signed ? name.replace("int", "") : name.replace("uint", "")
@@ -17,7 +15,17 @@ export function integerZod(name: string) {
         }, z.string())
         */
     return z.coerce.string()
-        .transform((s) => BigInt(s))
+        .transform((s) => {
+            //TODO: This is due to a weird bug or impromper coercion
+            //1. zod-to-json-schem calls isOptional() to convert to JSON schema zod-to-json-schema/src/parsers/object.js:61:31
+            //2. zod calls isOptional calls safeParse(undefined).success zod/lib/index.mjs:806:21
+            //3. zod calls safeParse(undefined) (this gets coerced to "undefined")
+            if (s === undefined || s === "undefined") {
+                //throw new Error(`${name}Zod cannot convert undefined`)
+                return BigInt(0); //WARNING: this is not good behaviour
+            }
+            return BigInt(s)
+        })
         .refine((x) => {
             return min <= x && x <= max;
         })

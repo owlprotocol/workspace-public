@@ -30,6 +30,10 @@ export const factoryClasses = {
     ChainlinkAnyApiClient: contracts.chainlink.ChainlinkAnyApiClient__factory
 } as const
 
+export const interfaces = mapValues(factoryClasses, (f) => f.createInterface()) as {
+    [K in keyof typeof factoryClasses]: ReturnType<typeof factoryClasses[K]["createInterface"]>
+}
+
 export const abis = mapValues(factoryClasses, (f) => f.abi) as {
     [K in keyof typeof factoryClasses]: typeof factoryClasses[K]["abi"]
 }
@@ -69,6 +73,10 @@ export const factoryInterfaceClasses = {
 
 export const factoriesInterface = mapValues(factoryInterfaceClasses, (f) => new f()) as {
     [K in keyof typeof factoryInterfaceClasses]: InstanceType<typeof factoryInterfaceClasses[K]>
+}
+
+export const interfacesInterface = mapValues(factoryInterfaceClasses, (f) => f.createInterface()) as {
+    [K in keyof typeof factoryInterfaceClasses]: ReturnType<typeof factoryInterfaceClasses[K]["createInterface"]>
 }
 
 export const abisInterface = mapValues(factoryInterfaceClasses, (f) => f.abi) as {
