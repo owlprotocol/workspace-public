@@ -51,7 +51,8 @@
   },
   "sideEffects": false,
   "scripts": {
-    "build": "node ./scripts/generate-package.mjs && tsc && preconstruct build",
+    "build": "tsc && preconstruct build",
+    "codegen": "node ./scripts/generate-package.mjs",
     "push": "yalc push",
     "plop": "plop",
     "add-chain": "plop add-chain",

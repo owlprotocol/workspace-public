@@ -24,6 +24,19 @@ Customized to support additional chains & RPC formats.
 yarn add @thirdweb-dev/chains
 ```
 
+## Development
+
+```bash
+pnpm run codegen
+```
+* Pulls and parses chain data from [ethereum-lists/chains](https://github.com/ethereum-lists/chains) 
+    * Note: this is a slow process, only run if the list is updated
+
+```bash
+pnpm run build
+```
+* Compiles the package
+
 ## Contributing
 
 ### Adding / Overriding Chain Data
