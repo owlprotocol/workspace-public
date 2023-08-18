@@ -46,7 +46,7 @@
     "build:typechain": "npm-run-all build:typechain:web3 build:typechain:ethers",
     "build:typechain:web3": "typechain --target web3-v1 --node16-modules --out-dir=src/typechain/web3 'src/artifacts/+(contracts|@openzeppelin|@chainlink|@opengsn)/**/+([a-zA-Z0-9_]).json'",
     "build:typechain:ethers": "typechain --target=ethers-v5 --node16-modules --show-stack-traces --out-dir=src/typechain/ethers 'src/artifacts/+(contracts|@openzeppelin|@chainlink|@opengsn)/**/+([a-zA-Z0-9_]).json'",
-    "build:docs": "hardhat docgen && cp -R docs-contracts-reference/* ../docs/docs-contracts/reference",
+    "build:docs": "hardhat docgen",
     "build:esbuild": "node esbuild.config.mjs",
     "build:esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "build:tsc": "tsc --project tsconfig.build.json",

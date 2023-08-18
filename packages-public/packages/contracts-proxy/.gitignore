@@ -1,7 +1,4 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-cache/
-
 # dependencies
 node_modules
 .pnp
@@ -40,6 +37,7 @@ logs
 .env.test
 .env.production
 .env
+!.env.example
 
 # turbo
 .turbo
@@ -59,18 +57,14 @@ zsol
 typechain
 cache
 factory
-/src/typechain
-/src/artifacts
-/docs-contracts-reference/*
-!/docs-contracts-reference/index.md
-/scripts
+src/typechain
+src/artifacts
+docs-contracts-reference
 traceOutputDir
-#src/deployments
 
 # forge
-forge-cache/
-out/
+forge-cache
+out
 soljson-v*.js
 .openzeppelin/unknown-*.json
 *.py
-!.env.example
