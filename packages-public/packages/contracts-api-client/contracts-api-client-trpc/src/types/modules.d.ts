@@ -5,3 +5,4 @@
 /// <reference types="@trpc/client" />
 /// <reference types="@owlprotocol/contracts" />
 /// <reference types="@owlprotocol/contracts-proxy" />
+/// <reference types="@owlprotocol/contracts-api" />

@@ -6,7 +6,7 @@ import { RunTimeEnvironment } from "../utils.js";
  * Deployment is always the same regardless of contract.
  * We get the bytecode & name for a deterministic deployment from the Proxy Factory.
  */
-export const BalancesDeploy = async ({ provider, network }: RunTimeEnvironment) => {
+export const BalancesDeploy = async ({ provider, network }: Omit<RunTimeEnvironment, "signers">) => {
     if (network.name == "anvil") {
         const anvil = new ethers.Wallet(PRIVATE_KEY_ANVIL, provider);
         //Fund accounts on anvil

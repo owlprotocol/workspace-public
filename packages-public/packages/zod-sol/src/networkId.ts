@@ -5,8 +5,7 @@ export const networkIdZod = z.object({
     networkId: z
         .string()
         .regex(/^\d+$/)
-        .describe("The network id")
-        .default("80001"),
+        .describe("networkId")
 });
 
 export const contractAddressZod = networkIdZod.extend({ address: addressZod })

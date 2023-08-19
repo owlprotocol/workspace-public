@@ -153,7 +153,9 @@ declare global {
 declare global {
     interface ImportMetaEnv {
         readonly VITE_NODE_ENV?: 'development' | 'production' | 'test'
+        readonly NODE_ENV?: 'development' | 'production' | 'test'
         readonly VITE_LOG_LEVEL?: "trace" | "debug" | "info" | "warn" | "error";
+        readonly LOG_LEVEL?: "trace" | "debug" | "info" | "warn" | "error";
         readonly VITE_TITLE?: string;
         readonly VITE_CORS_PROXY?: string;
         readonly VITE_BEACON_ADMIN?: string;
@@ -283,8 +285,8 @@ if (!isClient()) {
     dotenv.config()
 }
 
-export const NODE_ENV = (import.meta.env ? import.meta.env.VITE_NODE_ENV : process.env.NODE_ENV) ?? "development"
-export const LOG_LEVEL = (import.meta.env ? import.meta.env.VITE_LOG_LEVEL : process.env.LOG_LEVEL) ?? (
+export const NODE_ENV = (import.meta.env ? import.meta.env.VITE_NODE_ENV ?? import.meta.env.NODE_ENV : process.env.NODE_ENV) ?? "development"
+export const LOG_LEVEL = (import.meta.env ? import.meta.env.VITE_LOG_LEVEL ?? import.meta.env.LOG_LEVEL : process.env.LOG_LEVEL) ?? (
     (NODE_ENV === "development" || NODE_ENV === "test") ? "debug" : "warn"
 )
 
@@ -347,8 +349,8 @@ export const PUBLIC_ADDRESS_1_LOCAL = (import.meta.env ? import.meta.env.VITE_PU
  * Used to defive default Infura connection uri. */
 //Default "Public" Infura Key
 export const INFURA_API_KEY = (import.meta.env ? import.meta.env.VITE_INFURA_API_KEY : process.env.INFURA_API_KEY) ?? INFURA_API_KEY_PUBLIC
-export const THIRDWEB_API_KEY = (import.meta.env ? import.meta.env.VITE_THIRDWEB_API_KEY: process.env.THIRDWEB_API_KEY) ?? THIRDWEB_API_KEY_PUBLIC
-export const ANKR_API_KEY = (import.meta.env ? import.meta.env.VITE_ANKR_API_KEY: process.env.ANKR_API_KEY) ?? ANKR_API_KEY_PUBLIC
+export const THIRDWEB_API_KEY = (import.meta.env ? import.meta.env.VITE_THIRDWEB_API_KEY : process.env.THIRDWEB_API_KEY) ?? THIRDWEB_API_KEY_PUBLIC
+export const ANKR_API_KEY = (import.meta.env ? import.meta.env.VITE_ANKR_API_KEY : process.env.ANKR_API_KEY) ?? ANKR_API_KEY_PUBLIC
 export const ALCHEMY_API_KEY = undefined
 
 

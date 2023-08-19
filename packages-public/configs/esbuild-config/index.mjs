@@ -34,7 +34,7 @@ const inject = [] //['./react-shim.mjs']
 
 export const baseConfig = {
     sourcemap: 'external',
-    //platform: 'node', //'browser',
+    platform: 'neutral',
     target: ['es2020'],
     inject,
     plugins: [excludeNodeModulesPlugin],
