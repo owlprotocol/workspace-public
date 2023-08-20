@@ -23,7 +23,6 @@ import {
     InitializeFactories,
 } from "../../../ethers/deterministicFactories.js";
 import { AssetRouterInputInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/AssetRouterInput.js";
-import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
 
 describe("AssetRouterInput", function () {
     let signers: SignerWithAddress[];
@@ -60,7 +59,7 @@ describe("AssetRouterInput", function () {
             assetRouterInput = {
                 admin: signers[0].address,
                 contractUri: `assetRouterInput.${assetRouterInputName}.com`,
-                                inputBaskets: [
+                inputBaskets: [
                     {
                         burnAddress: signers[1].address,
                         erc20Unaffected: [],
@@ -96,7 +95,7 @@ describe("AssetRouterInput", function () {
             token = {
                 admin: signers[0].address,
                 contractUri: `token.${tokenName}.com`,
-                                name: `Token ${tokenName}`,
+                name: `Token ${tokenName}`,
                 symbol: `TK${tokenName}`,
             };
             const tokenInitArgs = initializeUtil(token);
@@ -109,7 +108,7 @@ describe("AssetRouterInput", function () {
                 assetRouterInput = {
                     admin: signers[0].address,
                     contractUri: `assetRouterInput.${assetRouterInputName}.com`,
-                                        inputBaskets: [
+                    inputBaskets: [
                         {
                             burnAddress: signers[1].address,
                             erc20Unaffected: [{ contractAddr: ERC20Mintable.address, amount: 1 }],
@@ -146,7 +145,7 @@ describe("AssetRouterInput", function () {
                 assetRouterInput = {
                     admin: signers[0].address,
                     contractUri: `assetRouterInput.${assetRouterInputName}.com`,
-                                        inputBaskets: [
+                    inputBaskets: [
                         {
                             burnAddress: signers[1].address,
                             erc20Unaffected: [],
@@ -193,7 +192,7 @@ describe("AssetRouterInput", function () {
             token = {
                 admin: signers[0].address,
                 contractUri: `token.${tokenName}.com`,
-                                name: `Token ${tokenName}`,
+                name: `Token ${tokenName}`,
                 symbol: `TK${tokenName}`,
                 initBaseURI: `token.${tokenName}.com/token`,
                 feeReceiver: signers[0].address,
@@ -208,7 +207,7 @@ describe("AssetRouterInput", function () {
                 assetRouterInput = {
                     admin: signers[0].address,
                     contractUri: `assetRouterInput.${assetRouterInputName}.com`,
-                                        inputBaskets: [
+                    inputBaskets: [
                         {
                             burnAddress: signers[1].address,
                             erc20Unaffected: [],
@@ -248,7 +247,7 @@ describe("AssetRouterInput", function () {
                 assetRouterInput = {
                     admin: signers[0].address,
                     contractUri: `assetRouterInput.${assetRouterInputName}.com`,
-                                        inputBaskets: [
+                    inputBaskets: [
                         {
                             burnAddress: signers[1].address,
                             erc20Unaffected: [],
@@ -290,7 +289,7 @@ describe("AssetRouterInput", function () {
                 assetRouterInput = {
                     admin: signers[0].address,
                     contractUri: `assetRouterAssetRouterInput.${assetRouterInputName}.com`,
-                                        inputBaskets: [
+                    inputBaskets: [
                         {
                             burnAddress: signers[1].address,
                             erc20Unaffected: [],
@@ -344,7 +343,7 @@ describe("AssetRouterInput", function () {
             token = {
                 admin: signers[0].address,
                 contractUri: `token.${tokenName}.com`,
-                                uri: `token.${tokenName}.com/token`,
+                uri: `token.${tokenName}.com/token`,
                 feeReceiver: signers[0].address,
             };
             const tokenInitArgs = initializeUtil(token);
@@ -357,7 +356,7 @@ describe("AssetRouterInput", function () {
                 assetRouterInput = {
                     admin: signers[0].address,
                     contractUri: `assetRouterInput.${assetRouterInputName}.com`,
-                                        inputBaskets: [
+                    inputBaskets: [
                         {
                             burnAddress: signers[1].address,
                             erc20Unaffected: [],
@@ -397,7 +396,7 @@ describe("AssetRouterInput", function () {
                 assetRouterInput = {
                     admin: signers[0].address,
                     contractUri: `assetRouterInput.${assetRouterInputName}.com`,
-                                        inputBaskets: [
+                    inputBaskets: [
                         {
                             burnAddress: signers[1].address,
                             erc20Unaffected: [],

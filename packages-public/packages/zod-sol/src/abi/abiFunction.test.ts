@@ -1,10 +1,10 @@
-import { expectType } from "ts-expect"
-import { AbiFunction, ZodForAbiFunction, zodForAbiFunction } from "./abiFunction.js";
+import { describe, test } from "vitest";
+/* eslint-disable @typescript-eslint/ban-types */
+import { expectType } from "ts-expect";
 import { ZodTypeAny, z } from "zod";
-import { mapValues } from "../lodash.js";
+import { AbiFunction, zodForAbiFunction } from "./abiFunction.js";
 
-describe('abiParamArrayTest', function () {
-
+describe("abiParamArrayTest", function () {
     const fnAbis = {
         empty: {
             inputs: [],
@@ -77,9 +77,8 @@ describe('abiParamArrayTest', function () {
                             type: "address",
                             internalType: "address",
                         },
-                    ]
+                    ],
                 },
-
             ],
             name: "myFunction",
             outputs: [],
@@ -98,106 +97,105 @@ describe('abiParamArrayTest', function () {
                             type: "address",
                             internalType: "address",
                         },
-                    ]
+                    ],
                 },
-
             ],
             name: "myFunction",
             outputs: [],
             stateMutability: "view",
             type: "function",
-        }
-    } as const
+        },
+    } as const;
 
-    it("typecheck fn abis", () => {
-        expectType<AbiFunction>(fnAbis.empty)
-        expectType<AbiFunction>(fnAbis.nonTuple)
-        expectType<AbiFunction>(fnAbis.nonTupleUnnamed)
-        expectType<AbiFunction>(fnAbis.nonTupleArray)
-        expectType<AbiFunction>(fnAbis.tuple)
-        expectType<AbiFunction>(fnAbis.tupleArray)
-    })
+    test("typecheck fn abis", () => {
+        expectType<AbiFunction>(fnAbis.empty);
+        expectType<AbiFunction>(fnAbis.nonTuple);
+        expectType<AbiFunction>(fnAbis.nonTupleUnnamed);
+        expectType<AbiFunction>(fnAbis.nonTupleArray);
+        expectType<AbiFunction>(fnAbis.tuple);
+        expectType<AbiFunction>(fnAbis.tupleArray);
+    });
 
-    it("empty", () => {
+    test("empty", () => {
         const fnZod = zodForAbiFunction(fnAbis.empty);
-        type X = typeof fnZod.inputsZod
-        type NameType = z.ZodLiteral<"myFunction">
-        type MutabilityType = z.ZodLiteral<"view">
-        type InputType = z.ZodObject<{}, "strip", ZodTypeAny, {}, {}>
-        type OutputType = z.ZodObject<{}, "strip", ZodTypeAny, {}, {}>
-        expectType<NameType>(fnZod.nameZod)
-        expectType<MutabilityType>(fnZod.stateMutabilityZod)
-        expectType<InputType>(fnZod.inputsZod)
-        expectType<OutputType>(fnZod.outputsZod)
+        type NameType = z.ZodLiteral<"myFunction">;
+        type MutabilityType = z.ZodLiteral<"view">;
+        type InputType = z.ZodObject<{}, "strip", ZodTypeAny, {}, {}>;
+        type OutputType = z.ZodObject<{}, "strip", ZodTypeAny, {}, {}>;
+        expectType<NameType>(fnZod.nameZod);
+        expectType<MutabilityType>(fnZod.stateMutabilityZod);
+        expectType<InputType>(fnZod.inputsZod);
+        expectType<OutputType>(fnZod.outputsZod);
         expectType<{
-            nameZod: NameType,
-            stateMutabilityZod: MutabilityType,
-            inputsZod: InputType,
-            outputsZod: OutputType
-        }
-        >(fnZod)
-    })
+            nameZod: NameType;
+            stateMutabilityZod: MutabilityType;
+            inputsZod: InputType;
+            outputsZod: OutputType;
+        }>(fnZod);
+    });
 
-    it("non-tuple", () => {
+    test("non-tuple", () => {
         const fnZod = zodForAbiFunction(fnAbis.nonTuple);
-        type X = typeof fnZod.inputsZod
-        type NameType = z.ZodLiteral<"myFunction">
-        type MutabilityType = z.ZodLiteral<"view">
-        type InputType = z.ZodObject<{ from: z.ZodString }, "strip", ZodTypeAny, { from: string }, { from: string }>
-        type OutputType = z.ZodObject<{}, "strip", ZodTypeAny, {}, {}>
-        expectType<NameType>(fnZod.nameZod)
-        expectType<MutabilityType>(fnZod.stateMutabilityZod)
-        expectType<InputType>(fnZod.inputsZod)
-        expectType<OutputType>(fnZod.outputsZod)
+        type NameType = z.ZodLiteral<"myFunction">;
+        type MutabilityType = z.ZodLiteral<"view">;
+        type InputType = z.ZodObject<{ from: z.ZodString }, "strip", ZodTypeAny, { from: string }, { from: string }>;
+        type OutputType = z.ZodObject<{}, "strip", ZodTypeAny, {}, {}>;
+        expectType<NameType>(fnZod.nameZod);
+        expectType<MutabilityType>(fnZod.stateMutabilityZod);
+        expectType<InputType>(fnZod.inputsZod);
+        expectType<OutputType>(fnZod.outputsZod);
         expectType<{
-            nameZod: NameType,
-            stateMutabilityZod: MutabilityType,
-            inputsZod: InputType,
-            outputsZod: OutputType
-        }
-        >(fnZod)
-    })
+            nameZod: NameType;
+            stateMutabilityZod: MutabilityType;
+            inputsZod: InputType;
+            outputsZod: OutputType;
+        }>(fnZod);
+    });
 
-    it("non-tuple unnamed", () => {
+    test("non-tuple unnamed", () => {
         const fnZod = zodForAbiFunction(fnAbis.nonTupleUnnamed);
-        type NameType = z.ZodLiteral<"myFunction">
-        type MutabilityType = z.ZodLiteral<"view">
-        type InputType = z.ZodObject<{ "": z.ZodString }, "strip", ZodTypeAny, { "": string }, { "": string }>
-        type OutputType = z.ZodObject<{}, "strip", ZodTypeAny, {}, {}>
-        expectType<NameType>(fnZod.nameZod)
-        expectType<MutabilityType>(fnZod.stateMutabilityZod)
-        expectType<InputType>(fnZod.inputsZod)
-        expectType<OutputType>(fnZod.outputsZod)
+        type NameType = z.ZodLiteral<"myFunction">;
+        type MutabilityType = z.ZodLiteral<"view">;
+        type InputType = z.ZodObject<{ "": z.ZodString }, "strip", ZodTypeAny, { "": string }, { "": string }>;
+        type OutputType = z.ZodObject<{}, "strip", ZodTypeAny, {}, {}>;
+        expectType<NameType>(fnZod.nameZod);
+        expectType<MutabilityType>(fnZod.stateMutabilityZod);
+        expectType<InputType>(fnZod.inputsZod);
+        expectType<OutputType>(fnZod.outputsZod);
         expectType<{
-            nameZod: NameType,
-            stateMutabilityZod: MutabilityType,
-            inputsZod: InputType,
-            outputsZod: OutputType
-        }
-        >(fnZod)
-    })
+            nameZod: NameType;
+            stateMutabilityZod: MutabilityType;
+            inputsZod: InputType;
+            outputsZod: OutputType;
+        }>(fnZod);
+    });
 
-    it("non-tuple array", () => {
+    test("non-tuple array", () => {
         const fnZod = zodForAbiFunction(fnAbis.nonTupleArray);
-        type NameType = z.ZodLiteral<"myFunction">
-        type MutabilityType = z.ZodLiteral<"view">
-        type InputType = z.ZodObject<{ from: z.ZodArray<z.ZodString> }, "strip", ZodTypeAny, { from: string[] }, { from: string[] }>
-        type OutputType = z.ZodObject<{}, "strip", ZodTypeAny, {}, {}>
-        expectType<NameType>(fnZod.nameZod)
-        expectType<MutabilityType>(fnZod.stateMutabilityZod)
-        expectType<InputType>(fnZod.inputsZod)
-        expectType<OutputType>(fnZod.outputsZod)
+        type NameType = z.ZodLiteral<"myFunction">;
+        type MutabilityType = z.ZodLiteral<"view">;
+        type InputType = z.ZodObject<
+            { from: z.ZodArray<z.ZodString> },
+            "strip",
+            ZodTypeAny,
+            { from: string[] },
+            { from: string[] }
+        >;
+        type OutputType = z.ZodObject<{}, "strip", ZodTypeAny, {}, {}>;
+        expectType<NameType>(fnZod.nameZod);
+        expectType<MutabilityType>(fnZod.stateMutabilityZod);
+        expectType<InputType>(fnZod.inputsZod);
+        expectType<OutputType>(fnZod.outputsZod);
         expectType<{
-            nameZod: NameType,
-            stateMutabilityZod: MutabilityType,
-            inputsZod: InputType,
-            outputsZod: OutputType
-        }
-        >(fnZod)
-    })
+            nameZod: NameType;
+            stateMutabilityZod: MutabilityType;
+            inputsZod: InputType;
+            outputsZod: OutputType;
+        }>(fnZod);
+    });
 
     // TODO: wait for tuple parsing to be fixed
-    // it("tuple", () => {
+    // test("tuple", () => {
     //     const fnZod = zodForAbiFunction(fnAbis.tuple);
     //     type NameType = z.ZodLiteral<"myFunction">
     //     type MutabilityType = z.ZodLiteral<"view">
@@ -222,7 +220,7 @@ describe('abiParamArrayTest', function () {
     // })
 
     // TODO: fix
-    // it("tuple array", () => {
+    // test("tuple array", () => {
     //     const fnZod = zodForAbiFunction(fnAbis.nonTupleArray);
     //     type NameType = z.ZodLiteral<"myFunction">
     //     type MutabilityType = z.ZodLiteral<"view">

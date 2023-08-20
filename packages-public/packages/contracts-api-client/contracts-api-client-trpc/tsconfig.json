@@ -6,7 +6,10 @@
     "sourceMap": false,
     "outDir": "lib/types",
     "strict": true,
-    "lib": ["esnext", "dom"],
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "esModuleInterop": false,
     "resolveJsonModule": true,
     "declaration": true,
@@ -14,9 +17,13 @@
     "skipLibCheck": true,
     "downlevelIteration": true,
     "isolatedModules": true,
-    "types": ["node", "mocha"],
+    "types": [
+      "node"
+    ],
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src"],
+  "include": [
+    "src"
+  ],
   "exclude": []
 }

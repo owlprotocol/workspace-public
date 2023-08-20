@@ -1,9 +1,9 @@
 import type { Contract as BaseContract, ContractFactory, Signer } from "ethers";
 import type { Interface } from "ethers/lib/utils.js";
-import type {Provider} from "@ethersproject/abstract-provider";
+import type { Provider } from "@ethersproject/abstract-provider";
 import type { AbiParam, } from "./abiParam.js";
-import { filter, mapValues } from "../lodash.js";
 import { AbiFunction, AbiWithZod, abiWithZod } from "./abiFunction.js";
+import { filter, mapValues } from "../lodash.js";
 
 
 /** Abi Event Item  */
@@ -78,6 +78,7 @@ export function contractFactoryWithZod<
 
 export function contractFactoriesWithZod<T extends Record<string, TypechainContractFactory>>(factories: T) {
     return mapValues(factories, (f) => contractFactoryWithZod(f)) as {
+        // eslint-disable-next-line prettier/prettier
         [K in keyof T]: ReturnType<typeof contractFactoryWithZod<T[K]["abi"]>>
     }
 }
@@ -91,7 +92,7 @@ export function contractFactoriesWithZod<T extends Record<string, TypechainContr
 export interface IContractFactory<
     ContractAbi extends Abi = Abi,
     ContractInterface extends Interface = Interface,
-    Contract extends BaseContract & { interface: ContractInterface } = BaseContract & { interface: ContractInterface}> {
+    Contract extends BaseContract & { interface: ContractInterface } = BaseContract & { interface: ContractInterface }> {
     readonly abi: ContractAbi;
     createInterface(): ContractInterface;
     connect(
@@ -99,10 +100,11 @@ export interface IContractFactory<
         signerOrProvider: Signer | Provider
     ): Contract;
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type IContractFactoryWithZod<T extends IContractFactory = IContractFactory> = ReturnType<typeof contractFactoryWithZod2<T["abi"], T>>
 export function contractFactoryWithZod2<
-   T extends Abi = Abi,
-   U extends IContractFactory<T> = IContractFactory<T>
+    T extends Abi = Abi,
+    U extends IContractFactory<T> = IContractFactory<T>
 >(f: U) {
     const abiFunctions = abiWithFunctionsOnly<T>(f.abi)
     const abiZod = abiWithZod<AbiFunctionsOnly<T>>(abiFunctions)

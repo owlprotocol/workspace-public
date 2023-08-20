@@ -6,7 +6,7 @@ import { AbiParamTupleArray, isAbiParamTupleArray } from "../abi/abiParamTupleAr
 import { AbiParam } from "../abi/abiParam.js";
 import { AbiFunction } from "../abi/abiFunction.js";
 
-export type ZodExample = string | boolean | Record<string, string | boolean>
+export type ZodExample = string | boolean | Record<string, string | boolean>;
 
 /**
  * Example non-array type
@@ -67,6 +67,7 @@ export function zodExampleForAbiParamNonTuple(t: NonTupleType): boolean | string
  * @param t
  * @returns
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function zodExampleForAbiParamArray<T extends ArrayType>(t: T): string {
     //TODO: Add more explanatory example
     return "[]";
@@ -79,17 +80,19 @@ export function zodExampleForAbiParamArray<T extends ArrayType>(t: T): string {
  */
 export function zodExampleForAbiParamTuple<T extends AbiParamTuple>(t: T): Record<string, string | boolean> {
     //Tuple or tuple array
-    const internals = Object.fromEntries(t.components.map((p, idx) => {
-        const key = p.name && p.name.length > 0 ? p.name : idx
-        let val: string | boolean;
-        if (p.type.endsWith("[]")) val = zodExampleForAbiParamArray(p.type as ArrayType)
-        else {
-            val = zodExampleForAbiParamNonTuple(p.type as NonTupleType)
-            if (val === "" && typeof key != "number") val = `<${key}>`;
-        }
+    const internals = Object.fromEntries(
+        t.components.map((p, idx) => {
+            const key = p.name && p.name.length > 0 ? p.name : idx;
+            let val: string | boolean;
+            if (p.type.endsWith("[]")) val = zodExampleForAbiParamArray(p.type as ArrayType);
+            else {
+                val = zodExampleForAbiParamNonTuple(p.type as NonTupleType);
+                if (val === "" && typeof key != "number") val = `<${key}>`;
+            }
 
-        return [key, val]
-    }))
+            return [key, val];
+        }),
+    );
 
     return internals;
 }
@@ -99,6 +102,7 @@ export function zodExampleForAbiParamTuple<T extends AbiParamTuple>(t: T): Recor
  * @param t
  * @returns
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function zodExampleForAbiParamTupleArray<T extends AbiParamTupleArray>(t: T): string {
     //TODO: Add more explanatory example
     return "[]";
@@ -139,25 +143,35 @@ export function zodExampleForAbiParamOverrides<T extends AbiParam>(t: T): ZodExa
  * @returns
  */
 export function zodExampleForFunction(inputs: AbiFunction["inputs"], outputs: AbiFunction["outputs"]) {
-    const inputsExample = Object.fromEntries(inputs.map((p, idx) => {
-        const key = p.name && p.name.length > 0 ? p.name : idx
-        //Overrides only apply to function inputs
-        let valOverr = zodExampleForAbiParamOverrides(p);
-        //overrides returning null are preserved and filtered later
-        if (valOverr !== undefined) return [key, valOverr] as [string, ZodExample | null]
-        const val = zodExampleForAbiParam(p);
-        if (val === "") return [key, `<${key}>`] as [string, string]
+    const inputsExample = Object.fromEntries(
+        inputs
+            .map((p, idx) => {
+                const key = p.name && p.name.length > 0 ? p.name : idx;
+                //Overrides only apply to function inputs
+                const valOverr = zodExampleForAbiParamOverrides(p);
+                //overrides returning null are preserved and filtered later
+                if (valOverr !== undefined) return [key, valOverr] as [string, ZodExample | null];
+                const val = zodExampleForAbiParam(p);
+                if (val === "") return [key, `<${key}>`] as [string, string];
 
-        return [key, val] as [string, ZodExample]
-    }).filter(([_, v]) => v != null)) as Record<string, ZodExample>
+                return [key, val] as [string, ZodExample];
+            })
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            .filter(([_, v]) => v != null),
+    ) as Record<string, ZodExample>;
 
-    const outputsExample = Object.fromEntries(outputs.map((p, idx) => {
-        const key = p.name && p.name.length > 0 ? p.name : idx
-        const val = zodExampleForAbiParam(p);
-        if (val === "" && typeof key != "number") return [key, `<${key}>`] as [string, string]
+    const outputsExample = Object.fromEntries(
+        outputs
+            .map((p, idx) => {
+                const key = p.name && p.name.length > 0 ? p.name : idx;
+                const val = zodExampleForAbiParam(p);
+                if (val === "" && typeof key != "number") return [key, `<${key}>`] as [string, string];
 
-        return [key, val] as [string, ZodExample]
-    }).filter(([_, v]) => v != null)) as Record<string, ZodExample>
+                return [key, val] as [string, ZodExample];
+            })
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            .filter(([_, v]) => v != null),
+    ) as Record<string, ZodExample>;
 
-    return { inputsExample, outputsExample }
+    return { inputsExample, outputsExample };
 }

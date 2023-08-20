@@ -6,7 +6,6 @@ import { mapValues } from "../../../lodash.js";
 
 import { TokenURIInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/TokenURI.js";
 
-
 interface Params extends RunTimeEnvironment {
     instances: number;
 }

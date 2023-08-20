@@ -1,7 +1,7 @@
 import { AbiParam } from "../abi/abiParam.js";
 
 export function functionParamsObjToTuple<T extends readonly AbiParam[]>(params: any, paramsAbi: T) {
-    const paramsTuple = [] as any[]
+    const paramsTuple = [] as any[];
     //loop abi by index, pick by name or (idx not implemented yet regardless)
     paramsAbi.forEach((param, idx) => {
         const paramByKey = params[param.name as keyof typeof params];
@@ -18,21 +18,21 @@ export function functionParamsObjToTuple<T extends readonly AbiParam[]>(params: 
 }
 
 export function functionParamsTupleToObj<T extends readonly AbiParam[]>(params: any, paramsAbi: T) {
-    const paramsObj = {} as any
+    const paramsObj = {} as any;
     //loop abi by index, pick by name or (idx not implemented yet regardless)
     paramsAbi.forEach((param, idx) => {
         const paramByKey = params[param.name as keyof typeof params];
         //TODO: This seems like weird bug introduced by making param names optional
-        if (paramByKey != undefined) return paramsObj[param.name ?? idx] = paramByKey;
+        if (paramByKey != undefined) return (paramsObj[param.name ?? idx] = paramByKey);
 
         const paramByIdx = params[`${idx}` as keyof typeof params];
-        if (paramByIdx != undefined) return paramsObj[idx] = paramByIdx;
+        if (paramByIdx != undefined) return (paramsObj[idx] = paramByIdx);
 
         //TODO: Push param by index of abi for unnamed parameters
         throw Error(`Parameter params.${param.name} and params[${idx}] undefined`);
     });
 
-    console.debug({ params, paramsObj, paramsAbi })
+    console.debug({ params, paramsObj, paramsAbi });
 
     return paramsObj;
 }

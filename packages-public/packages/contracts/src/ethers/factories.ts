@@ -142,6 +142,7 @@ export const factoriesAll = mapValues(factoriesWithInitializeUtils, ({ factory, 
     return getFactoryWithInitializeUtil(getDeployFactories(factory), initializeUtil as any)
 }) as {
         [K in keyof typeof factoriesWithInitializeUtils]:
+        // eslint-disable-next-line prettier/prettier
         ReturnType<typeof getFactoryWithInitializeUtil<
             typeof factoriesWithInitializeUtils[K]["factory"],
             Parameters<typeof factoriesWithInitializeUtils[K]["initializeUtil"]>[0]

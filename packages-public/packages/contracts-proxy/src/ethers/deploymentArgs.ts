@@ -14,52 +14,61 @@ export enum DeploymentMethod {
 
 export interface DeploymentArgsBase {
     /** msgSender parameter for deployment (default: admin) */
-    readonly msgSender?: string,
+    readonly msgSender?: string;
     /** salt parameter string for deployment of different contracts with same init params (default: 1) */
-    readonly salt?: string,
+    readonly salt?: string;
 }
 export interface DeploymentArgsDeterministic {
-    readonly deploymentMethod: DeploymentMethod.DETERMINISTIC
+    readonly deploymentMethod: DeploymentMethod.DETERMINISTIC;
 }
-export function isDeploymentArgsDeterministic(args: { deploymentMethod?: DeploymentMethod }): args is DeploymentArgsDeterministic {
-    return args.deploymentMethod === DeploymentMethod.DETERMINISTIC
+export function isDeploymentArgsDeterministic(args: {
+    deploymentMethod?: DeploymentMethod;
+}): args is DeploymentArgsDeterministic {
+    return args.deploymentMethod === DeploymentMethod.DETERMINISTIC;
 }
 export interface DeploymentArgsERC1167 {
-    readonly deploymentMethod: DeploymentMethod.ERC1167
+    readonly deploymentMethod: DeploymentMethod.ERC1167;
 }
 export function isDeploymentArgsERC1167(args: { deploymentMethod?: DeploymentMethod }): args is DeploymentArgsERC1167 {
-    return args.deploymentMethod === DeploymentMethod.ERC1167
+    return args.deploymentMethod === DeploymentMethod.ERC1167;
 }
 export interface DeploymentArgsBeaconOwl {
-    readonly deploymentMethod: DeploymentMethod.BEACON_OWL
+    readonly deploymentMethod: DeploymentMethod.BEACON_OWL;
 }
-export function isDeploymentArgsBeaconOwl(args: { deploymentMethod?: DeploymentMethod }): args is DeploymentArgsBeaconOwl {
-    return args.deploymentMethod === DeploymentMethod.BEACON_OWL
+export function isDeploymentArgsBeaconOwl(args: {
+    deploymentMethod?: DeploymentMethod;
+}): args is DeploymentArgsBeaconOwl {
+    return args.deploymentMethod === DeploymentMethod.BEACON_OWL;
 }
 export interface DeploymentArgsBeaconExisting {
-    readonly deploymentMethod: DeploymentMethod.BEACON_EXISTING
+    readonly deploymentMethod: DeploymentMethod.BEACON_EXISTING;
     /** Beacon Address */
-    readonly beaconAddress: string
+    readonly beaconAddress: string;
 }
-export function isDeploymentArgsBeaconExisting(args: { deploymentMethod?: DeploymentMethod }): args is DeploymentArgsBeaconExisting {
-    return args.deploymentMethod === DeploymentMethod.BEACON_EXISTING
+export function isDeploymentArgsBeaconExisting(args: {
+    deploymentMethod?: DeploymentMethod;
+}): args is DeploymentArgsBeaconExisting {
+    return args.deploymentMethod === DeploymentMethod.BEACON_EXISTING;
 }
 export interface DeploymentArgsBeaconNew {
-    readonly deploymentMethod: DeploymentMethod.BEACON_NEW
+    readonly deploymentMethod: DeploymentMethod.BEACON_NEW;
     /** Beacon Admin */
-    readonly beaconAdmin: string
+    readonly beaconAdmin: string;
 }
-export function isDeploymentArgsBeaconNew(args: { deploymentMethod?: DeploymentMethod }): args is DeploymentArgsBeaconNew {
-    return args.deploymentMethod === DeploymentMethod.BEACON_NEW
+export function isDeploymentArgsBeaconNew(args: {
+    deploymentMethod?: DeploymentMethod;
+}): args is DeploymentArgsBeaconNew {
+    return args.deploymentMethod === DeploymentMethod.BEACON_NEW;
 }
 
-export type DeploymentArgs = DeploymentArgsBase & (
-    DeploymentArgsDeterministic |
-    DeploymentArgsERC1167 |
-    DeploymentArgsBeaconOwl |
-    DeploymentArgsBeaconExisting |
-    DeploymentArgsBeaconNew
-)
+export type DeploymentArgs = DeploymentArgsBase &
+    (
+        | DeploymentArgsDeterministic
+        | DeploymentArgsERC1167
+        | DeploymentArgsBeaconOwl
+        | DeploymentArgsBeaconExisting
+        | DeploymentArgsBeaconNew
+    );
 
 /**
  * General interface for deployment args, mostly for informational purposes or for more flexible use cases
@@ -72,9 +81,9 @@ export interface DeploymentArgsOptional {
     /** salt parameter string for deployment of different contracts with same init params (default: 1) */
     readonly salt?: string;
     /** Deployment Method */
-    readonly deploymentMethod: DeploymentMethod.BEACON_NEW
+    readonly deploymentMethod: DeploymentMethod.BEACON_NEW;
     /** Beacon Address */
-    readonly beaconAddress?: string
+    readonly beaconAddress?: string;
     /** Beacon Admin */
-    readonly beaconAdmin?: string
+    readonly beaconAdmin?: string;
 }

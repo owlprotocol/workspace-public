@@ -21,7 +21,6 @@ import {
     ERC721MintableAutoIdInitializeArgs,
     initializeUtil,
 } from "../../../utils/initializeUtils/ERC721MintableAutoId.js";
-import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
 
 const cloneFactory = factories.ERC1167Factory.attach(ERC1167FactoryAddressLocal);
 describe("AssetRouterOutput", function () {
@@ -98,7 +97,7 @@ describe("AssetRouterOutput", function () {
             token = {
                 admin: signers[0].address,
                 contractUri: `token.${tokenName}.com`,
-                                name: `Token ${tokenName}`,
+                name: `Token ${tokenName}`,
                 symbol: `TK${tokenName}`,
             };
             const tokenInitArgs = initializeUtil(token);
@@ -153,7 +152,7 @@ describe("AssetRouterOutput", function () {
             token = {
                 admin: signers[0].address,
                 contractUri: `token.${tokenName}.com`,
-                                name: `Token ${tokenName}`,
+                name: `Token ${tokenName}`,
                 symbol: `TK${tokenName}`,
                 initBaseURI: `token.${tokenName}.com/token`,
                 feeReceiver: signers[0].address,
@@ -210,7 +209,7 @@ describe("AssetRouterOutput", function () {
             token = {
                 admin: signers[0].address,
                 contractUri: `token.${tokenName}.com`,
-                                uri: `token.${tokenName}.com/token`,
+                uri: `token.${tokenName}.com/token`,
                 feeReceiver: signers[0].address,
             };
             const tokenInitArgs = initializeUtil(token);

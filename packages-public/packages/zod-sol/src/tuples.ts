@@ -1,5 +1,6 @@
 //ADVANCED TUPLE
 //https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-1.html#mapped-types-on-tuples-and-arrays
+/*
 type MapToPromise<T> = { [K in keyof T]: Promise<T[K]> };
 type Coordinate = [number, number];
 type PromiseCoordinate = MapToPromise<Coordinate>;
@@ -22,10 +23,12 @@ type TupleToTuple<T extends readonly string[]> = {
     [Idx in keyof T]: T[Idx]
 }
 type X_Tuple = TupleToTuple<["name"]>
+*/
 
 
 //https://stackoverflow.com/questions/73919926/typescript-declare-type-of-index-of-tuple
 export type TupleIndices<T extends readonly any[]> =
+    // eslint-disable-next-line prettier/prettier
     Extract<keyof T, `${number}`> extends `${infer N extends number}` ? N : never;
 
 export { }

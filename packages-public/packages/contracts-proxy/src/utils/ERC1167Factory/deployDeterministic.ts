@@ -2,18 +2,23 @@
  * Typescript implementation of ERC1167 library pure functions
  */
 import { Contract, constants, utils } from "ethers";
-import type { BaseContract, UnsignedTransaction, Transaction, Signer, ContractFactory, BytesLike, Overrides } from "ethers";
+import type {
+    BaseContract,
+    UnsignedTransaction,
+    Transaction,
+    Signer,
+    ContractFactory,
+    BytesLike,
+    Overrides,
+} from "ethers";
 import { FormatTypes } from "@ethersproject/abi";
-import {
-    ERC1167FactoryAddress,
-    GetAddressArgs,
-} from "./getAddress.js";
+import type { TransactionReceipt } from "@ethersproject/providers";
+import { ERC1167FactoryAddress, GetAddressArgs } from "./getAddress.js";
 import { getInitData } from "./getInitData.js";
 import { DEFAULT_SALT, getSalt } from "./getSalt.js";
+import { ContractParameters, ContractParametersWithOverrides, CustomFactory } from "./factory.js";
 import { ERC1167FactoryFactory } from "../../ethers/factories.js";
 import * as Create2 from "../Create2.js";
-import { ContractParameters, ContractParametersWithOverrides, CustomFactory } from "./factory.js";
-import type { TransactionReceipt } from "@ethersproject/providers";
 
 export interface DeployDeterministicAddressArgs<
     ContractTyped extends BaseContract = BaseContract,
@@ -39,25 +44,23 @@ export function deployDeterministicAddress<
     return address;
 }
 
-export interface DeployDeterministicInput<
+export type DeployDeterministicInput<
     ContractTyped extends BaseContract = BaseContract,
     InitSignature extends keyof ContractTyped | void = void,
-> extends DeployDeterministicAddressArgs<ContractTyped, InitSignature> {
-}
+> = DeployDeterministicAddressArgs<ContractTyped, InitSignature>;
 export async function deployDeterministicTx<
     ContractTyped extends BaseContract = BaseContract,
     InitSignature extends keyof ContractTyped | void = void,
->(args: DeployDeterministicInput<ContractTyped, InitSignature>):
-    Promise<{ address: string, txPayload: UnsignedTransaction }> {
-
+>(
+    args: DeployDeterministicInput<ContractTyped, InitSignature>,
+): Promise<{ address: string; txPayload: UnsignedTransaction }> {
     // Assign Config
     const { bytecode, contractInterface, initOptions } = args;
-    const salt = args.salt ?? DEFAULT_SALT
-    const cloneFactoryAddress = args.cloneFactoryAddress ?? ERC1167FactoryAddress
-    const msgSender = args.msgSender ?? constants.AddressZero
+    const salt = args.salt ?? DEFAULT_SALT;
+    const cloneFactoryAddress = args.cloneFactoryAddress ?? ERC1167FactoryAddress;
+    const msgSender = args.msgSender ?? constants.AddressZero;
 
-    const cloneFactory = ERC1167FactoryFactory
-        .attach(cloneFactoryAddress)
+    const cloneFactory = ERC1167FactoryFactory.attach(cloneFactoryAddress);
 
     // Compute address
     const address = deployDeterministicAddress<ContractTyped, InitSignature>({
@@ -74,25 +77,29 @@ export async function deployDeterministicTx<
     const initData = getInitData<ContractTyped, InitSignature>(contractInterface, initOptions);
 
     // Compute deploy tx
-    const txPayload = await cloneFactory.populateTransaction.deployDeterministic(
-        salt,
-        bytecode,
-        initData,
-        msgSender,
-    );
+    const txPayload = await cloneFactory.populateTransaction.deployDeterministic(salt, bytecode, initData, msgSender);
 
-    return { address, txPayload }
+    return { address, txPayload };
 }
 
 export async function deployDeterministic<
     ContractTyped extends BaseContract = BaseContract,
     InitSignature extends keyof ContractTyped | void = void,
->(args: DeployDeterministicInput<ContractTyped, InitSignature>, signer: Signer, overrides?: Overrides):
-    Promise<{ address: string, txPayload: UnsignedTransaction, contract: ContractTyped, tx?: Transaction, receipt?: TransactionReceipt }> {
-    const provider = signer.provider
-    if (!provider) throw new Error(`signer.provider ${provider}`)
+>(
+    args: DeployDeterministicInput<ContractTyped, InitSignature>,
+    signer: Signer,
+    overrides?: Overrides,
+): Promise<{
+    address: string;
+    txPayload: UnsignedTransaction;
+    contract: ContractTyped;
+    tx?: Transaction;
+    receipt?: TransactionReceipt;
+}> {
+    const provider = signer.provider;
+    if (!provider) throw new Error(`signer.provider ${provider}`);
 
-    const from = await signer.getAddress()
+    const from = await signer.getAddress();
     const { contractInterface } = args;
     const { address, txPayload } = await deployDeterministicTx(args);
 
@@ -103,12 +110,12 @@ export async function deployDeterministic<
 
     // Check if deployed
     if ((await provider!.getCode(address)) == "0x") {
-        const tx = await signer.sendTransaction({ ...txPayload, type: txPayload.type ?? 0, ...overrides, from })
+        const tx = await signer.sendTransaction({ ...txPayload, type: txPayload.type ?? 0, ...overrides, from });
         const receipt = await tx.wait(1);
 
-        return { address, txPayload, contract, tx, receipt }
+        return { address, txPayload, contract, tx, receipt };
     }
-    return { address, txPayload, contract }
+    return { address, txPayload, contract };
 }
 
 /***** Deterministic Deployment *****/
@@ -126,13 +133,13 @@ export function deployDeterministicFactory<
     Factory extends ContractFactory = ContractFactory,
     InitSignature extends keyof ReturnType<Factory["attach"]> | void = void,
 >(args: DeterministicFactoryArgs<Factory, InitSignature>, signer?: Signer) {
-    const provider = signer?.provider
+    const provider = signer?.provider;
     // Assign Config
     const { contractFactory, initSignature } = args;
-    const bytecode = contractFactory.bytecode
-    const salt = args.salt ?? DEFAULT_SALT
-    const cloneFactoryAddress = args.cloneFactoryAddress ?? ERC1167FactoryAddress
-    const msgSender = args.msgSender ?? constants.AddressZero
+    const bytecode = contractFactory.bytecode;
+    const salt = args.salt ?? DEFAULT_SALT;
+    const cloneFactoryAddress = args.cloneFactoryAddress ?? ERC1167FactoryAddress;
+    const msgSender = args.msgSender ?? constants.AddressZero;
 
     // Init data fragment
     const contractInterface = contractFactory.interface;
@@ -141,7 +148,7 @@ export function deployDeterministicFactory<
 
     //Send deploy transactino
     const deploy = async (...args: ContractParametersWithOverrides<ReturnType<Factory["attach"]>, InitSignature>) => {
-        if (!signer) throw new Error(`signer ${provider} cannot factory.deploy()`)
+        if (!signer) throw new Error(`signer ${provider} cannot factory.deploy()`);
 
         let initArgs: any;
         let overrides: Overrides | undefined;
@@ -172,13 +179,17 @@ export function deployDeterministicFactory<
     };
 
     //Get deploy transaction
-    const getDeployTransaction = async (...args: ContractParametersWithOverrides<ReturnType<Factory["attach"]>, InitSignature>) => {
+    const getDeployTransaction = async (
+        ...args: ContractParametersWithOverrides<ReturnType<Factory["attach"]>, InitSignature>
+    ) => {
         let initArgs: any;
         let overrides: Overrides | undefined;
         if (!initSignature) {
             overrides = args[0] as Overrides;
         } else if (args.length == initArgsLen + 1) {
             initArgs = args.slice(0, args.length - 1);
+            //TODO: why?
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             overrides = args[args.length - 1] as Overrides;
         } else {
             initArgs = args;
@@ -193,10 +204,10 @@ export function deployDeterministicFactory<
             salt,
             initOptions,
             msgSender,
-        })
+        });
 
-        return txPayload
-    }
+        return txPayload;
+    };
 
     const getInitData2 = (...args: ContractParameters<ReturnType<Factory["attach"]>, InitSignature>) => {
         const initOptions = initSignature ? ({ initSignature, initArgs: args } as any) : undefined;
@@ -220,7 +231,7 @@ export function deployDeterministicFactory<
 
     //Check if contract exists
     const exists = async (...args: ContractParameters<ReturnType<Factory["attach"]>, InitSignature>) => {
-        if (!provider) throw new Error(`signer.provider ${provider} cannot factory.exists()`)
+        if (!provider) throw new Error(`signer.provider ${provider} cannot factory.exists()`);
 
         const address = getAddress(...args);
         if ((await provider.getCode(address)) != "0x") return true;
@@ -229,11 +240,14 @@ export function deployDeterministicFactory<
 
     //Create new factory with new signer
     const connect = (signer: Signer) => {
-        return deployDeterministicFactory(args, signer)
-    }
+        return deployDeterministicFactory(args, signer);
+    };
 
     //New factory
-    const factory = contractFactory.connect(signer as any) as CustomFactory<ReturnType<Factory["attach"]>, InitSignature>;
+    const factory = contractFactory.connect(signer as any) as CustomFactory<
+        ReturnType<Factory["attach"]>,
+        InitSignature
+    >;
     factory.deploy = deploy;
     factory.getDeployTransaction = getDeployTransaction;
     factory.getInitData = getInitData2;

@@ -1,6 +1,8 @@
-import { ZodEffects, z } from "zod";
+import { z } from "zod";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { AbiParam, ZodForAbiParam } from "./abiParam.js";
 import { zodForAbiParam } from "./abiParam.js"
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { TupleIndices } from "../types/TupleIndices.js";
 import { fromPairs, map } from "../lodash.js";
 
@@ -24,9 +26,11 @@ export interface AbiFunction {
     readonly outputs: readonly AbiParam[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, prettier/prettier
 export type AbiParamsNamedToZod<T extends readonly AbiParam[]> = ReturnType<typeof z.object<{
     [Idx in T[number]as Idx["name"]]: ZodForAbiParam<Idx>
 }>>
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type AbiParamsIdxToZod<T extends readonly AbiParam[]> = ReturnType<typeof z.object<{
     [Idx in TupleIndices<T> as Idx]: ZodForAbiParam<T[Idx]>
 }>>

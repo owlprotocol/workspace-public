@@ -11,15 +11,11 @@ export interface AssetRouterInputInitializeArgs {
 
 export function initializeUtil(args: AssetRouterInputInitializeArgs) {
     const { admin, contractUri, inputBaskets } = args;
-    return [
-        admin,
-        contractUri ?? "",
-        inputBaskets.map(validateAssetBasketInput),
-    ] as [
-            Parameters<AssetRouterInput["initialize"]>[0],
-            Parameters<AssetRouterInput["initialize"]>[1],
-            Parameters<AssetRouterInput["initialize"]>[2],
-        ]
+    return [admin, contractUri ?? "", inputBaskets.map(validateAssetBasketInput)] as [
+        Parameters<AssetRouterInput["initialize"]>[0],
+        Parameters<AssetRouterInput["initialize"]>[1],
+        Parameters<AssetRouterInput["initialize"]>[2],
+    ];
 }
 
 export const AssetRouterInputInterface = AssetRouterInput__factory.createInterface();

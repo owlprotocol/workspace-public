@@ -18,10 +18,10 @@ export function initializeUtil(args: ERC2981SetterInitializeArgs) {
         royaltyReceiver ?? admin,
         feeNumerator ?? constants.Zero,
     ] as [
-            Parameters<ERC2981Setter["initialize"]>[0],
-            Parameters<ERC2981Setter["initialize"]>[1],
-            Parameters<ERC2981Setter["initialize"]>[2],
-            Parameters<ERC2981Setter["initialize"]>[3],
-            Parameters<ERC2981Setter["initialize"]>[4],
-        ];
+        Parameters<ERC2981Setter["initialize"]>[0],
+        Parameters<ERC2981Setter["initialize"]>[1],
+        Parameters<ERC2981Setter["initialize"]>[2],
+        Parameters<ERC2981Setter["initialize"]>[3],
+        Parameters<ERC2981Setter["initialize"]>[4],
+    ];
 }

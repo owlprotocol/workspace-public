@@ -1,11 +1,11 @@
 import { BEACON_ADMIN } from "@owlprotocol/envvars";
 import type { ContractFactory, Signer } from "ethers";
+import { connectFactories } from "./connectFactories.js";
 import { mapValues } from "../lodash.js";
 import { deployDeterministicFactory } from "../utils/ERC1167Factory/deployDeterministic.js";
 import { cloneDeterministicFactory } from "../utils/ERC1167Factory/cloneDeterministic.js";
 import { beaconProxyFactory } from "../utils/ERC1167Factory/beaconProxyFactory.js";
 import { beaconFactory } from "../utils/ERC1167Factory/beaconFactory.js";
-import { connectFactories } from "./connectFactories.js";
 
 //Generate factories
 export function getFactoriesWithSigner<F extends { [k: string]: ContractFactory }>(
@@ -22,6 +22,7 @@ export function getFactoriesWithSigner<F extends { [k: string]: ContractFactory 
         return deployDeterministicFactory({
             contractFactory: f,
         }, signer);
+        // eslint-disable-next-line prettier/prettier
     }) as { [K in keyof typeof factoriesConnected]: ReturnType<typeof deployDeterministicFactory<typeof factoriesConnected[K]>> }
     //console.debug("factoriesImplementations")
 
@@ -35,6 +36,7 @@ export function getFactoriesWithSigner<F extends { [k: string]: ContractFactory 
     //console.debug("factoriesDeterministic")
 
     /** Factories that clone an implementation using ERC1167 */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const factoriesClone = mapValues(factoriesImplementations, (f: any, name) => {
         return cloneDeterministicFactory({
             contractFactory: f,

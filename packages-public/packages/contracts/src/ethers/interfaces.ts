@@ -128,7 +128,8 @@ export const ITokenConsumerInterfaceId = interfaceId(ITokenConsumerInterface.fra
 export const IChainlinkAnyApiClientInterface = contracts.chainlink.IChainlinkAnyApiClient__factory.createInterface();
 export const IChainlinkAnyApiClientInterfaceId = interfaceId(IChainlinkAnyApiClientInterface.fragments);
 
-export const IChainlinkAnyApiConsumerInterface = contracts.chainlink.IChainlinkAnyApiConsumer__factory.createInterface();
+export const IChainlinkAnyApiConsumerInterface =
+    contracts.chainlink.IChainlinkAnyApiConsumer__factory.createInterface();
 export const IChainlinkAnyApiConsumerInterfaceId = interfaceId(IChainlinkAnyApiConsumerInterface.fragments);
 
 export const interfaceIds = {

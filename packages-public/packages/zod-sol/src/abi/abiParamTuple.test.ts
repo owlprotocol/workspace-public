@@ -1,9 +1,10 @@
-import { expectType } from "ts-expect"
-import { AbiParamTuple, zodForAbiParamTuple } from "./abiParamTuple.js";
+import { describe, test } from "vitest";
+import { expectType } from "ts-expect";
 import { z } from "zod";
+import { zodForAbiParamTuple } from "./abiParamTuple.js";
 import { integerZod } from "../solidity/integer.js";
 
-describe('abiParamArrayTest', function () {
+describe("abiParamArrayTest", function () {
     const tuple = {
         name: "target",
         type: "tuple",
@@ -20,12 +21,14 @@ describe('abiParamArrayTest', function () {
         internalType: "struct Target",
     } as const; // satisfies AbiParamTuple;
 
-    it('tuple', async () => {
-        const zodTuple = zodForAbiParamTuple(tuple)
-        expectType<z.ZodObject<{
-            to: z.ZodString,
-            amount: ReturnType<typeof integerZod>
-        }>>(zodTuple)
+    test("tuple", async () => {
+        const zodTuple = zodForAbiParamTuple(tuple);
+        expectType<
+            z.ZodObject<{
+                to: z.ZodString;
+                amount: ReturnType<typeof integerZod>;
+            }>
+        >(zodTuple);
     });
 
     /*
@@ -42,7 +45,7 @@ describe('abiParamArrayTest', function () {
         internalType: "struct Receipt",
     } as const satisfies AbiParamTuple
 
-    it('tuple nested', async () => {
+    test('tuple nested', async () => {
         const zodTuple = zodForAbiParamTuple(tuple)
         expectType<z.ZodObject<{ to: z.ZodString, amount: z.ZodEffects<z.ZodBigInt, string, bigint> }>>(zodTuple)
     });

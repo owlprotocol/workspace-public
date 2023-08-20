@@ -12,8 +12,6 @@ export const ImplementationsDeploy = async ({ provider, signers, network }: RunT
     const signer = signers[0];
     let nonce = await provider.getTransactionCount(await signer.getAddress());
 
-
-
     const promises = mapValues(connectFactories(factoriesImplementations, signer), async (factory) => {
         const address = factory.getAddress();
 

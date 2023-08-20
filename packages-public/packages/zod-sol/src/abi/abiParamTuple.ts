@@ -1,5 +1,7 @@
 import { z } from "zod";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { type ZodForArrayType, type AbiParamArray, zodForAbiParamArray, ArrayType } from "./abiParamArray.js";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { zodForAbiParamNonTuple, type AbiParamNonTuple, type ZodForNonTupleType, NonTupleType } from "./abiParamNonTuple.js";
 import { fromPairs, map } from "../lodash.js";
 
@@ -20,6 +22,7 @@ export function isAbiParamTuple(t: { type: string }): t is AbiParamTuple {
     return t.type === "tuple"
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, prettier/prettier
 export type ZodForAbiParamTuple<T extends AbiParamTuple> = ReturnType<typeof z.object<{ [Idx in T["components"][number]as Idx["name"]]:
     Idx extends AbiParamNonTuple ? ZodForNonTupleType<Idx["type"]> :
     Idx extends AbiParamArray ? ZodForArrayType<Idx["type"]> :

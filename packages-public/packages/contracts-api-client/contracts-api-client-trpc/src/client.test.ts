@@ -1,30 +1,36 @@
+import { expect, describe, beforeAll, test } from "vitest";
 import { createClient } from "./client.js";
 import type { AppClient } from "./client.js";
 
 describe("trpc client", () => {
-
     let client: AppClient;
 
-    before(() => {
+    beforeAll(() => {
         client = createClient("");
+    });
 
-    })
+    test("/users/me", () => {
+        const me = client.users.me.query({});
+        expect(me).toBeDefined();
+    });
 
-    it("/users/me", () => {
-        const me = client.users.me.query({})
-    })
+    test("/<networkId>/interfaces/IERC20/read/balanceOf", async () => {
+        const balance = await client.interfaces.IERC20.balanceOf.mutate({
+            networkId: "1",
+            address: "",
+            contractParams: { account: "" },
+        });
+        expect(balance).toBeDefined();
+    });
 
-    it("/<networkId>/interfaces/IERC20/read/balanceOf", async () => {
-        const balance = await client.interfaces.IERC20.balanceOf.mutate({ networkId: "1", address: "", contractParams: { account: "" } })
-    })
-
-    it("/<networkId>/deploy/ERC20Mintable", async () => {
+    test("/<networkId>/deploy/ERC20Mintable", async () => {
         const erc20Mintable = await client.deploy.ERC20Mintable.mutate({
             networkId: "1",
             contractParams: {
                 name: "",
-                symbol: ""
-            }
-        })
-    })
-})
+                symbol: "",
+            },
+        });
+        expect(erc20Mintable).toBeDefined();
+    });
+});

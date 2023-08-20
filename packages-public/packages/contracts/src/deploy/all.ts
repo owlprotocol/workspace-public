@@ -3,7 +3,7 @@ import * as Common from "./common/index.js";
 import * as Plugins from "./plugins/index.js";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-export const AllDeploy = async () => { };
+export const AllDeploy = async () => {};
 AllDeploy.tags = ["All"];
 AllDeploy.dependencies = [
     ...Common.ImplementationsDeploy.tags,

@@ -6,7 +6,7 @@ import { mapValues } from "../../../lodash.js";
 import { ERC1155MintableInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC1155Mintable.js";
 
 interface Params extends RunTimeEnvironment {
-    instances: Omit<ERC1155MintableInitializeArgs, "admin">[],
+    instances: Omit<ERC1155MintableInitializeArgs, "admin">[];
     balanceTarget: number;
 }
 export const ERC1155MintableDeploy = async ({ provider, signers, network, instances, balanceTarget }: Params) => {
@@ -17,7 +17,6 @@ export const ERC1155MintableDeploy = async ({ provider, signers, network, instan
     let nonce = await provider.getTransactionCount(signerAddress);
 
     const ERC1155MintableFactory = getFactoriesWithSigner(factories, signer).factoriesBeaconProxies.ERC1155Mintable;
-
 
     const { chainId } = network.config;
 

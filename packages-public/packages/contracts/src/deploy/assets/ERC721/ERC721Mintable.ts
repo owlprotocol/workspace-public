@@ -6,7 +6,6 @@ import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.
 import { mapValues } from "../../../lodash.js";
 import { ERC721MintableInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC721Mintable.js";
 
-
 interface Params extends RunTimeEnvironment {
     instances: Omit<ERC721MintableInitializeArgs, "admin" | "name" | "symbol">[];
     balanceTarget: number;

@@ -10,15 +10,10 @@ export interface TokenURIBaseURIInitializeArgs {
 
 export function initializeUtil(args: TokenURIBaseURIInitializeArgs) {
     const { admin, contractUri, baseUriRole, baseUri } = args;
-    return [
-        admin,
-        contractUri ?? "",
-        baseUriRole ?? constants.AddressZero,
-        baseUri ?? "",
-    ] as [
-            Parameters<TokenURIBaseURI["initialize"]>[0],
-            Parameters<TokenURIBaseURI["initialize"]>[1],
-            Parameters<TokenURIBaseURI["initialize"]>[2],
-            Parameters<TokenURIBaseURI["initialize"]>[3],
-        ];
+    return [admin, contractUri ?? "", baseUriRole ?? constants.AddressZero, baseUri ?? ""] as [
+        Parameters<TokenURIBaseURI["initialize"]>[0],
+        Parameters<TokenURIBaseURI["initialize"]>[1],
+        Parameters<TokenURIBaseURI["initialize"]>[2],
+        Parameters<TokenURIBaseURI["initialize"]>[3],
+    ];
 }

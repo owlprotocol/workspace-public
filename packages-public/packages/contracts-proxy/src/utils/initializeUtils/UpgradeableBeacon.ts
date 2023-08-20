@@ -7,11 +7,8 @@ export interface UpgradeableBeaconInitializeArgs {
 
 export function initializeUtil(args: UpgradeableBeaconInitializeArgs) {
     const { admin, implementation } = args;
-    return [
-        admin,
-        implementation,
-    ] as [
-            Parameters<UpgradeableBeacon["initialize"]>[0],
-            Parameters<UpgradeableBeacon["initialize"]>[1],
-        ];
+    return [admin, implementation] as [
+        Parameters<UpgradeableBeacon["initialize"]>[0],
+        Parameters<UpgradeableBeacon["initialize"]>[1],
+    ];
 }

@@ -1,1 +1,1 @@
-export * from "./functionParamsObjToTuple.js"
+export * from "./functionParamsObjToTuple.js";

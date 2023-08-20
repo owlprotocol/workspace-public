@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 /**
  * Testing out encode/decode for ChainlinkAnyApiClient
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function mockConsumer() {
     console.debug("bytes32(1): ", ethers.utils.defaultAbiCoder.encode(["uint256"], [1]));
 
@@ -36,6 +37,7 @@ function tokenDnaConsumer() {
     console.debug("prefixData: ", prefixData);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function reqResponseData() {
     const data =
         "0x68747470733a2f2f697066732e696f2f697066732f516d5358416257356b716e3259777435444c336857354d736a654b4a4839724c654c6b51733362527579547871313f66696c656e616d653d73756e2d636861696e6c696e6b2e676966";

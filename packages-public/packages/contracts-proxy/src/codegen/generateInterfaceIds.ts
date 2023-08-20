@@ -1,7 +1,7 @@
 import { FormatTypes } from "@ethersproject/abi";
+import type { ContractFactory } from "ethers";
 import { writeFileSync, existsSync, mkdirSync } from "fs";
 import { interfaceId } from "../utils/IERC165.js";
-import type { ContractFactory } from "ethers";
 
 export function generateInterfaceIds(factories: { [k: string]: ContractFactory }) {
     const interfaceIdFolder = "interfaceId";

@@ -1,9 +1,9 @@
 import type { ContractFactory, Overrides, Signer, UnsignedTransaction } from "ethers";
-import { constants, ethers, utils } from "ethers";
-import { DeploymentArgs, isDeploymentArgsBeaconExisting, isDeploymentArgsBeaconNew, isDeploymentArgsBeaconOwl } from "./deploymentArgs.js";
-import { ContractParameters } from "../utils/ERC1167Factory/factory.js";
-import type { getDeployFactories } from "./getFactory.js";
+import { constants, ethers } from "ethers";
 import { TransactionResponse } from "@ethersproject/providers";
+import { DeploymentArgs, isDeploymentArgsBeaconExisting, isDeploymentArgsBeaconNew, isDeploymentArgsBeaconOwl } from "./deploymentArgs.js";
+import type { getDeployFactories } from "./getFactory.js";
+import { ContractParameters } from "../utils/ERC1167Factory/factory.js";
 
 /**
  *
@@ -13,6 +13,7 @@ import { TransactionResponse } from "@ethersproject/providers";
  * @returns
  */
 export function getFactoryWithInitializeUtil<F extends ContractFactory, K extends Record<string, any>>(
+    // eslint-disable-next-line prettier/prettier
     contractFactory: ReturnType<typeof getDeployFactories<F>>,
     initializeUtil: (args: K) => ContractParameters<ReturnType<F["attach"]>, "initialize">
 ) {
@@ -94,5 +95,6 @@ export function getFactoryWithInitializeUtil<F extends ContractFactory, K extend
     } as const
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type FactoryWithInitializeUtil<F extends ContractFactory = ContractFactory, K extends Record<string, any> = Record<string, any>> =
     ReturnType<typeof getFactoryWithInitializeUtil<F, K>>

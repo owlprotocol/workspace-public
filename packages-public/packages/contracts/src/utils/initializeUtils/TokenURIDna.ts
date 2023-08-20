@@ -20,11 +20,11 @@ export function initializeUtil(args: TokenURIDnaInitializeArgs) {
         dnaProviderRole ?? admin,
         dnaProvider ?? constants.AddressZero,
     ] as [
-            Parameters<TokenURIDna["initialize"]>[0],
-            Parameters<TokenURIDna["initialize"]>[1],
-            Parameters<TokenURIDna["initialize"]>[2],
-            Parameters<TokenURIDna["initialize"]>[3],
-            Parameters<TokenURIDna["initialize"]>[4],
-            Parameters<TokenURIDna["initialize"]>[5],
-        ];
+        Parameters<TokenURIDna["initialize"]>[0],
+        Parameters<TokenURIDna["initialize"]>[1],
+        Parameters<TokenURIDna["initialize"]>[2],
+        Parameters<TokenURIDna["initialize"]>[3],
+        Parameters<TokenURIDna["initialize"]>[4],
+        Parameters<TokenURIDna["initialize"]>[5],
+    ];
 }

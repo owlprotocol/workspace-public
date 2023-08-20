@@ -5,7 +5,6 @@ import { getContractURIs, logDeployment, RunTimeEnvironment } from "../../utils.
 import { mapValues } from "../../../lodash.js";
 import { TokenURIBaseURIInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/TokenURIBaseURI.js";
 
-
 interface Params extends RunTimeEnvironment {
     instances: number;
 }

@@ -20,11 +20,11 @@ export function initializeUtil(args: ERC721MintableAutoIdInitializeArgs) {
         tokenUriProvider ?? constants.AddressZero,
         tokenRoyaltyProvider ?? constants.AddressZero,
     ] as [
-            Parameters<ERC721MintableAutoId["initialize"]>[0],
-            Parameters<ERC721MintableAutoId["initialize"]>[1],
-            Parameters<ERC721MintableAutoId["initialize"]>[2],
-            Parameters<ERC721MintableAutoId["initialize"]>[3],
-            Parameters<ERC721MintableAutoId["initialize"]>[4],
-            Parameters<ERC721MintableAutoId["initialize"]>[5],
-        ];
+        Parameters<ERC721MintableAutoId["initialize"]>[0],
+        Parameters<ERC721MintableAutoId["initialize"]>[1],
+        Parameters<ERC721MintableAutoId["initialize"]>[2],
+        Parameters<ERC721MintableAutoId["initialize"]>[3],
+        Parameters<ERC721MintableAutoId["initialize"]>[4],
+        Parameters<ERC721MintableAutoId["initialize"]>[5],
+    ];
 }

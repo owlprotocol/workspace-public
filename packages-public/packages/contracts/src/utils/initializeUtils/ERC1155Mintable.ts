@@ -16,9 +16,9 @@ export function initializeUtil(args: ERC1155MintableInitializeArgs) {
         tokenUriProvider ?? constants.AddressZero,
         tokenRoyaltyProvider ?? constants.AddressZero,
     ] as [
-            Parameters<ERC1155Mintable["initialize"]>[0],
-            Parameters<ERC1155Mintable["initialize"]>[1],
-            Parameters<ERC1155Mintable["initialize"]>[2],
-            Parameters<ERC1155Mintable["initialize"]>[3],
-        ];
+        Parameters<ERC1155Mintable["initialize"]>[0],
+        Parameters<ERC1155Mintable["initialize"]>[1],
+        Parameters<ERC1155Mintable["initialize"]>[2],
+        Parameters<ERC1155Mintable["initialize"]>[3],
+    ];
 }

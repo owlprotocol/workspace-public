@@ -23,11 +23,11 @@ export function initializeUtil(args: AssetRouterCraftInitializeArgs) {
         inputBaskets.map(validateAssetBasketInput),
         outputBaskets.map(validateAssetBasketOutput),
     ] as [
-            Parameters<AssetRouterCraft["initialize"]>[0],
-            Parameters<AssetRouterCraft["initialize"]>[1],
-            Parameters<AssetRouterCraft["initialize"]>[2],
-            Parameters<AssetRouterCraft["initialize"]>[3],
-        ]
+        Parameters<AssetRouterCraft["initialize"]>[0],
+        Parameters<AssetRouterCraft["initialize"]>[1],
+        Parameters<AssetRouterCraft["initialize"]>[2],
+        Parameters<AssetRouterCraft["initialize"]>[3],
+    ];
 }
 
 export const AssetRouterCraftInterface = AssetRouterCraft__factory.createInterface();

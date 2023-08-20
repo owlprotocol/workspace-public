@@ -8,13 +8,9 @@ export interface BeaconProxyInitializeArgs {
 
 export function initializeUtil(args: BeaconProxyInitializeArgs) {
     const { admin, beaconAddress, data } = args;
-    return [
-        admin,
-        beaconAddress,
-        data
-    ] as [
-            Parameters<BeaconProxy["initialize"]>[0],
-            Parameters<BeaconProxy["initialize"]>[1],
-            Parameters<BeaconProxy["initialize"]>[2],
-        ];
+    return [admin, beaconAddress, data] as [
+        Parameters<BeaconProxy["initialize"]>[0],
+        Parameters<BeaconProxy["initialize"]>[1],
+        Parameters<BeaconProxy["initialize"]>[2],
+    ];
 }

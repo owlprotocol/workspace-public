@@ -11,8 +11,8 @@ const deploymentTx = {
 export const ProxyFactoryDeploy = async ({ provider, signers, network }: RunTimeEnvironment) => {
     //Check if already deployed
     const cloneFactoryAddress = ERC1167FactoryAddress;
-    const cloneFactoryFactory = ERC1167FactoryFactory.connect(signers[0])
-    const cloneFactory = cloneFactoryFactory.attach(cloneFactoryAddress)
+    const cloneFactoryFactory = ERC1167FactoryFactory.connect(signers[0]);
+    const cloneFactory = cloneFactoryFactory.attach(cloneFactoryAddress);
 
     const name = "ERC1167Factory";
 

@@ -7,11 +7,11 @@ import type { Signer } from "ethers";
 import { getInitDataEncoder } from "./getInitData.js";
 
 import { ContractParameters, ContractParametersWithOverrides, CustomFactory } from "./factory.js";
-import { BeaconProxyFactory as BeaconProxyFactory } from "../../ethers/factories.js";
-import type { BeaconProxy__factory } from "../../typechain/ethers/index.js";
 import { DeterministicFactoryArgs, deployDeterministicFactory } from "./deployDeterministic.js";
 import { DEFAULT_SALT } from "./getSalt.js";
 import { ERC1167FactoryAddress } from "./getAddress.js";
+import type { BeaconProxy__factory } from "../../typechain/ethers/index.js";
+import { BeaconProxyFactory as BeaconProxyFactory } from "../../ethers/factories.js";
 
 /***** Beacon Proxy *****/
 interface BeaconProxyFactoryArgs<
@@ -24,25 +24,28 @@ export function beaconProxyFactory<
     Factory extends ContractFactory = ContractFactory,
     InitSignature extends keyof ReturnType<Factory["attach"]> | void = void,
 >(args: BeaconProxyFactoryArgs<Factory, InitSignature>, signer?: Signer) {
-    const provider = signer?.provider
+    const provider = signer?.provider;
     // Assign Config
     const { contractFactory, initSignature, beaconAddress } = args;
-    const salt = args.salt ?? DEFAULT_SALT
-    const cloneFactoryAddress = args.cloneFactoryAddress ?? ERC1167FactoryAddress
-    const msgSender = args.msgSender ?? constants.AddressZero
+    const salt = args.salt ?? DEFAULT_SALT;
+    const cloneFactoryAddress = args.cloneFactoryAddress ?? ERC1167FactoryAddress;
+    const msgSender = args.msgSender ?? constants.AddressZero;
 
     // Init data fragment
     const contractInterface = contractFactory.interface;
     const initFragment = initSignature ? contractInterface.getFunction(initSignature as string) : undefined;
     const initArgsLen = initFragment ? initFragment.inputs.length : 0;
 
-    const BeaconProxyDeterministicFactory = deployDeterministicFactory<BeaconProxy__factory, "initialize">({
-        contractFactory: BeaconProxyFactory,
-        cloneFactoryAddress,
-        initSignature: "initialize",
-        msgSender,
-        salt,
-    }, signer);
+    const BeaconProxyDeterministicFactory = deployDeterministicFactory<BeaconProxy__factory, "initialize">(
+        {
+            contractFactory: BeaconProxyFactory,
+            cloneFactoryAddress,
+            initSignature: "initialize",
+            msgSender,
+            salt,
+        },
+        signer,
+    );
 
     //@ts-expect-error
     const encoder = getInitDataEncoder<ReturnType<Factory["attach"]>, InitSignature>(contractInterface, initSignature!);
@@ -66,7 +69,9 @@ export function beaconProxyFactory<
         return contractFactory.attach(beacon.address) as ReturnType<Factory["attach"]>;
     };
 
-    const getDeployTransaction = async (...args: ContractParametersWithOverrides<ReturnType<Factory["attach"]>, InitSignature>) => {
+    const getDeployTransaction = async (
+        ...args: ContractParametersWithOverrides<ReturnType<Factory["attach"]>, InitSignature>
+    ) => {
         let initArgs: any;
         let overrides: Overrides | undefined;
         if (!initSignature) {
@@ -96,7 +101,7 @@ export function beaconProxyFactory<
     };
 
     const exists = async (...args: ContractParameters<ReturnType<Factory["attach"]>, InitSignature>) => {
-        if (!provider) throw new Error(`signer.provider ${provider}`)
+        if (!provider) throw new Error(`signer.provider ${provider}`);
 
         const address = getAddress(...args);
         if ((await provider.getCode(address)) != "0x") return true;
@@ -105,11 +110,14 @@ export function beaconProxyFactory<
 
     //Create new factory with new signer
     const connect = (signer: Signer) => {
-        return beaconProxyFactory(args, signer)
-    }
+        return beaconProxyFactory(args, signer);
+    };
 
     //New factory
-    const factory = contractFactory.connect(signer as any) as CustomFactory<ReturnType<Factory["attach"]>, InitSignature>;
+    const factory = contractFactory.connect(signer as any) as CustomFactory<
+        ReturnType<Factory["attach"]>,
+        InitSignature
+    >;
     factory.deploy = deploy;
     factory.getDeployTransaction = getDeployTransaction;
     factory.getInitData = getInitData2;

@@ -3,7 +3,7 @@ import { readdirSync, writeFileSync, readFileSync, existsSync, mkdirSync } from 
 export function generateDeploymentsExport() {
     const deploymentsFolder = "src/deployments";
     if (!existsSync(deploymentsFolder)) {
-        mkdirSync(deploymentsFolder)
+        mkdirSync(deploymentsFolder);
     }
 
     const networks = readdirSync(deploymentsFolder);

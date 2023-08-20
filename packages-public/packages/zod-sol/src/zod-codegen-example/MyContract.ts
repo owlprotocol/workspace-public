@@ -10,5 +10,5 @@ export const MyContract = {
         //TODO: Use docs?
         outputsExample: {},
     },
-    fnAddress: { inputs: z.object({ to: zSol.addressZod }), outputs: z.object({}) }
+    fnAddress: { inputs: z.object({ to: zSol.addressZod }), outputs: z.object({}) },
 };

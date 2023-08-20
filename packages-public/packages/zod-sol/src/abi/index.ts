@@ -1,4 +1,4 @@
-export * from "./abiParamNonTuple.js"
+export * from "./abiParamNonTuple.js";
 export * from "./abiParamArray.js";
 export * from "./abiParamTuple.js";
 export * from "./abiParamTupleArray.js";

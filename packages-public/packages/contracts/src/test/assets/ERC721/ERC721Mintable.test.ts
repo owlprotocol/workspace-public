@@ -3,7 +3,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import hre, { ethers } from "hardhat";
 import { expect, assert } from "chai";
 import { zip } from "lodash";
-import { ERC721Mintable } from "../../../typechain/ethers/index.js";;
+import { ERC721Mintable } from "../../../typechain/ethers/index.js";
 import deployProxyNick from "../../../deploy-hre/common/DeterministicDeployer.js";
 import ProxyFactoryDeploy from "../../../deploy-hre/common/ProxyFactory.js";
 import ERC1820Deploy from "../../../deploy-hre/common/ERC1820.js";
@@ -24,7 +24,6 @@ import {
 } from "../../../ethers/interfaces.js";
 import { registry as registryContract } from "../../../utils/ERC1820.js";
 import { sleep } from "../../utils/sleep.js";
-import { ERC1167FactoryAddress } from "../../../utils/ERC1167Factory/index.js";
 
 describe("ERC721Mintable", function () {
     let signers: SignerWithAddress[];
@@ -57,7 +56,7 @@ describe("ERC721Mintable", function () {
         token = {
             admin: signers[0].address,
             contractUri: `token.${tokenName}.com`,
-                        name: `Token ${tokenName}`,
+            name: `Token ${tokenName}`,
             symbol: `TK${tokenName}`,
             initBaseURI: `token.${tokenName}.com/token`,
             feeReceiver: signers[0].address,

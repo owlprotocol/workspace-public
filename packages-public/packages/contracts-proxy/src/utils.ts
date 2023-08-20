@@ -17,8 +17,8 @@ export function logDeployment(
 ) {
     const msg = `${networkName.padEnd(20)}\t${contractName.padEnd(30)}\t${deploymentType.padEnd(20)}\t${status.padEnd(
         10,
-    )}\t${address}`
-    console.debug(msg)
+    )}\t${address}`;
+    console.debug(msg);
     if (process.env.LOG_LEVEL != "info") {
         log.log(msg);
     }

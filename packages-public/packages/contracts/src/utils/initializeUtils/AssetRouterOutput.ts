@@ -17,7 +17,7 @@ export function initializeUtil(args: AssetRouterOutputInitializeArgs) {
         Parameters<AssetRouterOutput["initialize"]>[1],
         Parameters<AssetRouterOutput["initialize"]>[2],
         Parameters<AssetRouterOutput["initialize"]>[3],
-    ]
+    ];
 }
 
 export const AssetRouterOutputInterface = AssetRouterOutput__factory.createInterface();
