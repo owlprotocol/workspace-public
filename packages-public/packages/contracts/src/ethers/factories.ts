@@ -68,7 +68,9 @@ export const factoryInterfaceClasses = {
     IAssetRouterInput: contracts.plugins.assetRouter.IAssetRouterInput__factory,
     IAssetRouterOutput: contracts.plugins.assetRouter.IAssetRouterOutput__factory,
     IChainlinkAnyApiClient: contracts.chainlink.ChainlinkAnyApiClient__factory,
-    IChainlinkAnyApiConsumer: contracts.chainlink.IChainlinkAnyApiConsumer__factory
+    IChainlinkAnyApiConsumer: contracts.chainlink.IChainlinkAnyApiConsumer__factory,
+    ISafeProxyFactory: contracts.safe.ISafeProxyFactory__factory,
+    ISafe: contracts.safe.ISafe__factory
 } as const
 
 export const factoriesInterface = mapValues(factoryInterfaceClasses, (f) => new f()) as {

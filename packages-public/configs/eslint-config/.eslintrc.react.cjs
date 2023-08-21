@@ -4,15 +4,20 @@ module.exports = {
     },
     parser: "@typescript-eslint/parser", // Specifies the ESLint parser
     extends: [
+        "plugin:react/recommended", // Uses the recommended rules from @eslint-plugin-react
         "plugin:@typescript-eslint/recommended", // Uses the recommended rules from @typescript-eslint/eslint-plugin
         "plugin:prettier/recommended",
         "plugin:import/typescript",
+        "plugin:storybook/recommended",
         "plugin:node/recommended",
     ],
-    plugins: ["@typescript-eslint", "prettier", "import"],
+    plugins: ["@typescript-eslint", "prettier", "import", "react-hooks"],
     parserOptions: {
         ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
         sourceType: "module", // Allows for the use of imports
+        ecmaFeatures: {
+            jsx: true, // Allows for the parsing of JSX
+        },
     },
     rules: {
         "linebreak-style": ["error", "unix"],
@@ -57,7 +62,7 @@ module.exports = {
             "off",
             "always",
             {
-                tryExtensions: [".js", ".ts", ".node"],
+                tryExtensions: [".js", ".ts", ".jsx", ".tsx", ".node"],
             },
         ],
         "@typescript-eslint/no-unused-vars": [
@@ -69,13 +74,26 @@ module.exports = {
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/ban-ts-comment": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-filename-extension": [
+            1,
+            {
+                extensions: [".js", ".jsx", ".ts", ".tsx"],
+            },
+        ],
+        "react/prop-types": 0,
+        "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
+        "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies
     },
     settings: {
+        react: {
+            version: "detect", // Tells eslint-plugin-react to automatically detect the version of React to use
+        },
         "import/parsers": {
-            "@typescript-eslint/parser": [".ts"],
+            "@typescript-eslint/parser": [".ts", ".tsx"],
         },
         "import/resolver": {},
-        "import/extensions": [".js", ".mjs", ".ts"],
+        "import/extensions": [".js", ".mjs", ".jsx", ".ts", ".tsx"],
     },
     overrides: [],
     ignorePatterns: [
