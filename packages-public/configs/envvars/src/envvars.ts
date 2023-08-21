@@ -146,6 +146,8 @@ declare global {
             readonly FIREBASE_PROJECT_ID?: string;
             readonly FIREBASE_APP_ID?: string;
             readonly FIREBASE_MEASUREMENT_ID?: string;
+            readonly FIREBASE_SERVICE_EMAIL?: string;
+            readonly FIREBASE_PRIVATE_KEY?: string;
         }
     }
 }
@@ -275,6 +277,8 @@ declare global {
         readonly VITE_FIREBASE_PROJECT_ID?: string;
         readonly VITE_FIREBASE_APP_ID?: string;
         readonly VITE_FIREBASE_MEASUREMENT_ID?: string;
+        readonly VITE_FIREBASE_SERVICE_EMAIL?: string;
+        readonly VITE_FIREBASE_PRIVATE_KEY?: string;
     }
 }
 
@@ -700,3 +704,9 @@ export const FIREBASE_APP_ID = import.meta.env ? import.meta.env.VITE_FIREBASE_A
 export const FIREBASE_MEASUREMENT_ID = import.meta.env
     ? import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
     : process.env.FIREBASE_MEASUREMENT_ID;
+export const FIREBASE_SERVICE_EMAIL = import.meta.env
+    ? import.meta.env.VITE_FIREBASE_SERVICE_EMAIL
+    : process.env.FIREBASE_SERVICE_EMAIL;
+export const FIREBASE_PRIVATE_KEY = import.meta.env
+    ? import.meta.env.VITE_FIREBASE_PRIVATE_KEY
+    : process.env.FIREBASE_PRIVATE_KEY;
