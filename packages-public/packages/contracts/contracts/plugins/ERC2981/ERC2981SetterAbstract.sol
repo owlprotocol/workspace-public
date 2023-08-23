@@ -27,15 +27,15 @@ abstract contract ERC2981SetterAbstract is
      * @dev ERC2981SetterAbstract unchained initialization
      * @param royaltyRole write role
      * @param royaltyReceiver initial royalty receiver
-     * @param _feeNumerator fee numerator
+     * @param feeNumerator fee numerator
      */
     function __ERC2981SetterAbstract_init_unchained(
         address royaltyRole,
         address royaltyReceiver,
-        uint96 _feeNumerator
+        uint96 feeNumerator
     ) internal {
         _grantRole(ROYALTY_ROLE, royaltyRole);
-        _setDefaultRoyalty(royaltyReceiver, _feeNumerator);
+        _setDefaultRoyalty(royaltyReceiver, feeNumerator);
 
         if (_registryExists()) {
             _registerInterface(type(IERC2981Upgradeable).interfaceId);

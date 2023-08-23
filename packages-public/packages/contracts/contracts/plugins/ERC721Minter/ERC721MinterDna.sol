@@ -17,22 +17,22 @@ import {ERC721MinterAbstract} from "./ERC721MinterAbstract.sol";
 contract ERC721MinterDna is ERC721MinterAbstract, TokenDnaConsumerAbstract, OwlBase, IERC721MinterDna {
     function initialize(
         address admin,
-        string memory _contractUri,
+        string memory contractUri,
         address minterRole,
         address token,
         address dnaProvider
     ) external initializer {
-        __ERC721MinterDna_init(admin, _contractUri, minterRole, token, dnaProvider);
+        __ERC721MinterDna_init(admin, contractUri, minterRole, token, dnaProvider);
     }
 
     function __ERC721MinterDna_init(
         address admin,
-        string memory _contractUri,
+        string memory contractUri,
         address minterRole,
         address token,
         address dnaProvider
     ) internal {
-        __ContractURI_init_unchained(admin, _contractUri);
+        __ContractURI_init_unchained(admin, contractUri);
         __OwlBase_init_unchained(admin);
 
         __TokenConsumerAbstract_init_unchained(admin, token);

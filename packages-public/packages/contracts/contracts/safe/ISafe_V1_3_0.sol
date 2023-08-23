@@ -29,13 +29,13 @@ interface ISafe_V1_3_0 {
 
     function VERSION() external view returns (string memory);
 
-    function addOwnerWithThreshold(address owner, uint256 _threshold) external;
+    function addOwnerWithThreshold(address owner, uint256 threshold) external;
 
     function approveHash(bytes32 hashToApprove) external;
 
     function approvedHashes(address, bytes32) external view returns (uint256);
 
-    function changeThreshold(uint256 _threshold) external;
+    function changeThreshold(uint256 threshold) external;
 
     function checkNSignatures(
         bytes32 dataHash,
@@ -62,7 +62,7 @@ interface ISafe_V1_3_0 {
         uint256 gasPrice,
         address gasToken,
         address refundReceiver,
-        uint256 _nonce
+        uint256 nonce
     ) external view returns (bytes memory);
 
     function execTransaction(
@@ -115,7 +115,7 @@ interface ISafe_V1_3_0 {
         uint256 gasPrice,
         address gasToken,
         address refundReceiver,
-        uint256 _nonce
+        uint256 nonce
     ) external view returns (bytes32);
 
     function isModuleEnabled(address module) external view returns (bool);
@@ -124,7 +124,7 @@ interface ISafe_V1_3_0 {
 
     function nonce() external view returns (uint256);
 
-    function removeOwner(address prevOwner, address owner, uint256 _threshold) external;
+    function removeOwner(address prevOwner, address owner, uint256 threshold) external;
 
     function requiredTxGas(address to, uint256 value, bytes memory data, uint8 operation) external returns (uint256);
 
@@ -133,8 +133,8 @@ interface ISafe_V1_3_0 {
     function setGuard(address guard) external;
 
     function setup(
-        address[] memory _owners,
-        uint256 _threshold,
+        address[] memory owners,
+        uint256 threshold,
         address to,
         bytes memory data,
         address fallbackHandler,

@@ -22,22 +22,22 @@ contract ERC721MinterAutoIdDna is
 {
     function initialize(
         address admin,
-        string memory _contractUri,
+        string memory contractUri,
         address minterRole,
         address token,
         address dnaProvider
     ) external initializer {
-        __ERC721MinterAutoIdDna_init(admin, _contractUri, minterRole, token, dnaProvider);
+        __ERC721MinterAutoIdDna_init(admin, contractUri, minterRole, token, dnaProvider);
     }
 
     function __ERC721MinterAutoIdDna_init(
         address admin,
-        string memory _contractUri,
+        string memory contractUri,
         address minterRole,
         address token,
         address dnaProvider
     ) internal {
-        __ContractURI_init_unchained(admin, _contractUri);
+        __ContractURI_init_unchained(admin, contractUri);
         __OwlBase_init_unchained(admin);
 
         __TokenConsumerAbstract_init_unchained(admin, token);
