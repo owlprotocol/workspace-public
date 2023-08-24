@@ -10,7 +10,7 @@ pragma solidity ^0.8.7;
  */
 interface IChainlinkAnyApiClient {
     /**
-     * @dev Issue Chainlink AnyApi request. Protected by onlyRole(REQUEST_ROLE)
+     * @dev Issue Chainlink AnyApi request. Protected by onlyRoleRecursive(REQUEST_ROLE)
      * @param fulfillAddress address of contract to call on fulfillment
      * @param fulfillPrefixData prefix data that is concatenated with response. Can store additional params
      * @param reqJobId jobId of request. Should be a Get > bytes job. We make this parametrized to support multiple networks & operator deployments.
@@ -37,7 +37,7 @@ interface IChainlinkAnyApiClient {
     function fulfill(bytes32 reqId, bytes memory reqResponseData) external;
 
     /**
-     * @dev Allow withdraw of Link tokens from the contract. Protected by onlyRole(WITHDRAW_ROLE)
+     * @dev Allow withdraw of Link tokens from the contract. Protected by onlyRoleRecursive(WITHDRAW_ROLE)
      * @param to target address, does not have to be same as caller
      * @param amount amount to withdraw, does not have to be full amount
      */

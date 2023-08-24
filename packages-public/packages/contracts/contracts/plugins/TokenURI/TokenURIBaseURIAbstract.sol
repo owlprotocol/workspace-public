@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {AccessControlRecursive} from "../../plugins/AccessControl/AccessControlRecursive.sol";
 import {StringsUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 
 import {ITokenURI} from "./ITokenURI.sol";
@@ -14,7 +15,7 @@ import {ERC1820RegistryConsumer} from "../../common/ERC1820/ERC1820RegistryConsu
  * Commonly used by ERC721 as it often generates uri as `api.com/id`
  */
 abstract contract TokenURIBaseURIAbstract is
-    AccessControlUpgradeable,
+    AccessControlRecursive,
     ERC1820RegistryConsumer,
     ITokenURIBaseURI,
     ITokenURI
@@ -27,11 +28,9 @@ abstract contract TokenURIBaseURIAbstract is
 
     /**
      * @dev TokenURIBaseURIAbstract unchained initialization.
-     * @param baseUriRole write role
      * @param baseUri initial contract base uri
      */
-    function __TokenURIBaseURIAbstract_init_unchained(address baseUriRole, string memory baseUri) internal {
-        _grantRole(TOKEN_URI_BASE_URI_ROLE, baseUriRole);
+    function __TokenURIBaseURIAbstract_init_unchained(string memory baseUri) internal {
         _setTokenURIBaseURI(baseUri);
 
         if (_registryExists()) {
@@ -50,7 +49,7 @@ abstract contract TokenURIBaseURIAbstract is
     /**
      * @dev Set contract base uri
      */
-    function setTokenURIBaseURI(string memory uri) external onlyRole(TOKEN_URI_BASE_URI_ROLE) {
+    function setTokenURIBaseURI(string memory uri) external onlyRoleRecursive(TOKEN_URI_BASE_URI_ROLE) {
         _setTokenURIBaseURI(uri);
     }
 

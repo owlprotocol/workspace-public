@@ -4,27 +4,16 @@ import type { TokenURIDna } from "../../typechain/ethers/contracts/plugins/Token
 export interface TokenURIDnaInitializeArgs {
     admin: Parameters<TokenURIDna["initialize"]>[0];
     contractUri?: Parameters<TokenURIDna["initialize"]>[1];
-    baseUriRole?: Parameters<TokenURIDna["initialize"]>[2];
-    baseUri?: Parameters<TokenURIDna["initialize"]>[3];
-    dnaProviderRole?: Parameters<TokenURIDna["initialize"]>[4];
-    dnaProvider?: Parameters<TokenURIDna["initialize"]>[5];
+    baseUri?: Parameters<TokenURIDna["initialize"]>[2];
+    dnaProvider?: Parameters<TokenURIDna["initialize"]>[3];
 }
 
 export function initializeUtil(args: TokenURIDnaInitializeArgs) {
-    const { admin, contractUri, baseUriRole, baseUri, dnaProviderRole, dnaProvider } = args;
-    return [
-        admin,
-        contractUri ?? "",
-        baseUriRole ?? admin,
-        baseUri ?? "",
-        dnaProviderRole ?? admin,
-        dnaProvider ?? constants.AddressZero,
-    ] as [
+    const { admin, contractUri, baseUri, dnaProvider } = args;
+    return [admin, contractUri ?? "", baseUri ?? "", dnaProvider ?? constants.AddressZero] as [
         Parameters<TokenURIDna["initialize"]>[0],
         Parameters<TokenURIDna["initialize"]>[1],
         Parameters<TokenURIDna["initialize"]>[2],
         Parameters<TokenURIDna["initialize"]>[3],
-        Parameters<TokenURIDna["initialize"]>[4],
-        Parameters<TokenURIDna["initialize"]>[5],
     ];
 }

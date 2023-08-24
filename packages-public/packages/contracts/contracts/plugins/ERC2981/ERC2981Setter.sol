@@ -17,11 +17,10 @@ contract ERC2981Setter is OwlBase, ERC2981SetterAbstract {
     function initialize(
         address admin,
         string memory contractUri,
-        address royaltyRole,
         address royaltyReceiver,
         uint96 feeNumerator
     ) external initializer {
-        __ERC2981Setter_init(admin, contractUri, royaltyRole, royaltyReceiver, feeNumerator);
+        __ERC2981Setter_init(admin, contractUri, royaltyReceiver, feeNumerator);
     }
 
     /**
@@ -30,14 +29,13 @@ contract ERC2981Setter is OwlBase, ERC2981SetterAbstract {
     function __ERC2981Setter_init(
         address admin,
         string memory contractUri,
-        address royaltyRole,
         address royaltyReceiver,
         uint96 feeNumerator
     ) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
-        __ERC2981SetterAbstract_init_unchained(royaltyRole, royaltyReceiver, feeNumerator);
+        __ERC2981SetterAbstract_init_unchained(royaltyReceiver, feeNumerator);
     }
 
     function supportsInterface(

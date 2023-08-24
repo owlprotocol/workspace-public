@@ -6,6 +6,7 @@ import {IAccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/acc
 
 import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {AccessControlRecursive} from "../plugins/AccessControl/AccessControlRecursive.sol";
 import {IERC1820RegistryUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/introspection/IERC1820RegistryUpgradeable.sol";
 
 import {ContractURI} from "./ContractURI.sol";
@@ -24,7 +25,7 @@ import {IContractURI} from "./IContractURI.sol";
  * - Consistent access control
  * - UUPS contract upgrade support
  */
-contract OwlBase is AccessControlUpgradeable, ERC1820RegistryConsumer, ContractURI, IOwlBase {
+contract OwlBase is AccessControlRecursive, ERC1820RegistryConsumer, ContractURI, IOwlBase {
     // Consistent version across all contracts
     string internal constant _version = "v0.1";
 
@@ -42,8 +43,7 @@ contract OwlBase is AccessControlUpgradeable, ERC1820RegistryConsumer, ContractU
      * @param contractUri URI for storing metadata
      */
     function __OwlBase_init(address admin, string memory contractUri) internal {
-        __ContractURI_init_unchained(admin, contractUri);
-
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
     }
 

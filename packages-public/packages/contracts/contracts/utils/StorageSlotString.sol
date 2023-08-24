@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 /**
  * @dev Library for reading and writing strings to specific storage slots.
-* Example usage to set ERC1967 implementation slot:
+ * Example usage to set ERC1967 implementation slot:
  * ```
  * contract ERC1967 {
  *   bytes32 internal constant _CONTRACT_URI_SLOT = keccak256('CONTRACT_URI');
@@ -12,7 +12,7 @@ pragma solidity ^0.8.0;
  *       return StorageSlotString.getStringSlot(_CONTRACT_URI_SLOT).value;
  *   }
  *
- *   function setContractURI(string memory uri) external onlyRole(CONTRACT_URI_ROLE) {
+ *   function setContractURI(string memory uri) external onlyRoleRecursive(CONTRACT_URI_ROLE) {
  *       StorageSlotString.getStringSlot(_CONTRACT_URI_SLOT).value = uri;
  *   }
  * }

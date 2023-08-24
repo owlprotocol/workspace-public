@@ -2,13 +2,14 @@
 pragma solidity ^0.8.9;
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {AccessControlRecursive} from "../../plugins/AccessControl/AccessControlRecursive.sol";
 import {StorageSlotUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StorageSlotUpgradeable.sol";
 import {ERC1820RegistryConsumer} from "../../common/ERC1820/ERC1820RegistryConsumer.sol";
 
 import {ITokenURI} from "./ITokenURI.sol";
 import {ITokenURIConsumer} from "./ITokenURIConsumer.sol";
 
-abstract contract TokenURIConsumerAbstract is AccessControlUpgradeable, ERC1820RegistryConsumer, ITokenURIConsumer {
+abstract contract TokenURIConsumerAbstract is AccessControlRecursive, ERC1820RegistryConsumer, ITokenURIConsumer {
     using StorageSlotUpgradeable for bytes32;
 
     bytes32 internal constant TOKEN_URI_PROVIDER_ROLE = keccak256("TOKEN_URI_PROVIDER_ROLE");
@@ -18,7 +19,7 @@ abstract contract TokenURIConsumerAbstract is AccessControlUpgradeable, ERC1820R
         return StorageSlotUpgradeable.getAddressSlot(_TOKEN_URI_PROVIDER_SLOT).value;
     }
 
-    function setUriProvider(address uriProvider) external onlyRole(TOKEN_URI_PROVIDER_ROLE) {
+    function setUriProvider(address uriProvider) external onlyRoleRecursive(TOKEN_URI_PROVIDER_ROLE) {
         _setUriProvider(uriProvider);
     }
 
@@ -30,8 +31,7 @@ abstract contract TokenURIConsumerAbstract is AccessControlUpgradeable, ERC1820R
         return ITokenURI(uriProvider()).tokenURI(tokenId);
     }
 
-    function __TokenURIConsumerAbstract_init_unchained(address uriProviderRole, address uriProvider) internal {
-        _grantRole(TOKEN_URI_PROVIDER_ROLE, uriProviderRole);
+    function __TokenURIConsumerAbstract_init_unchained(address uriProvider) internal {
         _setUriProvider(uriProvider);
 
         if (_registryExists()) {

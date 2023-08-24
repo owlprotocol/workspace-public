@@ -2,6 +2,7 @@
 pragma solidity ^0.8.7;
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {AccessControlRecursive} from "../plugins/AccessControl/AccessControlRecursive.sol";
 import {ERC1820RegistryConsumer} from "../common/ERC1820/ERC1820RegistryConsumer.sol";
 import {IChainlinkAnyApiConsumer} from "./IChainlinkAnyApiConsumer.sol";
 
@@ -14,9 +15,7 @@ abstract contract ChainlinkAnyApiConsumerAbstract is
 {
     bytes32 internal constant FULFILL_ROLE = keccak256("FULFILL_ROLE");
 
-    function __ChainlinkAnyApiConsumer_init_unchained(address fulfillRole) internal {
-        _grantRole(FULFILL_ROLE, fulfillRole);
-
+    function __ChainlinkAnyApiConsumer_init_unchained() internal {
         if (_registryExists()) {
             _registerInterface(type(IChainlinkAnyApiConsumer).interfaceId);
         }

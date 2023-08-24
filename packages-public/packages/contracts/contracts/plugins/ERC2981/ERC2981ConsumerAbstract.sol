@@ -4,12 +4,13 @@ pragma solidity ^0.8.9;
 import {IERC165Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol";
 import {IERC2981Upgradeable} from "@openzeppelin/contracts-upgradeable/interfaces/IERC2981Upgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {AccessControlRecursive} from "../../plugins/AccessControl/AccessControlRecursive.sol";
 import {StorageSlotUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StorageSlotUpgradeable.sol";
 import {ERC1820RegistryConsumer} from "../../common/ERC1820/ERC1820RegistryConsumer.sol";
 
 import {IERC2981Consumer} from "./IERC2981Consumer.sol";
 
-abstract contract ERC2981ConsumerAbstract is AccessControlUpgradeable, ERC1820RegistryConsumer, IERC2981Consumer {
+abstract contract ERC2981ConsumerAbstract is AccessControlRecursive, ERC1820RegistryConsumer, IERC2981Consumer {
     using StorageSlotUpgradeable for bytes32;
 
     bytes32 internal constant TOKEN_ROYALTY_PROVIDER_ROLE = keccak256("TOKEN_ROYALTY_PROVIDER_ROLE");
@@ -19,7 +20,7 @@ abstract contract ERC2981ConsumerAbstract is AccessControlUpgradeable, ERC1820Re
         return StorageSlotUpgradeable.getAddressSlot(_TOKEN_ROYALTY_PROVIDER_SLOT).value;
     }
 
-    function setRoyaltyProvider(address royaltyProvider) external onlyRole(TOKEN_ROYALTY_PROVIDER_ROLE) {
+    function setRoyaltyProvider(address royaltyProvider) external onlyRoleRecursive(TOKEN_ROYALTY_PROVIDER_ROLE) {
         _setRoyaltyProvider(royaltyProvider);
     }
 
@@ -34,8 +35,7 @@ abstract contract ERC2981ConsumerAbstract is AccessControlUpgradeable, ERC1820Re
         return IERC2981Upgradeable(royaltyProvider()).royaltyInfo(tokenId, salePrice);
     }
 
-    function __ERC2981ConsumerAbstract_init_unchained(address royaltyProviderRole, address royaltyProvider) internal {
-        _grantRole(TOKEN_ROYALTY_PROVIDER_ROLE, royaltyProviderRole);
+    function __ERC2981ConsumerAbstract_init_unchained(address royaltyProvider) internal {
         _setRoyaltyProvider(royaltyProvider);
 
         if (_registryExists()) {

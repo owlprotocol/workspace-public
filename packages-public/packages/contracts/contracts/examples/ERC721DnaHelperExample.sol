@@ -6,7 +6,7 @@ import {ERC721DnaHelperLib} from "../helpers/ERC721DnaHelperLib.sol";
 
 contract ERC721DnaHelperExample is OwlBase {
     function __ERC721DnaHelperExample_init(address admin, string memory contractUri) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
 
         __OwlBase_init_unchained(admin);
     }

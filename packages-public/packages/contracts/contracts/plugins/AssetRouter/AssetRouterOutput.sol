@@ -53,22 +53,17 @@ contract AssetRouterOutput is ERC721HolderUpgradeable, ERC1155HolderUpgradeable,
         AssetBasketOutput[] calldata _outputBaskets,
         address[] calldata _routers
     ) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
         //No GSN router initialized as calls are not using GSN
         __OwlBase_init_unchained(admin);
 
-        __AssetRouterOutput_init_unchained(_outputBaskets, admin, admin, _routers);
+        __AssetRouterOutput_init_unchained(_outputBaskets, _routers);
     }
 
     function __AssetRouterOutput_init_unchained(
         AssetBasketOutput[] calldata _outputBaskets,
-        address depositRole,
-        address withdrawRole,
         address[] memory _routers
     ) internal onlyInitializing {
-        _grantRole(DEPOSIT_ROLE, depositRole);
-        _grantRole(WITHDRAW_ROLE, withdrawRole);
-
         //Roles
         for (uint256 i = 0; i < _routers.length; i++) {
             _grantRole(ASSET_ROUTER_INPUT, _routers[i]);
@@ -100,7 +95,7 @@ contract AssetRouterOutput is ERC721HolderUpgradeable, ERC1155HolderUpgradeable,
     /**
      * inheritdoc IAssetRouterOutput
      */
-    function deposit(uint256 amount, uint256 basketIdx) external onlyRole(DEPOSIT_ROLE) {
+    function deposit(uint256 amount, uint256 basketIdx) external onlyRoleRecursive(DEPOSIT_ROLE) {
         AssetOutputLib.deposit(outputBaskets[basketIdx], amount);
         emit UpdateBasket(basketIdx, int256(amount));
     }
@@ -108,7 +103,7 @@ contract AssetRouterOutput is ERC721HolderUpgradeable, ERC1155HolderUpgradeable,
     /**
      * inheritdoc IAssetRouterOutput
      */
-    function withdraw(uint256 amount, uint256 basketIdx) external onlyRole(WITHDRAW_ROLE) {
+    function withdraw(uint256 amount, uint256 basketIdx) external onlyRoleRecursive(WITHDRAW_ROLE) {
         AssetOutputLib.withdraw(outputBaskets[basketIdx], amount);
         emit UpdateBasket(basketIdx, -int256(amount));
     }
@@ -116,7 +111,7 @@ contract AssetRouterOutput is ERC721HolderUpgradeable, ERC1155HolderUpgradeable,
     /**
      * inheritdoc IAssetRouterOutput
      */
-    function output(address to, uint256 amount, uint256 basketIdx) external onlyRole(ASSET_ROUTER_INPUT) {
+    function output(address to, uint256 amount, uint256 basketIdx) external onlyRoleRecursive(ASSET_ROUTER_INPUT) {
         AssetOutputLib.output(outputBaskets[basketIdx], amount, to);
         emit RouteBasket(msg.sender, to, basketIdx, amount);
         emit UpdateBasket(basketIdx, -int256(amount));

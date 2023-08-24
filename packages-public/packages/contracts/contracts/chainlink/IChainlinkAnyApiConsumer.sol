@@ -7,7 +7,7 @@ pragma solidity ^0.8.7;
 interface IChainlinkAnyApiConsumer {
     /**
      * @dev Fulfill function called by IChainlinkAnyApiClient. Developer is responsible for decoding data
-     * Protected by onlyRole(FULFILL_ROLE) which maps trusted IChainlinkAnyApiClient
+     * Protected by onlyRoleRecursive(FULFILL_ROLE) which maps trusted IChainlinkAnyApiClient
      * @param fulfillPrefixData that was submitted at request time
      * @param fulfillResponseData returned by Chainlink node
      */

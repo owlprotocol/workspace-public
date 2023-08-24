@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import {IERC2981Upgradeable} from "@openzeppelin/contracts-upgradeable/interfaces/IERC2981Upgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {AccessControlRecursive} from "../../plugins/AccessControl/AccessControlRecursive.sol";
 import {ERC2981Upgradeable} from "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
 
 import {ERC1820RegistryConsumer} from "../../common/ERC1820/ERC1820RegistryConsumer.sol";
@@ -14,7 +15,7 @@ import {IERC2981Setter} from "./IERC2981Setter.sol";
  * @dev ERC2981 with access control public functions
  */
 abstract contract ERC2981SetterAbstract is
-    AccessControlUpgradeable,
+    AccessControlRecursive,
     ERC1820RegistryConsumer,
     ERC2981Upgradeable,
     IERC2981Setter
@@ -25,16 +26,10 @@ abstract contract ERC2981SetterAbstract is
 
     /**
      * @dev ERC2981SetterAbstract unchained initialization
-     * @param royaltyRole write role
      * @param royaltyReceiver initial royalty receiver
      * @param feeNumerator fee numerator
      */
-    function __ERC2981SetterAbstract_init_unchained(
-        address royaltyRole,
-        address royaltyReceiver,
-        uint96 feeNumerator
-    ) internal {
-        _grantRole(ROYALTY_ROLE, royaltyRole);
+    function __ERC2981SetterAbstract_init_unchained(address royaltyReceiver, uint96 feeNumerator) internal {
         _setDefaultRoyalty(royaltyReceiver, feeNumerator);
 
         if (_registryExists()) {
@@ -46,14 +41,18 @@ abstract contract ERC2981SetterAbstract is
     /**
      * @dev exposing `_setTokenRoyalty`
      */
-    function setTokenRoyalty(uint256 tokenId, address receiver, uint96 feeNumerator) external onlyRole(ROYALTY_ROLE) {
+    function setTokenRoyalty(
+        uint256 tokenId,
+        address receiver,
+        uint96 feeNumerator
+    ) external onlyRoleRecursive(ROYALTY_ROLE) {
         _setTokenRoyalty(tokenId, receiver, feeNumerator);
     }
 
     /**
      * @dev Exposing `_setDefaultRoyalty`
      */
-    function setDefaultRoyalty(address receiver, uint96 feeNumerator) external onlyRole(ROYALTY_ROLE) {
+    function setDefaultRoyalty(address receiver, uint96 feeNumerator) external onlyRoleRecursive(ROYALTY_ROLE) {
         _setDefaultRoyalty(receiver, feeNumerator);
     }
 

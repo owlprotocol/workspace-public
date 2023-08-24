@@ -13,21 +13,16 @@ import {ERC721MinterAbstract} from "./ERC721MinterAbstract.sol";
  * @dev ERC721 minter module
  */
 contract ERC721Minter is ERC721MinterAbstract, OwlBase, IERC721Minter {
-    function initialize(
-        address admin,
-        string memory contractUri,
-        address minterRole,
-        address token
-    ) external initializer {
-        __ERC721Minter_init(admin, contractUri, minterRole, token);
+    function initialize(address admin, string memory contractUri, address token) external initializer {
+        __ERC721Minter_init(admin, contractUri, token);
     }
 
-    function __ERC721Minter_init(address admin, string memory contractUri, address minterRole, address token) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+    function __ERC721Minter_init(address admin, string memory contractUri, address token) internal {
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
-        __TokenConsumerAbstract_init_unchained(admin, token);
-        __ERC721MinterAbstract_init_unchained(minterRole);
+        __TokenConsumerAbstract_init_unchained(token);
+        __ERC721MinterAbstract_init_unchained();
         __ERC721Minter_init_unchained();
     }
 
@@ -37,19 +32,22 @@ contract ERC721Minter is ERC721MinterAbstract, OwlBase, IERC721Minter {
         }
     }
 
-    function mint(address to, uint256 tokenId) external virtual onlyRole(MINTER_ROLE) {
+    function mint(address to, uint256 tokenId) external virtual onlyRoleRecursive(MINTER_ROLE) {
         _mint(to, tokenId);
     }
 
-    function mintBatch(address[] memory to, uint256[] memory tokenId) external virtual onlyRole(MINTER_ROLE) {
+    function mintBatch(address[] memory to, uint256[] memory tokenId) external virtual onlyRoleRecursive(MINTER_ROLE) {
         _mintBatch(to, tokenId);
     }
 
-    function safeMint(address to, uint256 tokenId) external virtual onlyRole(MINTER_ROLE) {
+    function safeMint(address to, uint256 tokenId) external virtual onlyRoleRecursive(MINTER_ROLE) {
         _safeMint(to, tokenId);
     }
 
-    function safeMintBatch(address[] memory to, uint256[] memory tokenId) external virtual onlyRole(MINTER_ROLE) {
+    function safeMintBatch(
+        address[] memory to,
+        uint256[] memory tokenId
+    ) external virtual onlyRoleRecursive(MINTER_ROLE) {
         _safeMintBatch(to, tokenId);
     }
 

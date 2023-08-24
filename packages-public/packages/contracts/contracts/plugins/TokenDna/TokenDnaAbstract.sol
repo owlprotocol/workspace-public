@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {AccessControlRecursive} from "../../plugins/AccessControl/AccessControlRecursive.sol";
 import {ERC1820RegistryConsumer} from "../../common/ERC1820/ERC1820RegistryConsumer.sol";
 import {Base64UrlUpgradeable} from "../../utils/Base64UrlUpgradeable.sol";
 import {StorageSlotMappingUInt256Bytes} from "../../utils/StorageSlotMappingUInt256Bytes.sol";
@@ -11,7 +12,7 @@ import {ITokenDna} from "./ITokenDna.sol";
 /**
  * @dev TokenDnaAbstract storage contract
  */
-abstract contract TokenDnaAbstract is AccessControlUpgradeable, ERC1820RegistryConsumer, ITokenDna {
+abstract contract TokenDnaAbstract is AccessControlRecursive, ERC1820RegistryConsumer, ITokenDna {
     using StorageSlotMappingUInt256Bytes for bytes32;
 
     bytes32 internal constant DNA_ROLE = keccak256("DNA_ROLE");
@@ -19,11 +20,8 @@ abstract contract TokenDnaAbstract is AccessControlUpgradeable, ERC1820RegistryC
 
     /**
      * @dev TokenDnaAbstract unchained initialization
-     * @param dnaRole writer role
      */
-    function __TokenDnaAbstract_init_unchained(address dnaRole) internal {
-        _grantRole(DNA_ROLE, dnaRole);
-
+    function __TokenDnaAbstract_init_unchained() internal {
         if (_registryExists()) {
             _registerInterface(type(ITokenDna).interfaceId);
         }
@@ -32,7 +30,7 @@ abstract contract TokenDnaAbstract is AccessControlUpgradeable, ERC1820RegistryC
     /**
      * inheritdoc ITokenDnaAbstract
      */
-    function setDna(uint256 tokenId, bytes memory dna) public virtual onlyRole(DNA_ROLE) {
+    function setDna(uint256 tokenId, bytes memory dna) public virtual onlyRoleRecursive(DNA_ROLE) {
         mapping(uint256 => bytes) storage dnaStorage = _DNA_SLOT.getMapppingUInt256BytesSlot().value;
         dnaStorage[tokenId] = dna;
     }
@@ -40,7 +38,7 @@ abstract contract TokenDnaAbstract is AccessControlUpgradeable, ERC1820RegistryC
     /**
      * inheritdoc ITokenDnaAbstract
      */
-    function setDnaBatch(uint256[] memory tokenId, bytes[] memory dna) public virtual onlyRole(DNA_ROLE) {
+    function setDnaBatch(uint256[] memory tokenId, bytes[] memory dna) public virtual onlyRoleRecursive(DNA_ROLE) {
         require(tokenId.length == dna.length, "tokenId.length != dna.length");
         mapping(uint256 => bytes) storage dnaStorage = _DNA_SLOT.getMapppingUInt256BytesSlot().value;
 

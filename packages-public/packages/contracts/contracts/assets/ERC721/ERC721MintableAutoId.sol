@@ -43,18 +43,17 @@ contract ERC721MintableAutoId is ERC721Abstract, IERC721MintableAutoId {
         address tokenUriProvider,
         address tokenRoyaltyProvider
     ) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
         __ERC721_init_unchained(name, symbol);
-        __TokenURIConsumerAbstract_init_unchained(admin, tokenUriProvider);
-        __ERC2981ConsumerAbstract_init_unchained(admin, tokenRoyaltyProvider);
+        __TokenURIConsumerAbstract_init_unchained(tokenUriProvider);
+        __ERC2981ConsumerAbstract_init_unchained(tokenRoyaltyProvider);
         __ERC721Abstract_init_unchained();
-        __ERC721MintableAutoIdAbstract_init_unchained(admin);
+        __ERC721MintableAutoIdAbstract_init_unchained();
     }
 
-    function __ERC721MintableAutoIdAbstract_init_unchained(address minterRole) internal {
-        _grantRole(MINTER_ROLE, minterRole);
+    function __ERC721MintableAutoIdAbstract_init_unchained() internal {
         if (_registryExists()) {
             _registerInterface(type(IERC721MintableAutoId).interfaceId);
         }
@@ -66,7 +65,7 @@ contract ERC721MintableAutoId is ERC721Abstract, IERC721MintableAutoId {
     /**
      * @inheritdoc IERC721MintableAutoId
      */
-    function mint(address to) external virtual onlyRole(MINTER_ROLE) returns (uint256) {
+    function mint(address to) external virtual onlyRoleRecursive(MINTER_ROLE) returns (uint256) {
         uint256 tokenId = nextId.current();
         nextId.increment();
 
@@ -78,7 +77,7 @@ contract ERC721MintableAutoId is ERC721Abstract, IERC721MintableAutoId {
     /**
      * @inheritdoc IERC721MintableAutoId
      */
-    function mintBatch(address[] memory to) external virtual onlyRole(MINTER_ROLE) returns (uint256[] memory) {
+    function mintBatch(address[] memory to) external virtual onlyRoleRecursive(MINTER_ROLE) returns (uint256[] memory) {
         uint256 startId = nextId.current();
         unchecked {
             nextId._value += to.length;
@@ -97,7 +96,7 @@ contract ERC721MintableAutoId is ERC721Abstract, IERC721MintableAutoId {
     /**
      * @inheritdoc IERC721MintableAutoId
      */
-    function safeMint(address to) external virtual onlyRole(MINTER_ROLE) returns (uint256) {
+    function safeMint(address to) external virtual onlyRoleRecursive(MINTER_ROLE) returns (uint256) {
         uint256 tokenId = nextId.current();
         nextId.increment();
 
@@ -109,7 +108,9 @@ contract ERC721MintableAutoId is ERC721Abstract, IERC721MintableAutoId {
     /**
      * @inheritdoc IERC721MintableAutoId
      */
-    function safeMintBatch(address[] memory to) external virtual onlyRole(MINTER_ROLE) returns (uint256[] memory) {
+    function safeMintBatch(
+        address[] memory to
+    ) external virtual onlyRoleRecursive(MINTER_ROLE) returns (uint256[] memory) {
         uint256 startId = nextId.current();
         unchecked {
             nextId._value += to.length;

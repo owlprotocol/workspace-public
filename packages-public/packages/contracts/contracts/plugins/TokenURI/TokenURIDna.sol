@@ -26,12 +26,10 @@ contract TokenURIDna is TokenURIBaseURIAbstract, TokenDnaConsumerAbstract, OwlBa
     function initialize(
         address admin,
         string memory contractUri,
-        address baseUriRole,
         string memory baseUri,
-        address dnaProviderRole,
         address dnaProvider
     ) external initializer {
-        __TokenURIDna_init(admin, contractUri, baseUriRole, baseUri, dnaProviderRole, dnaProvider);
+        __TokenURIDna_init(admin, contractUri, baseUri, dnaProvider);
     }
 
     /**
@@ -40,16 +38,14 @@ contract TokenURIDna is TokenURIBaseURIAbstract, TokenDnaConsumerAbstract, OwlBa
     function __TokenURIDna_init(
         address admin,
         string memory contractUri,
-        address baseUriRole,
         string memory baseUri,
-        address dnaProviderRole,
         address dnaProvider
     ) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
-        __TokenURIBaseURIAbstract_init_unchained(baseUriRole, baseUri);
-        __TokenDnaConsumerAbstract_init_unchained(dnaProviderRole, dnaProvider);
+        __TokenURIBaseURIAbstract_init_unchained(baseUri);
+        __TokenDnaConsumerAbstract_init_unchained(dnaProvider);
     }
 
     function tokenURI(uint256 tokenId) external view override returns (string memory) {

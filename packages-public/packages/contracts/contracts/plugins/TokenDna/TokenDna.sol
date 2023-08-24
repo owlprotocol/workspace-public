@@ -13,19 +13,19 @@ import {IChainlinkAnyApiConsumer} from "../../chainlink/IChainlinkAnyApiConsumer
  * @dev TokenDna storage contract
  */
 contract TokenDna is ChainlinkAnyApiConsumerAbstract, TokenDnaAbstract, OwlBase {
-    function initialize(address admin, string memory contractUri, address dnaRole) external initializer {
-        __TokenDna_init(admin, contractUri, dnaRole);
+    function initialize(address admin, string memory contractUri) external initializer {
+        __TokenDna_init(admin, contractUri);
     }
 
     /**
      * @dev TokenDna chained initialization
      */
-    function __TokenDna_init(address admin, string memory contractUri, address dnaRole) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+    function __TokenDna_init(address admin, string memory contractUri) internal {
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
-        __TokenDnaAbstract_init_unchained(dnaRole);
-        __ChainlinkAnyApiConsumer_init_unchained(dnaRole);
+        __TokenDnaAbstract_init_unchained();
+        __ChainlinkAnyApiConsumer_init_unchained();
     }
 
     /**
@@ -34,7 +34,7 @@ contract TokenDna is ChainlinkAnyApiConsumerAbstract, TokenDnaAbstract, OwlBase 
     function fulfill(
         bytes calldata fulfillPrefixData,
         bytes calldata fulfillResponseData
-    ) external virtual onlyRole(FULFILL_ROLE) {
+    ) external virtual onlyRoleRecursive(FULFILL_ROLE) {
         bytes4 selector = bytes4(fulfillPrefixData[:4]);
         if (selector == ITokenDna.setDna.selector) {
             (, uint256 tokenId) = abi.decode(fulfillPrefixData, (bytes4, uint256));

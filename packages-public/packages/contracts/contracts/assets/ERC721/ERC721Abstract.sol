@@ -5,7 +5,6 @@ import {IERC165Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/intr
 import {IERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import {IERC721MetadataUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 
-import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
@@ -47,12 +46,12 @@ abstract contract ERC721Abstract is
         address tokenUriProvider,
         address tokenRoyaltyProvider
     ) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
         __ERC721_init_unchained(name, symbol);
-        __TokenURIConsumerAbstract_init_unchained(admin, tokenUriProvider);
-        __ERC2981ConsumerAbstract_init_unchained(admin, tokenRoyaltyProvider);
+        __TokenURIConsumerAbstract_init_unchained(tokenUriProvider);
+        __ERC2981ConsumerAbstract_init_unchained(tokenRoyaltyProvider);
         __ERC721Abstract_init_unchained();
     }
 
@@ -70,7 +69,7 @@ abstract contract ERC721Abstract is
      * @dev Overrides isApprovedForAll with global approvals
      */
     function isApprovedForAll(address owner, address operator) public view virtual override returns (bool) {
-        return hasRole(APPROVED_FOR_ALL_ROLE, operator) || ERC721Upgradeable.isApprovedForAll(owner, operator);
+        return hasRoleRecursive(APPROVED_FOR_ALL_ROLE, operator) || ERC721Upgradeable.isApprovedForAll(owner, operator);
     }
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {

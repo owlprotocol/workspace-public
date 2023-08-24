@@ -4,7 +4,6 @@ pragma solidity ^0.8.9;
 import {IERC165Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol";
 import {IERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 
-import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
@@ -35,11 +34,11 @@ abstract contract ERC1155Abstract is
         address tokenUriProvider,
         address tokenRoyaltyProvider
     ) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
-        __TokenURIConsumerAbstract_init_unchained(admin, tokenUriProvider);
-        __ERC2981ConsumerAbstract_init_unchained(admin, tokenRoyaltyProvider);
+        __TokenURIConsumerAbstract_init_unchained(tokenUriProvider);
+        __ERC2981ConsumerAbstract_init_unchained(tokenRoyaltyProvider);
         __ERC1155Abstract_init_unchained();
     }
 
@@ -53,7 +52,8 @@ abstract contract ERC1155Abstract is
      * @dev Overrides isApprovedForAll with global approvals
      */
     function isApprovedForAll(address account, address operator) public view virtual override returns (bool) {
-        return hasRole(APPROVED_FOR_ALL_ROLE, operator) || ERC1155Upgradeable.isApprovedForAll(account, operator);
+        return
+            hasRoleRecursive(APPROVED_FOR_ALL_ROLE, operator) || ERC1155Upgradeable.isApprovedForAll(account, operator);
     }
 
     function uri(uint256 tokenId) public view override returns (string memory) {

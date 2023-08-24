@@ -50,7 +50,7 @@ contract AssetRouterInput is OwlBase, IAssetRouterInput, IERC721ReceiverUpgradea
         string memory contractUri,
         AssetBasketInput[] memory _inputBaskets
     ) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
         __AssetRouterInput_init_unchained(_inputBaskets);

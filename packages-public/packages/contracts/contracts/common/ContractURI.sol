@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {AccessControlRecursive} from "../plugins/AccessControl/AccessControlRecursive.sol";
 import {ERC1820RegistryConsumer} from "./ERC1820/ERC1820RegistryConsumer.sol";
 import {IContractURI} from "./IContractURI.sol";
 import {StorageSlotString} from "../utils/StorageSlotString.sol";
@@ -9,26 +10,23 @@ import {StorageSlotString} from "../utils/StorageSlotString.sol";
 /**
  * @dev Implements contract uri getter/setter
  */
-contract ContractURI is AccessControlUpgradeable, ERC1820RegistryConsumer, IContractURI {
+contract ContractURI is AccessControlRecursive, ERC1820RegistryConsumer, IContractURI {
     bytes32 internal constant CONTRACT_URI_ROLE = keccak256("CONTRACT_URI_ROLE");
     bytes32 internal constant _CONTRACT_URI_SLOT = keccak256("CONTRACT_URI");
 
     /**
      * @dev ContractURI chained initialization
-     * @param contractUriRole write role
      * @param contractUri initial contract uri
      */
-    function __ContractURI_init(address contractUriRole, string memory contractUri) internal {
-        __ContractURI_init_unchained(contractUriRole, contractUri);
+    function __ContractURI_init(string memory contractUri) internal {
+        __ContractURI_init_unchained(contractUri);
     }
 
     /**
      * @dev ContractURI unchained initialization.
-     * @param contractUriRole write role
      * @param contractUri initial contract uri
      */
-    function __ContractURI_init_unchained(address contractUriRole, string memory contractUri) internal {
-        _grantRole(CONTRACT_URI_ROLE, contractUriRole);
+    function __ContractURI_init_unchained(string memory contractUri) internal {
         _setContractURI(contractUri);
 
         if (_registryExists()) {
@@ -46,7 +44,7 @@ contract ContractURI is AccessControlUpgradeable, ERC1820RegistryConsumer, ICont
     /**
      * @dev Set contract uri
      */
-    function setContractURI(string memory uri) external onlyRole(CONTRACT_URI_ROLE) {
+    function setContractURI(string memory uri) external onlyRoleRecursive(CONTRACT_URI_ROLE) {
         _setContractURI(uri);
     }
 

@@ -21,7 +21,7 @@ contract OwlBaseExample is OwlBase {
      * Edit this if new initialization variables are added
      */
     function __OwlBaseExample_init(address admin, string memory contractUri) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
         __OwlBaseExample_init_unchained();

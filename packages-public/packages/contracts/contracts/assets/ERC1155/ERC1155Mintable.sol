@@ -27,17 +27,16 @@ contract ERC1155Mintable is ERC1155Abstract, IERC1155Mintable {
         address tokenUriProvider,
         address tokenRoyaltyProvider
     ) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
-        __TokenURIConsumerAbstract_init_unchained(admin, tokenUriProvider);
-        __ERC2981ConsumerAbstract_init_unchained(admin, tokenRoyaltyProvider);
+        __TokenURIConsumerAbstract_init_unchained(tokenUriProvider);
+        __ERC2981ConsumerAbstract_init_unchained(tokenRoyaltyProvider);
         __ERC1155Abstract_init_unchained();
-        __ERC1155Mintable_init_unchained(admin);
+        __ERC1155Mintable_init_unchained();
     }
 
-    function __ERC1155Mintable_init_unchained(address minterRole) internal {
-        _grantRole(MINTER_ROLE, minterRole);
+    function __ERC1155Mintable_init_unchained() internal {
         if (_registryExists()) {
             _registerInterface(type(IERC1155Mintable).interfaceId);
         }
@@ -47,7 +46,7 @@ contract ERC1155Mintable is ERC1155Abstract, IERC1155Mintable {
     /**
      * @inheritdoc IERC1155Mintable
      */
-    function mint(address to, uint256 id, uint256 amount, bytes memory data) external onlyRole(MINTER_ROLE) {
+    function mint(address to, uint256 id, uint256 amount, bytes memory data) external onlyRoleRecursive(MINTER_ROLE) {
         _mint(to, id, amount, data);
     }
 
@@ -59,7 +58,7 @@ contract ERC1155Mintable is ERC1155Abstract, IERC1155Mintable {
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) external onlyRole(MINTER_ROLE) {
+    ) external onlyRoleRecursive(MINTER_ROLE) {
         _mintBatch(to, ids, amounts, data);
     }
 }

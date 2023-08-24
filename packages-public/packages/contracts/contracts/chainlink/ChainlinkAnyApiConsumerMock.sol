@@ -26,17 +26,16 @@ contract ChainlinkApiConsumerMock is OwlBase, ChainlinkAnyApiConsumerAbstract {
      * @dev Initialize the consumer.
      * @param admin AccessControl admin
      * @param contractUri URI for storing metadata
-     * @param fulfillRole ChainlinkAnyApiClient address
      */
-    function initialize(address admin, string calldata contractUri, address fulfillRole) external initializer {
-        __ContractURI_init_unchained(admin, contractUri);
+    function initialize(address admin, string calldata contractUri) external initializer {
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
-        __ChainlinkAnyApiConsumerMock_init(fulfillRole);
+        __ChainlinkAnyApiConsumerMock_init();
     }
 
-    function __ChainlinkAnyApiConsumerMock_init(address fulfillRole) internal {
-        __ChainlinkAnyApiConsumer_init_unchained(fulfillRole);
+    function __ChainlinkAnyApiConsumerMock_init() internal {
+        __ChainlinkAnyApiConsumer_init_unchained();
         __ChainlinkAnyApiConsumerMock_init_unchained();
     }
 
@@ -48,7 +47,7 @@ contract ChainlinkApiConsumerMock is OwlBase, ChainlinkAnyApiConsumerAbstract {
     function fulfill(
         bytes calldata fulfillPrefixData,
         bytes calldata fulfillResponseData
-    ) external virtual onlyRole(FULFILL_ROLE) {
+    ) external virtual onlyRoleRecursive(FULFILL_ROLE) {
         (uint256 prefixNo, string memory prefixString) = abi.decode(fulfillPrefixData, (uint256, string));
         (uint256 responseNo, string memory responseString) = abi.decode(fulfillResponseData, (uint256, string));
 

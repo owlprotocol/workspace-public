@@ -18,26 +18,24 @@ contract ERC721MinterDna is ERC721MinterAbstract, TokenDnaConsumerAbstract, OwlB
     function initialize(
         address admin,
         string memory contractUri,
-        address minterRole,
         address token,
         address dnaProvider
     ) external initializer {
-        __ERC721MinterDna_init(admin, contractUri, minterRole, token, dnaProvider);
+        __ERC721MinterDna_init(admin, contractUri, token, dnaProvider);
     }
 
     function __ERC721MinterDna_init(
         address admin,
         string memory contractUri,
-        address minterRole,
         address token,
         address dnaProvider
     ) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
-        __TokenConsumerAbstract_init_unchained(admin, token);
-        __ERC721MinterAbstract_init_unchained(minterRole);
-        __TokenDnaConsumerAbstract_init_unchained(admin, dnaProvider);
+        __TokenConsumerAbstract_init_unchained(token);
+        __ERC721MinterAbstract_init_unchained();
+        __TokenDnaConsumerAbstract_init_unchained(dnaProvider);
         __ERC721MinterDna_init_unchained();
     }
 
@@ -47,7 +45,7 @@ contract ERC721MinterDna is ERC721MinterAbstract, TokenDnaConsumerAbstract, OwlB
         }
     }
 
-    function mint(address to, uint256 tokenId, bytes memory dna) external virtual onlyRole(MINTER_ROLE) {
+    function mint(address to, uint256 tokenId, bytes memory dna) external virtual onlyRoleRecursive(MINTER_ROLE) {
         _mint(to, tokenId);
         _setDna(tokenId, dna);
     }
@@ -56,12 +54,12 @@ contract ERC721MinterDna is ERC721MinterAbstract, TokenDnaConsumerAbstract, OwlB
         address[] memory to,
         uint256[] memory tokenId,
         bytes[] memory dna
-    ) external virtual onlyRole(MINTER_ROLE) {
+    ) external virtual onlyRoleRecursive(MINTER_ROLE) {
         _mintBatch(to, tokenId);
         _setDnaBatch(tokenId, dna);
     }
 
-    function safeMint(address to, uint256 tokenId, bytes memory dna) external virtual onlyRole(MINTER_ROLE) {
+    function safeMint(address to, uint256 tokenId, bytes memory dna) external virtual onlyRoleRecursive(MINTER_ROLE) {
         _safeMint(to, tokenId);
         _setDna(tokenId, dna);
     }
@@ -70,7 +68,7 @@ contract ERC721MinterDna is ERC721MinterAbstract, TokenDnaConsumerAbstract, OwlB
         address[] memory to,
         uint256[] memory tokenId,
         bytes[] memory dna
-    ) external virtual onlyRole(MINTER_ROLE) {
+    ) external virtual onlyRoleRecursive(MINTER_ROLE) {
         _safeMintBatch(to, tokenId);
         _setDnaBatch(tokenId, dna);
     }

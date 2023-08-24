@@ -2,20 +2,20 @@
 pragma solidity ^0.8.9;
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {AccessControlRecursive} from "../../plugins/AccessControl/AccessControlRecursive.sol";
 import {StorageSlotUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StorageSlotUpgradeable.sol";
 import {ERC1820RegistryConsumer} from "../../common/ERC1820/ERC1820RegistryConsumer.sol";
 
 import {ITokenDna} from "./ITokenDna.sol";
 import {ITokenDnaConsumer} from "./ITokenDnaConsumer.sol";
 
-abstract contract TokenDnaConsumerAbstract is AccessControlUpgradeable, ERC1820RegistryConsumer, ITokenDnaConsumer {
+abstract contract TokenDnaConsumerAbstract is AccessControlRecursive, ERC1820RegistryConsumer, ITokenDnaConsumer {
     using StorageSlotUpgradeable for bytes32;
 
     bytes32 internal constant TOKEN_DNA_PROVIDER_ROLE = keccak256("TOKEN_DNA_PROVIDER_ROLE");
     bytes32 internal constant _TOKEN_DNA_PROVIDER_SLOT = keccak256("TOKEN_DNA_PROVIDER");
 
-    function __TokenDnaConsumerAbstract_init_unchained(address dnaProviderRole, address dnaProvider) internal {
-        _grantRole(TOKEN_DNA_PROVIDER_ROLE, dnaProviderRole);
+    function __TokenDnaConsumerAbstract_init_unchained(address dnaProvider) internal {
         _setDnaProvider(dnaProvider);
 
         if (_registryExists()) {
@@ -27,7 +27,7 @@ abstract contract TokenDnaConsumerAbstract is AccessControlUpgradeable, ERC1820R
         return _TOKEN_DNA_PROVIDER_SLOT.getAddressSlot().value;
     }
 
-    function setDnaProvider(address dnaProvider) external onlyRole(TOKEN_DNA_PROVIDER_ROLE) {
+    function setDnaProvider(address dnaProvider) external onlyRoleRecursive(TOKEN_DNA_PROVIDER_ROLE) {
         _setDnaProvider(dnaProvider);
     }
 

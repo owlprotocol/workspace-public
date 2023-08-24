@@ -61,21 +61,13 @@ contract ChainlinkAnyApiClient is OwlBase, ChainlinkClient, IChainlinkAnyApiClie
         address token,
         address oracle
     ) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
-        __ChainlinkAnyApiClient_init_unchained(admin, admin, token, oracle);
+        __ChainlinkAnyApiClient_init_unchained(token, oracle);
     }
 
-    function __ChainlinkAnyApiClient_init_unchained(
-        address requestRole,
-        address withdrawRole,
-        address token,
-        address oracle
-    ) internal {
-        _grantRole(REQUEST_ROLE, requestRole);
-        _grantRole(WITHDRAW_ROLE, withdrawRole);
-
+    function __ChainlinkAnyApiClient_init_unchained(address token, address oracle) internal {
         if (_registryExists()) {
             _registerInterface(type(IChainlinkAnyApiClient).interfaceId);
         }
@@ -94,7 +86,7 @@ contract ChainlinkAnyApiClient is OwlBase, ChainlinkClient, IChainlinkAnyApiClie
         string calldata reqUrl,
         string calldata reqPath,
         uint256 reqFee
-    ) external onlyRole(REQUEST_ROLE) {
+    ) external onlyRoleRecursive(REQUEST_ROLE) {
         Chainlink.Request memory req = buildChainlinkRequest(reqJobId, address(this), this.fulfill.selector);
         req.add("get", reqUrl);
         req.add("path", reqPath);
@@ -114,7 +106,7 @@ contract ChainlinkAnyApiClient is OwlBase, ChainlinkClient, IChainlinkAnyApiClie
     /**
      * @inheritdoc IChainlinkAnyApiClient
      */
-    function withdrawLink(address to, uint256 amount) external onlyRole(WITHDRAW_ROLE) {
+    function withdrawLink(address to, uint256 amount) external onlyRoleRecursive(WITHDRAW_ROLE) {
         LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
         require(link.transfer(to, amount), "Unable to transfer");
     }

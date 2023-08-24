@@ -38,3 +38,23 @@ See [OWLArchitecture](OWLArchitecture.svg) for more info on what's going on unde
 
 ## Development
 See [contract-structure.md](../docs/docs-contracts/advanced/contract-structure.md) for more info.
+
+## Roles
+```
+DEFAULT_ADMIN_ROLE              #Admin
+CONTRACT_URI_ROLE               #Set contract uri
+APPROVED_FOR_ALL_ROLE           #Approve all transfers (god-mode)
+MINTER_ROLE                     #Mint token
+REQUEST_ROLE                    #Request Chainlink
+WITHDRAW_ROLE                   #Withdraw tokens
+FULFILL_ROLE                    #Fulfill Chainlink request
+DEPOSIT_ROLE                    #Deposit to asset router
+ROYALTY_ROLE                    #Set royalty
+TOKEN_ROYALTY_PROVIDER_ROLE     #Set royalty provider address
+TOKEN_DNA_ROLE                  #Set dna
+TOKEN_DNA_PROVIDER_ROLE         #Set dna provider address
+TOKEN_URI_ROLE                  #Set uri (for TokenURI contract)
+TOKEN_URI_BASE_URI_ROLE         #Set base uri (for TokenURIBaseURI and TokenURIDna)
+TOKEN_URI_PROVIDER_ROLE         #Set uri provider address
+TOKEN_ROLE                      #Set token address
+```

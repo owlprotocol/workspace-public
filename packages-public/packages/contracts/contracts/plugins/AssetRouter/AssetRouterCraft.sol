@@ -59,21 +59,16 @@ contract AssetRouterCraft is ERC721HolderUpgradeable, ERC1155HolderUpgradeable, 
         AssetBasketInput[] memory _inputBaskets,
         AssetBasketOutput[] memory _outputBaskets
     ) internal {
-        __ContractURI_init_unchained(admin, contractUri);
+        __ContractURI_init_unchained(contractUri);
         __OwlBase_init_unchained(admin);
 
-        __AssetRouterCraft_init_unchained(_inputBaskets, _outputBaskets, admin, admin);
+        __AssetRouterCraft_init_unchained(_inputBaskets, _outputBaskets);
     }
 
     function __AssetRouterCraft_init_unchained(
         AssetBasketInput[] memory _inputBaskets,
-        AssetBasketOutput[] memory _outputBaskets,
-        address depositRole,
-        address withdrawRole
+        AssetBasketOutput[] memory _outputBaskets
     ) internal {
-        _grantRole(DEPOSIT_ROLE, depositRole);
-        _grantRole(WITHDRAW_ROLE, withdrawRole);
-
         //Registry
         if (_registryExists()) {
             _registerInterface(type(IERC721ReceiverUpgradeable).interfaceId);
@@ -232,7 +227,7 @@ contract AssetRouterCraft is ERC721HolderUpgradeable, ERC1155HolderUpgradeable, 
     /**
      * inheritdoc IAssetRouterOutput
      */
-    function deposit(uint256 amount, uint256 basketIdx) external onlyRole(DEPOSIT_ROLE) {
+    function deposit(uint256 amount, uint256 basketIdx) external onlyRoleRecursive(DEPOSIT_ROLE) {
         AssetOutputLib.deposit(outputBaskets[basketIdx], amount);
         emit UpdateBasket(basketIdx, int256(amount));
     }
@@ -240,7 +235,7 @@ contract AssetRouterCraft is ERC721HolderUpgradeable, ERC1155HolderUpgradeable, 
     /**
      * inheritdoc IAssetRouterOutput
      */
-    function withdraw(uint256 amount, uint256 basketIdx) external onlyRole(WITHDRAW_ROLE) {
+    function withdraw(uint256 amount, uint256 basketIdx) external onlyRoleRecursive(WITHDRAW_ROLE) {
         AssetOutputLib.withdraw(outputBaskets[basketIdx], amount);
         emit UpdateBasket(basketIdx, -int256(amount));
     }
