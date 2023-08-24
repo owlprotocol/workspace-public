@@ -102,6 +102,7 @@ const config = {
             optimizer: {
                 enabled: true,
                 runs: 100,
+                details: { yul: true }
             },
         },
     },

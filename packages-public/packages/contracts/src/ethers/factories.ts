@@ -1,8 +1,9 @@
 import { getFactoriesWithSigner, getDeployFactories, getFactoryWithInitializeUtil, Utils as ProxyUtils } from "@owlprotocol/contracts-proxy";
 import * as contracts from "../typechain/ethers/factories/contracts/index.js";
 import * as oz from "../typechain/ethers/factories/@openzeppelin/contracts-upgradeable/index.js";
+import * as safe from "../typechain/ethers/factories/@safe-global/safe-contracts/contracts/index.js";
 import * as Utils from "../utils/initializeUtils/index.js";
-import { mapValues } from "../lodash.js"
+import { mapValues, omit } from "../lodash.js"
 
 //ERC1820 Registry
 export const ERC1820RegistryFactory = new contracts.common.erc1820.erc1820Sol.ERC1820Registry__factory();
@@ -14,7 +15,7 @@ export const BlockNumberFactory = new contracts.utils.BlockNumber__factory();
 
 //WARNING: ONLY add contracts that support initialize pattern
 //Implementations
-export const factoryClasses = {
+export const factoryClassesAll = {
     ERC20Mintable: contracts.assets.erc20.ERC20Mintable__factory,
     ERC721Mintable: contracts.assets.erc721.ERC721Mintable__factory,
     ERC721MintableAutoId: contracts.assets.erc721.ERC721MintableAutoId__factory,
@@ -27,8 +28,23 @@ export const factoryClasses = {
     AssetRouterCraft: contracts.plugins.assetRouter.AssetRouterCraft__factory,
     AssetRouterInput: contracts.plugins.assetRouter.AssetRouterInput__factory,
     AssetRouterOutput: contracts.plugins.assetRouter.AssetRouterOutput__factory,
-    ChainlinkAnyApiClient: contracts.chainlink.ChainlinkAnyApiClient__factory
+    ChainlinkAnyApiClient: contracts.chainlink.ChainlinkAnyApiClient__factory,
+    //Non-initializable
+    Multicall2: contracts.utils.Multicall2__factory,
+    BlockNumber: contracts.utils.BlockNumber__factory,
+    ERC1820Registry: contracts.common.erc1820.erc1820Sol.ERC1820Registry__factory,
+    Safe: safe.Safe__factory,
+    SafeL2: safe.SafeL2__factory,
+    SafeProxyFactory: safe.proxies.SafeProxyFactory__factory,
+    SimulateTxAccessor: safe.accessors.SimulateTxAccessor__factory,
+    CompatibilityFallbackHandler: safe.handler.CompatibilityFallbackHandler__factory,
+    Multisend: safe.libraries.MultiSend__factory,
+    MultisendCallOnly: safe.libraries.MultiSendCallOnly__factory,
+    SignMessageLib: safe.libraries.SignMessageLib__factory,
+    CreateCall: safe.libraries.CreateCall__factory,
 } as const
+
+export const factoryClasses = omit(factoryClassesAll, ["Multicall2", "BlockNumber", "ERC1820Registry", "Safe", "SafeL2", "SafeProxyFactory", "SimulateTxAccessor", "CompatibilityFallbackHandler", "Multisend", "MultisendCallOnly", "SignMessageLib", "CreateCall"])
 
 export const interfaces = mapValues(factoryClasses, (f) => f.createInterface()) as {
     [K in keyof typeof factoryClasses]: ReturnType<typeof factoryClasses[K]["createInterface"]>
@@ -119,9 +135,21 @@ export const factoriesBeaconProxies = factories2.factoriesBeaconProxies;
 //Add non-initializable contract implementations
 export const factoriesImplementations = {
     ...factoriesImplementationsBase,
+    //Non-initializable
     ERC1820Registry: ProxyUtils.deployDeterministicFactory({ contractFactory: ERC1820RegistryFactory }),
     Multicall2: ProxyUtils.deployDeterministicFactory({ contractFactory: Multicall2Factory }),
     BlockNumber: ProxyUtils.deployDeterministicFactory({ contractFactory: BlockNumberFactory }),
+    Safe: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.Safe__factory() }),
+    SafeL2: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.SafeL2__factory() }),
+    SafeProxyFactory: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.proxies.SafeProxyFactory__factory() }),
+    //Fails just like in official repo
+    //SimulateTxAccessor: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.Safe__factory() }),
+    CompatibilityFallbackHandler: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.handler.CompatibilityFallbackHandler__factory() }),
+    Multisend: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.libraries.MultiSend__factory() }),
+    MultisendCallOnly: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.libraries.MultiSendCallOnly__factory() }),
+    SignMessageLib: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.libraries.SignMessageLib__factory() }),
+    CreateCall: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.libraries.CreateCall__factory }),
+
 } as const;
 
 const factoriesWithInitializeUtils = {
