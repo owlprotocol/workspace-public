@@ -136,7 +136,6 @@ export const ${name} = { fnUInt256: ${expectedUInt256},\nfnAddress: ${expectedAd
 
             const result = genZodValidatorForContract(name, [fnAbis.uint256, fnAbis.address], zSolPackage);
             assert.equal(result, expected);
-            console.debug(expected);
         });
     });
 });

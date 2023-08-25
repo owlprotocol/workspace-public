@@ -32,7 +32,7 @@ export function functionParamsTupleToObj<T extends readonly AbiParam[]>(params: 
         throw Error(`Parameter params.${param.name} and params[${idx}] undefined`);
     });
 
-    console.debug({ params, paramsObj, paramsAbi });
+    //console.debug({ params, paramsObj, paramsAbi });
 
     return paramsObj;
 }
