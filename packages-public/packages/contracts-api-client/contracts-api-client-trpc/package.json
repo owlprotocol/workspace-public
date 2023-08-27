@@ -33,7 +33,7 @@
     "README.md"
   ],
   "engines": {
-    "node": "^16.0.0"
+    "node": "^18.0.0"
   },
   "scripts": {
     "test": "pnpm run test:ci",
@@ -53,18 +53,18 @@
     "lint:fix": "eslint --fix 'src/**/*.ts'"
   },
   "dependencies": {
-    "@ethersproject/providers": "5.7.2",
-    "@owlprotocol/contracts-api": "workspace:",
-    "@owlprotocol/contracts": "workspace:*",
-    "@owlprotocol/contracts-proxy": "workspace:*",
     "@trpc/client": "10.36",
     "@trpc/server": "10.36",
-    "trpc-openapi": "^1.2.0"
+    "cross-fetch": "^4.0.0"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
+    "@ethersproject/providers": "5.7.2",
+    "@owlprotocol/contracts": "workspace:*",
+    "@owlprotocol/contracts-api": "workspace:",
+    "@owlprotocol/contracts-proxy": "workspace:*",
     "@types/dotenv": "^8.2.0",
     "@types/node": "^16.11.26",
     "cross-env": "^7.0.3",
@@ -72,6 +72,7 @@
     "madge": "^5.0.2",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
+    "trpc-openapi": "^1.2.0",
     "typescript": "4.9.5",
     "vite": "^4.4.9",
     "vitest": "^0.34.2"

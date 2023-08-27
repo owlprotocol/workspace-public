@@ -1,12 +1,12 @@
 {
-    "name": "@owlprotocol/contracts-sdk",
-    "version": "2.0.0",
+    "name": "@owlprotocol/dfns-sdk-mock",
+    "version": "1.2.0",
     "private": false,
     "repository": {
         "type": "git",
-        "url": "https://github.com/owlprotocol/contracts-sdk.git"
+        "url": "https://github.com/owlprotocol/dfns-sdk-mock.git"
     },
-    "homepage": "https://github.com/owlprotocol/owlprotocol.git",
+    "homepage": "https://owlprotocol.github.io/dfns-sdk-mock",
     "copyright": "Copyright 2023 Owl Protocol",
     "author": {
         "name": "Leo Vigna",
@@ -36,7 +36,9 @@
         "node": "^18.0.0"
     },
     "scripts": {
-        "test": "mocha 'lib/esm/**/*.test.js'",
+        "test": "pnpm run test:ci",
+        "test:watch": "vitest",
+        "test:ci": "vitest --run",
         "build": "npm-run-all -p tsc esbuild",
         "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
         "esbuild": "node esbuild.config.mjs",
@@ -51,28 +53,24 @@
         "lint:fix": "eslint --fix 'src/**/*.ts'"
     },
     "dependencies": {
-        "@owlprotocol/contracts": "workspace:*",
-        "@owlprotocol/contracts-proxy": "workspace:*"
-    },
-    "peerDependencies": {
         "ethers": "5.7.2"
     },
     "devDependencies": {
+        "@dfns/lib-ethersjs5": "0.1.0-beta.1",
+        "@dfns/sdk": "0.1.0-beta.1",
+        "@dfns/sdk-keysigner": "0.1.0-beta.1",
         "@owlprotocol/esbuild-config": "workspace:*",
         "@owlprotocol/eslint-config": "workspace:*",
         "@owlprotocol/prettier-config": "workspace:*",
-        "@types/chai": "^4.3.3",
-        "@types/mocha": "^9.1.1",
         "@types/node": "^16.11.26",
         "@types/dotenv": "^8.2.0",
-        "chai": "^4.3.6",
         "cross-env": "^7.0.3",
         "dotenv": "^16.0.3",
-        "ethers": "5.7.2",
         "madge": "^5.0.2",
-        "mocha": "^9.2.2",
         "npm-run-all": "^4.1.5",
         "rimraf": "^3.0.2",
-        "typescript": "4.9.5"
+        "typescript": "4.9.5",
+        "vite": "^4.4.9",
+        "vitest": "^0.34.2"
     }
 }
