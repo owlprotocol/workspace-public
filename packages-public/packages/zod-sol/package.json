@@ -63,7 +63,7 @@
         "@owlprotocol/eslint-config": "workspace:*",
         "@owlprotocol/prettier-config": "workspace:*",
         "@types/dotenv": "^8.2.0",
-        "@types/node": "^16.11.26",
+        "@types/node": "^20.5.6",
         "cross-env": "^7.0.3",
         "dotenv": "^16.0.3",
         "madge": "^5.0.2",

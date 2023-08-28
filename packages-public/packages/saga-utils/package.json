@@ -61,7 +61,7 @@
         "@owlprotocol/prettier-config": "workspace:*",
         "@types/chai": "^4.3.3",
         "@types/mocha": "^9.1.1",
-        "@types/node": "^16.11.26",
+        "@types/node": "^20.5.6",
         "@types/dotenv": "^8.2.0",
         "chai": "^4.3.6",
         "cross-env": "^7.0.3",

@@ -51,7 +51,7 @@
         "@owlprotocol/eslint-config": "workspace:*",
         "@types/chai": "^4.3.0",
         "@types/mocha": "^9.1.0",
-        "@types/node": "^16.11.26",
+        "@types/node": "^20.5.6",
         "chai": "^4.3.6",
         "cross-env": "^7.0.3",
         "dotenv": "^10.0.0",
