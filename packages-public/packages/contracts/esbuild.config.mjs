@@ -1,4 +1,4 @@
-import { buildLib, cjsLibConfig } from '@owlprotocol/esbuild-config';
+import { buildLib, cjsLibConfig } from "@owlprotocol/esbuild-config";
 
 /*
 let plugin = {

@@ -77,6 +77,7 @@ export const factoryInterfaceClasses = {
     IERC1155Mintable: contracts.assets.erc1155.IERC1155Mintable__factory,
     ITokenURI: contracts.plugins.tokenUri.ITokenURI__factory,
     ITokenURIBaseURI: contracts.plugins.tokenUri.ITokenURIBaseURI__factory,
+    ITokenURIConsumer: contracts.plugins.tokenUri.ITokenURIConsumer__factory,
     IERC2981: oz.interfaces.IERC2981Upgradeable__factory,
     IERC2981Setter: contracts.plugins.erc2981.IERC2981Setter__factory,
     ITokenDna: contracts.plugins.tokenDna.ITokenDna__factory,
