@@ -1,38 +1,38 @@
 {
-    "name": "@owlprotocol/esbuild-config",
-    "version": "2.0.0",
-    "private": false,
-    "license": "MIT",
-    "exports": {
-        ".": {
-            "require": "./index.mjs",
-            "import": "./index.mjs"
-        }
-    },
-    "files": [
-        "index.mjs",
-        "LICENSE",
-        "README.md"
-    ],
-    "engines": {
-        "node": "^18.0.0"
-    },
-    "scripts": {
-        "publish": "pnpm publish --no-git-checks --access public",
-        "lint": "eslint index.mjs",
-        "lint:fix": "eslint index.mjs --fix"
-    },
-    "dependencies": {
-        "@esbuild-plugins/node-resolve": "^0.1.4",
-        "esbuild": "^0.14.25",
-        "esbuild-copy-static-files": "^0.1.0",
-        "esbuild-plugin-alias": "^0.2.1",
-        "esbuild-plugin-babel": "^0.2.3",
-        "esbuild-plugin-copy": "^1.1.0",
-        "glob": "^7.2.0"
-    },
-    "devDependencies": {
-        "@owlprotocol/eslint-config": "workspace:*",
-        "@owlprotocol/prettier-config": "workspace:*"
+  "name": "@owlprotocol/esbuild-config",
+  "version": "2.0.0",
+  "private": false,
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "require": "./index.mjs",
+      "import": "./index.mjs"
     }
+  },
+  "files": [
+    "index.mjs",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": "^18.0.0"
+  },
+  "scripts": {
+    "publish": "pnpm publish --no-git-checks --access public",
+    "lint": "eslint index.mjs",
+    "lint:fix": "eslint index.mjs --fix"
+  },
+  "dependencies": {
+    "@esbuild-plugins/node-resolve": "^0.1.4",
+    "esbuild": "^0.19.2",
+    "esbuild-copy-static-files": "^0.1.0",
+    "esbuild-plugin-alias": "^0.2.1",
+    "esbuild-plugin-babel": "^0.2.3",
+    "esbuild-plugin-copy": "^1.1.0",
+    "glob": "^7.2.0"
+  },
+  "devDependencies": {
+    "@owlprotocol/eslint-config": "workspace:*",
+    "@owlprotocol/prettier-config": "workspace:*"
+  }
 }

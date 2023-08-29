@@ -20,14 +20,6 @@ const excludeNodeModulesPlugin = NodeResolvePlugin({
 });
 
 const ESBUILD_WATCH = process.env.ESBUILD_WATCH === "true" || process.env.ESBUILD_WATCH === "1";
-const watch = ESBUILD_WATCH
-    ? {
-          onRebuild: (error) => {
-              if (error) console.error("watch esbuild failed:", error);
-              else console.log("watch esbuild succeeded");
-          },
-      }
-    : false;
 
 const external = ["url", "events", "path"];
 const inject = []; //['./react-shim.mjs']
@@ -38,7 +30,6 @@ export const baseConfig = {
     target: ["es2020"],
     inject,
     plugins: [excludeNodeModulesPlugin],
-    watch,
 };
 
 //CJS Library (Testing)
@@ -109,27 +100,40 @@ export const distConfigs = [cjsBundleConfig, cjsBundleMinConfig, esmBundleConfig
 export const configs = [...libConfigs, ...distConfigs];
 
 export const buildLib = async () => {
-    const packagePromises = libConfigs.map(async (c) => {
-        const dir = c.outdir;
-        if (!existsSync(dir)) {
-            mkdirSync(dir, { recursive: true });
-        }
-        const p = join(dir, "package.json");
-        if (!existsSync(p)) {
-            const type = c.format === "esm" ? "module" : "commonjs";
-            writeFileSync(p, JSON.stringify({ type }), "utf-8");
-        }
-    });
-    const buildPromises = libConfigs.map((c) => esbuild.build(c));
-    return Promise.all([...packagePromises, ...buildPromises]);
+    //Write package.json
+    await Promise.all(
+        libConfigs.map(async (c) => {
+            const dir = c.outdir;
+            if (!existsSync(dir)) {
+                mkdirSync(dir, { recursive: true });
+            }
+            const p = join(dir, "package.json");
+            if (!existsSync(p)) {
+                const type = c.format === "esm" ? "module" : "commonjs";
+                writeFileSync(p, JSON.stringify({ type }), "utf-8");
+            }
+        }),
+    );
+
+    if (!ESBUILD_WATCH) {
+        //Static build
+        await Promise.all(libConfigs.map((c) => esbuild.build(c)));
+    } else {
+        //Incremental build
+        await Promise.all(libConfigs.map((c) => esbuild.context(c).then((c) => c.watch())));
+    }
 };
 
 export const buildDist = async () => {
-    const promises = distConfigs.map((c) => esbuild.build(c));
-    return Promise.all(promises);
+    if (!ESBUILD_WATCH) {
+        //Static build
+        await Promise.all(distConfigs.map((c) => esbuild.build(c)));
+    } else {
+        //Incremental build
+        await Promise.all(distConfigs.map((c) => esbuild.context(c).then((c) => c.watch())));
+    }
 };
 
 export const buildAll = async () => {
-    const promises = configs.map((c) => esbuild.build(c));
-    return Promise.all(promises);
+    await Promise.all([buildLib(), buildDist()]);
 };
