@@ -3,14 +3,22 @@
 
 /** @type {Partial<Chain>} */
 export default {
-  icon: {
-    url: "ipfs://QmcxZHpyJa8T4i63xqjPYrZ6tKrt55tZJpbXcjSDKuKaf9/polygon/512.png",
-    height: 512,
-    width: 512,
-    format: "png",
-  },
-  rpc: [
-    "https://polygon-mainnet.infura.io/v3/${INFURA_API_KEY}",
-    "https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
-  ],
+    icon: {
+        url: "ipfs://QmcxZHpyJa8T4i63xqjPYrZ6tKrt55tZJpbXcjSDKuKaf9/polygon/512.png",
+        height: 512,
+        width: 512,
+        format: "png",
+    },
+    rpc: [
+        "https://polygon-mainnet.infura.io/v3/${INFURA_API_KEY}",
+        "https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+    ],
+    features: [
+        {
+            "name": "EIP1559"
+        },
+        {
+            "name": "EIP155"
+        }
+    ],
 };

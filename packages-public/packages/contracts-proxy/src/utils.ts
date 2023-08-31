@@ -1,11 +1,24 @@
+import type { Provider } from "@ethersproject/providers";
 import type { Signer } from "ethers";
-import type { BaseProvider } from "@ethersproject/providers";
 import log from "loglevel";
+import type { HardhatRuntimeEnvironment } from "hardhat/types";
 
 export interface RunTimeEnvironment {
-    provider: BaseProvider;
-    signers: Signer[];
-    network: any; //Partial<HardhatRuntimeEnvironment['network']>
+    readonly provider: Provider;
+    readonly network: {
+        readonly name: string;
+        readonly config: { readonly chainId: number; readonly eip1559?: boolean };
+    };
+    readonly signer: Signer;
+}
+
+export interface HRE {
+    readonly ethers: HardhatRuntimeEnvironment["ethers"];
+    readonly network: {
+        readonly name: string;
+        readonly config: { readonly chainId: number; readonly eip1559: boolean };
+    };
+    readonly deployments: HardhatRuntimeEnvironment["deployments"];
 }
 
 export function logDeployment(

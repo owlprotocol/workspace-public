@@ -1,22 +1,21 @@
 import { ethers, utils } from "ethers";
-import { PRIVATE_KEY_ANVIL, PUBLIC_ADDRESS_FACTORY_DEPLOYER } from "@owlprotocol/envvars";
+import {
+    PRIVATE_KEY_ANVIL,
+    PUBLIC_ADDRESS_0_LOCAL,
+    PUBLIC_ADDRESS_1_LOCAL,
+    PUBLIC_ADDRESS_FACTORY_DEPLOYER,
+} from "@owlprotocol/envvars";
 import { RunTimeEnvironment } from "../utils.js";
 
 /**
  * Deployment is always the same regardless of contract.
  * We get the bytecode & name for a deterministic deployment from the Proxy Factory.
  */
-export const BalancesDeploy = async ({ provider, network }: Omit<RunTimeEnvironment, "signers">) => {
-    if (network.name == "anvil") {
+export const BalancesDeploy = async ({ provider, network }: Omit<RunTimeEnvironment, "signer">) => {
+    if (network.name == "localhost") {
         const anvil = new ethers.Wallet(PRIVATE_KEY_ANVIL, provider);
         //Fund accounts on anvil
-        const accounts = network.config.accounts;
-        const addressList = [PUBLIC_ADDRESS_FACTORY_DEPLOYER];
-
-        for (const pKey of accounts) {
-            const address = await new ethers.Wallet(pKey, provider).getAddress();
-            addressList.push(address);
-        }
+        const addressList = [PUBLIC_ADDRESS_FACTORY_DEPLOYER, PUBLIC_ADDRESS_0_LOCAL, PUBLIC_ADDRESS_1_LOCAL];
 
         for (const address of addressList) {
             const balance = await provider.getBalance(address);
@@ -25,7 +24,7 @@ export const BalancesDeploy = async ({ provider, network }: Omit<RunTimeEnvironm
                     to: address,
                     value: utils.parseEther("10.0").sub(balance),
                     gasLimit: 21000,
-                    type: ((network.config as any).eip1559 as boolean) ? 2 : 0,
+                    type: network.config.eip1559 ? 2 : 0,
                 });
                 await tx.wait(1);
             }

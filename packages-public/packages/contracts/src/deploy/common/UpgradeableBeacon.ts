@@ -1,16 +1,13 @@
 import log from "loglevel";
-import { connectFactories } from "@owlprotocol/contracts-proxy";
+import { connectFactories, logDeployment, RunTimeEnvironment } from "@owlprotocol/contracts-proxy";
 import { mapValues, zipObject } from "../../lodash.js";
-
-import { logDeployment, RunTimeEnvironment } from "../utils.js";
 import { factoriesBeacons } from "../../ethers/factories.js";
 
 /**
  * Deployment is always the same regardless of contract.
  * We get the bytecode & name for a deterministic deployment from the Proxy Factory.
  */
-export const UpgradeableBeaconDeploy = async ({ provider, signers, network }: RunTimeEnvironment) => {
-    const signer = signers[0];
+export const UpgradeableBeaconDeploy = async ({ provider, signer, network }: RunTimeEnvironment) => {
     const signerAddress = await signer.getAddress();
     let nonce = await provider.getTransactionCount(signerAddress);
 

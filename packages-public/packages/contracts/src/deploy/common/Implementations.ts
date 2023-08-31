@@ -1,15 +1,13 @@
 import log from "loglevel";
-import { connectFactories } from "@owlprotocol/contracts-proxy";
+import { connectFactories, logDeployment, RunTimeEnvironment } from "@owlprotocol/contracts-proxy";
 import { mapValues, zipObject } from "../../lodash.js";
-import { logDeployment, RunTimeEnvironment } from "../utils.js";
 import { factoriesImplementations } from "../../ethers/factories.js";
 
 /**
  * Deployment is always the same regardless of contract.
  * We get the bytecode & name for a deterministic deployment from the Proxy Factory.
  */
-export const ImplementationsDeploy = async ({ provider, signers, network }: RunTimeEnvironment) => {
-    const signer = signers[0];
+export const ImplementationsDeploy = async ({ provider, signer, network }: RunTimeEnvironment) => {
     let nonce = await provider.getTransactionCount(await signer.getAddress());
 
     const promises = mapValues(connectFactories(factoriesImplementations, signer), async (factory) => {

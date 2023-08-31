@@ -19,10 +19,10 @@ describe("safe.test.ts", async () => {
     let signer: Signer;
     let signerAddress: string;
 
-    const chainId = 31337;
+    const chainId = 1337;
     let salt = 1;
     const networkId = `${chainId}`;
-    const network = { name: "anvil", config: { chainId, accounts: [PRIVATE_KEY_0_LOCAL] } };
+    const network = { name: "localhost", config: { chainId, accounts: [PRIVATE_KEY_0_LOCAL] } };
 
     beforeAll(async () => {
         const ganacheProvider = ganache.provider({
@@ -44,8 +44,8 @@ describe("safe.test.ts", async () => {
         //Fund address
         await DeployProxy.BalancesDeploy({ provider, network });
         //Deploy Proxy Factory
-        await DeployProxy.ProxyFactoryDeploy({ provider, signers: [signer], network });
-        await ImplementationsDeploy({ provider, signers: [signer], network });
+        await DeployProxy.ProxyFactoryDeploy({ provider, network });
+        await ImplementationsDeploy({ provider, signer, network });
 
         await sleep(1000);
     });

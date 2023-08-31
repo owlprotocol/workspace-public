@@ -1,4 +1,3 @@
-import { THIRDWEB_API_KEY, INFURA_API_KEY, ANKR_API_KEY, ALCHEMY_API_KEY } from "@owlprotocol/envvars";
 import { Chain } from "./types.js";
 
 export interface ChainWithData extends Chain {
@@ -6,20 +5,38 @@ export interface ChainWithData extends Chain {
     readonly rpcThirdWeb?: string;
     readonly rpcAlchemy?: string;
     readonly rpcInfura?: string;
+    readonly rpcAnkr?: string;
     readonly rpcPublic?: string;
     readonly rpcDefault?: string;
 
     readonly wsThirdWeb?: string;
     readonly wsAlchemy?: string;
     readonly wsInfura?: string;
+    readonly wsAnkr?: string;
     readonly wsPublic?: string;
     readonly wsDefault?: string;
 
     readonly explorerEtherscan?: string;
     readonly explorerBlockscout?: string;
+    readonly explorer?: string;
+    readonly explorerApi?: string;
+    readonly explorerApiKey?: string;
 }
 
-export function getChainWithData(chain: Chain) {
+export interface GetChainWithDataOptions {
+    readonly THIRDWEB_API_KEY?: string;
+    readonly INFURA_API_KEY?: string;
+    readonly ANKR_API_KEY?: string;
+    readonly ALCHEMY_API_KEY?: string;
+    readonly rpc?: string;
+    readonly ws?: string;
+    readonly explorer?: string;
+    readonly explorerApi?: string;
+    readonly explorerApiKey?: string;
+}
+export function getChainWithData(chain: Chain, options?: GetChainWithDataOptions): ChainWithData {
+    const { THIRDWEB_API_KEY, INFURA_API_KEY, ANKR_API_KEY, ALCHEMY_API_KEY, rpc, ws } = options ?? {}
+
     let rpcThirdWeb = chain.rpc.find((r) => {
         return THIRDWEB_API_KEY && r.startsWith("https://") && r.includes("${THIRDWEB_API_KEY}")
     })
@@ -61,6 +78,7 @@ export function getChainWithData(chain: Chain) {
     })
     if (wsAlchemy && ALCHEMY_API_KEY) wsAlchemy = wsAlchemy.replace("${ALCHEMY_API_KEY}", ALCHEMY_API_KEY)
 
+    //Note: Only secure https supported
     let rpcPublic = chain.rpc.find((r) => {
         return r.startsWith("https://") &&
             !r.includes("${THIRDWEB_API_KEY}") &&
@@ -69,6 +87,7 @@ export function getChainWithData(chain: Chain) {
             !r.includes("${ALCHEMY_API_KEY}")
     })
 
+    //Note: Only secure websocket supported
     let wsPublic = chain.rpc.find((r) => {
         return r.startsWith("wss://") &&
             !r.includes("${THIRDWEB_API_KEY}") &&
@@ -77,16 +96,18 @@ export function getChainWithData(chain: Chain) {
             !r.includes("${ALCHEMY_API_KEY}")
     })
 
-    const rpcDefault = rpcInfura ?? rpcThirdWeb ?? rpcAnkr ?? rpcAlchemy ?? rpcPublic
-    const wsDefault = wsInfura ?? wsThirdWeb ?? wsAnkr ?? wsAlchemy ?? wsPublic
+    const rpcDefault = rpc ?? rpcInfura ?? rpcThirdWeb ?? rpcAnkr ?? rpcAlchemy ?? rpcPublic
+    const wsDefault = ws ?? wsInfura ?? wsThirdWeb ?? wsAnkr ?? wsAlchemy ?? wsPublic
 
     let explorerEtherscan = chain.explorers?.find((r) => {
         return r.name.toLowerCase().includes("scan")
-    })
+    })?.url
     let explorerBlockscout = chain.explorers?.find((r) => {
         return r.name.toLowerCase().includes("scout")
-    })
-    const explorerDefault = explorerEtherscan ?? explorerBlockscout
+    })?.url
+    const explorer = options?.explorer ?? explorerEtherscan ?? explorerBlockscout;
+    const explorerApi = options?.explorerApi;
+    const explorerApiKey = options?.explorerApiKey;
 
     return {
         ...chain,
@@ -104,6 +125,8 @@ export function getChainWithData(chain: Chain) {
         wsDefault,
         explorerEtherscan,
         explorerBlockscout,
-        explorerDefault
-    } as ChainWithData
+        explorer,
+        explorerApi,
+        explorerApiKey,
+    }
 }

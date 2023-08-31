@@ -1,13 +1,14 @@
-import type { HardhatRuntimeEnvironment } from "hardhat/types";
+import { HRE } from "@owlprotocol/contracts-proxy";
+
 import { mapValues, zipObject } from "../../lodash.js";
 import { UpgradeableBeaconDeploy } from "../../deploy/common/UpgradeableBeacon.js";
 
-const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironment) => {
+const deploy = async ({ ethers, network, deployments }: HRE) => {
     const { save, getOrNull } = deployments;
 
     const results = await UpgradeableBeaconDeploy({
         provider: ethers.provider,
-        signers: await ethers.getSigners(),
+        signer: (await ethers.getSigners())[0],
         network,
     });
 

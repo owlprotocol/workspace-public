@@ -20,6 +20,9 @@
     "LICENSE",
     "README.md"
   ],
+  "engines": {
+    "node": "^18.0.0"
+  },
   "scripts": {
     "build": "npm-run-all -p tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
@@ -27,13 +30,16 @@
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "tsc": "tsc",
     "tsc:watch": "tsc -w",
-    "clean": "rimraf dist lib"
+    "clean": "rimraf dist lib",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "eslint --fix 'src/**/*.ts'"
   },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.5",
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@nomicfoundation/hardhat-verify": "^1.0.0",
     "@owlprotocol/envvars": "workspace:*",
+    "@owlprotocol/chains": "workspace:*",
     "ethers": "5.7.2",
     "hardhat-deploy": "^0.11.10",
     "hardhat-deploy-ethers": "^0.3.0-beta.13",
@@ -43,6 +49,8 @@
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",
+    "@owlprotocol/eslint-config": "workspace:*",
+    "@owlprotocol/prettier-config": "workspace:*",
     "@types/node": "^20.5.6",
     "@types/lodash": "4.14.188",
     "npm-run-all": "^4.1.5"

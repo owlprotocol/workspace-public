@@ -56,8 +56,6 @@
     "build:hardhat": "hardhat compile",
     "build:zsol": "tsx src/codegen/runGenerateZodValidators.ts",
     "clean": "rimraf lib cache src/artifacts src/typechain src/zsol",
-    "node": "npm run node:anvil",
-    "node:anvil": "anvil",
     "coverage": "hardhat coverage --solcoverjs .solcover.js --testfiles 'test/**/*.test.ts'",
     "coverage:gsn": "hardhat --network local coverage --solcoverjs .solcover.js --testfiles 'test/**/*.test.ts'",
     "test": "npm-run-all to:commonjs test-exec to:module",

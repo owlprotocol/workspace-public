@@ -1,13 +1,13 @@
-import type { HardhatRuntimeEnvironment } from "hardhat/types";
+import { HRE } from "@owlprotocol/contracts-proxy";
 import { mapValues, zipObject } from "../../lodash.js";
 import { ImplementationsDeploy } from "../../deploy/common/Implementations.js";
 
-const deploy = async ({ ethers, network, deployments }: HardhatRuntimeEnvironment) => {
+const deploy = async ({ ethers, network, deployments }: HRE) => {
     const { save, getOrNull } = deployments;
 
     const results = await ImplementationsDeploy({
         provider: ethers.provider,
-        signers: await ethers.getSigners(),
+        signer: (await ethers.getSigners())[0],
         network,
     });
 

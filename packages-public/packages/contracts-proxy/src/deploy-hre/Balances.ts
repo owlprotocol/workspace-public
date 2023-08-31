@@ -1,7 +1,7 @@
-import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import { BalancesDeploy } from "../deploy/Balances.js";
+import { HRE } from "../utils.js";
 
-const deploy = async ({ ethers, network }: HardhatRuntimeEnvironment) => {
+const deploy = async ({ ethers, network }: HRE) => {
     await BalancesDeploy({ provider: ethers.provider, network });
     return;
 };
