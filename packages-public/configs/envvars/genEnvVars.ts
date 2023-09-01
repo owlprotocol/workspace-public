@@ -148,6 +148,7 @@ export const ENVVARS: EnvVarDef[] = [
     { name: "NODE_ENV", defaultValue: "development", enumValues: ["development", "production", "test"] },
     { name: "LOG_LEVEL", defaultValue: "warn", enumValues: ["trace", "debug", "info", "warn", "error"] },
     { name: "TITLE" },
+    { name: "API_BASE_URL", defaultValue: "http://localhost:3000/api" },
     { name: "CORS_PROXY" },
     { name: "README_SECRET" },
     ...DFNS_ENVVARS,
