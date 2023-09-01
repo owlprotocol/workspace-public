@@ -38,7 +38,7 @@ const defaultNetworkIds = allChains.map((c) => c.chainId);
 
 export function getHardhatConfig(
     networkIds: number[] = defaultNetworkIds,
-    accounts: string[] = PRIVATE_KEY_0 ? [] : [PRIVATE_KEY_0!],
+    accounts: string[] = PRIVATE_KEY_0 ? [PRIVATE_KEY_0] : [],
     accountsLocal: string[] = [PRIVATE_KEY_0_LOCAL],
 ) {
     const chains = networkIds.map((id) => getChainWithDataByChainId(id)).filter((c) => c.rpcDefault != undefined);

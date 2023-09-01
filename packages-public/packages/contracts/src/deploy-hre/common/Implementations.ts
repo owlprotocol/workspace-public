@@ -5,6 +5,8 @@ import { ImplementationsDeploy } from "../../deploy/common/Implementations.js";
 const deploy = async ({ ethers, network, deployments }: HRE) => {
     const { save, getOrNull } = deployments;
 
+    console.debug(network);
+
     const results = await ImplementationsDeploy({
         provider: ethers.provider,
         signer: (await ethers.getSigners())[0],
