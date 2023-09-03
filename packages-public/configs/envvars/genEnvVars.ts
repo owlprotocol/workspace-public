@@ -32,6 +32,12 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
 const SCRIPT_ENVVARS: EnvVarDef[] = [
     //Cold-storage admin for beacons
     { name: "BEACON_ADMIN", defaultValue: "0xad839Bc20a349b2502468c9d6ba47531f435491f" },
+    //Hot-wallet for contracts-api relayer
+    { name: "PRIVATE_KEY_RELAYER" },
+    {
+        name: "PRIVATE_KEY_RELAYER_LOCAL",
+        defaultValue: "0x0000000000000000000000000000000000000000000000000000000000000001",
+    },
     //Hot-wallet for deployment
     { name: "PRIVATE_KEY_0" },
     { name: "PUBLIC_ADDRESS_0" },
