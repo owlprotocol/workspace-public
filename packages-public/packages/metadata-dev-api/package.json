@@ -1,6 +1,6 @@
 {
     "name": "@owlprotocol/starter-typescript",
-    "version": "1.2.0",
+    "version": "2.0.1",
     "private": false,
     "repository": {
         "type": "git",
@@ -45,8 +45,6 @@
         "tsc": "tsc",
         "tsc:watch": "tsc -w",
         "clean": "rimraf lib dist",
-        "prepublishOnly": "pnpm run test",
-        "publish": "pnpm publish --no-git-checks --access public",
         "madge": "madge src/index.ts -c",
         "lint": "eslint",
         "lint:fix": "eslint --fix"

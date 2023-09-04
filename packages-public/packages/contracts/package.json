@@ -1,6 +1,6 @@
 {
   "name": "@owlprotocol/contracts",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "private": false,
   "repository": {
     "type": "git",
@@ -55,7 +55,7 @@
     "build:tsc:watch": "mkdir -p lib/types && cp -r src/typechain lib/types && tsc --project tsconfig.build.json -w",
     "build:hardhat": "hardhat compile",
     "build:zsol": "tsx src/codegen/runGenerateZodValidators.ts",
-    "clean": "rimraf lib cache src/artifacts src/typechain src/zsol",
+    "clean": "rimraf lib bin cache docs-contracts-reference src/artifacts src/typechain src/zsol",
     "coverage": "hardhat coverage --solcoverjs .solcover.js --testfiles 'test/**/*.test.ts'",
     "coverage:gsn": "hardhat --network local coverage --solcoverjs .solcover.js --testfiles 'test/**/*.test.ts'",
     "test": "npm-run-all to:commonjs test-exec to:module",

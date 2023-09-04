@@ -1,6 +1,6 @@
 {
     "name": "web3-cli",
-    "version": "1.2.0",
+    "version": "2.0.1",
     "private": false,
     "repository": {
         "type": "git",
@@ -54,7 +54,7 @@
         "posttest": "npm run lint",
         "prepack": "npm run build && oclif manifest && oclif readme",
         "test": "mocha --forbid-only \"test/**/*.test.ts\"",
-        "version": "oclif readme && git add README.md",
+        "version": "2.0.1",
         "lint": "eslint 'src/**/*.ts'",
         "lint:fix": "eslint --fix 'src/**/*.ts'"
     },

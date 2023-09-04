@@ -1,5 +1,14 @@
 # @owlprotocol/contracts
 
+## 2.0.2
+
+### Patch Changes
+
+- 26e0d473: Initial Release
+- Updated dependencies [26e0d473]
+  - @owlprotocol/contracts-proxy@2.0.2
+  - @owlprotocol/zod-sol@2.0.2
+
 ## 2.0.0
 
 ### Major Changes

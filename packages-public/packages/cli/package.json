@@ -1,6 +1,6 @@
 {
     "name": "@owlprotocol/nft-sdk-cli",
-    "version": "1.2.2",
+    "version": "2.0.1",
     "license": "MIT",
     "type": "module",
     "main": "./lib/cjs/index.cjs",
@@ -35,8 +35,6 @@
         "clean": "npm-run-all -p clean:build clean:projects",
         "clean:build": "rimraf lib dist",
         "clean:projects": "rm -f projects/**/*.js && rm -f projects/**/*.d.ts",
-        "prepublishOnly": "pnpm run test",
-        "publish": "pnpm publish --no-git-checks --access public",
         "madge": "madge src/index.ts -c",
         "lint": "eslint",
         "lint:fix": "eslint --fix",
