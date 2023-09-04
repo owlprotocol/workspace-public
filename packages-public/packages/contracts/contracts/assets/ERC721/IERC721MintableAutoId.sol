@@ -22,4 +22,6 @@ interface IERC721MintableAutoId {
     function safeMint(address to) external returns (uint256);
 
     function safeMintBatch(address[] memory to) external returns (uint256[] memory);
+
+    function totalSupply() external view returns (uint256);
 }
