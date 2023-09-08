@@ -62,7 +62,7 @@
     },
     "peerDependencies": {
         "dexie-react-hooks": "^1.1.1",
-        "react": "^17.0.2",
+        "react": "^18.2.0",
         "react-dom": "^17.0.2"
     },
     "devDependencies": {
@@ -81,8 +81,8 @@
         "chai": "^4.3.6",
         "cross-env": "^7.0.3",
         "dexie-react-hooks": "^1.1.1",
-        "react": "^17.0.2",
-        "react-dom": "^17.0.2",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
         "dotenv": "^16.0.3",
         "jsdom": "^20.0.0",
         "madge": "^5.0.2",

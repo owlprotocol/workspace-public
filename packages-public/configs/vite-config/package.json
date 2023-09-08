@@ -27,26 +27,29 @@
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "tsc": "tsc",
     "tsc:watch": "tsc -w",
-    "clean": "rimraf dist lib"
+    "clean": "rimraf dist lib",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "eslint --fix 'src/**/*.ts'",
+    "madge": "madge src/index.ts -c"
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
     "@owlprotocol/esbuild-config": "workspace:*",
-    "@rollup/plugin-alias": "^3.1.9",
-    "@rollup/plugin-commonjs": "^22.0.0",
-    "@rollup/plugin-inject": "^4.0.4",
+    "@owlprotocol/eslint-config": "workspace:*",
+    "@owlprotocol/prettier-config": "workspace:*",
+    "@rollup/plugin-inject": "^5.0.3",
     "@types/node": "^20.5.6",
-    "@vitejs/plugin-react": "^1.0.7",
+    "@vitejs/plugin-react-swc": "^3.3.2",
     "npm-run-all": "^4.1.5",
-    "rollup": "^2.72.1",
+    "rollup": "^3.29.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "typescript": "4.9.5",
-    "vite": "3.0.2",
-    "vite-dts": "workspace:*",
-    "vite-plugin-checker": "^0.6.0",
-    "vite-plugin-environment": "^1.1.1",
-    "vite-plugin-node-polyfills": "^0.8.2",
-    "vite-plugin-svgr": "^2.1.0"
+    "vite": "^4.4.5",
+    "vitest": "^0.34.2",
+    "vite-plugin-dts": "^3.5.3",
+    "vite-plugin-checker": "^0.6.2",
+    "vite-plugin-node-polyfills": "^0.12.0",
+    "vite-plugin-svgr": "^3.2.0"
   }
 }
