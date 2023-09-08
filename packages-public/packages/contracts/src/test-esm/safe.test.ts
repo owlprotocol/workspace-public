@@ -7,6 +7,7 @@ import { sleep } from "@owlprotocol/utils";
 import { Deploy as DeployProxy } from "@owlprotocol/contracts-proxy";
 import { ImplementationsDeploy } from "../deploy/index.js";
 import {
+    createSafeSDK,
     createSafeTransaction,
     parseProxyCreationEvent,
     deploySafe,
@@ -99,23 +100,15 @@ describe("safe.test.ts", async () => {
             ).wait();
             const balancePre = await provider.getBalance(safeAddress);
 
+            const safeSDK = await createSafeSDK(signer, networkId, safeAddress);
+
             //Transaction Safe
-            const safeTxUnsigned = await createSafeTransaction({
-                provider,
-                networkId,
-                safeAddress,
-                data: {
-                    to: signerAddress,
-                    data: "0x",
-                    value: "1",
-                },
+            const safeTxUnsigned = await createSafeTransaction(safeSDK, {
+                to: signerAddress,
+                data: "0x",
+                value: "1",
             });
-            const safeTx = await signSafeTransaction({
-                signer,
-                networkId,
-                safeAddress,
-                safeTransaction: safeTxUnsigned,
-            });
+            const safeTx = await signSafeTransaction(safeSDK, safeTxUnsigned);
             const safeTxResponse = await executeSafeTransaction({
                 signer,
                 networkId,

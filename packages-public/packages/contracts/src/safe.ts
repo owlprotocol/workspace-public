@@ -144,52 +144,9 @@ export function parseProxyCreationEvent(log: Log): { proxy: string; singleton: s
     }
 }
 
-/**
- * Generate safe transaction.
- * @param config
- * @returns Safe Transaction
- */
-export async function createSafeTransaction(config: {
-    provider: Provider;
-    networkId: string;
-    safeAddress: string;
-    data: SafeTransactionDataPartial | MetaTransactionData[];
-}): Promise<SafeTransaction> {
-    const { provider, networkId, safeAddress } = config;
+export async function createSafeSDK(signer: Signer, networkId: string, safeAddress: string): Promise<SafeSDK> {
     const contracts = contractsByNetwork[networkId] ?? singletonFactoryContracts;
-    //Initialized Eth Adapter
-    const ethAdapter = new EthersAdapter({
-        ethers,
-        signerOrProvider: provider,
-    });
-    //Initialize Safe SDK
-    const safeSDK = await Safe.create({
-        ethAdapter,
-        safeAddress,
-        contractNetworks: { [networkId]: contracts },
-        isL1SafeMasterCopy: false,
-    });
 
-    //Generate transaction
-    const safeTransactionDataPartial = config.data;
-    const safeTransaction = await safeSDK.createTransaction({ safeTransactionData: safeTransactionDataPartial });
-    return safeTransaction;
-}
-
-/**
- * Sign safe transaction. MUST be signed by an owner
- * @param config
- * @returns Safe Transaction (with added signature)
- */
-export async function signSafeTransaction(config: {
-    signer: Signer;
-    networkId: string;
-    safeAddress: string;
-    safeTransaction: SafeTransaction;
-}) {
-    const { signer, networkId, safeAddress, safeTransaction } = config;
-    const contracts = contractsByNetwork[networkId] ?? singletonFactoryContracts;
-    //Initialized Eth Adapter
     const ethAdapter = new EthersAdapter({
         ethers,
         signerOrProvider: signer,
@@ -201,8 +158,30 @@ export async function signSafeTransaction(config: {
         contractNetworks: { [networkId]: contracts },
         isL1SafeMasterCopy: false,
     });
-    //Sign transaction
-    const safeTransactionSigned = await safeSDK.signTransaction(safeTransaction);
+
+    return safeSDK;
+}
+
+/**
+ * Generate safe transaction.
+ * @returns Safe Transaction
+ */
+export async function createSafeTransaction(
+    safeSDK: SafeSDK,
+    data: SafeTransactionDataPartial | MetaTransactionData[],
+): Promise<SafeTransaction> {
+    // TODO: wrap for errors
+    const safeTransaction = await safeSDK.createTransaction({ safeTransactionData: data });
+    return safeTransaction;
+}
+
+/**
+ * Sign safe transaction. MUST be signed by an owner
+ * @returns Safe Transaction (with added signature)
+ */
+export async function signSafeTransaction(safeSDK: SafeSDK, safeTxUnsigned: SafeTransaction) {
+    // TODO: wrap for errors
+    const safeTransactionSigned = await safeSDK.signTransaction(safeTxUnsigned);
     return safeTransactionSigned;
 }
 
