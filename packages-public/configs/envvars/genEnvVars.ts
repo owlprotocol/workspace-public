@@ -157,6 +157,7 @@ export const ENVVARS: EnvVarDef[] = [
     { name: "API_BASE_URL", defaultValue: "http://localhost:3000/api" },
     { name: "CORS_PROXY" },
     { name: "README_SECRET" },
+    { name: "CLERK_PUBLISHABLE_KEY" },
     ...DFNS_ENVVARS,
     ...FIREBASE_ENVVARS,
     ...SCRIPT_ENVVARS,
