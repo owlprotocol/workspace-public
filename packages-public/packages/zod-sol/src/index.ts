@@ -3,3 +3,4 @@ export * from "./abi/index.js";
 export * from "./networkId.js";
 export * from "./utils/index.js";
 export * from "./zod-codegen/index.js";
+export * from "./eth/index.js";
