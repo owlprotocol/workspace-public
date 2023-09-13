@@ -8,6 +8,7 @@ import {
 } from "@owlprotocol/envvars";
 import { initializeApp, getApp, getApps } from "firebase-admin/app";
 import { getFirestore, CollectionReference } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
 import { getStorage } from "firebase-admin/storage";
 import type { AppOptions } from "firebase-admin";
 import { cert } from "firebase-admin/app";
@@ -55,6 +56,7 @@ function getFirebaseConfig() {
         // Connect to emulator (if test). Do NOT use localhost as breaks in CI
         process.env["FIRESTORE_EMULATOR_HOST"] = "127.0.0.1:8080";
         process.env["FIREBASE_STORAGE_EMULATOR_HOST"] = "127.0.0.1:9199";
+        process.env["FIREBASE_AUTH_EMULATOR_HOST"] = "127.0.0.1:9099";
     }
 
     return firebaseConfig;
@@ -73,6 +75,7 @@ function getFirebaseApp() {
 
 export const firebaseApp = getFirebaseApp();
 export const firestore = getFirestore(firebaseApp);
+export const auth = getAuth(firebaseApp);
 
 // NOTE: storage.apiEndponit stores the prefix of each file's publicUrl
 export const storage = getStorage(firebaseApp);

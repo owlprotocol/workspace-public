@@ -9,6 +9,7 @@ import {
 } from "@owlprotocol/envvars";
 import { FirebaseOptions, initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore, collection, CollectionReference, connectFirestoreEmulator } from "firebase/firestore";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getStorage, connectStorageEmulator } from "firebase/storage";
 import { User } from "../models/User.js";
 import { Contract } from "../models/Contract.js";
@@ -31,14 +32,12 @@ function getFirebaseConfig() {
     } else {
         //Emulator Firebase Config
         firebaseConfig = {
+            apiKey: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
             //https://firebase.google.com/docs/emulator-suite/connect_firestore#admin_sdks
             //Demo prefix forces connection to emulator
             projectId: `demo-${FIREBASE_PROJECT_ID}`,
             storageBucket: `demo-${FIREBASE_STORAGE_BUCKET}`,
         };
-        // Connect to emulator (if test). Do NOT use localhost as breaks in CI
-        process.env["FIRESTORE_EMULATOR_HOST"] = "127.0.0.1:8080";
-        process.env["FIREBASE_STORAGE_EMULATOR_HOST"] = "127.0.0.1:9199";
     }
 
     return firebaseConfig;
@@ -56,13 +55,15 @@ function getFirebaseApp() {
 }
 
 export const firebaseApp = getFirebaseApp();
-const firestore = getFirestore(firebaseApp);
+export const firestore = getFirestore(firebaseApp);
+export const auth = getAuth(firebaseApp);
 // NOTE: storage.apiEndponit stores the prefix of each file's publicUrl
-const storage = getStorage(firebaseApp);
+export const storage = getStorage(firebaseApp);
 
 if (NODE_ENV !== "production") {
     connectFirestoreEmulator(firestore, "127.0.0.1", 8080);
-    connectStorageEmulator(storage, "127.0.0.1", 8080);
+    connectAuthEmulator(auth, "http://127.0.0.1:9099");
+    connectStorageEmulator(storage, "127.0.0.1", 9199);
 }
 //TODO: Doesn't work, maybe see compat api?
 //export const bucket: ReturnType<typeof storage.bucket> = storage.bucket();

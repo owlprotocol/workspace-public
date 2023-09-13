@@ -51,7 +51,7 @@
     "node": "^18.0.0"
   },
   "scripts": {
-    "test": "firebase emulators:exec --only firestore,storage --project demo-owl-protocol 'pnpm run test:ci'",
+    "test": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'pnpm run test:ci'",
     "test:watch": "vitest",
     "test:ci": "vitest --run",
     "build": "npm-run-all -p tsc esbuild",
@@ -64,7 +64,8 @@
     "madge": "madge src/index.ts -c",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
-    "lint:staged": "lint-staged"
+    "lint:staged": "lint-staged",
+    "firebase-emulator": "firebase emulators:start --only firestore,storage,auth --project demo-owl-protocol"
   },
   "dependencies": {
     "@owlprotocol/envvars": "workspace:*",
@@ -79,7 +80,6 @@
     "@trpc/server": "10.36"
   },
   "devDependencies": {
-    "@owlprotocol/contracts-proxy": "workspace:*",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",

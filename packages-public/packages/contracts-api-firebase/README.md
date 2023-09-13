@@ -34,3 +34,11 @@ All true
 ## Admin
 
 Exported under `@owlprotocol/contracts-api-firebase/admin`. Integration for `firebase-admin` SDK that runs server-side. Admin SDK has full authority and ignores all security rules. Admin is authenticated using a service accouint.
+
+## Emulators
+
+The purpose of this package is also to have proper emulator config to be able to run local tests efficiently. We connect emulators for Firestore, Auth, Storage SDKs.
+
+https://firebase.google.com/docs/emulator-suite/connect_firestore
+https://firebase.google.com/docs/emulator-suite/connect_auth
+https://firebase.google.com/docs/emulator-suite/connect_storage
