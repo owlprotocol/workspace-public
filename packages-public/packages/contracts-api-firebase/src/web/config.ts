@@ -12,6 +12,7 @@ import { getFirestore, collection, CollectionReference, connectFirestoreEmulator
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getStorage, connectStorageEmulator } from "firebase/storage";
 import { User } from "../models/User.js";
+import { Template } from "../models/Template.js";
 import { Contract } from "../models/Contract.js";
 import { MetadataContract } from "../models/MetadataContract.js";
 import { MetadataTokens } from "../models/MetadataTokens.js";
@@ -70,6 +71,7 @@ if (NODE_ENV !== "production") {
 
 //Collections
 export const usersCol = collection(firestore, "users") as CollectionReference<User>;
+export const templatesCol = collection(firestore, "templates") as CollectionReference<Template>;
 export const requestTemplatesCol = collection(firestore, "requestTemplates") as CollectionReference<RequestTemplate>;
 export const contractsCol = collection(firestore, "contracts") as CollectionReference<Contract>;
 export const metadataContractsCol = collection(firestore, "metadataContracts") as CollectionReference<MetadataContract>;
