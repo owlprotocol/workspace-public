@@ -158,6 +158,7 @@ export const ENVVARS: EnvVarDef[] = [
     { name: "CORS_PROXY" },
     { name: "README_SECRET" },
     { name: "CLERK_PUBLISHABLE_KEY" },
+    { name: "CLERK_WEBHOOK_SECRET_KEY" },
     ...DFNS_ENVVARS,
     ...FIREBASE_ENVVARS,
     ...SCRIPT_ENVVARS,
