@@ -23,6 +23,7 @@ export interface Contract {
     readonly address: string;
     readonly contractName: string;
     readonly networkId: string;
+    readonly projectId?: string;
     readonly contractParams?: any;
     readonly deployParams?: {
         readonly msgSender: string;
