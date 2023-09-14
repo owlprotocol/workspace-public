@@ -1,4 +1,4 @@
-import { DocumentData, doc, getDoc } from "firebase/firestore";
+import { DocumentData, doc, getDoc, getDocs, QueryDocumentSnapshot } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
 import { contractsCol } from "./config.js";
 import { Contract } from "../models/Contract.js";
@@ -26,4 +26,22 @@ export async function getContract(id: string): Promise<Contract> {
     }
 
     return contractSnapshot.data();
+}
+
+export async function getAllContracts(): Promise<Contract[]> {
+    try {
+        const querySnapshot = await getDocs(contractsCol);
+        return querySnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => doc.data() as Contract);
+    } catch (e) {
+        if (e instanceof FirebaseError) {
+            console.error(e);
+            const firebaseError = e as FirebaseError;
+            console.log(firebaseError.code);
+            if (firebaseError.code === "permission-denied") {
+                throw new Error("User not allowed to get documents");
+            }
+            throw new Error(`Error getting documents: ${firebaseError.message}`);
+        }
+        throw new Error(`Error getting documents: ${e}`);
+    }
 }
