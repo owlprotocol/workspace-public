@@ -31,7 +31,7 @@ export async function getContract(id: string): Promise<Contract> {
 export async function getAllContracts(): Promise<Contract[]> {
     try {
         const querySnapshot = await getDocs(contractsCol);
-        return querySnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => doc.data() as Contract);
+        return querySnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => doc.data() as Contract); //QueryDocumentSnapshot -> type representing document from firestore query, document data is placeholder for data
     } catch (e) {
         if (e instanceof FirebaseError) {
             console.error(e);
