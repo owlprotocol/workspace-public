@@ -37,6 +37,8 @@ export const testProjectTemplateId = uuid1;
 export const testProjectTemplate: ProjectTemplate = {
     templateId: testProjectTemplateId,
     templateName: "NFT Collection",
+    templateDescription: "Create digital assets connected to any API via Chainlink",
+    imgUrl: "nft.svg",
 };
 export const testProjectId = crypto.randomUUID();
 export const testProject: Project = {
