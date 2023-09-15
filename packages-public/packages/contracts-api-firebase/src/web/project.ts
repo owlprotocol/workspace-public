@@ -1,10 +1,9 @@
-import { CollectionReference, DocumentData, doc, getDoc, setDoc } from "firebase/firestore";
+import { DocumentData, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
 import { projectsCol } from "./config.js";
 import { Project } from "../models/Project.js";
 
 export async function createProject(
-    projectsCol: CollectionReference<Project>,
     projectName: string,
     userId: string,
 ): Promise<{ projectId: string; project: Project }> {
@@ -20,12 +19,12 @@ export async function createProject(
         userId,
     };
 
-    await setDoc(projectsCol());
+    await setDoc(doc(projectsCol, projectId), project);
 
     return { projectId, project };
 }
 
-export async function getProject(id: string): Promise<Project> {
+export async function getProjectById(id: string): Promise<Project> {
     const projectRef = doc(projectsCol, id);
     let projectSnapshot: DocumentData;
     try {
@@ -48,4 +47,17 @@ export async function getProject(id: string): Promise<Project> {
     }
 
     return projectSnapshot.data();
+}
+
+export async function getProjectsByUserId(userId: string): Promise<Project[]> {
+    let projects: Project[];
+    try {
+        const projectQuery = query(projectsCol, where("userId", "==", userId));
+        const projectSnapshot = await getDocs(projectQuery);
+        projects = projectSnapshot.docs.map((doc) => doc.data());
+    } catch (e) {
+        console.error(`Error getting projects: ${e}`);
+        throw e;
+    }
+    return projects;
 }
