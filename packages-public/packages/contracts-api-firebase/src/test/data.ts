@@ -1,6 +1,8 @@
 import { ethers } from "ethers";
 import { PRIVATE_KEY_0_LOCAL } from "@owlprotocol/envvars";
+import * as crypto from "crypto";
 import { User } from "../models/User.js";
+import { Project } from "../models/Project.js";
 import { ProjectTemplate } from "../models/ProjectTemplate.js";
 
 export const testNetworkId = "31337";
@@ -35,4 +37,10 @@ export const testProjectTemplateId = uuid1;
 export const testProjectTemplate: ProjectTemplate = {
     templateId: testProjectTemplateId,
     templateName: "NFT Collection",
+};
+export const testProjectId = crypto.randomUUID();
+export const testProject: Project = {
+    projectId: testProjectId,
+    projectName: "Test Project",
+    userId: testUserId,
 };

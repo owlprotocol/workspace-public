@@ -1,5 +1,6 @@
 import { DocumentData, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
+import * as crypto from "crypto";
 import { projectsCol } from "./config.js";
 import { Project } from "../models/Project.js";
 
