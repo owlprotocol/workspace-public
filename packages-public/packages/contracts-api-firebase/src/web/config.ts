@@ -7,10 +7,10 @@ import {
     FIREBASE_STORAGE_BUCKET,
     NODE_ENV,
 } from "@owlprotocol/envvars";
-import { FirebaseOptions, initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, collection, CollectionReference, connectFirestoreEmulator } from "firebase/firestore";
-import { getAuth, connectAuthEmulator } from "firebase/auth";
-import { getStorage, connectStorageEmulator } from "firebase/storage";
+import { FirebaseOptions, initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getFirestore, collection, CollectionReference, connectFirestoreEmulator, Firestore } from "firebase/firestore";
+import { getAuth, connectAuthEmulator, Auth } from "firebase/auth";
+import { getStorage, connectStorageEmulator, FirebaseStorage } from "firebase/storage";
 import { User } from "../models/User.js";
 import { ProjectTemplate } from "../models/ProjectTemplate.js";
 import { Contract } from "../models/Contract.js";
@@ -44,28 +44,42 @@ function getFirebaseConfig() {
     return firebaseConfig;
 }
 
-function getFirebaseApp() {
+/**
+ * Get singleton Firebase app, and underlying sdk modules
+ */
+function getFirebaseApp(): { firebaseApp: FirebaseApp; firestore: Firestore; auth: Auth; storage: FirebaseStorage } {
     // Init the firebase app if not in test environment
     if (getApps().length === 0) {
         const config = getFirebaseConfig();
         //Initialize firestore
-        return initializeApp(config);
+        const firebaseApp = initializeApp(config);
+        const firestore = getFirestore(firebaseApp);
+        const auth = getAuth(firebaseApp);
+        // NOTE: storage.apiEndponit stores the prefix of each file's publicUrl
+        const storage = getStorage(firebaseApp);
+
+        //Initial setup & running in non-prod
+        //Initialize Emulator
+        if (NODE_ENV !== "production") {
+            connectFirestoreEmulator(firestore, "127.0.0.1", 8080);
+            connectAuthEmulator(auth, "http://127.0.0.1:9099");
+            connectStorageEmulator(storage, "127.0.0.1", 9199);
+        }
+
+        return { firebaseApp, firestore, auth, storage };
     } else {
-        return getApp();
+        const firebaseApp = getApp();
+        const firestore = getFirestore(firebaseApp);
+        const auth = getAuth(firebaseApp);
+        // NOTE: storage.apiEndponit stores the prefix of each file's publicUrl
+        const storage = getStorage(firebaseApp);
+
+        return { firebaseApp, firestore, auth, storage };
     }
 }
 
-export const firebaseApp = getFirebaseApp();
-export const firestore = getFirestore(firebaseApp);
-export const auth = getAuth(firebaseApp);
-// NOTE: storage.apiEndponit stores the prefix of each file's publicUrl
-export const storage = getStorage(firebaseApp);
+export const { firebaseApp, firestore, auth, storage } = getFirebaseApp();
 
-if (NODE_ENV !== "production") {
-    connectFirestoreEmulator(firestore, "127.0.0.1", 8080);
-    connectAuthEmulator(auth, "http://127.0.0.1:9099");
-    connectStorageEmulator(storage, "127.0.0.1", 9199);
-}
 //TODO: Doesn't work, maybe see compat api?
 //export const bucket: ReturnType<typeof storage.bucket> = storage.bucket();
 
