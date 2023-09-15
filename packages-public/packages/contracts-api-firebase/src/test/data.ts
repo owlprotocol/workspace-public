@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { PRIVATE_KEY_0_LOCAL } from "@owlprotocol/envvars";
 import { User } from "../models/User.js";
-import { Template } from "../models/Template.js";
+import { ProjectTemplate } from "../models/ProjectTemplate.js";
 
 export const testNetworkId = "31337";
 export const testSigner = new ethers.Wallet(PRIVATE_KEY_0_LOCAL);
@@ -31,8 +31,8 @@ export const testUser: User = {
         },
     },
 };
-export const testTemplateId = uuid1;
-export const testTemplate: Template = {
-    templateId: testTemplateId,
+export const testProjectTemplateId = uuid1;
+export const testProjectTemplate: ProjectTemplate = {
+    templateId: testProjectTemplateId,
     templateName: "NFT Collection",
 };

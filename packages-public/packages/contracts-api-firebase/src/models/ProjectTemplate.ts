@@ -1,4 +1,4 @@
-export interface Template {
+export interface ProjectTemplate {
     templateId: string;
     templateName: string;
 }
