@@ -1,6 +1,11 @@
 import { ESLint } from "eslint";
 import { writeFileSync } from "fs";
 
+export enum ModuleType {
+    CJS = "CJS",
+    ESM = "ESM",
+}
+
 /** Define an envvar, defaultValues, and enum values if applicable */
 export interface EnvVarDef {
     readonly name: string;
@@ -107,6 +112,7 @@ const EXPLORER_API_DEFAULTS: Record<string, string | undefined> = {
 };
 
 /** API Keys are per-domain */
+//Exposed API Key are meant for public use, not used in production
 const EXPLORER_API_KEY_DEFAULTS: Record<string, string | undefined> = {
     //Ethereum
     1: "BG78ZBIAH64QWA748MMNVVZEHW13JR4Z6I",
@@ -172,10 +178,24 @@ export const ENVVARS: EnvVarDef[] = [
  * @param defaultValue default hard-coded value
  * @returns
  */
-export function genEnvVarStatement(name: string, defaultValue?: string) {
+export function genEnvVarStatement(name: string, moduleType: ModuleType, defaultValue?: string): string {
     const varName = `export const ${name}`;
-    let varValue = `import.meta.env ? (import.meta.env.${name} ?? import.meta.env.VITE_${name}) : process.env.${name}`;
-    if (defaultValue) varValue = `(${varValue}) ?? "${defaultValue}"`;
+    let varValue: string;
+    if (moduleType === ModuleType.CJS) {
+        //value as process.env (NodeJS only)
+        varValue = `process.env.${name}`;
+    } else if (moduleType === ModuleType.ESM) {
+        //value as import.meta.env (NodeJS ESM or Vite bundler)
+        //import.meta.env is used by Vite (transform)
+        //process.env is used by NodeJS (runtime)
+        varValue = `import.meta.env ? (import.meta.env.${name} ?? import.meta.env.VITE_${name}) : process.env.${name}`;
+    } else {
+        throw new Error(`Invalid moduleType ${moduleType}`);
+    }
+    //Add default value
+    if (defaultValue) {
+        varValue = `(${varValue}) ?? "${defaultValue}"`;
+    }
     return `${varName} = ${varValue};`;
 }
 
@@ -186,48 +206,59 @@ export function genEnvVarTypeDef(name: string, enumValues?: string[]) {
 }
 
 /** Generate envvar exports */
-export function genEnvVarsFile(envvars: EnvVarDef[]) {
-    const exports = envvars.map((e) => genEnvVarStatement(e.name, e.defaultValue)).join("\n");
+export function genEnvVarsFile(envvars: EnvVarDef[], moduleType: ModuleType) {
+    const exports = envvars.map((e) => genEnvVarStatement(e.name, moduleType, e.defaultValue)).join("\n");
     return exports;
 }
 
-export function genEnvDtsFile(envvars: EnvVarDef[]) {
-    const comment = `
+export function genEnvDtsFile(envvars: EnvVarDef[], moduleType: ModuleType): string {
+    const dtsFilePrefix = `
 /**
  * Environment variables. We use a hybrid solution that supports both import.meta.env for static
  * replacement used by client bundlers (Vite, Webpack...) and process.env for NodeJS libraries.
  * @module Environment
  */
 `;
+    const dtsFileSuffix = `
+const isClient = () => typeof window !== "undefined";
+
+import dotenv from "dotenv";
+if (!isClient()) {
+    dotenv.config();
+}`;
 
     const types = envvars.map((e) => genEnvVarTypeDef(e.name, e.enumValues));
     const typesWithVITE = envvars.map((e) => genEnvVarTypeDef(`VITE_${e.name}`, e.enumValues));
-    const globalNameSpace = `declare global {
+    if (moduleType === ModuleType.CJS) {
+        const globalNameSpace = `declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace NodeJS {
         interface ProcessEnv {
             ${types.join("\n            ")}
         }
     }
+}
+`;
+        return [dtsFilePrefix, globalNameSpace, dtsFileSuffix].join("\n");
+    } else if (moduleType === ModuleType.ESM) {
+        const globalNameSpace = `declare global {
     interface ImportMetaEnv {
         ${types.join("\n            ")}
         ${typesWithVITE.join("\n            ")}
     }
 }
-
-const isClient = () => typeof window !== "undefined";
-
-import dotenv from "dotenv";
-if (!isClient()) {
-    dotenv.config();
-}
 `;
+        //Define Import Meta
+        const dtsFileImportMetaEnv = `/// <reference types="vite/client" />`;
 
-    return [comment, globalNameSpace].join("\n");
+        return [dtsFileImportMetaEnv, dtsFilePrefix, globalNameSpace, dtsFileSuffix].join("\n");
+    } else {
+        throw new Error(`Invalid moduleType ${moduleType}`);
+    }
 }
 
-export async function writeEnvVarFile(envvars: EnvVarDef[], envVarsPath: string) {
-    const file = `${genEnvDtsFile(envvars)}\n${genEnvVarsFile(envvars)}`;
+export async function writeEnvVarFile(envvars: EnvVarDef[], moduleType: ModuleType, envVarsPath: string) {
+    const file = `${genEnvDtsFile(envvars, moduleType)}\n${genEnvVarsFile(envvars, moduleType)}`;
     writeFileSync(envVarsPath, file);
 
     //Lint files
@@ -237,7 +268,10 @@ export async function writeEnvVarFile(envvars: EnvVarDef[], envVarsPath: string)
 }
 
 export async function main() {
-    await writeEnvVarFile(ENVVARS, "src/envvars.ts");
+    await Promise.all([
+        writeEnvVarFile(ENVVARS, ModuleType.CJS, "src/envvars.cts"),
+        writeEnvVarFile(ENVVARS, ModuleType.ESM, "src/envvars.mts"),
+    ]);
 }
 
 main();

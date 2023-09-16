@@ -4,7 +4,8 @@ import * as esbuild from "esbuild";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 
-const files = glob.default.sync("src/**/*.{ts,tsx,json}");
+const filesCts = glob.default.sync("src/**/*.{ts,cts,tsx,json}");
+const filesMts = glob.default.sync("src/**/*.{ts,mts,tsx,json}");
 
 const excludeNodeModulesPlugin = NodeResolvePlugin({
     extensions: [".ts", ".js", ".json"],
@@ -34,7 +35,7 @@ export const baseConfig = {
 
 //CJS Library (Testing)
 export const cjsLibConfig = {
-    entryPoints: files,
+    entryPoints: filesCts,
     bundle: false,
     outdir: "lib/cjs",
     //outExtension: { '.js': '.cjs' },
@@ -44,7 +45,7 @@ export const cjsLibConfig = {
 
 //ESM Library
 export const esmLibConfig = {
-    entryPoints: files,
+    entryPoints: filesMts,
     bundle: false,
     outdir: "lib/esm",
     format: "esm",

@@ -1,5 +1,5 @@
 import { getChainWithData, GetChainWithDataOptions, getChainByChainId } from "@owlprotocol/chains";
-import * as envvars from "./envvars.js";
+import * as envvars from "./envvars.cjs";
 
 export function getChainWithDataByChainId(chainId: number) {
     const options: GetChainWithDataOptions = {
