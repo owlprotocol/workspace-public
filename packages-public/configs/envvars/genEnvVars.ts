@@ -21,8 +21,8 @@ const DFNS_ENVVARS: EnvVarDef[] = [
 const FIREBASE_ENVVARS: EnvVarDef[] = [
     { name: "FIREBASE_API_KEY" },
     { name: "FIREBASE_AUTH_DOMAIN" },
-    { name: "FIREBASE_PROJECT_ID" },
-    { name: "FIREBASE_APP_ID" },
+    { name: "FIREBASE_PROJECT_ID", defaultValue: "owl-protocol" },
+    { name: "FIREBASE_APP_ID", defaultValue: "owl-protocol" },
     { name: "FIREBASE_MEASUREMENT_ID" },
     { name: "FIREBASE_SERVICE_EMAIL" },
     { name: "FIREBASE_PRIVATE_KEY" },

@@ -1,5 +1,4 @@
-import { DocumentData, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
-import { FirebaseError } from "firebase/app";
+import { deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 import * as crypto from "crypto";
 import { projectsCol } from "./config.js";
 import { Project } from "../models/Project.js";
@@ -25,23 +24,33 @@ export async function createProject(
     return { projectId, project };
 }
 
+/**
+ * @dev Get all projects. Should enforce security rules. Used mostly for testing
+ */
+export async function getProjectsAll(): Promise<Project[]> {
+    const snapshot = await getDocs(projectsCol);
+    return snapshot.docs.map((d) => d.data());
+}
+
+/**
+ * @dev Delete all projects. Should enforce security rules. Used mostly for testing.
+ */
+export async function deleteProjectsAll(): Promise<void[]> {
+    const snapshot = await getDocs(projectsCol);
+    return Promise.all(snapshot.docs.map((d) => deleteDoc(doc(projectsCol, d.id))));
+}
+
+/**
+ * @dev Get project by id.
+ * @param id
+ * @returns
+ * @throws FirebaseError permission-denied
+ * @throws FirebaseError other errors
+ * @throws Project not found
+ */
 export async function getProjectById(id: string): Promise<Project> {
     const projectRef = doc(projectsCol, id);
-    let projectSnapshot: DocumentData;
-    try {
-        projectSnapshot = await getDoc(projectRef);
-    } catch (e) {
-        if (e instanceof FirebaseError) {
-            console.error(e);
-            const firebaseError = e as FirebaseError;
-            console.log(firebaseError.code);
-            if (firebaseError.code === "permission-denied") {
-                throw new Error("User not allowed to get document");
-            }
-            throw new Error(`Error getting document: ${firebaseError.message}`);
-        }
-        throw new Error(`Error getting document: ${e}`);
-    }
+    const projectSnapshot = await getDoc(projectRef);
 
     if (!projectSnapshot.exists()) {
         throw new Error("Project not found");
