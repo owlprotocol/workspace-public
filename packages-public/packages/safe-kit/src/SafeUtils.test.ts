@@ -1,10 +1,15 @@
 import { describe, test, expect, beforeAll } from "vitest";
 import { Provider } from "@ethersproject/providers";
 import { Signer } from "ethers";
-import { deploySafe, predictSafeAddress, createProxyWithNonceTransaction, parseProxyCreationEvent } from "./safe.js";
-import { getGanacheProvider, contractsSetup, testSigner, testNetwork } from "../blockchainSetup.js";
-import { defaultSafeCoreContractAddresses } from "../types/SafeCoreContracts.js";
-import { SafeAccountConfig } from "../types/Safe.js";
+import {
+    deploySafe,
+    predictSafeAddress,
+    createProxyWithNonceTransaction,
+    parseProxyCreationEvent,
+} from "./SafeUtils.js";
+import { getGanacheProvider, contractsSetup, testSigner, testNetwork } from "./blockchainSetup.js";
+import { defaultSafeCoreContractAddresses } from "./types/SafeCoreContracts.js";
+import { SafeAccountConfig } from "./types/Safe.js";
 
 //For this test to work, anvil MUST run in background as Gnosis contracts must be deployed
 describe("safe.test.ts", async () => {

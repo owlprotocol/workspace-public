@@ -1,14 +1,13 @@
 import { describe, test, expect, beforeAll } from "vitest";
 import { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
 import { Provider } from "@ethersproject/providers";
-import { SafeL2__factory } from "@owlprotocol/contracts/typechain/ethers";
-import { deploySafe, predictSafeAddress } from "./safe.js";
-import { createSafeTransaction, signSafeTransaction, populateExecuteTransaction } from "./safeTransaction.js";
-import { SENTINEL_ADDRESS } from "./constants.js";
-import { getGanacheProvider, contractsSetup, testSigner, testNetwork, testChainId } from "../blockchainSetup.js";
-import { defaultSafeCoreContractAddresses } from "../types/SafeCoreContracts.js";
-import { SafeAccountConfig } from "../types/Safe.js";
-import { SafeTransactionDataPartial, MetaTransactionData } from "../types/SafeTransaction.js";
+import { deploySafe, predictSafeAddress } from "./SafeUtils.js";
+import { createSafeTransaction, signSafeTransaction, createExecuteTransaction } from "./SafeTransaction.js";
+import { SENTINEL_ADDRESS } from "./utils/constants.js";
+import { getGanacheProvider, contractsSetup, testSigner, testNetwork, testChainId } from "./blockchainSetup.js";
+import { defaultSafeCoreContractAddresses } from "./types/SafeCoreContracts.js";
+import { SafeAccountConfig } from "./types/Safe.js";
+import { SafeTransactionDataPartial, MetaTransactionData } from "./types/SafeTransactionData.js";
 
 //For this test to work, anvil MUST run in background as Gnosis contracts must be deployed
 describe("safe.test.ts", async () => {
@@ -55,19 +54,14 @@ describe("safe.test.ts", async () => {
         const nonce = safeNonce;
         console.debug(signer);
         const provider = signer.provider!;
-        const safeContract = SafeL2__factory.connect(safeAddress, provider);
         const safeTransactionData: SafeTransactionDataPartial = {
             to: SENTINEL_ADDRESS,
             value: "1",
             data: "0x",
         };
-        const safeTransaction = await createSafeTransaction(
-            provider,
-            safeContract,
-            safeTransactionData,
-            { multiSendAddress },
-            { nonce },
-        );
+        const safeTransaction = await createSafeTransaction(provider, safeAddress, safeTransactionData, nonce, {
+            multiSendAddress,
+        });
         expect(safeTransaction, "safeTransaction").toBeDefined();
         expect(Object.keys(safeTransaction.signatures).length, "signatures.length = 0").toBe(0);
     });
@@ -76,7 +70,6 @@ describe("safe.test.ts", async () => {
         //Do not increment since not submitting
         const nonce = safeNonce;
         const provider = signer.provider!;
-        const safeContract = SafeL2__factory.connect(safeAddress, provider);
         const safeTransactionData: MetaTransactionData[] = [
             {
                 to: SENTINEL_ADDRESS,
@@ -89,13 +82,9 @@ describe("safe.test.ts", async () => {
                 data: "0x",
             },
         ];
-        const safeTransaction = await createSafeTransaction(
-            provider,
-            safeContract,
-            safeTransactionData,
-            { multiSendAddress },
-            { nonce },
-        );
+        const safeTransaction = await createSafeTransaction(provider, safeAddress, safeTransactionData, nonce, {
+            multiSendAddress,
+        });
         expect(safeTransaction, "safeTransaction").toBeDefined();
         expect(Object.keys(safeTransaction.signatures).length, "signatures.length = 0").toBe(0);
     });
@@ -104,21 +93,14 @@ describe("safe.test.ts", async () => {
         //Do not increment since not submitting
         const nonce = safeNonce;
         const provider = signer.provider!;
-        const safeContract = SafeL2__factory.connect(safeAddress, provider);
         const safeTransactionData: SafeTransactionDataPartial = {
             to: SENTINEL_ADDRESS,
             value: "1",
             data: "0x",
         };
-        const safeTransaction = await createSafeTransaction(
-            provider,
-            safeContract,
-            safeTransactionData,
-            {
-                multiSendAddress,
-            },
-            { nonce },
-        );
+        const safeTransaction = await createSafeTransaction(provider, safeAddress, safeTransactionData, nonce, {
+            multiSendAddress,
+        });
         expect(safeTransaction, "safeTransaction").toBeDefined();
         expect(Object.keys(safeTransaction.signatures).length, "signatures.length = 0").toBe(0);
 
@@ -132,28 +114,21 @@ describe("safe.test.ts", async () => {
 
         //increment since submitting
         const nonce = safeNonce++;
-        const safeContract = SafeL2__factory.connect(safeAddress, provider);
         const safeTransactionData: SafeTransactionDataPartial = {
             to: SENTINEL_ADDRESS,
             value: "1",
             data: "0x",
         };
-        const safeTransaction = await createSafeTransaction(
-            provider,
-            safeContract,
-            safeTransactionData,
-            {
-                multiSendAddress,
-            },
-            { nonce },
-        );
+        const safeTransaction = await createSafeTransaction(provider, safeAddress, safeTransactionData, nonce, {
+            multiSendAddress,
+        });
         expect(safeTransaction, "safeTransaction").toBeDefined();
         expect(Object.keys(safeTransaction.signatures).length, "signatures.length = 0").toBe(0);
 
         const safeTransactionSigned = await signSafeTransaction(chainId, safeAddress, safeTransaction, signer);
         expect(Object.keys(safeTransactionSigned.signatures).length, "signatures.length = 1").toBe(1);
 
-        const tx = await populateExecuteTransaction(safeContract, safeTransactionSigned);
+        const tx = await createExecuteTransaction(safeAddress, safeTransactionSigned);
 
         //Send balance to Safe for test transactiosn
         await signer.sendTransaction({
@@ -184,7 +159,6 @@ describe("safe.test.ts", async () => {
 
         //increment since submitting
         const nonce = safeNonce++;
-        const safeContract = SafeL2__factory.connect(safeAddress, provider);
         const safeTransactionData: MetaTransactionData[] = [
             {
                 to: SENTINEL_ADDRESS,
@@ -197,22 +171,16 @@ describe("safe.test.ts", async () => {
                 data: "0x",
             },
         ];
-        const safeTransaction = await createSafeTransaction(
-            provider,
-            safeContract,
-            safeTransactionData,
-            {
-                multiSendAddress,
-            },
-            { nonce },
-        );
+        const safeTransaction = await createSafeTransaction(provider, safeAddress, safeTransactionData, nonce, {
+            multiSendAddress,
+        });
         expect(safeTransaction, "safeTransaction").toBeDefined();
         expect(Object.keys(safeTransaction.signatures).length, "signatures.length = 0").toBe(0);
 
         const safeTransactionSigned = await signSafeTransaction(chainId, safeAddress, safeTransaction, signer);
         expect(Object.keys(safeTransactionSigned.signatures).length, "signatures.length = 1").toBe(1);
 
-        const tx = await populateExecuteTransaction(safeContract, safeTransactionSigned);
+        const tx = await createExecuteTransaction(safeAddress, safeTransactionSigned);
 
         //Send balance to Safe for test transactiosn
         await signer.sendTransaction({

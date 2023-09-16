@@ -1,6 +1,6 @@
 import { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
 import type { SafeSignature } from "../types/SafeSignature.js";
-import type { OperationType, SafeTransactionData } from "../types/SafeTransaction.js";
+import type { OperationType, SafeTransactionData } from "../types/SafeTransactionData.js";
 
 export interface SafeTransactionEIP712Args {
     readonly safeAddress: string;

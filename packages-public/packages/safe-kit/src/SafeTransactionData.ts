@@ -5,14 +5,13 @@ import { pack as solidityPack } from "@ethersproject/solidity";
 import { hexToNumber, hexToNumberString, toChecksumAddress } from "web3-utils";
 import { constants } from "ethers";
 import type { Provider } from "@ethersproject/providers";
-import type { SafeL2 } from "@owlprotocol/contracts/typechain/ethers";
-import { estimateGas } from "./gas.js";
+import { estimateGas } from "./utils/gas.js";
 import {
     MetaTransactionData,
     OperationType,
     SafeTransactionData,
     SafeTransactionDataPartial,
-} from "../types/SafeTransaction.js";
+} from "./types/SafeTransactionData.js";
 
 export function standardizeMetaTransactionData(tx: SafeTransactionDataPartial): MetaTransactionData {
     const standardizedTxs: MetaTransactionData = {
@@ -24,8 +23,9 @@ export function standardizeMetaTransactionData(tx: SafeTransactionDataPartial): 
 
 export type StandardizeSafeTransactionDataProps = {
     readonly provider: Provider;
-    readonly safeContract: SafeL2;
+    readonly safeAddress: string;
     readonly tx: SafeTransactionDataPartial;
+    readonly nonce: number;
     /** Whether gas computation required (default: false).
      * If no gas value is specified & gasRequired, we use estimateGas to get gas expense of tx. */
     readonly gasRequired?: boolean;
@@ -40,8 +40,9 @@ export type StandardizeSafeTransactionDataProps = {
  */
 export async function standardizeSafeTransactionData({
     provider,
-    safeContract,
+    safeAddress,
     tx,
+    nonce,
     gasRequired,
     simulateTxAccessorAddress,
 }: StandardizeSafeTransactionDataProps): Promise<SafeTransactionData> {
@@ -54,8 +55,7 @@ export async function standardizeSafeTransactionData({
         gasPrice: tx.gasPrice ?? "0",
         gasToken: tx.gasToken || constants.AddressZero,
         refundReceiver: tx.refundReceiver || constants.AddressZero,
-        //TODO: Enable batch nonce computation for meta tx or does this not matter?
-        nonce: tx.nonce ?? (safeContract ? (await safeContract.nonce()).toNumber() : 0),
+        nonce,
     };
 
     if (tx.safeTxGas !== undefined) {
@@ -80,7 +80,7 @@ export async function standardizeSafeTransactionData({
 
     const safeTxGas = await estimateGas(
         provider,
-        safeContract.address,
+        safeAddress,
         simulateTxAccessorAddress,
         standardizedTxs.to,
         standardizedTxs.value,

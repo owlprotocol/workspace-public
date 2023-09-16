@@ -1,4 +1,4 @@
-import { BigNumber, PopulatedTransaction } from "ethers";
+import { BigNumber } from "ethers";
 import { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
 import { Provider, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import {
@@ -18,21 +18,17 @@ import {
     SafeCoreContractAddresses,
     SafeCoreContracts,
 } from "./types/SafeCoreContracts.js";
-import { createProxyWithNonceTransaction, deploySafe, predictSafeAddress } from "./utils/safe.js";
+import { createProxyWithNonceTransaction, deploySafe, predictSafeAddress } from "./SafeUtils.js";
 import {
-    createRejectionTransactionDataPartial,
+    createRejectionTransaction,
     createSafeTransaction,
-    populateExecuteTransaction,
+    createExecuteTransaction,
     signSafeTransaction,
-} from "./utils/safeTransaction.js";
-import {
-    MetaTransactionData,
-    SafeTransaction,
-    SafeTransactionDataPartial,
-    SafeTransactionOptionalProps,
-} from "./types/SafeTransaction.js";
+} from "./SafeTransaction.js";
+import type { SafeTransaction, SafeTransactionOptionalProps } from "./types/SafeTransaction.js";
+import type { MetaTransactionData, SafeTransactionDataPartial } from "./types/SafeTransactionData.js";
 import { generateEIP712Signature, SafeTransactionEIP712Args } from "./utils/eip712.js";
-import { SafeSignature } from "./types/SafeSignature.js";
+import type { SafeSignature } from "./types/SafeSignature.js";
 
 /**
  * Extracts provider and signer from Provider or connected signer
@@ -91,11 +87,11 @@ export class Safe {
     constructor(
         providerOrSigner: Provider | Signer,
         safeAddress: string,
-        safeCoreContracts: SafeCoreContractAddresses,
+        chainId?: number | undefined,
         owners?: string[] | undefined,
         threshold?: number | undefined,
         nonce?: number | undefined,
-        chainId?: number | undefined,
+        safeCoreContracts = defaultSafeCoreContractAddresses,
     ) {
         const { provider, signer } = getProviderAndSigner(providerOrSigner);
         if (!provider) {
@@ -146,9 +142,9 @@ export class Safe {
 
     static predictSafeAddress(
         safeAccountConfig: SafeAccountConfig,
-        saltNonce?: string,
+        saltNonce?: string | undefined,
         safeCoreContracts = defaultSafeCoreContractAddresses,
-        proxyCreationCode?: string,
+        proxyCreationCode?: string | undefined,
     ): string {
         const { safeProxyFactoryAddress, safeMasterCopyAddress, fallbackHandlerAddress } = safeCoreContracts;
         return predictSafeAddress(
@@ -165,26 +161,27 @@ export class Safe {
     static connect(
         providerOrSigner: Provider | Signer,
         safeAddress: string,
-        safeCoreContracts = defaultSafeCoreContractAddresses,
+        chainId?: number | undefined,
         owners?: string[] | undefined,
         threshold?: number | undefined,
         nonce?: number | undefined,
-        chainId?: number | undefined,
+        safeCoreContracts = defaultSafeCoreContractAddresses,
     ): Safe {
-        return new Safe(providerOrSigner, safeAddress, safeCoreContracts, owners, threshold, nonce, chainId);
+        return new Safe(providerOrSigner, safeAddress, chainId, owners, threshold, nonce, safeCoreContracts);
     }
 
-    static async deployTransaction(
+    static deployTransaction(
         providerOrSigner: Provider | Signer,
         safeAccountConfig: SafeAccountConfig,
-        saltNonce?: string,
+        saltNonce?: string | undefined,
+        chainId?: number | undefined,
         safeCoreContracts = defaultSafeCoreContractAddresses,
-        proxyCreationCode?: string,
-    ): Promise<{
+        proxyCreationCode?: string | undefined,
+    ): {
         readonly safe: Safe;
         readonly to: string;
         readonly data: string;
-    }> {
+    } {
         const { safeProxyFactoryAddress, safeMasterCopyAddress, fallbackHandlerAddress } = safeCoreContracts;
         const safeAddress = predictSafeAddress(
             safeAccountConfig,
@@ -201,11 +198,12 @@ export class Safe {
         const safe = Safe.connect(
             providerOrSigner,
             safeAddress,
-            safeCoreContracts,
+            chainId,
             safeAccountConfig.owners,
             safeAccountConfig.threshold,
             //TODO: Is init value of nonce 0?
             0,
+            safeCoreContracts,
         );
 
         return {
@@ -229,9 +227,10 @@ export class Safe {
     static async deploy(
         signer: Signer,
         safeAccountConfig: SafeAccountConfig,
-        saltNonce?: string,
+        saltNonce?: string | undefined,
+        chainId?: number | undefined,
+        txWait?: number | undefined,
         safeCoreContracts = defaultSafeCoreContractAddresses,
-        txWait?: number,
     ): Promise<{
         readonly safe: Safe;
         readonly txResponse: TransactionResponse;
@@ -256,9 +255,11 @@ export class Safe {
         const safe = Safe.connect(
             signer,
             safeAddress,
-            safeCoreContracts,
+            chainId,
             safeAccountConfig.owners,
             safeAccountConfig.threshold,
+            0,
+            safeCoreContracts,
         );
 
         return {
@@ -393,13 +394,10 @@ export class Safe {
 
         return createSafeTransaction(
             this.provider,
-            this.safeContract,
+            this.getAddress(),
             safeTransactionData,
+            nonce ?? (await this.getNonce(true)),
             { multiSendAddress },
-            {
-                nonce: nonce ?? (await this.getNonce(true)),
-            },
-            false,
         );
     }
 
@@ -410,8 +408,8 @@ export class Safe {
      * @returns The Safe transaction that invalidates the pending Safe transaction/s
      */
     async createRejectionTransaction(nonce: number): Promise<SafeTransaction> {
-        const safeTransactionData = createRejectionTransactionDataPartial(this.safeAddress, nonce);
-        return this.createTransaction(safeTransactionData);
+        const multiSendAddress = this.safeCoreContractAddresses.multiSendAddress;
+        return createRejectionTransaction(this.provider, this.getAddress(), nonce, { multiSendAddress });
     }
 
     /**
@@ -549,11 +547,12 @@ export class Safe {
      * @throws "There are X signatures missing"
      * @throws "Cannot specify gas and gasLimit together in transaction options"
      */
-    async populateExecuteTransaction(safeTransaction: SafeTransaction): Promise<PopulatedTransaction> {
+    async createExecuteTransaction(safeTransaction: SafeTransaction): Promise<{ to: string; data: string }> {
+        /*
         if (!(await this.isSafeDeployed())) {
             throw new Error("Safe is not deployed");
         }
-
-        return populateExecuteTransaction(this.safeContract, safeTransaction);
+        */
+        return createExecuteTransaction(this.getAddress(), safeTransaction);
     }
 }

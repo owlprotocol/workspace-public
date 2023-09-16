@@ -1,6 +1,6 @@
 import { SimulateTxAccessor__factory, SafeL2__factory } from "@owlprotocol/contracts/typechain/ethers";
 import type { Provider } from "@ethersproject/providers";
-import type { OperationType } from "../types/SafeTransaction.js";
+import type { OperationType } from "../types/SafeTransactionData.js";
 
 export async function estimateGas(
     provider: Provider,

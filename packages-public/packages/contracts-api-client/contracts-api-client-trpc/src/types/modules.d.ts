@@ -6,3 +6,4 @@
 /// <reference types="@owlprotocol/contracts" />
 /// <reference types="@owlprotocol/contracts-proxy" />
 /// <reference types="@owlprotocol/contracts-api" />
+/// <reference types="@owlprotocol/safe-kit" />

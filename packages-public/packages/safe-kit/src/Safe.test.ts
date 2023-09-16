@@ -4,9 +4,9 @@ import { Signer } from "ethers";
 import { getGanacheProvider, contractsSetup, testSigner, testNetwork } from "./blockchainSetup.js";
 import { Safe } from "./Safe.js";
 import { SafeAccountConfig } from "./types/Safe.js";
-import { parseProxyCreationEvent } from "./utils/safe.js";
+import { parseProxyCreationEvent } from "./SafeUtils.js";
 import { SENTINEL_ADDRESS } from "./utils/constants.js";
-import { SafeTransactionDataPartial } from "./types/SafeTransaction.js";
+import type { SafeTransactionDataPartial } from "./types/SafeTransactionData.js";
 
 //For this test to work, anvil MUST run in background as Gnosis contracts must be deployed
 describe("safe.test.ts", async () => {
@@ -98,7 +98,7 @@ describe("safe.test.ts", async () => {
             const safeTransactionSigned = await safe.signTransaction(safeTransaction);
             expect(Object.keys(safeTransactionSigned.signatures).length, "signatures.length = 1").toBe(1);
 
-            const tx = await safe.populateExecuteTransaction(safeTransactionSigned);
+            const tx = await safe.createExecuteTransaction(safeTransactionSigned);
 
             //Send balance to Safe for test transactiosn
             await signer.sendTransaction({

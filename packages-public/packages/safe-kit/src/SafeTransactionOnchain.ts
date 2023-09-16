@@ -1,5 +1,5 @@
 import { utils } from "ethers";
-import { SafeTransactionData } from "../types/SafeTransaction.js";
+import type { SafeTransactionData } from "./types/SafeTransactionData.js";
 
 // keccak256(
 //     "EIP712Domain(uint256 chainId,address verifyingContract)"

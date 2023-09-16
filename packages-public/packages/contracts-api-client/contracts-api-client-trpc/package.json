@@ -62,6 +62,7 @@
     "@owlprotocol/contracts": "workspace:*",
     "@owlprotocol/contracts-api": "workspace:",
     "@owlprotocol/contracts-proxy": "workspace:*",
+    "@owlprotocol/safe-kit": "workspace:*",
     "@types/dotenv": "^8.2.0",
     "@types/node": "^20.5.6",
     "cross-env": "^7.0.3",

@@ -1,31 +1,49 @@
 import { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
-import { MultiSend__factory } from "@owlprotocol/contracts/typechain/ethers";
-import type { SafeL2 } from "@owlprotocol/contracts/typechain/ethers";
+import { MultiSend__factory, SafeL2__factory } from "@owlprotocol/contracts/typechain/ethers";
 import { Provider } from "@ethersproject/providers";
-import { PopulatedTransaction } from "ethers";
-import { encodeMultiSendData, standardizeMetaTransactionData, standardizeSafeTransactionData } from "./transactions.js";
-import { generateEIP712Signature, SafeTransactionEIP712Args } from "./eip712.js";
 import {
-    addSignature,
-    encodedSignatures,
-    isMetaTransactionArray,
-    MetaTransactionData,
-    OperationType,
-    SafeTransaction,
-    SafeTransactionDataPartial,
-    SafeTransactionOptionalProps,
-} from "../types/SafeTransaction.js";
-import { defaultSafeCoreContractAddresses } from "../types/SafeCoreContracts.js";
+    encodeMultiSendData,
+    standardizeMetaTransactionData,
+    standardizeSafeTransactionData,
+} from "./SafeTransactionData.js";
+import { generateEIP712Signature, SafeTransactionEIP712Args } from "./utils/eip712.js";
+import { MetaTransactionData, OperationType, SafeTransactionDataPartial } from "./types/SafeTransactionData.js";
+import { defaultSafeCoreContractAddresses } from "./types/SafeCoreContracts.js";
+import { SafeSignature } from "./types/SafeSignature.js";
+import { SafeTransaction, SafeTransactionOptionalProps, isMetaTransactionArray } from "./types/SafeTransaction.js";
 
-export interface CreateSafeTransactionProps {
-    /** safeTransactionData - The transaction or transaction array to process */
-    readonly safeTransactionData: SafeTransactionDataPartial | MetaTransactionData[];
-    /** options - The transaction array optional properties */
-    readonly options?: SafeTransactionOptionalProps;
-    /** multiSendAddress */
-    readonly multiSendAddress: string;
-    /** onlyCalls - Forces the execution of the transaction array with MultiSendCallOnly contract */
-    readonly onlyCalls?: boolean;
+/**
+ * Returns new safe transaction with added signature
+ * @param tx
+ * @param signature
+ * @returns
+ */
+export function addSignature(tx: SafeTransaction, signature: SafeSignature): SafeTransaction {
+    return {
+        data: tx.data,
+        signatures: {
+            ...tx.signatures,
+            [signature.signer.toLowerCase()]: signature.data,
+        },
+    };
+}
+
+/**
+ * Concatenates all signatures as one, signers addresses are sorted
+ * @param tx
+ * @returns
+ */
+export function encodedSignatures(tx: SafeTransaction): string {
+    const signers = Array.from(Object.keys(tx.signatures)).sort();
+    return (
+        "0x" +
+        signers
+            .map((signerAddress) => {
+                //slice(2) to remove 0x prefix
+                return tx.signatures[signerAddress].slice(2);
+            })
+            .join("")
+    );
 }
 
 /**
@@ -66,33 +84,17 @@ export function createSafeTransactionDataPartial(
 }
 
 /**
- * @dev Returns a Safe transaction data ready to invalidate the pending Safe transaction/s with a specific nonce.
- *
- * @param nonce - The nonce of the transaction/s that are going to be rejected
- * @returns The Safe transaction that invalidates the pending Safe transaction/s
- */
-export function createRejectionTransactionDataPartial(safeAddress: string, nonce: number): SafeTransactionDataPartial {
-    const safeTransactionData: SafeTransactionDataPartial = {
-        to: safeAddress,
-        nonce,
-        value: "0",
-        data: "0x",
-        safeTxGas: "0",
-    };
-    return safeTransactionData;
-}
-
-/**
  * @dev Create safe transaction from safe tx or meta transaction array
  * @param provider
- * @param safeContract
+ * @param safeAddress
  * @param safeTransactionData tx or meta tx array
  * @param multiSendAddress multisend or multisendCallOnly contract
  */
 export async function createSafeTransaction(
     provider: Provider,
-    safeContract: SafeL2,
+    safeAddress: string,
     safeTransactionData: SafeTransactionDataPartial | MetaTransactionData[],
+    nonce: number,
     { multiSendAddress: multiSendAddress } = {
         multiSendAddress: defaultSafeCoreContractAddresses.multiSendAddress,
     },
@@ -100,12 +102,51 @@ export async function createSafeTransaction(
     gasRequired?: boolean,
 ): Promise<SafeTransaction> {
     const txDataPartial = createSafeTransactionDataPartial(safeTransactionData, { multiSendAddress }, options);
-    const data = await standardizeSafeTransactionData({ provider, safeContract, tx: txDataPartial, gasRequired });
+    const data = await standardizeSafeTransactionData({
+        provider,
+        safeAddress,
+        tx: txDataPartial,
+        nonce,
+        gasRequired,
+    });
 
     return {
         data,
         signatures: {},
     };
+}
+
+/**
+ * @dev Returns a Safe transaction data ready to invalidate the pending Safe transaction/s with a specific nonce.
+ *
+ * @param nonce - The nonce of the transaction/s that are going to be rejected
+ * @returns The Safe transaction that invalidates the pending Safe transaction/s
+ */
+export async function createRejectionTransaction(
+    provider: Provider,
+    safeAddress: string,
+    nonce: number,
+    { multiSendAddress: multiSendAddress } = {
+        multiSendAddress: defaultSafeCoreContractAddresses.multiSendAddress,
+    },
+    options?: SafeTransactionOptionalProps,
+    gasRequired?: boolean,
+): Promise<SafeTransaction> {
+    const safeTransactionData: SafeTransactionDataPartial = {
+        to: safeAddress,
+        value: "0",
+        data: "0x",
+        safeTxGas: "0",
+    };
+    return createSafeTransaction(
+        provider,
+        safeAddress,
+        safeTransactionData,
+        nonce,
+        { multiSendAddress },
+        options,
+        gasRequired,
+    );
 }
 
 /**
@@ -156,11 +197,8 @@ export async function validateSafeTransactionSignatureThreshold(
     //TODO: Validate signatures?
 }
 
-export async function populateExecuteTransaction(
-    safeContract: SafeL2,
-    safeTransaction: SafeTransaction,
-): Promise<PopulatedTransaction> {
-    return safeContract.populateTransaction.execTransaction(
+export function encodeExecuteTransaction(safeTransaction: SafeTransaction): string {
+    return SafeL2__factory.createInterface().encodeFunctionData("execTransaction", [
         safeTransaction.data.to,
         safeTransaction.data.value,
         safeTransaction.data.data,
@@ -171,5 +209,13 @@ export async function populateExecuteTransaction(
         safeTransaction.data.gasToken,
         safeTransaction.data.refundReceiver,
         encodedSignatures(safeTransaction),
-    );
+    ]);
+}
+
+export function createExecuteTransaction(
+    safeAddress: string,
+    safeTransaction: SafeTransaction,
+): { to: string; data: string } {
+    const data = encodeExecuteTransaction(safeTransaction);
+    return { to: safeAddress, data };
 }
