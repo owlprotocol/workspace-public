@@ -68,3 +68,8 @@ out
 soljson-v*.js
 .openzeppelin/unknown-*.json
 *.py
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault

@@ -74,6 +74,9 @@
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
     "madge": "madge src/index.ts -c",
+    "dotenv:login": "dotenv-vault login -y",
+    "dotenv:pull": "dotenv-vault pull -y",
+    "dotenv:push": "dotenv-vault push -y",
     "to:commonjs": "sed 's/\"type\": \"module\"/\"type\": \"commonjs\"/g' package.json > ./temp.package.json && mv ./temp.package.json package.json",
     "to:module": "sed 's/\"type\": \"commonjs\"/\"type\": \"module\"/g' package.json > ./temp.package.json && mv -f ./temp.package.json package.json"
   },

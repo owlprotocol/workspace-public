@@ -174,7 +174,7 @@ export const ENVVARS: EnvVarDef[] = [
 const NODE_ENV_VAR = {
     name: "NODE_ENV",
     defaultValue: "development",
-    enumValues: ["development", "production", "test"],
+    enumValues: ["development", "test", "ci", "staging", "production"],
 };
 
 /**
@@ -225,24 +225,33 @@ export function genEnvDtsFile(envvars: EnvVarDef[], moduleType: ModuleType): str
  */
 `;
 
+    const NODE_ENV_EXPORT_CJS = `export const NODE_ENV = (import.meta.env ? import.meta.env.NODE_ENV : process.env.NODE_ENV) ?? "development";`;
+    const NODE_ENV_EXPORT_ESM = `export const NODE_ENV = process.env.NODE_ENV ?? "development";`;
+    const NODE_ENV_EXPORT = moduleType === ModuleType.CJS ? NODE_ENV_EXPORT_CJS : NODE_ENV_EXPORT_ESM;
+
     //NODE_ENV loaded before .env file
     const dtsFileSuffix = `
-${genEnvVarStatement(NODE_ENV_VAR.name, moduleType, NODE_ENV_VAR.defaultValue)}
+${NODE_ENV_EXPORT}
 
 const isClient = () => typeof window !== "undefined";
 
 import dotenv from "dotenv";
 import { resolve } from "path";
 if (!isClient()) {
-    //Load .env
-    dotenv.config();
-    //Load .env.NODE_ENV (override)
-    if (NODE_ENV === "development") {
-        dotenv.config({ path: resolve(process.cwd(), ".env.development"), override: true });
+    const DOTENV_KEY = process.env.DOTENV_KEY;
+    if (DOTENV_KEY) {
+        //Load remote envvars
+        dotenv.config();
+    } else if (NODE_ENV === "development") {
+        dotenv.config({ path: resolve(process.cwd(), ".env") });
     } else if (NODE_ENV === "test") {
-        dotenv.config({ path: resolve(process.cwd(), ".env.test"), override: true });
+        dotenv.config({ path: resolve(process.cwd(), ".env.test") });
+    } else if (NODE_ENV === "ci") {
+        dotenv.config({ path: resolve(process.cwd(), ".env.ci") });
+    } else if (NODE_ENV === "staging") {
+        dotenv.config({ path: resolve(process.cwd(), ".env.staging") });
     } else if (NODE_ENV === "production") {
-        dotenv.config({ path: resolve(process.cwd(), ".env.production"), override: true });
+        dotenv.config({ path: resolve(process.cwd(), ".env.production") });
     }
 }`;
 

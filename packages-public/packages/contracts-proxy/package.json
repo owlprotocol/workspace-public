@@ -59,6 +59,9 @@
     "madge": "madge src/index.ts -c",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
+    "dotenv:login": "dotenv-vault login -y",
+    "dotenv:pull": "dotenv-vault pull -y",
+    "dotenv:push": "dotenv-vault push -y",
     "to:commonjs": "sed 's/\"type\": \"module\"/\"type\": \"commonjs\"/g' package.json > ./temp.package.json && mv ./temp.package.json package.json",
     "to:module": "sed 's/\"type\": \"commonjs\"/\"type\": \"module\"/g' package.json > ./temp.package.json && mv -f ./temp.package.json package.json"
   },
@@ -98,7 +101,7 @@
     "bn.js": "^5.2.1",
     "chai": "^4.3.6",
     "cross-env": "^7.0.3",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.3.1",
     "ethers": "5.7.2",
     "handlebars": "^4.7.7",
     "hardhat-deploy": "^0.11.10",

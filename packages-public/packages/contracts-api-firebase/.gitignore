@@ -56,3 +56,9 @@ logs
 .datastore_fs
 .datastore_level
 .datastore_s3
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
+!.env.test.vault
