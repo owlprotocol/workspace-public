@@ -52,7 +52,6 @@ describe("safe.test.ts", async () => {
     test("createSafeTransaction - regular", async () => {
         //Do not increment since not submitting
         const nonce = safeNonce;
-        console.debug(signer);
         const provider = signer.provider!;
         const safeTransactionData: SafeTransactionDataPartial = {
             to: SENTINEL_ADDRESS,

@@ -157,7 +157,6 @@ const NETWORK_ENVVARS: EnvVarDef[] = [];
 chainIds.forEach((c) => NETWORK_ENVVARS.push(...getEnvVarsForNetworkId(`${c}`)));
 
 export const ENVVARS: EnvVarDef[] = [
-    { name: "NODE_ENV", defaultValue: "development", enumValues: ["development", "production", "test"] },
     { name: "LOG_LEVEL", defaultValue: "warn", enumValues: ["trace", "debug", "info", "warn", "error"] },
     { name: "TITLE" },
     { name: "API_BASE_URL", defaultValue: "http://localhost:3000/api" },
@@ -171,6 +170,12 @@ export const ENVVARS: EnvVarDef[] = [
     ...BLOCKCHAIN_ENVVARS,
     ...NETWORK_ENVVARS,
 ];
+
+const NODE_ENV_VAR = {
+    name: "NODE_ENV",
+    defaultValue: "development",
+    enumValues: ["development", "production", "test"],
+};
 
 /**
  * Support both import.meta.env imports and process.env imports
@@ -219,16 +224,33 @@ export function genEnvDtsFile(envvars: EnvVarDef[], moduleType: ModuleType): str
  * @module Environment
  */
 `;
+
+    //NODE_ENV loaded before .env file
     const dtsFileSuffix = `
+${genEnvVarStatement(NODE_ENV_VAR.name, moduleType, NODE_ENV_VAR.defaultValue)}
+
 const isClient = () => typeof window !== "undefined";
 
 import dotenv from "dotenv";
+import { resolve } from "path";
 if (!isClient()) {
+    //Load .env
     dotenv.config();
+    //Load .env.NODE_ENV (override)
+    if (NODE_ENV === "development") {
+        dotenv.config({ path: resolve(process.cwd(), ".env.development"), override: true });
+    } else if (NODE_ENV === "test") {
+        dotenv.config({ path: resolve(process.cwd(), ".env.test"), override: true });
+    } else if (NODE_ENV === "production") {
+        dotenv.config({ path: resolve(process.cwd(), ".env.production"), override: true });
+    }
 }`;
 
-    const types = envvars.map((e) => genEnvVarTypeDef(e.name, e.enumValues));
-    const typesWithVITE = envvars.map((e) => genEnvVarTypeDef(`VITE_${e.name}`, e.enumValues));
+    const types = [
+        genEnvVarTypeDef(NODE_ENV_VAR.name, NODE_ENV_VAR.enumValues),
+        ...envvars.map((e) => genEnvVarTypeDef(e.name, e.enumValues)),
+    ];
+    const typesWithVITE = [...envvars.map((e) => genEnvVarTypeDef(`VITE_${e.name}`, e.enumValues))];
     if (moduleType === ModuleType.CJS) {
         const globalNameSpace = `declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
