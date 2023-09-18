@@ -1,31 +1,27 @@
 import { describe, test, expect, beforeEach } from "vitest";
-import { createProject, deleteProjectsAll, getProjectById, getProjectsByUserId } from "./project.js";
-import { testUserId } from "../test/data.js";
+import { projectsCRUD } from "./crud.js";
+import { testProject } from "../test/data.js";
 
-describe("Project Tests", () => {
+describe("project.test.ts", () => {
     beforeEach(async () => {
-        await deleteProjectsAll();
+        await projectsCRUD.deleteAll();
     });
 
-    test("createProject", async () => {
-        const { projectId, project } = await createProject("My Project", testUserId);
-        expect(projectId).toBeTypeOf("string");
-        expect(project.userId).toStrictEqual(testUserId);
+    test("set", async () => {
+        await projectsCRUD.set(testProject);
     });
 
-    test("getProjectsByUserId", async () => {
-        const result = await createProject("My Project", testUserId);
-        const projectExpected = result.project;
-        const projects = await getProjectsByUserId(testUserId);
-
-        expect(projects.length).toStrictEqual(1);
-        expect(projects[0]).toStrictEqual(projectExpected);
+    test("get", async () => {
+        await projectsCRUD.set(testProject);
+        const project = await projectsCRUD.get(testProject.id);
+        expect(project).toStrictEqual(testProject);
     });
 
-    test("getProjectById", async () => {
-        const result = await createProject("My Project", testUserId);
-        const projectExpected = result.project;
-        const project = await getProjectById(result.projectId);
-        expect(project).toStrictEqual(projectExpected);
+    test("where", async () => {
+        await projectsCRUD.set(testProject);
+        const projects = await projectsCRUD.getWhere({ userId: testProject.userId });
+
+        expect(projects.length).toBe(1);
+        expect(projects[0]).toStrictEqual(testProject);
     });
 });

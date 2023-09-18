@@ -17,6 +17,8 @@ import { Contract } from "../models/Contract.js";
 import { MetadataContract } from "../models/MetadataContract.js";
 import { MetadataTokens } from "../models/MetadataTokens.js";
 import { RequestTemplate } from "../models/RequestTemplate.js";
+import { ProjectTemplate } from "../models/ProjectTemplate.js";
+import { Project } from "../models/Project.js";
 
 function getFirebaseConfig() {
     let firebaseConfig: AppOptions = {};
@@ -83,6 +85,8 @@ export const bucket = storage.bucket();
 
 //Collections
 export const usersCol = firestore.collection("users") as CollectionReference<User>;
+export const projectTemplatesCol = firestore.collection("projectTempalates") as CollectionReference<ProjectTemplate>;
+export const projectsCol = firestore.collection("projects") as CollectionReference<Project>;
 export const requestTemplatesCol = firestore.collection("requestTemplates") as CollectionReference<RequestTemplate>;
 export const contractsCol = firestore.collection("contracts") as CollectionReference<Contract>;
 export const metadataContractsCol = firestore.collection("metadataContracts") as CollectionReference<MetadataContract>;

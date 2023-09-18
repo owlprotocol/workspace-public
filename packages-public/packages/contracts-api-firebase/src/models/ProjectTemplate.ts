@@ -1,6 +1,6 @@
 export interface ProjectTemplate {
-    templateId: string;
-    templateName: string;
-    templateDescription: string;
-    imgUrl: string;
+    readonly id: string;
+    readonly name: string;
+    readonly description: string;
+    readonly imgUrl: string;
 }

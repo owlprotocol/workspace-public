@@ -20,6 +20,7 @@ export enum DeploymentMethod {
 }
 
 export interface Contract {
+    readonly id: string;
     readonly address: string;
     readonly contractName: string;
     readonly networkId: string;

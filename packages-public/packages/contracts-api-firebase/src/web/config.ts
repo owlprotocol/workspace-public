@@ -87,8 +87,8 @@ export const { firebaseApp, firestore, auth, storage } = getFirebaseApp();
 //Collections
 export const usersCol = collection(firestore, "users") as CollectionReference<User>;
 export const projectTemplatesCol = collection(firestore, "projectTemplates") as CollectionReference<ProjectTemplate>;
+export const projectsCol = collection(firestore, "projects") as CollectionReference<Project>;
 export const requestTemplatesCol = collection(firestore, "requestTemplates") as CollectionReference<RequestTemplate>;
 export const contractsCol = collection(firestore, "contracts") as CollectionReference<Contract>;
-export const projectsCol = collection(firestore, "projects") as CollectionReference<Project>;
 export const metadataContractsCol = collection(firestore, "metadataContracts") as CollectionReference<MetadataContract>;
 export const metadataTokensCol = collection(firestore, "metadataTokens") as CollectionReference<MetadataTokens>;

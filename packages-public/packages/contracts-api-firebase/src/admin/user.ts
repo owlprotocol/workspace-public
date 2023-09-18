@@ -70,6 +70,7 @@ export async function createUserByEmail(
     const apiKey = crypto.randomUUID();
     //initial user data
     const user: User = {
+        id: userId,
         email,
         apiKey,
         gnosisAddress: {},

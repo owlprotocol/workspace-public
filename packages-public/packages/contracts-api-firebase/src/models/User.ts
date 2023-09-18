@@ -2,6 +2,7 @@ import { z } from "zod";
 import { addressZod } from "@owlprotocol/zod-sol";
 
 export interface User {
+    readonly id: string;
     readonly email: string;
     readonly apiKey: string;
     readonly dfnsAddress?: string;

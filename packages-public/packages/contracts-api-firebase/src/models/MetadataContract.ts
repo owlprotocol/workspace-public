@@ -3,6 +3,7 @@
  * `metadataJson` is a JSON object that can returned by a contract's `contractURI` method
  */
 export interface MetadataContract {
+    readonly id: string;
     // The userId of the owner
     readonly owner: string;
     // A user defined identifier, not unique

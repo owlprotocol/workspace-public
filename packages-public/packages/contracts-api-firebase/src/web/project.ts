@@ -14,8 +14,8 @@ export async function createProject(
     const projectId = crypto.randomUUID();
     //initial project data
     const project: Project = {
-        projectName,
-        projectId,
+        name: projectName,
+        id: projectId,
         userId,
     };
 

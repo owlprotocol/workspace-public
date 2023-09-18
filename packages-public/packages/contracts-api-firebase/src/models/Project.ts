@@ -1,5 +1,6 @@
 export interface Project {
-    projectId: string;
-    projectName: string;
-    userId: string;
+    readonly id: string;
+    readonly userId: string;
+    readonly name: string;
+    readonly description?: string;
 }

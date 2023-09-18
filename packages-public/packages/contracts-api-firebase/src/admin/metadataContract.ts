@@ -34,6 +34,7 @@ export async function createMetadataContractWithName(
     // Create a default metadata object
     const metadataJson = { name, image_url: imageUrl };
     const metadataContract: MetadataContract = {
+        id: crypto.randomUUID(),
         owner: userId,
         metadataJson: metadataJson,
         type: "firebase",

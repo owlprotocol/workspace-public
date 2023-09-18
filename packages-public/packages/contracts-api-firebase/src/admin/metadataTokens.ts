@@ -45,6 +45,7 @@ export async function createMetadataTokensWithName(
 ): Promise<{ id: string; metadataTokens: MetadataTokens }> {
     // Create a default metadata object
     const metadataTokens: MetadataTokens = {
+        id: crypto.randomUUID(),
         owner: userId,
         type: "firebase",
         tokenMap: tokenMap,

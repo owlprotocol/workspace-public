@@ -1,13 +1,23 @@
 import { describe, test, expect } from "vitest";
-import { setDoc, getDoc, doc } from "firebase/firestore";
-import { usersCol } from "./config.js";
-import { testUser, testUserId } from "../test/data.js";
+import { usersCRUD } from "./crud.js";
+import { testUser } from "../test/data.js";
 
-describe("User Tests", () => {
-    test("users", async () => {
-        await setDoc(doc(usersCol, testUserId), testUser);
-        const snapshot = await getDoc(doc(usersCol, testUserId));
-        const result = snapshot.data();
-        expect(result).toStrictEqual(testUser);
+describe("user.test.ts", () => {
+    test("set", async () => {
+        await usersCRUD.set(testUser);
+    });
+
+    test("get", async () => {
+        await usersCRUD.set(testUser);
+        const project = await usersCRUD.get(testUser.id);
+        expect(project).toStrictEqual(testUser);
+    });
+
+    test("where", async () => {
+        await usersCRUD.set(testUser);
+        const projects = await usersCRUD.getWhere({ email: testUser.email });
+
+        expect(projects.length).toBe(1);
+        expect(projects[0]).toStrictEqual(testUser);
     });
 });

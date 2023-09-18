@@ -1,8 +1,8 @@
 import { OnlineTrait } from "./OnlineTraits.js";
 
 export interface RequestTemplate {
+    readonly id: string;
     // The userId of the owner
-    owner: string;
+    readonly owner: string;
     onlineTraits: [OnlineTrait];
-    id?: string;
 }

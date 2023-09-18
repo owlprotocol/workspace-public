@@ -44,6 +44,7 @@ export async function createRequestTemplate(
     onlineTraits: [OnlineTrait],
 ): Promise<string> {
     const requestTemplate: RequestTemplate = {
+        id: crypto.randomUUID(),
         owner,
         onlineTraits,
     };

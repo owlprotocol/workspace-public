@@ -18,6 +18,7 @@ export const testNetwork = {
 };
 export const testUserId = uuid1;
 export const testUser: User = {
+    id: testUserId,
     email: "johndoe@gmail.com",
     apiKey: uuid2,
     dfnsId: uuid3,
@@ -35,14 +36,14 @@ export const testUser: User = {
 };
 export const testProjectTemplateId = uuid1;
 export const testProjectTemplate: ProjectTemplate = {
-    templateId: testProjectTemplateId,
-    templateName: "NFT Collection",
-    templateDescription: "Create digital assets connected to any API via Chainlink",
+    id: testProjectTemplateId,
+    name: "NFT Collection",
+    description: "Create digital assets connected to any API via Chainlink",
     imgUrl: "nft.svg",
 };
 export const testProjectId = crypto.randomUUID();
 export const testProject: Project = {
-    projectId: testProjectId,
-    projectName: "Test Project",
+    id: testProjectId,
+    name: "Test Project",
     userId: testUserId,
 };
