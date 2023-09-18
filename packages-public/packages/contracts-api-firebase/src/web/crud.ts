@@ -1,5 +1,5 @@
 /***** Generics for Firebase Web CRUD *****/
-import { CollectionReference } from "firebase/firestore";
+import { CollectionReference, DocumentData, DocumentReference } from "firebase/firestore";
 import {
     deleteDoc,
     doc,
@@ -41,7 +41,7 @@ import { MetadataTokens } from "../models/MetadataTokens.js";
 export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
     collection: CollectionReference<Omit<T, "id">>,
 ) {
-    const getDocRef = (id: string) => {
+    const getDocRef = (id: string): DocumentReference<Omit<T, "id">, DocumentData> => {
         return doc(collection, id);
     };
 
@@ -143,7 +143,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
      * Get all docs
      * @returns docs
      */
-    const getAll = async (): Promise<(T | undefined)[]> => {
+    const getAll = async (): Promise<T[]> => {
         const snapshot = await getDocs(collection);
         return snapshot.docs.map((refSnapshot) => {
             return { ...refSnapshot.data(), id: refSnapshot.id } as T;

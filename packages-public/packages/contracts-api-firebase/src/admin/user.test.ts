@@ -1,8 +1,12 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect, beforeEach } from "vitest";
 import { usersCRUD } from "./crud.js";
 import { testUser } from "../test/data.js";
 
 describe("user.test.ts", async () => {
+    beforeEach(async () => {
+        await usersCRUD.deleteAll();
+    });
+
     test("set", async () => {
         await usersCRUD.set(testUser);
     });

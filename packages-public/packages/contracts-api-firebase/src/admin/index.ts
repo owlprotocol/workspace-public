@@ -1,4 +1,5 @@
 export * from "./config.js";
+export * from "./crud.js";
 export * from "./contract.js";
 export * from "./metadataContract.js";
 export * from "./metadataTokens.js";

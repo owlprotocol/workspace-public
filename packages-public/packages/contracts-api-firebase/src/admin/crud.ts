@@ -1,5 +1,5 @@
 /***** Generics for Firebase Admin CRUD *****/
-import { UpdateData, CollectionReference, Query } from "firebase-admin/firestore";
+import { UpdateData, CollectionReference, Query, DocumentReference } from "firebase-admin/firestore";
 import { zip, omit } from "lodash-es";
 import * as crypto from "crypto";
 import {
@@ -29,7 +29,7 @@ import { MetadataTokens } from "../models/MetadataTokens.js";
 export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
     collection: CollectionReference<Omit<T, "id">>,
 ) {
-    const getDocRef = (id: string) => {
+    const getDocRef = (id: string): DocumentReference<Omit<T, "id">> => {
         return collection.doc(id);
     };
 
@@ -131,7 +131,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
      * Get all docs
      * @returns docs
      */
-    const getAll = async (): Promise<(T | undefined)[]> => {
+    const getAll = async (): Promise<T[]> => {
         const snapshot = await collection.get();
         return snapshot.docs.map((refSnapshot) => {
             return { ...refSnapshot.data(), id: refSnapshot.id } as T;

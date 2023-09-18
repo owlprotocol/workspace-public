@@ -1,10 +1,11 @@
 /// <reference types="vitest" />
 import { defineConfig } from "vite";
 
+// eslint-disable-next-line import/no-default-export
 export default defineConfig({
     plugins: [],
     test: {
-        //environment: "jsdom",
+        //environment: "node",
         globals: false,
         globalSetup: "vitest.setup.ts",
         testTimeout: 20000,

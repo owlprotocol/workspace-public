@@ -34,6 +34,11 @@
       "require": "./lib/cjs/web/index.js",
       "import": "./lib/esm/web/index.js"
     },
+    "./hooks": {
+      "types": "./lib/types/hooks/index.d.ts",
+      "require": "./lib/cjs/hooks/index.js",
+      "import": "./lib/esm/hooks/index.js"
+    },
     "./test": {
       "types": "./lib/types/test/index.d.ts",
       "require": "./lib/cjs/test/index.js",
@@ -54,6 +59,7 @@
     "test": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'pnpm run test:ci'",
     "test:watch": "vitest",
     "test:ci": "DOTENV_KEY=$DOTENV_KEY_CONTRACTS_API_FIREBASE vitest --run",
+    "test:jsdom": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'vitest src/hooks/user.test.ts'",
     "build": "npm-run-all -p tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
     "esbuild": "node esbuild.config.mjs",
@@ -73,33 +79,37 @@
   "dependencies": {
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
-    "zod": "3.21.4",
     "is-ipfs": "^8.0.1",
-    "jsonpath": "^1.1.1"
+    "jsonpath": "^1.1.1",
+    "zod": "3.21.4"
   },
   "peerDependencies": {
-    "firebase-admin": "^11.10.1",
+    "@trpc/server": "10.36",
     "firebase": "^10.3.1",
-    "@trpc/server": "10.36"
+    "firebase-admin": "^11.10.1"
   },
   "devDependencies": {
+    "@google-cloud/storage": "^6.12.0",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
-    "@google-cloud/storage": "^6.12.0",
+    "@testing-library/react-hooks": "^8.0.1",
     "@trpc/server": "10.36",
-    "@types/node": "^20.5.6",
     "@types/dotenv": "^8.2.0",
     "@types/jsonpath": "^0.2.0",
+    "@types/node": "^20.5.6",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.3.1",
     "firebase": "^10.3.1",
     "firebase-admin": "^11.10.1",
     "firebase-tools": "^12.5.2",
-    "cross-env": "^7.0.3",
     "lint-staged": "^11.1.2",
-    "dotenv": "^16.3.1",
     "madge": "^5.0.2",
     "node-fetch": "^3.3.1",
     "npm-run-all": "^4.1.5",
+    "react": "^18.2.0",
+    "react-test-renderer": "^18.2.0",
+    "reactfire": "^4.2.3",
     "rimraf": "^3.0.2",
     "tsx": "^3.12.7",
     "typescript": "4.9.5",
