@@ -12,6 +12,15 @@ describe("user.test.ts", () => {
         console.debug(users);
     });
 
+    test("useGet - undefined id", async () => {
+        await usersCRUD.set(testUser);
+        const { result } = renderHook(() => usersHooks.useGet(undefined));
+
+        const [result0, options0] = result.current;
+        expect(result0).toStrictEqual(undefined);
+        expect(options0.status).toBe("loading");
+    });
+
     test("useGet", async () => {
         await usersCRUD.set(testUser);
         const { result, waitForNextUpdate } = renderHook(() => usersHooks.useGet(testUserId));
