@@ -4,7 +4,8 @@ import { addressZod } from "@owlprotocol/zod-sol";
 export interface User {
     readonly id: string;
     readonly email: string;
-    readonly apiKey: string;
+    readonly type?: "dev" | "user";
+    readonly apiKey?: string;
     readonly dfnsAddress?: string;
     readonly dfnsId?: string;
     readonly gnosisAddress: {
@@ -24,7 +25,8 @@ export interface User {
 
 export const userZod = z.object({
     email: z.string().describe("email"),
-    apiKey: z.string().describe("apiKey"),
+    type: z.enum(["user", "dev"]).optional(),
+    apiKey: z.string().describe("apiKey").optional(),
     dfnsAddress: addressZod.describe("dfnsAddress").optional(),
     dfnsId: z.string().describe("dfnsId").optional(),
     gnosisTxHash: z.string().describe("gnosisTxHash").optional(),
