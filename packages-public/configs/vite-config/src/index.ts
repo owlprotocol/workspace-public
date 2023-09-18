@@ -14,7 +14,7 @@ import ReactPlugin from "@vitejs/plugin-react-swc";
 import CheckerPlugin from "vite-plugin-checker";
 import SVGRPlugin from "vite-plugin-svgr";
 import DTSPlugin from "vite-plugin-dts";
-import { nodePolyfills as vitePolyfills } from "vite-plugin-node-polyfills";
+//import { nodePolyfills as vitePolyfills } from "vite-plugin-node-polyfills";
 
 //const NODE_ENV = process.env.NODE_ENV ?? "development"; /// process.env.MODE
 export const define = {
@@ -25,7 +25,15 @@ export const define = {
 };
 
 export const plugins = [
-    vitePolyfills(),
+    //TODO: Re-enable?
+    /**
+     * Breaks with lodash-es
+     * - imports buffer polyfill package (breaks)
+     * - solution => disable buffer from dependencies in pnpmfile.cjs
+     * - vite-plugin-node-polyfills breaks because cannot import buffer
+     *   - under the hood imported by node-stdlib-browser
+     */
+    //vitePolyfills(),
     ReactPlugin(),
     SVGRPlugin({
         svgrOptions: {
@@ -60,7 +68,7 @@ export const rollupPlugins = [
 ] as any[];
 
 export const alias = {
-    buffer: "rollup-plugin-node-polyfills/polyfills/buffer-es6",
+    //buffer: "rollup-plugin-node-polyfills/polyfills/buffer-es6",
     events: "rollup-plugin-node-polyfills/polyfills/events",
     http: "rollup-plugin-node-polyfills/polyfills/http",
     https: "rollup-plugin-node-polyfills/polyfills/http",
@@ -82,7 +90,7 @@ export const manualChunks = (id) => {
         { match: /@web3-react/, chunk: "web3-react" },
         { match: /@walletconnect/, chunk: "walletconnect" },
         { match: /@fortawesome/, chunk: "@fortawesome" },
-        { match: /lodash@/, chunck: "lodash" },
+        //{ match: /lodash@/, chunck: "lodash" },
         { match: /ipfs-http-client@/, chunk: "ipfs-http-client" },
         /*
         { match: /react@/, chunk: 'react' },

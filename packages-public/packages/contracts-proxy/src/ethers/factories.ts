@@ -8,15 +8,15 @@ export const factoryClasses = {
 } as const;
 
 export const factories = mapValues(factoryClasses, (f) => new f()) as {
-    [K in keyof typeof factoryClasses]: InstanceType<typeof factoryClasses[K]>;
+    [K in keyof typeof factoryClasses]: InstanceType<(typeof factoryClasses)[K]>;
 };
 
 export const interfaces = mapValues(factoryClasses, (f) => f.createInterface()) as {
-    [K in keyof typeof factoryClasses]: ReturnType<typeof factoryClasses[K]["createInterface"]>;
+    [K in keyof typeof factoryClasses]: ReturnType<(typeof factoryClasses)[K]["createInterface"]>;
 };
 
 export const abis = mapValues(factoryClasses, (f) => f.abi) as {
-    [K in keyof typeof factoryClasses]: typeof factoryClasses[K]["abi"];
+    [K in keyof typeof factoryClasses]: (typeof factoryClasses)[K]["abi"];
 };
 
 //Interfaces
@@ -27,15 +27,15 @@ export const factoryInterfaceClasses = {
 } as const;
 
 export const factoriesInterface = mapValues(factoryInterfaceClasses, (f) => new f()) as {
-    [K in keyof typeof factoryInterfaceClasses]: InstanceType<typeof factoryInterfaceClasses[K]>;
+    [K in keyof typeof factoryInterfaceClasses]: InstanceType<(typeof factoryInterfaceClasses)[K]>;
 };
 
 export const interfacesInterface = mapValues(factoryInterfaceClasses, (f) => f.createInterface()) as {
-    [K in keyof typeof factoryInterfaceClasses]: ReturnType<typeof factoryInterfaceClasses[K]["createInterface"]>;
+    [K in keyof typeof factoryInterfaceClasses]: ReturnType<(typeof factoryInterfaceClasses)[K]["createInterface"]>;
 };
 
 export const abisInterface = mapValues(factoryInterfaceClasses, (f) => f.abi) as {
-    [K in keyof typeof factoryInterfaceClasses]: typeof factoryInterfaceClasses[K]["abi"];
+    [K in keyof typeof factoryInterfaceClasses]: (typeof factoryInterfaceClasses)[K]["abi"];
 };
 
 //Proxies

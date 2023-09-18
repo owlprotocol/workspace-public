@@ -38,7 +38,7 @@ export const ImplementationsDeploy = async ({ provider, signer, network }: RunTi
     });
 
     const results = zipObject(Object.keys(promises), await Promise.all(Object.values(promises))) as {
-        [K in keyof typeof promises]: Awaited<typeof promises[K]>;
+        [K in keyof typeof promises]: Awaited<(typeof promises)[K]>;
     };
 
     mapValues(results, ({ address, error, deployed }, name) => {

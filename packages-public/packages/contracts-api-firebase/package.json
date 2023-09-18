@@ -81,7 +81,8 @@
     "@owlprotocol/zod-sol": "workspace:*",
     "is-ipfs": "^8.0.1",
     "jsonpath": "^1.1.1",
-    "zod": "3.21.4"
+    "zod": "3.21.4",
+    "lodash-es": "4.17.21"
   },
   "peerDependencies": {
     "@trpc/server": "10.36",
@@ -90,6 +91,7 @@
   },
   "devDependencies": {
     "@google-cloud/storage": "^6.12.0",
+    "@types/lodash-es": "4.17.6",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",

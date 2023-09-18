@@ -11,7 +11,7 @@ import { beaconFactory } from "../utils/ERC1167Factory/beaconFactory.js";
 export function getFactoriesWithSigner<F extends { [k: string]: ContractFactory }>(
     factories: F,
     signer?: Signer | undefined,
-    beaconAdmin = BEACON_ADMIN
+    beaconAdmin = BEACON_ADMIN,
 ) {
     /** Basic factories */
     const factoriesConnected = connectFactories(factories, signer as any);
@@ -19,50 +19,77 @@ export function getFactoriesWithSigner<F extends { [k: string]: ContractFactory 
 
     /** Factories that deploy standalone implementations */
     const factoriesImplementations = mapValues(factoriesConnected, (f) => {
-        return deployDeterministicFactory({
-            contractFactory: f,
-        }, signer);
+        return deployDeterministicFactory(
+            {
+                contractFactory: f,
+            },
+            signer,
+        );
         // eslint-disable-next-line prettier/prettier
     }) as { [K in keyof typeof factoriesConnected]: ReturnType<typeof deployDeterministicFactory<typeof factoriesConnected[K]>> }
     //console.debug("factoriesImplementations")
 
     /** Factories that deploy and initialize a smart contract */
     const factoriesDeterministic = mapValues(factoriesConnected, (f: any) => {
-        return deployDeterministicFactory({
-            contractFactory: f,
-            initSignature: "initialize"
-        }, signer);
-    }) as { [K in keyof typeof factoriesConnected]: ReturnType<typeof deployDeterministicFactory<typeof factoriesConnected[K], "initialize">> }
+        return deployDeterministicFactory(
+            {
+                contractFactory: f,
+                initSignature: "initialize",
+            },
+            signer,
+        );
+    }) as {
+        [K in keyof typeof factoriesConnected]: ReturnType<
+            typeof deployDeterministicFactory<(typeof factoriesConnected)[K], "initialize">
+        >;
+    };
     //console.debug("factoriesDeterministic")
 
     /** Factories that clone an implementation using ERC1167 */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const factoriesClone = mapValues(factoriesImplementations, (f: any, name) => {
-        return cloneDeterministicFactory({
-            contractFactory: f,
-            initSignature: "initialize",
-            implementationAddress: f.getAddress()
-        }, signer);
-    }) as { [K in keyof typeof factoriesConnected]: ReturnType<typeof cloneDeterministicFactory<typeof factoriesConnected[K], "initialize">> }
+        return cloneDeterministicFactory(
+            {
+                contractFactory: f,
+                initSignature: "initialize",
+                implementationAddress: f.getAddress(),
+            },
+            signer,
+        );
+    }) as {
+        [K in keyof typeof factoriesConnected]: ReturnType<
+            typeof cloneDeterministicFactory<(typeof factoriesConnected)[K], "initialize">
+        >;
+    };
     //console.debug("factoriesClone")
 
     /** Factories that deploy UpgradeableBeacons using standard implemenation addresses, and default beacon admin */
     const factoriesBeacons = mapValues(factoriesImplementations, (f: any) => {
-        return beaconFactory({
-            implementationAddress: f.getAddress(),
-            beaconAdmin
-        }, signer);
-    }) as { [K in keyof typeof factoriesConnected]: ReturnType<typeof beaconFactory> }
+        return beaconFactory(
+            {
+                implementationAddress: f.getAddress(),
+                beaconAdmin,
+            },
+            signer,
+        );
+    }) as { [K in keyof typeof factoriesConnected]: ReturnType<typeof beaconFactory> };
     //console.debug("factoriesBeacons")
 
     /** Factories that deploy BeaconProxies using the standard Owl Protocol-managed beacons */
     const factoriesBeaconProxies = mapValues(factoriesBeacons, (f: any, k) => {
-        return beaconProxyFactory({
-            contractFactory: factories[k],
-            initSignature: "initialize",
-            beaconAddress: f.getAddress()
-        }, signer);
-    }) as { [K in keyof typeof factoriesConnected]: ReturnType<typeof beaconProxyFactory<typeof factoriesConnected[K], "initialize">> }
+        return beaconProxyFactory(
+            {
+                contractFactory: factories[k],
+                initSignature: "initialize",
+                beaconAddress: f.getAddress(),
+            },
+            signer,
+        );
+    }) as {
+        [K in keyof typeof factoriesConnected]: ReturnType<
+            typeof beaconProxyFactory<(typeof factoriesConnected)[K], "initialize">
+        >;
+    };
 
     return {
         factories: factoriesConnected,
@@ -71,6 +98,6 @@ export function getFactoriesWithSigner<F extends { [k: string]: ContractFactory 
         factoriesClone,
         factoriesBeacons,
         factoriesBeaconProxies,
-        signer
-    } as const
+        signer,
+    } as const;
 }

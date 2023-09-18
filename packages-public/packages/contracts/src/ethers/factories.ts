@@ -1,9 +1,14 @@
-import { getFactoriesWithSigner, getDeployFactories, getFactoryWithInitializeUtil, Utils as ProxyUtils } from "@owlprotocol/contracts-proxy";
+import {
+    getFactoriesWithSigner,
+    getDeployFactories,
+    getFactoryWithInitializeUtil,
+    Utils as ProxyUtils,
+} from "@owlprotocol/contracts-proxy";
 import * as contracts from "../typechain/ethers/factories/contracts/index.js";
 import * as oz from "../typechain/ethers/factories/@openzeppelin/contracts-upgradeable/index.js";
 import * as safe from "../typechain/ethers/factories/@safe-global/safe-contracts/contracts/index.js";
 import * as Utils from "../utils/initializeUtils/index.js";
-import { mapValues, omit } from "../lodash.js"
+import { mapValues, omit } from "../lodash.js";
 
 //ERC1820 Registry
 export const ERC1820RegistryFactory = new contracts.common.erc1820.erc1820Sol.ERC1820Registry__factory();
@@ -42,21 +47,34 @@ export const factoryClassesAll = {
     MultisendCallOnly: safe.libraries.MultiSendCallOnly__factory,
     SignMessageLib: safe.libraries.SignMessageLib__factory,
     CreateCall: safe.libraries.CreateCall__factory,
-} as const
+} as const;
 
-export const factoryClasses = omit(factoryClassesAll, ["Multicall2", "BlockNumber", "ERC1820Registry", "Safe", "SafeL2", "SafeProxyFactory", "SimulateTxAccessor", "CompatibilityFallbackHandler", "Multisend", "MultisendCallOnly", "SignMessageLib", "CreateCall"])
+export const factoryClasses = omit(factoryClassesAll, [
+    "Multicall2",
+    "BlockNumber",
+    "ERC1820Registry",
+    "Safe",
+    "SafeL2",
+    "SafeProxyFactory",
+    "SimulateTxAccessor",
+    "CompatibilityFallbackHandler",
+    "Multisend",
+    "MultisendCallOnly",
+    "SignMessageLib",
+    "CreateCall",
+]);
 
 export const interfaces = mapValues(factoryClasses, (f) => f.createInterface()) as {
-    [K in keyof typeof factoryClasses]: ReturnType<typeof factoryClasses[K]["createInterface"]>
-}
+    [K in keyof typeof factoryClasses]: ReturnType<(typeof factoryClasses)[K]["createInterface"]>;
+};
 
 export const abis = mapValues(factoryClasses, (f) => f.abi) as {
-    [K in keyof typeof factoryClasses]: typeof factoryClasses[K]["abi"]
-}
+    [K in keyof typeof factoryClasses]: (typeof factoryClasses)[K]["abi"];
+};
 
 export const factories = mapValues(factoryClasses, (f) => new f()) as {
-    [K in keyof typeof factoryClasses]: InstanceType<typeof factoryClasses[K]>
-}
+    [K in keyof typeof factoryClasses]: InstanceType<(typeof factoryClasses)[K]>;
+};
 
 //Interfaces
 export const factoryInterfaceClasses = {
@@ -87,20 +105,20 @@ export const factoryInterfaceClasses = {
     IChainlinkAnyApiClient: contracts.chainlink.IChainlinkAnyApiClient__factory,
     IChainlinkAnyApiConsumer: contracts.chainlink.IChainlinkAnyApiConsumer__factory,
     ISafeProxyFactory: contracts.safe.ISafeProxyFactory__factory,
-    ISafe: contracts.safe.ISafe__factory
-} as const
+    ISafe: contracts.safe.ISafe__factory,
+} as const;
 
 export const factoriesInterface = mapValues(factoryInterfaceClasses, (f) => new f()) as {
-    [K in keyof typeof factoryInterfaceClasses]: InstanceType<typeof factoryInterfaceClasses[K]>
-}
+    [K in keyof typeof factoryInterfaceClasses]: InstanceType<(typeof factoryInterfaceClasses)[K]>;
+};
 
 export const interfacesInterface = mapValues(factoryInterfaceClasses, (f) => f.createInterface()) as {
-    [K in keyof typeof factoryInterfaceClasses]: ReturnType<typeof factoryInterfaceClasses[K]["createInterface"]>
-}
+    [K in keyof typeof factoryInterfaceClasses]: ReturnType<(typeof factoryInterfaceClasses)[K]["createInterface"]>;
+};
 
 export const abisInterface = mapValues(factoryInterfaceClasses, (f) => f.abi) as {
-    [K in keyof typeof factoryInterfaceClasses]: typeof factoryInterfaceClasses[K]["abi"]
-}
+    [K in keyof typeof factoryInterfaceClasses]: (typeof factoryInterfaceClasses)[K]["abi"];
+};
 
 //Assets
 export const ERC20MintableFactory = factories.ERC20Mintable;
@@ -142,21 +160,31 @@ export const factoriesImplementations = {
     BlockNumber: ProxyUtils.deployDeterministicFactory({ contractFactory: BlockNumberFactory }),
     Safe: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.Safe__factory() }),
     SafeL2: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.SafeL2__factory() }),
-    SafeProxyFactory: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.proxies.SafeProxyFactory__factory() }),
+    SafeProxyFactory: ProxyUtils.deployDeterministicFactory({
+        contractFactory: new safe.proxies.SafeProxyFactory__factory(),
+    }),
     //Fails just like in official repo
     //SimulateTxAccessor: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.Safe__factory() }),
-    CompatibilityFallbackHandler: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.handler.CompatibilityFallbackHandler__factory() }),
+    CompatibilityFallbackHandler: ProxyUtils.deployDeterministicFactory({
+        contractFactory: new safe.handler.CompatibilityFallbackHandler__factory(),
+    }),
     Multisend: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.libraries.MultiSend__factory() }),
-    MultisendCallOnly: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.libraries.MultiSendCallOnly__factory() }),
-    SignMessageLib: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.libraries.SignMessageLib__factory() }),
-    CreateCall: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.libraries.CreateCall__factory }),
-
+    MultisendCallOnly: ProxyUtils.deployDeterministicFactory({
+        contractFactory: new safe.libraries.MultiSendCallOnly__factory(),
+    }),
+    SignMessageLib: ProxyUtils.deployDeterministicFactory({
+        contractFactory: new safe.libraries.SignMessageLib__factory(),
+    }),
+    CreateCall: ProxyUtils.deployDeterministicFactory({ contractFactory: new safe.libraries.CreateCall__factory() }),
 } as const;
 
 const factoriesWithInitializeUtils = {
     ERC20Mintable: { factory: ERC20MintableFactory, initializeUtil: Utils.ERC20Mintable.initializeUtil },
     ERC721Mintable: { factory: ERC721MintableFactory, initializeUtil: Utils.ERC721Mintable.initializeUtil },
-    ERC721MintableAutoId: { factory: ERC721MintableAutoIdFactory, initializeUtil: Utils.ERC721MintableAutoId.initializeUtil },
+    ERC721MintableAutoId: {
+        factory: ERC721MintableAutoIdFactory,
+        initializeUtil: Utils.ERC721MintableAutoId.initializeUtil,
+    },
     ERC1155Mintable: { factory: ERC1155MintableFactory, initializeUtil: Utils.ERC1155Mintable.initializeUtil },
     TokenURI: { factory: TokenURIFactory, initializeUtil: Utils.TokenURI.initializeUtil },
     TokenURIBaseURI: { factory: TokenURIBaseURIFactory, initializeUtil: Utils.TokenURIBaseURI.initializeUtil },
@@ -166,19 +194,22 @@ const factoriesWithInitializeUtils = {
     AssetRouterCraft: { factory: AssetRouterCraftFactory, initializeUtil: Utils.AssetRouterCraft.initializeUtil },
     AssetRouterInput: { factory: AssetRouterInputFactory, initializeUtil: Utils.AssetRouterInput.initializeUtil },
     AssetRouterOutput: { factory: AssetRouterOutputFactory, initializeUtil: Utils.AssetRouterOutput.initializeUtil },
-    ChainlinkAnyApiClient: { factory: ChainlinkAnyApiClient, initializeUtil: Utils.ChainlinkAnyApiClient.initializeUtil }
+    ChainlinkAnyApiClient: {
+        factory: ChainlinkAnyApiClient,
+        initializeUtil: Utils.ChainlinkAnyApiClient.initializeUtil,
+    },
 } as const;
 
 export const factoriesAll = mapValues(factoriesWithInitializeUtils, ({ factory, initializeUtil }) => {
-    return getFactoryWithInitializeUtil(getDeployFactories(factory), initializeUtil as any)
+    return getFactoryWithInitializeUtil(getDeployFactories(factory), initializeUtil as any);
 }) as {
-        [K in keyof typeof factoriesWithInitializeUtils]:
-        // eslint-disable-next-line prettier/prettier
-        ReturnType<typeof getFactoryWithInitializeUtil<
-            typeof factoriesWithInitializeUtils[K]["factory"],
-            Parameters<typeof factoriesWithInitializeUtils[K]["initializeUtil"]>[0]
-        >>
-    }
+    [K in keyof typeof factoriesWithInitializeUtils]: ReturnType<
+        typeof getFactoryWithInitializeUtil<
+            (typeof factoriesWithInitializeUtils)[K]["factory"],
+            Parameters<(typeof factoriesWithInitializeUtils)[K]["initializeUtil"]>[0]
+        >
+    >;
+};
 
 export interface DeployedLinkReferences {
     [libraryFileName: string]: {

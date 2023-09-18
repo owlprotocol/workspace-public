@@ -1,6 +1,6 @@
-import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
-import type { AppRouter } from '@owlprotocol/contracts-api';
-import fetch from 'cross-fetch';
+import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
+import type { AppRouter } from "@owlprotocol/contracts-api";
+import fetch from "cross-fetch";
 
 export const createClient = (apiKey: string, url?: string) => {
     const client = createTRPCProxyClient<AppRouter>({
@@ -19,7 +19,6 @@ export const createClient = (apiKey: string, url?: string) => {
     });
 
     return client;
-}
+};
 
-// eslint-disable-next-line prettier/prettier
-export type AppClient = ReturnType<typeof createTRPCProxyClient<AppRouter>>
+export type AppClient = ReturnType<typeof createTRPCProxyClient<AppRouter>>;
