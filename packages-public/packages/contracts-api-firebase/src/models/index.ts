@@ -7,4 +7,6 @@ export * from "./RequestTemplate.js";
 export * from "./TokenMetadata.js";
 export * from "./TokenMetadataAttribute.js";
 export * from "./User.js";
+export * from "./Coupon.js";
+export * from "./CouponItem.js";
 export * from "./ProjectTemplate.js";

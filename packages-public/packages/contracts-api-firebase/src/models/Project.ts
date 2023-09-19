@@ -3,4 +3,5 @@ export interface Project {
     readonly userId: string;
     readonly name: string;
     readonly description?: string;
+    readonly shopifyAPIKey?: string;
 }
