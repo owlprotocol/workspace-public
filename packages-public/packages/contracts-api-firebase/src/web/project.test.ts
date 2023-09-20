@@ -19,7 +19,7 @@ describe("project.test.ts", () => {
 
     test("where", async () => {
         await projectsCRUD.set(testProject);
-        const projects = await projectsCRUD.getWhere({ userId: testProject.userId });
+        const projects = await projectsCRUD.getWhere({ owner: testProject.owner });
 
         expect(projects.length).toBe(1);
         expect(projects[0]).toStrictEqual(testProject);

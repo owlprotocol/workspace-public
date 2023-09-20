@@ -16,7 +16,7 @@ export async function createProject(
     const project: Project = {
         name: projectName,
         id: projectId,
-        userId,
+        owner: userId,
     };
 
     await setDoc(doc(projectsCol, projectId), project);

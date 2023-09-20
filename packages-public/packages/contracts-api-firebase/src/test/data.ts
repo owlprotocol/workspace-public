@@ -45,5 +45,5 @@ export const testProjectId = crypto.randomUUID();
 export const testProject: Project = {
     id: testProjectId,
     name: "Test Project",
-    userId: testUserId,
+    owner: testUserId,
 };
