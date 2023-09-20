@@ -3,6 +3,6 @@ export interface Project {
     readonly owner: string;
     readonly name: string;
     readonly description?: string;
-    readonly shopifyAPIKey?: string;
+    readonly shopifyToken?: string;
     readonly storeName?: string;
 }
