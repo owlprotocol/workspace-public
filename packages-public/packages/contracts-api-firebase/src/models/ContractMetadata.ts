@@ -2,6 +2,7 @@
  * Generic Contract-level metadata. See https://docs.opensea.io/docs/contract-level-metadata
  **/
 export interface ContractMetadata {
+    readonly id: string;
     /** Contract name */
     readonly name?: string;
     /** Contract description */

@@ -1,5 +1,5 @@
 /***** Generics for Firebase Web CRUD *****/
-import { CollectionReference, DocumentData, DocumentSnapshot, QuerySnapshot } from "firebase/firestore";
+import { CollectionReference, DocumentData, DocumentSnapshot, QuerySnapshot, limit, orderBy } from "firebase/firestore";
 import { doc, query, where, QueryConstraint } from "firebase/firestore";
 import { useFirestoreCollection, useFirestoreDoc, ObservableStatus } from "reactfire";
 import {
@@ -18,6 +18,12 @@ import { ProjectTemplate } from "../models/ProjectTemplate.js";
 import { RequestTemplate } from "../models/RequestTemplate.js";
 import { MetadataContract } from "../models/MetadataContract.js";
 import { MetadataTokens } from "../models/MetadataTokens.js";
+
+export interface QueryOptions {
+    limit?: number;
+    orderBy?: string;
+    order?: "asc" | "desc";
+}
 
 /**
  * Firebase CRUD Wrappers. create, get, getAll, update, rdelete, deleteAll
@@ -64,14 +70,23 @@ export function getFirebaseHooks<T extends Record<string, any> & { id: string }>
 
     /**
      * Get docs that match filter
+     * @param filter
+     * @param options limit, orderBy, order
      * @returns docs
      */
     const useGetWhere = (
         filter: Partial<Omit<T, "id">>,
+        options?: QueryOptions,
     ): [T[] | undefined, ObservableStatus<QuerySnapshot<Omit<T, "id">, DocumentData>>] => {
         const queryFilterConstraints: QueryConstraint[] = Object.entries(filter).map(([key, value]) => {
             return where(key, "==", value);
         });
+        if (options?.orderBy) {
+            queryFilterConstraints.push(orderBy(options.orderBy, options.order ?? "asc"));
+        }
+        if (options?.limit) {
+            queryFilterConstraints.push(limit(options.limit));
+        }
 
         const result = useFirestoreCollection(query(collection, ...queryFilterConstraints));
         const snapshot = result.data;
@@ -86,10 +101,26 @@ export function getFirebaseHooks<T extends Record<string, any> & { id: string }>
         return [data, result] as [T[] | undefined, typeof result];
     };
 
+    /**
+     * Get docs that match filter
+     * @param filter
+     * @param options limit, orderBy, order
+     * @returns docs
+     */
+    const useGetWhereFirst = (
+        filter: Partial<Omit<T, "id">>,
+        options?: Omit<QueryOptions, "limit">,
+    ): [T | undefined, ObservableStatus<QuerySnapshot<Omit<T, "id">, DocumentData>>] => {
+        const [data, result] = useGetWhere(filter, { ...options, limit: 1 });
+
+        return [data ? data[0] : undefined, result];
+    };
+
     return {
         useGet,
         useGetAll,
         useGetWhere,
+        useGetWhereFirst,
     };
 }
 

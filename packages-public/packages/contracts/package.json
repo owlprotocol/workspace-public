@@ -28,6 +28,11 @@
       "types": "./lib/types/typechain/ethers/index.d.ts",
       "require": "./lib/cjs/typechain/ethers/index.js",
       "import": "./lib/esm/typechain/ethers/index.js"
+    },
+    "./utils/initializeUtils": {
+      "types": "./lib/types/utils/initializeUtils/index.d.ts",
+      "require": "./lib/cjs/utils/initializeUtils/index.js",
+      "import": "./lib/esm/ethers/initializeUtils/index.js"
     }
   },
   "files": [

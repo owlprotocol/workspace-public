@@ -61,6 +61,7 @@
     "@ethersproject/providers": "5.7.2",
     "@owlprotocol/contracts": "workspace:*",
     "@owlprotocol/contracts-api": "workspace:",
+    "@owlprotocol/contracts-api-firebase": "workspace:",
     "@owlprotocol/contracts-proxy": "workspace:*",
     "@owlprotocol/safe-kit": "workspace:*",
     "@types/dotenv": "^8.2.0",

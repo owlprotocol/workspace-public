@@ -19,4 +19,6 @@ export interface TokenMetadataAttribute {
     readonly display_type?: "number" | "boost_number" | "boost_percentage" | "date" | string;
     /** Display value */
     readonly display_value?: string;
+    /** Custom keys */
+    readonly [key: string]: unknown;
 }

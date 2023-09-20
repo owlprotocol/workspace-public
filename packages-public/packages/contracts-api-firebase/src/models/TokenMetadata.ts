@@ -1,12 +1,15 @@
 import { TokenMetadataAttribute } from "./TokenMetadataAttribute.js";
 
 export interface TokenMetadataLocalization {
+    //TODO: make read-only
     /** URI for localization info */
-    readonly uri?: string;
+    uri?: string;
     /** Default localization (eg. "en") */
-    readonly default?: string;
+    default?: string;
     /** Supported locales (eg. ["en", "es"]) */
-    readonly locales?: string[];
+    locales?: string[];
+    /** Custom keys */
+    [key: string]: unknown;
 }
 
 /**
@@ -79,4 +82,6 @@ export interface TokenMetadata {
      * e.g. 18, means to divide the token amount by 1000000000000000000 to get its user representation.
      */
     readonly decimals?: number;
+    /** Custom keys */
+    readonly [key: string]: unknown;
 }

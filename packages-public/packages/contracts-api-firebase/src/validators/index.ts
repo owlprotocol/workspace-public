@@ -11,6 +11,3 @@ export * from "./RequestTemplate.js";
 export * from "./TokenMetadata.js";
 export * from "./TokenMetadataAttribute.js";
 export * from "./User.js";
-export * from "./CouponDefinition.js";
-export * from "./CouponCampaign.js";
-export * from "./CouponInstance.js";

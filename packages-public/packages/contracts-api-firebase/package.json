@@ -19,6 +19,11 @@
   "module": "./lib/esm/index.mjs",
   "types": "./lib/types/index.d.ts",
   "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "require": "./lib/cjs/index.js",
+      "import": "./lib/esm/index.js"
+    },
     "./models": {
       "types": "./lib/types/models/index.d.ts",
       "require": "./lib/cjs/models/index.js",
@@ -39,6 +44,16 @@
       "require": "./lib/cjs/hooks/index.js",
       "import": "./lib/esm/hooks/index.js"
     },
+    "./validators": {
+      "types": "./lib/types/validators/index.d.ts",
+      "require": "./lib/cjs/validators/index.js",
+      "import": "./lib/esm/validators/index.js"
+    },
+    "./utils": {
+      "types": "./lib/types/utils/index.d.ts",
+      "require": "./lib/cjs/utils/index.js",
+      "import": "./lib/esm/utils/index.js"
+    },
     "./test": {
       "types": "./lib/types/test/index.d.ts",
       "require": "./lib/cjs/test/index.js",
@@ -57,9 +72,8 @@
   },
   "scripts": {
     "test": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'pnpm run test:ci'",
-    "test:watch": "vitest",
+    "test:watch": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'vitest'",
     "test:ci": "DOTENV_KEY=$DOTENV_KEY_CONTRACTS_API_FIREBASE vitest --run",
-    "test:jsdom": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'vitest src/hooks/user.test.ts'",
     "build": "npm-run-all -p tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
     "esbuild": "node esbuild.config.mjs",
@@ -74,15 +88,17 @@
     "dotenv:login": "dotenv-vault login -y",
     "dotenv:pull": "dotenv-vault pull -y",
     "dotenv:push": "dotenv-vault push -y",
-    "firebase-emulator": "firebase emulators:start --only firestore,storage,auth --project demo-owl-protocol"
+    "firebase-emulator": "firebase emulators:start --only firestore,storage,auth --project demo-owl-protocol",
+    "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol"
   },
   "dependencies": {
+    "@ethersproject/bignumber": "^5.6.2",
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
     "is-ipfs": "^8.0.1",
     "jsonpath": "^1.1.1",
-    "zod": "3.21.4",
-    "lodash-es": "4.17.21"
+    "lodash-es": "4.17.21",
+    "zod": "3.21.4"
   },
   "peerDependencies": {
     "@trpc/server": "10.36",
@@ -91,7 +107,6 @@
   },
   "devDependencies": {
     "@google-cloud/storage": "^6.12.0",
-    "@types/lodash-es": "4.17.6",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
@@ -99,6 +114,7 @@
     "@trpc/server": "10.36",
     "@types/dotenv": "^8.2.0",
     "@types/jsonpath": "^0.2.0",
+    "@types/lodash-es": "4.17.6",
     "@types/node": "^20.5.6",
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
@@ -113,6 +129,7 @@
     "react-test-renderer": "^18.2.0",
     "reactfire": "^4.2.3",
     "rimraf": "^3.0.2",
+    "ts-expect": "^1.3.0",
     "tsx": "^3.12.7",
     "typescript": "4.9.5",
     "vite": "^4.4.9",

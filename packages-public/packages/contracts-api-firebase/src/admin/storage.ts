@@ -1,7 +1,7 @@
 import { Bucket } from "@google-cloud/storage";
 import { MetadataResponse } from "@google-cloud/storage/build/src/nodejs-common";
 import { TRPCError } from "@trpc/server";
-import * as crypto from "crypto";
+import crypto from "node:crypto";
 
 export interface FileMetadata {
     owner: string;
