@@ -38,7 +38,7 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
 const SHOPIFY_ENVVARS: EnvVarDef[] = [
     { name: "SHOPIFY_API_KEY" },
     { name: "SHOPIFY_API_SECRET" },
-    { name: "SHOPIFY_SCOPES", defaultValue: "read_customers,read_customers" },
+    { name: "SHOPIFY_SCOPES", defaultValue: "read_customers,read_orders" },
     { name: "SHOPIFY_HOSTNAME" },
 ];
 const SCRIPT_ENVVARS: EnvVarDef[] = [
@@ -141,6 +141,7 @@ const EXPLORER_API_KEY_DEFAULTS: Record<string, string | undefined> = {
     56: "9TRND69HZABV4HU73SPTECP72S94Q8K5B7",
     97: "9TRND69HZABV4HU73SPTECP72S94Q8K5B7",
 };
+
 /**
  * Get envvar definitions for networkId
  * @param networkId
