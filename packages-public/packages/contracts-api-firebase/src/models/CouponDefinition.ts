@@ -3,7 +3,7 @@ export interface CouponDefinition {
     readonly owner: string;
     readonly couponCampaign?: string;
     readonly shopifyPriceRuleId?: string;
-    readonly shopifyDiscountCodeId?: string;
+    readonly shopifyDiscounCodeId?: string;
     readonly oncePerCustomer?: boolean;
     // Must be ERC-1155
     readonly tokenAddress: string;

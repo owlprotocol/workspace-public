@@ -12,6 +12,7 @@ import { getFirestore, collection, CollectionReference, connectFirestoreEmulator
 import { getAuth, connectAuthEmulator, Auth } from "firebase/auth";
 import { getStorage, connectStorageEmulator, FirebaseStorage } from "firebase/storage";
 import { User } from "../models/User.js";
+import { CouponDefinition } from "../models/CouponDefinition.js";
 import { ProjectTemplate } from "../models/ProjectTemplate.js";
 import { Contract } from "../models/Contract.js";
 import { MetadataContract } from "../models/MetadataContract.js";
@@ -21,7 +22,6 @@ import { Project } from "../models/Project.js";
 import { UserPrivate } from "../models/UserPrivate.js";
 import { UserPersonal } from "../models/UserPersonal.js";
 import { Store } from "../models/Store.js";
-import { CouponDefinition } from "../models/CouponDefinition.js";
 import { CouponCampaign } from "../models/CouponCampaign.js";
 import { CouponInstance } from "../models/CouponInstance.js";
 import { StorePrivate } from "../models/StorePrivate.js";
