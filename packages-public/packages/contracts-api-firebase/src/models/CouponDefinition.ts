@@ -3,12 +3,12 @@ export interface CouponDefinition {
     readonly owner: string;
     readonly couponCampaign?: string;
     readonly shopifyPriceRuleId?: string;
-    readonly shopifyDiscounCodeId?: string;
+    readonly shopifyDiscountCodeId?: string;
     readonly oncePerCustomer?: boolean;
     // Must be ERC-1155
-    readonly tokenAddress: string;
-    readonly tokenId: string;
-    readonly networkId: string;
+    readonly tokenAddress?: string;
+    readonly tokenId?: string;
+    readonly networkId?: string;
     readonly name: string;
     readonly description?: string;
     // TODO: use shopify price_rule.value_type
