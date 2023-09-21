@@ -2,7 +2,7 @@ import { Interface } from "@ethersproject/abi";
 import { arrayify } from "@ethersproject/bytes";
 import { pack as solidityPack } from "@ethersproject/solidity";
 //TODO: Remove web3-utils dependency
-import { hexToNumber, hexToNumberString, toChecksumAddress } from "web3-utils";
+import web3Utils from "web3-utils";
 import { constants } from "ethers";
 import type { Provider } from "@ethersproject/providers";
 import { estimateGas } from "./utils/gas.js";
@@ -12,6 +12,8 @@ import {
     SafeTransactionData,
     SafeTransactionDataPartial,
 } from "./types/SafeTransactionData.js";
+
+const { hexToNumber, hexToNumberString, toChecksumAddress } = web3Utils;
 
 export function standardizeMetaTransactionData(tx: SafeTransactionDataPartial): MetaTransactionData {
     const standardizedTxs: MetaTransactionData = {
