@@ -20,6 +20,11 @@ import { RequestTemplate } from "../models/RequestTemplate.js";
 import { Project } from "../models/Project.js";
 import { UserPrivate } from "../models/UserPrivate.js";
 import { UserPersonal } from "../models/UserPersonal.js";
+import { Store } from "../models/Store.js";
+import { CouponDefinition } from "../models/CouponDefinition.js";
+import { CouponCampaign } from "../models/CouponCampaign.js";
+import { CouponInstance } from "../models/CouponInstance.js";
+import { StorePrivate } from "../models/StorePrivate.js";
 
 function getFirebaseConfig() {
     let firebaseConfig: FirebaseOptions = {};
@@ -96,3 +101,8 @@ export const requestTemplatesCol = collection(firestore, "requestTemplates") as 
 export const contractsCol = collection(firestore, "contracts") as CollectionReference<Contract>;
 export const metadataContractsCol = collection(firestore, "metadataContracts") as CollectionReference<MetadataContract>;
 export const metadataTokensCol = collection(firestore, "metadataTokens") as CollectionReference<MetadataTokens>;
+export const storesCol = collection(firestore, "stores") as CollectionReference<Store>;
+export const storePrivatesCol = collection(firestore, "storePrivates") as CollectionReference<StorePrivate>;
+export const couponDefinitionsCol = collection(firestore, "couponDefinitions") as CollectionReference<CouponDefinition>;
+export const couponCampaignsCol = collection(firestore, "couponCampaigns") as CollectionReference<CouponCampaign>;
+export const couponInstancesCol = collection(firestore, "couponInstances") as CollectionReference<CouponInstance>;

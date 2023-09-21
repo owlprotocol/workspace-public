@@ -4,11 +4,15 @@ import { doc, query, where, QueryConstraint } from "firebase/firestore";
 import { useFirestoreCollection, useFirestoreDoc, ObservableStatus } from "reactfire";
 import {
     contractsCol,
+    couponCampaignsCol,
+    couponDefinitionsCol,
+    couponInstancesCol,
     metadataContractsCol,
     metadataTokensCol,
     projectTemplatesCol,
     projectsCol,
     requestTemplatesCol,
+    storesCol,
     usersCol,
 } from "../web/config.js";
 import { Contract } from "../models/Contract.js";
@@ -18,6 +22,10 @@ import { ProjectTemplate } from "../models/ProjectTemplate.js";
 import { RequestTemplate } from "../models/RequestTemplate.js";
 import { MetadataContract } from "../models/MetadataContract.js";
 import { MetadataTokens } from "../models/MetadataTokens.js";
+import { Store } from "../models/Store.js";
+import { CouponCampaign } from "../models/CouponCampaign.js";
+import { CouponDefinition } from "../models/CouponDefinition.js";
+import { CouponInstance } from "../models/CouponInstance.js";
 
 export interface QueryOptions {
     limit?: number;
@@ -131,3 +139,7 @@ export const contractsHooks = getFirebaseHooks<Contract>(contractsCol);
 export const projectsHooks = getFirebaseHooks<Project>(projectsCol);
 export const metadataContractsHooks = getFirebaseHooks<MetadataContract>(metadataContractsCol);
 export const metadataTokensHooks = getFirebaseHooks<MetadataTokens>(metadataTokensCol);
+export const storeHooks = getFirebaseHooks<Store>(storesCol);
+export const couponCampaignHooks = getFirebaseHooks<CouponCampaign>(couponCampaignsCol);
+export const couponDefinitionHooks = getFirebaseHooks<CouponDefinition>(couponDefinitionsCol);
+export const couponInstanceHooks = getFirebaseHooks<CouponInstance>(couponInstancesCol);

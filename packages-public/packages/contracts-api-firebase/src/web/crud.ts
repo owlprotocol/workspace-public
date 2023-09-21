@@ -17,12 +17,17 @@ import { zip, omit } from "lodash-es";
 import * as crypto from "crypto";
 import {
     contractsCol,
+    couponCampaignsCol,
+    couponDefinitionsCol,
+    couponInstancesCol,
     firestore,
     metadataContractsCol,
     metadataTokensCol,
     projectTemplatesCol,
     projectsCol,
     requestTemplatesCol,
+    storesCol,
+    storePrivatesCol,
     usersCol,
 } from "./config.js";
 import { Contract } from "../models/Contract.js";
@@ -34,6 +39,11 @@ import { MetadataContract } from "../models/MetadataContract.js";
 import { MetadataTokens } from "../models/MetadataTokens.js";
 import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
 import { getFirestorePathValue } from "../utils/getFirestorePathValue.js";
+import { Store } from "../models/Store.js";
+import { StorePrivate } from "../models/StorePrivate.js";
+import { CouponDefinition } from "../models/CouponDefinition.js";
+import { CouponCampaign } from "../models/CouponCampaign.js";
+import { CouponInstance } from "../models/CouponInstance.js";
 
 export interface QueryOptions {
     limit?: number;
@@ -337,3 +347,8 @@ export const contractsCRUD = getFirebaseCRUD<Contract>(contractsCol);
 export const projectsCRUD = getFirebaseCRUD<Project>(projectsCol);
 export const metadataContractsCRUD = getFirebaseCRUD<MetadataContract>(metadataContractsCol);
 export const metadataTokensCRUD = getFirebaseCRUD<MetadataTokens>(metadataTokensCol);
+export const storesCRUD = getFirebaseCRUD<Store>(storesCol);
+export const storePrivateCRUD = getFirebaseCRUD<StorePrivate>(storePrivatesCol);
+export const couponCampaignCRUD = getFirebaseCRUD<CouponCampaign>(couponCampaignsCol);
+export const couponDefinitionCRUD = getFirebaseCRUD<CouponDefinition>(couponDefinitionsCol);
+export const couponInstanceCRUD = getFirebaseCRUD<CouponInstance>(couponInstancesCol);

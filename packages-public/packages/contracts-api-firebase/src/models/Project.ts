@@ -3,6 +3,6 @@ export interface Project {
     readonly owner: string;
     readonly name: string;
     readonly description?: string;
-    readonly shopifyToken?: string;
-    readonly storeName?: string;
+    readonly store?: string;
+    readonly type?: "coupon";
 }

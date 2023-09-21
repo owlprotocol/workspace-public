@@ -5,12 +5,17 @@ import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import crypto from "node:crypto";
 import {
     contractsCol,
+    couponCampaignCol,
+    couponDefinitionCol,
+    couponInstanceCol,
     firestore,
     metadataContractsCol,
     metadataTokensCol,
     projectTemplatesCol,
     projectsCol,
     requestTemplatesCol,
+    storeCol,
+    storePrivateCol,
     usersCol,
 } from "./config.js";
 import { Contract } from "../models/Contract.js";
@@ -22,6 +27,11 @@ import { MetadataContract } from "../models/MetadataContract.js";
 import { MetadataTokens } from "../models/MetadataTokens.js";
 import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
 import { getFirestorePathValue } from "../utils/getFirestorePathValue.js";
+import { Store } from "../models/Store.js";
+import { StorePrivate } from "../models/StorePrivate.js";
+import { CouponCampaign } from "../models/CouponCampaign.js";
+import { CouponDefinition } from "../models/CouponDefinition.js";
+import { CouponInstance } from "../models/CouponInstance.js";
 
 export interface AccessControl<T, AccessControlParams extends any[] = []> {
     readAccessCheck?: (item: T, ...params: AccessControlParams) => boolean;
@@ -861,4 +871,39 @@ export const metadataTokensCRUD = getFirebaseCRUD<MetadataTokens, [userId: Admin
     setAccessCheck: (metadataTokens, userId) => userId === AdminRoles.ADMIN || metadataTokens.owner === userId,
     updateAccessCheck: (metadataTokens, userId) => userId === AdminRoles.ADMIN || metadataTokens.owner === userId,
     deleteAccessCheck: (metadataTokens, userId) => userId === AdminRoles.ADMIN || metadataTokens.owner === userId,
+});
+export const storeCRUD = getFirebaseCRUD<Store, [userId: AdminRoles | string]>(storeCol, {
+    readAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
+    setAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
+    updateAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
+    deleteAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
+});
+export const storePrivateCRUD = getFirebaseCRUD<StorePrivate, [userId: AdminRoles | string]>(storePrivateCol, {
+    readAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
+    setAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
+    updateAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
+    deleteAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
+});
+export const couponCampaignCRUD = getFirebaseCRUD<CouponCampaign, [userId: AdminRoles | string]>(couponCampaignCol, {
+    readAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
+    setAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
+    updateAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
+    deleteAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
+});
+export const couponDefinitionCRUD = getFirebaseCRUD<CouponDefinition, [userId: AdminRoles | string]>(
+    couponDefinitionCol,
+    {
+        readAccessCheck: (couponDefinition, userId) => userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
+        setAccessCheck: (couponDefinition, userId) => userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
+        updateAccessCheck: (couponDefinition, userId) =>
+            userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
+        deleteAccessCheck: (couponDefinition, userId) =>
+            userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
+    },
+);
+export const couponInstanceCRUD = getFirebaseCRUD<CouponInstance, [userId: AdminRoles | string]>(couponInstanceCol, {
+    readAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
+    setAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
+    updateAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
+    deleteAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
 });

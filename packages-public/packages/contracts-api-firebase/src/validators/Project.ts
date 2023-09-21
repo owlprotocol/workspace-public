@@ -8,8 +8,8 @@ export const projectZod = z
         owner: z.string().describe("owner"),
         name: z.string().describe("name"),
         description: z.string().describe("description").optional(),
-        shopifyToken: z.string().describe("Shopify token").optional(),
-        storeName: z.string().describe("store name").optional(),
+        store: z.string().describe("store").optional(),
+        type: z.enum(["coupon"]).describe("type").optional(),
     })
     .describe("project");
 
