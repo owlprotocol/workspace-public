@@ -5,17 +5,17 @@ import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import crypto from "node:crypto";
 import {
     contractsCol,
-    couponCampaignCol,
-    couponDefinitionCol,
-    couponInstanceCol,
+    couponCampaignsCol,
+    couponDefinitionsCol,
+    couponInstancesCol,
     firestore,
     metadataContractsCol,
     metadataTokensCol,
     projectTemplatesCol,
     projectsCol,
     requestTemplatesCol,
-    storeCol,
-    storePrivateCol,
+    storesCol,
+    storePrivatesCol,
     usersCol,
 } from "./config.js";
 import { Contract } from "../models/Contract.js";
@@ -872,28 +872,31 @@ export const metadataTokensCRUD = getFirebaseCRUD<MetadataTokens, [userId: Admin
     updateAccessCheck: (metadataTokens, userId) => userId === AdminRoles.ADMIN || metadataTokens.owner === userId,
     deleteAccessCheck: (metadataTokens, userId) => userId === AdminRoles.ADMIN || metadataTokens.owner === userId,
 });
-export const storeCRUD = getFirebaseCRUD<Store, [userId: AdminRoles | string]>(storeCol, {
-    readAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
+export const storesCRUD = getFirebaseCRUD<Store, [userId: AdminRoles | string]>(storesCol, {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    readAccessCheck: (store, userId) => true,
     setAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
     updateAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
     deleteAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
 });
-export const storePrivateCRUD = getFirebaseCRUD<StorePrivate, [userId: AdminRoles | string]>(storePrivateCol, {
+export const storePrivatesCRUD = getFirebaseCRUD<StorePrivate, [userId: AdminRoles | string]>(storePrivatesCol, {
     readAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
     setAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
     updateAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
     deleteAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
 });
-export const couponCampaignCRUD = getFirebaseCRUD<CouponCampaign, [userId: AdminRoles | string]>(couponCampaignCol, {
-    readAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
+export const couponCampaignsCRUD = getFirebaseCRUD<CouponCampaign, [userId: AdminRoles | string]>(couponCampaignsCol, {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    readAccessCheck: (couponCampaign, userId) => true,
     setAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
     updateAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
     deleteAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
 });
-export const couponDefinitionCRUD = getFirebaseCRUD<CouponDefinition, [userId: AdminRoles | string]>(
-    couponDefinitionCol,
+export const couponDefinitionsCRUD = getFirebaseCRUD<CouponDefinition, [userId: AdminRoles | string]>(
+    couponDefinitionsCol,
     {
-        readAccessCheck: (couponDefinition, userId) => userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        readAccessCheck: (couponDefinition, userId) => true,
         setAccessCheck: (couponDefinition, userId) => userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
         updateAccessCheck: (couponDefinition, userId) =>
             userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
@@ -901,8 +904,9 @@ export const couponDefinitionCRUD = getFirebaseCRUD<CouponDefinition, [userId: A
             userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
     },
 );
-export const couponInstanceCRUD = getFirebaseCRUD<CouponInstance, [userId: AdminRoles | string]>(couponInstanceCol, {
-    readAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
+export const couponInstancesCRUD = getFirebaseCRUD<CouponInstance, [userId: AdminRoles | string]>(couponInstancesCol, {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    readAccessCheck: (couponInstance, userId) => true,
     setAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
     updateAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
     deleteAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
