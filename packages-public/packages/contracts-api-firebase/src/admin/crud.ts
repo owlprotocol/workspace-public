@@ -31,12 +31,6 @@ export interface AccessControl<T, AccessControlParams extends any[] = []> {
     deleteAccessCheck?: (item: T, ...params: AccessControlParams) => boolean;
 }
 
-//TODO: getWhereFirst
-//TODO: getOrCreate
-//TODO: getWhereFirstOrCreate
-//TODO: increment
-//TODO: decrement
-
 export interface QueryOptions {
     limit?: number;
     orderBy?: string;

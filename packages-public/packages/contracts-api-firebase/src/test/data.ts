@@ -1,6 +1,8 @@
 import { User } from "../models/User.js";
 import { Project } from "../models/Project.js";
 import { ProjectTemplate } from "../models/ProjectTemplate.js";
+import { UserPrivate } from "../models/UserPrivate.js";
+import { UserPersonal } from "../models/UserPersonal.js";
 
 export const testNetworkId = "31337";
 
@@ -11,6 +13,26 @@ const uuid4 = "00000000-0000-0000-0000-000000000004";
 const uuid5 = "00000000-0000-0000-0000-000000000005";
 
 export const testUserId = uuid1;
+export const testUserPersonal: UserPersonal = {
+    id: testUserId,
+    email: "johndoe@gmail.com",
+    apiKey: uuid2,
+    gnosisAddress: {},
+    topupTotals: {
+        [testNetworkId]: {
+            native: "0",
+        },
+    },
+    topupMax: {
+        [testNetworkId]: {
+            native: "1000000000000000000",
+        },
+    },
+};
+export const testUserPrivate: UserPrivate = {
+    id: testUserId,
+    dfnsId: uuid3,
+};
 export const testUser: User = {
     id: testUserId,
     email: "johndoe@gmail.com",

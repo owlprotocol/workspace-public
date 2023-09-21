@@ -226,7 +226,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
      * @param items
      * @returns
      */
-    const updateBatch = async (items: Partial<T> & { id: string }[]): Promise<void> => {
+    const updateBatch = async (items: (Partial<T> & { id: string })[]): Promise<void> => {
         await runTransaction(firestore, async (transaction) => {
             const operations = items.map((item) => {
                 const ref = doc(collection, item.id);

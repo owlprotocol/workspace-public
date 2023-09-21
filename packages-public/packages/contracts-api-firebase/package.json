@@ -94,6 +94,7 @@
   "dependencies": {
     "@ethersproject/bignumber": "^5.6.2",
     "@owlprotocol/envvars": "workspace:*",
+    "@owlprotocol/utils": "workspace:^",
     "@owlprotocol/zod-sol": "workspace:*",
     "is-ipfs": "^8.0.1",
     "jsonpath": "^1.1.1",

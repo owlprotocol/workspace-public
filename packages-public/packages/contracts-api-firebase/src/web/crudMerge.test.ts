@@ -1,8 +1,8 @@
 import { describe, test, expect, beforeEach } from "vitest";
-import { usersCRUD } from "./crud.js";
+import { usersCRUDMerged as usersCRUD } from "./crudMerged.js";
 import { testNetworkId, testUser } from "../test/data.js";
 
-describe("user.test.ts", () => {
+describe("crudMerge.test.ts", () => {
     beforeEach(async () => {
         await usersCRUD.deleteAll();
     });
@@ -49,53 +49,12 @@ describe("user.test.ts", () => {
         expect(user).toStrictEqual(testUser);
     });
 
-    test("getOrCreate, get", async () => {
-        const testUser2 = { ...testUser, email: "jane.doe@gmail.com" };
-        await usersCRUD.set(testUser);
-        const user = await usersCRUD.getOrCreate(testUser.id, testUser2);
-        expect(user).toStrictEqual(testUser);
-    });
-
-    test("getOrCreate, create", async () => {
-        const testUser2 = { ...testUser, email: "jane.doe@gmail.com" };
-        const user = await usersCRUD.getOrCreate(testUser.id, testUser2);
-        expect(user).toStrictEqual(testUser2);
-    });
-
-    test("getWhereFirstOrCreate, get", async () => {
-        const testUser2 = { ...testUser, email: "jane.doe@gmail.com" };
-        await usersCRUD.set(testUser);
-        const user = await usersCRUD.getWhereFirstOrCreate({ email: testUser.email }, testUser2);
-        expect(user).toStrictEqual(testUser);
-    });
-
-    test("getWhereFirstOrCreate, create", async () => {
-        const testUser2 = { ...testUser, email: "jane.doe@gmail.com" };
-        const user = await usersCRUD.getWhereFirstOrCreate({ email: testUser2.email }, testUser2);
-        expect(user).toStrictEqual(testUser2);
-    });
-
     test("getAll", async () => {
         await usersCRUD.set(testUser);
         const users = await usersCRUD.getAll();
 
         expect(users.length).toBe(1);
         expect(users[0]).toStrictEqual(testUser);
-    });
-
-    test("where", async () => {
-        await usersCRUD.set(testUser);
-        const users = await usersCRUD.getWhere({ email: testUser.email });
-
-        expect(users.length).toBe(1);
-        expect(users[0]).toStrictEqual(testUser);
-    });
-
-    test("whereFirst", async () => {
-        await usersCRUD.set(testUser);
-        const user = await usersCRUD.getWhereFirst({ email: testUser.email });
-
-        expect(user).toStrictEqual(testUser);
     });
 
     test("update", async () => {
@@ -146,19 +105,17 @@ describe("user.test.ts", () => {
         expect(user).toStrictEqual(testUserUpdated);
     });
 
-    test("increment", async () => {
+    test("delete", async () => {
         await usersCRUD.set(testUser);
-        await usersCRUD.increment(testUser.id, `topupTotals.${testNetworkId}.native`, "10");
-
-        const user = await usersCRUD.get(testUser.id);
-        expect(user.topupTotals[testNetworkId].native).toStrictEqual("10");
+        await usersCRUD.delete(testUser.id);
+        const users = await usersCRUD.getAll();
+        expect(users.length).toBe(0);
     });
 
-    test("decrement", async () => {
+    test("deleteBatch", async () => {
         await usersCRUD.set(testUser);
-        await usersCRUD.decrement(testUser.id, `topupTotals.${testNetworkId}.native`, "10");
-
-        const user = await usersCRUD.get(testUser.id);
-        expect(user.topupTotals[testNetworkId].native).toStrictEqual("-10");
+        await usersCRUD.deleteBatch([testUser.id]);
+        const users = await usersCRUD.getAll();
+        expect(users.length).toBe(0);
     });
 });
