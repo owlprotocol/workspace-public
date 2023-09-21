@@ -1,9 +1,10 @@
 export interface CouponInstance {
     readonly id: string;
+    // The user that received the coupon
     readonly owner: string;
     readonly couponDefinition: string;
-    // The user that received the coupon
     readonly redeemed?: boolean;
+    readonly minted?: boolean;
     readonly createdAt?: Date;
     // Store where the coupon can be redeemed
     readonly couponStore?: string;

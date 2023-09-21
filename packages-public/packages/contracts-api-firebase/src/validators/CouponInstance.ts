@@ -7,6 +7,7 @@ export const couponInstance = z
         id: z.string().describe("id"),
         owner: z.string().describe("owner"),
         couponDefinition: z.string().describe("coupon definition"),
+        minted: z.boolean().describe("minted").optional(),
         redeemed: z.boolean().describe("redeemed").optional(),
         createdAt: z.date().describe("createdAt").optional(),
         couponStore: z.string().describe("coupon store").optional(),
