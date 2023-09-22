@@ -18,6 +18,7 @@ export const couponDefinition = z
         discountType: z.enum(["fixed_amount", "percentage"]).describe("discount type").optional(),
         discountValue: z.number().describe("discount value").optional(),
         status: z.enum(["active", "inactive"]).describe("status"),
+        store: z.string().describe("description").optional(),
     })
     .describe("coupon definition");
 

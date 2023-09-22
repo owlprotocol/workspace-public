@@ -34,6 +34,13 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
     { name: "FIREBASE_DATABASE_URL" },
     { name: "FIREBASE_STORAGE_BUCKET" },
 ];
+//Shopify config
+const SHOPIFY_ENVVARS: EnvVarDef[] = [
+    { name: "SHOPIFY_API_KEY" },
+    { name: "SHOPIFY_API_SECRET" },
+    { name: "SHOPIFY_SCOPES", defaultValue: "read_customers,read_customers" },
+    { name: "SHOPIFY_HOSTNAME" },
+];
 const SCRIPT_ENVVARS: EnvVarDef[] = [
     //Cold-storage admin for beacons
     { name: "BEACON_ADMIN", defaultValue: "0xad839Bc20a349b2502468c9d6ba47531f435491f" },
@@ -166,6 +173,7 @@ export const ENVVARS: EnvVarDef[] = [
     { name: "CLERK_WEBHOOK_SECRET_KEY" },
     ...DFNS_ENVVARS,
     ...FIREBASE_ENVVARS,
+    ...SHOPIFY_ENVVARS,
     ...SCRIPT_ENVVARS,
     ...BLOCKCHAIN_ENVVARS,
     ...NETWORK_ENVVARS,
@@ -245,7 +253,7 @@ if (!isClient()) {
     } else if (NODE_ENV === "development") {
         dotenv.config({ path: resolve(process.cwd(), ".env") });
     } else if (NODE_ENV === "test") {
-        dotenv.config({ path: resolve(process.cwd(), ".env.test") });
+        dotenv.config({ path: resolve(process.cwd(), ".env") });
     } else if (NODE_ENV === "ci") {
         dotenv.config({ path: resolve(process.cwd(), ".env.ci") });
     } else if (NODE_ENV === "staging") {

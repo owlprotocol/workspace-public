@@ -7,6 +7,7 @@ export const storePrivateZod = z
         id: z.string().describe("id"),
         owner: z.string().describe("owner"),
         shopifyToken: z.string().describe("shopify token").optional(),
+        shopifyDomain: z.string().describe("shopify domain").optional(),
     })
     .describe("storePrivate");
 

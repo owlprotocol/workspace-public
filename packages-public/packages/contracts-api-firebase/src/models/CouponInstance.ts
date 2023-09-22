@@ -5,7 +5,7 @@ export interface CouponInstance {
     readonly couponDefinition: string;
     readonly redeemed?: boolean;
     readonly minted?: boolean;
-    readonly createdAt?: Date;
+    readonly createdAt?: number;
     // Store where the coupon can be redeemed
     readonly couponStore?: string;
     // The id of the Shopify order that generated the coupon

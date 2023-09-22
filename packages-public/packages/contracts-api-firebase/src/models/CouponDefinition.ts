@@ -15,4 +15,6 @@ export interface CouponDefinition {
     readonly discountType?: "fixed_amount" | "percentage";
     readonly discountValue?: number;
     readonly status: "active" | "inactive";
+    //store
+    readonly store?: string;
 }

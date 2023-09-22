@@ -91,6 +91,14 @@ describe("user.test.ts", () => {
         expect(users[0]).toStrictEqual(testUser);
     });
 
+    test("where, orderBy", async () => {
+        await usersCRUD.set(testUser);
+        const users = await usersCRUD.getWhere({ email: testUser.email }, { orderBy: "apiKey" });
+
+        expect(users.length).toBe(1);
+        expect(users[0]).toStrictEqual(testUser);
+    });
+
     test("whereFirst", async () => {
         await usersCRUD.set(testUser);
         const user = await usersCRUD.getWhereFirst({ email: testUser.email });
