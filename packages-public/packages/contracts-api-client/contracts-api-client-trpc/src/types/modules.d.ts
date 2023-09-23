@@ -10,3 +10,4 @@
 /// <reference types="@owlprotocol/dfns-sdk-mock" />
 /// <reference types="@owlprotocol/safe-kit" />
 /// <reference types="@shopify/shopify-api" />
+/// <reference types="@owlprotocol/shopify-api-mock" />

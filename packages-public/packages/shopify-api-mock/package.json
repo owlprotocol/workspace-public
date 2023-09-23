@@ -1,12 +1,12 @@
 {
-  "name": "@owlprotocol/contracts-api-client-trpc",
-  "version": "2.0.2",
+  "name": "@owlprotocol/shopify-api-mock",
+  "version": "2.0.1",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/owlprotocol/contracts-api-client-trpc.git"
+    "url": "https://github.com/owlprotocol/shopify-api-mock.git"
   },
-  "homepage": "https://owlprotocol.github.io/contracts-api-client-trpc",
+  "homepage": "https://owlprotocol.github.io/shopify-api-mock",
   "copyright": "Copyright 2023 Owl Protocol",
   "author": {
     "name": "Leo Vigna",
@@ -36,6 +36,7 @@
     "node": "^18.0.0"
   },
   "scripts": {
+    "test": "pnpm run test:ci",
     "test:watch": "vitest",
     "test:ci": "vitest --run",
     "build": "npm-run-all -p tsc esbuild",
@@ -47,34 +48,26 @@
     "clean": "rimraf lib dist",
     "madge": "madge src/index.ts -c",
     "lint": "eslint 'src/**/*.ts'",
-    "lint:fix": "eslint --fix 'src/**/*.ts'"
+    "lint:fix": "eslint --fix 'src/**/*.ts'",
+    "lint:staged": "lint-staged"
   },
   "dependencies": {
-    "@trpc/client": "10.36",
-    "@trpc/server": "10.36",
-    "cross-fetch": "^4.0.0"
+    "zod": "3.21.4"
   },
   "devDependencies": {
-    "@ethersproject/providers": "5.7.2",
-    "@owlprotocol/contracts": "workspace:*",
-    "@owlprotocol/contracts-api": "workspace:",
-    "@owlprotocol/contracts-api-firebase": "workspace:",
-    "@owlprotocol/contracts-proxy": "workspace:*",
-    "@owlprotocol/dfns-sdk-mock": "workspace:*",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
-    "@owlprotocol/safe-kit": "workspace:*",
-    "@owlprotocol/shopify-api-mock": "workspace:*",
     "@shopify/shopify-api": "^7.7.0",
     "@types/dotenv": "^8.2.0",
     "@types/node": "^20.5.6",
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
+    "lint-staged": "^11.1.2",
     "madge": "^5.0.2",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
-    "trpc-openapi": "^1.2.0",
+    "tsx": "^3.12.7",
     "typescript": "4.9.5",
     "vite": "^4.4.9",
     "vitest": "^0.34.2"

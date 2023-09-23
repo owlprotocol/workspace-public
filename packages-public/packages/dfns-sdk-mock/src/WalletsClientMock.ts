@@ -61,7 +61,39 @@ export class WalletsClientMock implements WalletsClientInterface {
             : ethers.utils.HDNode.fromSeed(ethers.utils.randomBytes(32));
     }
 
-    //TODO: Implement this
+    /**
+     * Add hard-coded wallet
+     * @param wallet
+     * @param privateKey
+     */
+    addWallet(wallet: Wallet, privateKey: string): T.CreateWalletResponse {
+        if (this.wallets[wallet.id]) {
+            throw new Error(`Wallet ${wallet.id} exists! Use different id or get wallet with getWallet()`);
+        }
+        const signer = new ethers.Wallet(privateKey);
+        let signingKey = wallet.signingKey;
+        if (wallet.status === "Active" && !signingKey) {
+            const { curve, compressedPublicKey } = signer._signingKey();
+            signingKey = {
+                //TODO: Support EdDSA
+                scheme: "ECDSA" as KeyScheme,
+                curve: curve as KeyCurve,
+                publicKey: compressedPublicKey.substring(2), //strip 0x prefix
+            };
+        }
+        const walletResponse = { ...wallet, signingKey };
+        this.wallets[wallet.id] = walletResponse;
+        this.privateKeys[wallet.id] = privateKey.replace("0x", "");
+        this.walletsCount++;
+
+        return walletResponse;
+    }
+
+    /**
+     * Create wallet similar to DFNS request, uses stored hdNode
+     * @param request
+     * @returns
+     */
     async createWallet(request: T.CreateWalletRequest): Promise<T.CreateWalletResponse> {
         //Request Body
         const { network, externalId, tags, name } = request.body;

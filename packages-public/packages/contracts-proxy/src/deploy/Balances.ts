@@ -4,6 +4,7 @@ import {
     PUBLIC_ADDRESS_0_LOCAL,
     PUBLIC_ADDRESS_1_LOCAL,
     PUBLIC_ADDRESS_FACTORY_DEPLOYER,
+    PUBLIC_ADDRESS_RELAYER_LOCAL,
 } from "@owlprotocol/envvars";
 import { RunTimeEnvironment } from "../utils.js";
 
@@ -15,7 +16,12 @@ export const BalancesDeploy = async ({ provider, network }: Omit<RunTimeEnvironm
     if (network.name == "localhost") {
         const anvil = new ethers.Wallet(PRIVATE_KEY_ANVIL, provider);
         //Fund accounts on anvil
-        const addressList = [PUBLIC_ADDRESS_FACTORY_DEPLOYER, PUBLIC_ADDRESS_0_LOCAL, PUBLIC_ADDRESS_1_LOCAL];
+        const addressList = [
+            PUBLIC_ADDRESS_FACTORY_DEPLOYER,
+            PUBLIC_ADDRESS_0_LOCAL,
+            PUBLIC_ADDRESS_1_LOCAL,
+            PUBLIC_ADDRESS_RELAYER_LOCAL,
+        ];
 
         for (const address of addressList) {
             const balance = await provider.getBalance(address);

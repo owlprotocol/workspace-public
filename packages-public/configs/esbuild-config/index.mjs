@@ -100,41 +100,55 @@ export const distConfigs = [cjsBundleConfig, cjsBundleMinConfig, esmBundleConfig
 
 export const configs = [...libConfigs, ...distConfigs];
 
-export const buildLib = async () => {
+export async function buildConfig(c) {
     //Write package.json
-    await Promise.all(
-        libConfigs.map(async (c) => {
-            const dir = c.outdir;
-            if (!existsSync(dir)) {
-                mkdirSync(dir, { recursive: true });
-            }
-            const p = join(dir, "package.json");
-            if (!existsSync(p)) {
-                const type = c.format === "esm" ? "module" : "commonjs";
-                writeFileSync(p, JSON.stringify({ type }), "utf-8");
-            }
-        }),
-    );
+    if (!c.bundle) {
+        const dir = c.outdir;
+        if (!existsSync(dir)) {
+            mkdirSync(dir, { recursive: true });
+        }
+        const p = join(dir, "package.json");
+        if (!existsSync(p)) {
+            const type = c.format === "esm" ? "module" : "commonjs";
+            writeFileSync(p, JSON.stringify({ type }), "utf-8");
+        }
+    }
 
     if (!ESBUILD_WATCH) {
         //Static build
-        await Promise.all(libConfigs.map((c) => esbuild.build(c)));
+        await esbuild.build(c);
     } else {
         //Incremental build
-        await Promise.all(libConfigs.map((c) => esbuild.context(c).then((c) => c.watch())));
+        const ctx = await esbuild.context(c);
+        await ctx.watch();
     }
-};
+}
 
-export const buildDist = async () => {
-    if (!ESBUILD_WATCH) {
-        //Static build
-        await Promise.all(distConfigs.map((c) => esbuild.build(c)));
-    } else {
-        //Incremental build
-        await Promise.all(distConfigs.map((c) => esbuild.context(c).then((c) => c.watch())));
-    }
-};
+export function buildLibESM() {
+    return buildConfig(esmLibConfig);
+}
 
-export const buildAll = async () => {
-    await Promise.all([buildLib(), buildDist()]);
-};
+export function buildLibCJS() {
+    return buildConfig(cjsLibConfig);
+}
+
+export function buildDistESM() {
+    return buildConfig(esmBundleConfig);
+}
+
+export function buildDistCJS() {
+    return buildConfig(cjsBundleConfig);
+}
+
+export function buildLib() {
+    //Write package.json
+    return Promise.all(libConfigs.map(buildConfig));
+}
+
+export function buildDist() {
+    return Promise.all(distConfigs.map(buildConfig));
+}
+
+export function buildAll() {
+    return Promise.all(configs.map(buildConfig));
+}

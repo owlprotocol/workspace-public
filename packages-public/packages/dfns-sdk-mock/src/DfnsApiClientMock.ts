@@ -21,7 +21,7 @@ export interface DfnsApiClientInterface {
 }
 
 export class DfnsApiClientMock implements DfnsApiClientInterface {
-    private _wallets: WalletsClientInterface;
+    private _wallets: WalletsClientMock;
 
     constructor(mnemonic?: string) {
         this._wallets = new WalletsClientMock(mnemonic);
@@ -51,7 +51,7 @@ export class DfnsApiClientMock implements DfnsApiClientInterface {
     get publicKeys(): PublicKeysClient {
         throw new Error("Unimplemented");
     }
-    get wallets(): WalletsClientInterface {
+    get wallets(): WalletsClientMock {
         return this._wallets;
     }
 }
