@@ -17,6 +17,7 @@ import {
     storesCol,
     storePrivatesCol,
     usersCol,
+    emailsCol,
 } from "./config.js";
 import { Contract } from "../models/Contract.js";
 import { User } from "../models/User.js";
@@ -32,6 +33,7 @@ import { StorePrivate } from "../models/StorePrivate.js";
 import { CouponCampaign } from "../models/CouponCampaign.js";
 import { CouponDefinition } from "../models/CouponDefinition.js";
 import { CouponInstance } from "../models/CouponInstance.js";
+import { Email } from "../models/Email.js";
 
 export interface AccessControl<T, AccessControlParams extends any[] = []> {
     readAccessCheck?: (item: T, ...params: AccessControlParams) => boolean;
@@ -908,7 +910,7 @@ export const couponInstancesCRUD = getFirebaseCRUD<CouponInstance, [userId: Admi
     deleteAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
 });
 
-export const emailsCRUD = getFirebaseCRUD<CouponInstance, [userId: AdminRoles | string]>(couponInstancesCol, {
+export const emailsCRUD = getFirebaseCRUD<Email, [userId: AdminRoles | string]>(emailsCol, {
     readAccessCheck: () => false,
     setAccessCheck: () => true,
     updateAccessCheck: () => false,

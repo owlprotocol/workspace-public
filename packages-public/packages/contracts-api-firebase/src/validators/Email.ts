@@ -6,7 +6,18 @@ export const emailZod = z
     .object({
         id: z.string().describe("id"),
         to: z.array(z.string()).describe("recipients"),
-        message: z.object({ subject: z.string().describe("subject"), html: z.string().describe("html") }),
+        message: z
+            .object({
+                subject: z.string().describe("subject"),
+                html: z.string().describe("html"),
+            })
+            .optional(),
+        template: z
+            .object({
+                name: z.string().describe("name"),
+                data: z.record(z.string(), z.string()),
+            })
+            .optional(),
     })
     .describe("email");
 

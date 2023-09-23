@@ -341,4 +341,4 @@ export const storePrivateCRUD = getFirebaseCRUD(storePrivatesCol);
 export const couponCampaignCRUD = getFirebaseCRUD(couponCampaignsCol);
 export const couponDefinitionCRUD = getFirebaseCRUD(couponDefinitionsCol);
 export const couponInstanceCRUD = getFirebaseCRUD(couponInstancesCol);
-export const emailCRUD = getFirebaseCRUD(emailsCol);
+export const emailsCRUD = getFirebaseCRUD(emailsCol);
