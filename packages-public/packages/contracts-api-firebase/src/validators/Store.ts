@@ -6,7 +6,7 @@ export const storeZod = z
     .object({
         id: z.string().describe("id"),
         owner: z.string().describe("owner"),
-        storeName: z.string().describe("store name").optional(),
+        storeName: z.string().describe("store name"),
         storeDomain: z.string().describe("store domain").optional(),
     })
     .describe("store");

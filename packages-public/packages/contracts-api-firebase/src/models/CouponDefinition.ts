@@ -9,7 +9,7 @@ export interface CouponDefinition {
     readonly tokenAddress: string;
     readonly tokenId: string;
     readonly networkId: string;
-    readonly name?: string;
+    readonly name: string;
     readonly description?: string;
     // TODO: use shopify price_rule.value_type
     readonly discountType?: "fixed_amount" | "percentage";

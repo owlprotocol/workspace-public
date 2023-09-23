@@ -13,7 +13,7 @@ export const couponDefinition = z
         tokenAddress: z.string().describe("token address"),
         tokenId: z.string().describe("token id"),
         networkId: z.string().describe("network id"),
-        name: z.string().describe("name").optional(),
+        name: z.string().describe("name"),
         description: z.string().describe("description").optional(),
         discountType: z.enum(["fixed_amount", "percentage"]).describe("discount type").optional(),
         discountValue: z.number().describe("discount value").optional(),

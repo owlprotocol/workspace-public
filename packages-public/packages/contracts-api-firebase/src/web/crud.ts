@@ -1,38 +1,42 @@
 /***** Generics for Firebase Web CRUD *****/
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
-import { CollectionReference, DocumentData, DocumentReference, limit, orderBy } from "firebase/firestore";
 import {
+    CollectionReference,
+    DocumentData,
+    DocumentReference,
+    QueryConstraint,
     deleteDoc,
     doc,
     getDoc,
-    runTransaction,
     getDocs,
+    limit,
+    orderBy,
     query,
+    runTransaction,
     setDoc,
     updateDoc,
     where,
-    QueryConstraint,
 } from "firebase/firestore";
-import { zip, omit } from "lodash-es";
+import { omit, zip } from "lodash-es";
 import * as crypto from "crypto";
 import {
     contractsCol,
     couponCampaignsCol,
     couponDefinitionsCol,
     couponInstancesCol,
+    emailsCol,
     firestore,
     metadataContractsCol,
     metadataTokensCol,
     projectTemplatesCol,
     projectsCol,
     requestTemplatesCol,
-    storesCol,
     storePrivatesCol,
+    storesCol,
     usersCol,
-    emailsCol,
 } from "./config.js";
-import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
 import { getFirestorePathValue } from "../utils/getFirestorePathValue.js";
+import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
 
 export interface QueryOptions {
     limit?: number;

@@ -3,13 +3,14 @@ export interface CouponInstance {
     // The user that received the coupon
     readonly owner: string;
     readonly couponDefinition: string;
-    readonly redeemed?: boolean;
-    readonly minted?: boolean;
+    redeemed: boolean;
+    minted: boolean;
+    promotionCode?: string;
     readonly createdAt?: number;
     // Store where the coupon can be redeemed
-    readonly couponStore?: string;
+    readonly couponStore: string;
     // The id of the Shopify order that generated the coupon
     readonly shopifyOrderId: string;
     // Store that executed the order
-    readonly orderStore?: string;
+    readonly orderStore: string;
 }
