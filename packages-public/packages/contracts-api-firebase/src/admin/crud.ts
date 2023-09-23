@@ -873,8 +873,7 @@ export const metadataTokensCRUD = getFirebaseCRUD<MetadataTokens, [userId: Admin
     deleteAccessCheck: (metadataTokens, userId) => userId === AdminRoles.ADMIN || metadataTokens.owner === userId,
 });
 export const storesCRUD = getFirebaseCRUD<Store, [userId: AdminRoles | string]>(storesCol, {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    readAccessCheck: (store, userId) => true,
+    readAccessCheck: () => true,
     setAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
     updateAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
     deleteAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
@@ -886,8 +885,7 @@ export const storePrivatesCRUD = getFirebaseCRUD<StorePrivate, [userId: AdminRol
     deleteAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
 });
 export const couponCampaignsCRUD = getFirebaseCRUD<CouponCampaign, [userId: AdminRoles | string]>(couponCampaignsCol, {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    readAccessCheck: (couponCampaign, userId) => true,
+    readAccessCheck: () => true,
     setAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
     updateAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
     deleteAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
@@ -895,8 +893,7 @@ export const couponCampaignsCRUD = getFirebaseCRUD<CouponCampaign, [userId: Admi
 export const couponDefinitionsCRUD = getFirebaseCRUD<CouponDefinition, [userId: AdminRoles | string]>(
     couponDefinitionsCol,
     {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        readAccessCheck: (couponDefinition, userId) => true,
+        readAccessCheck: () => true,
         setAccessCheck: (couponDefinition, userId) => userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
         updateAccessCheck: (couponDefinition, userId) =>
             userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
@@ -905,9 +902,15 @@ export const couponDefinitionsCRUD = getFirebaseCRUD<CouponDefinition, [userId: 
     },
 );
 export const couponInstancesCRUD = getFirebaseCRUD<CouponInstance, [userId: AdminRoles | string]>(couponInstancesCol, {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    readAccessCheck: (couponInstance, userId) => true,
+    readAccessCheck: () => true,
     setAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
     updateAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
     deleteAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
+});
+
+export const emailsCRUD = getFirebaseCRUD<CouponInstance, [userId: AdminRoles | string]>(couponInstancesCol, {
+    readAccessCheck: () => false,
+    setAccessCheck: () => true,
+    updateAccessCheck: () => false,
+    deleteAccessCheck: () => false,
 });

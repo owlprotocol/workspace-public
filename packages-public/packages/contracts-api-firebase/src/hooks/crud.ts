@@ -14,18 +14,8 @@ import {
     requestTemplatesCol,
     storesCol,
     usersCol,
+    emailsCol,
 } from "../web/config.js";
-import { Contract } from "../models/Contract.js";
-import { User } from "../models/User.js";
-import { Project } from "../models/Project.js";
-import { ProjectTemplate } from "../models/ProjectTemplate.js";
-import { RequestTemplate } from "../models/RequestTemplate.js";
-import { MetadataContract } from "../models/MetadataContract.js";
-import { MetadataTokens } from "../models/MetadataTokens.js";
-import { Store } from "../models/Store.js";
-import { CouponCampaign } from "../models/CouponCampaign.js";
-import { CouponDefinition } from "../models/CouponDefinition.js";
-import { CouponInstance } from "../models/CouponInstance.js";
 
 export interface QueryOptions {
     limit?: number;
@@ -132,14 +122,15 @@ export function getFirebaseHooks<T extends Record<string, any> & { id: string }>
     };
 }
 
-export const usersHooks = getFirebaseHooks<User>(usersCol);
-export const projectTemplatesHooks = getFirebaseHooks<ProjectTemplate>(projectTemplatesCol);
-export const requestTemplatesHooks = getFirebaseHooks<RequestTemplate>(requestTemplatesCol);
-export const contractsHooks = getFirebaseHooks<Contract>(contractsCol);
-export const projectsHooks = getFirebaseHooks<Project>(projectsCol);
-export const metadataContractsHooks = getFirebaseHooks<MetadataContract>(metadataContractsCol);
-export const metadataTokensHooks = getFirebaseHooks<MetadataTokens>(metadataTokensCol);
-export const storesHooks = getFirebaseHooks<Store>(storesCol);
-export const couponCampaignsHooks = getFirebaseHooks<CouponCampaign>(couponCampaignsCol);
-export const couponDefinitionsHooks = getFirebaseHooks<CouponDefinition>(couponDefinitionsCol);
-export const couponInstancesHooks = getFirebaseHooks<CouponInstance>(couponInstancesCol);
+export const usersHooks = getFirebaseHooks(usersCol);
+export const projectTemplatesHooks = getFirebaseHooks(projectTemplatesCol);
+export const requestTemplatesHooks = getFirebaseHooks(requestTemplatesCol);
+export const contractsHooks = getFirebaseHooks(contractsCol);
+export const projectsHooks = getFirebaseHooks(projectsCol);
+export const metadataContractsHooks = getFirebaseHooks(metadataContractsCol);
+export const metadataTokensHooks = getFirebaseHooks(metadataTokensCol);
+export const storesHooks = getFirebaseHooks(storesCol);
+export const couponCampaignsHooks = getFirebaseHooks(couponCampaignsCol);
+export const couponDefinitionsHooks = getFirebaseHooks(couponDefinitionsCol);
+export const couponInstancesHooks = getFirebaseHooks(couponInstancesCol);
+export const emailsHooks = getFirebaseHooks(emailsCol);

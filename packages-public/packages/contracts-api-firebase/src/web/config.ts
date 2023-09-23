@@ -25,6 +25,7 @@ import { CouponDefinition } from "../models/CouponDefinition.js";
 import { CouponCampaign } from "../models/CouponCampaign.js";
 import { CouponInstance } from "../models/CouponInstance.js";
 import { StorePrivate } from "../models/StorePrivate.js";
+import { Email } from "../models/Email.js";
 
 function getFirebaseConfig() {
     let firebaseConfig: FirebaseOptions = {};
@@ -106,3 +107,4 @@ export const storePrivatesCol = collection(firestore, "storePrivates") as Collec
 export const couponDefinitionsCol = collection(firestore, "couponDefinitions") as CollectionReference<CouponDefinition>;
 export const couponCampaignsCol = collection(firestore, "couponCampaigns") as CollectionReference<CouponCampaign>;
 export const couponInstancesCol = collection(firestore, "couponInstances") as CollectionReference<CouponInstance>;
+export const emailsCol = collection(firestore, "emails") as CollectionReference<Email>;

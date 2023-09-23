@@ -16,3 +16,4 @@ export * from "./CouponCampaign.js";
 export * from "./CouponInstance.js";
 export * from "./Store.js";
 export * from "./StorePrivate.js";
+export * from "./Email.js";
