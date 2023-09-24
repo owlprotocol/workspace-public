@@ -1,8 +1,8 @@
-import { API_BASE_URL } from "@owlprotocol/envvars";
+import { API_REST_BASE_URL } from "@owlprotocol/envvars";
 import crypto from "node:crypto";
 import { MetadataContract } from "../models/MetadataContract.js";
 
-export const metadataContractBaseUriPrefix = `${API_BASE_URL}/metadata/contract`;
+export const metadataContractBaseUriPrefix = `${API_REST_BASE_URL}/metadata/contract`;
 
 /**
  * Get contract metadata base uri

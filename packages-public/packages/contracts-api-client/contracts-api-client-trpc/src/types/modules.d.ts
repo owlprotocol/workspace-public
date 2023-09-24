@@ -1,5 +1,6 @@
 //Declare packages that don't come with types here
 /// <reference types="trpc-openapi" />
+/// <reference types="react-query" />
 /// <reference types="@dfns/sdk" />
 /// <reference types="@ethersproject/providers" />
 /// <reference types="@owlprotocol/contracts" />

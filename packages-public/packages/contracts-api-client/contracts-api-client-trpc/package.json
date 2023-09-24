@@ -23,6 +23,16 @@
       "types": "./lib/types/index.d.ts",
       "require": "./lib/cjs/index.js",
       "import": "./lib/esm/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client.d.ts",
+      "require": "./lib/cjs/client.js",
+      "import": "./lib/esm/client.js"
+    },
+    "./react": {
+      "types": "./lib/types/react.d.ts",
+      "require": "./lib/cjs/react.js",
+      "import": "./lib/esm/react.js"
     }
   },
   "files": [
@@ -68,12 +78,16 @@
     "@owlprotocol/safe-kit": "workspace:*",
     "@owlprotocol/shopify-api-mock": "workspace:*",
     "@shopify/shopify-api": "^7.7.0",
+    "@tanstack/react-query": "^4.29.7",
+    "@trpc/react-query": "^10.38.4",
     "@types/dotenv": "^8.2.0",
     "@types/node": "^20.5.6",
+    "@types/react": "^17.0.40",
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
     "madge": "^5.0.2",
     "npm-run-all": "^4.1.5",
+    "react": "^18.2.0",
     "rimraf": "^3.0.2",
     "trpc-openapi": "^1.2.0",
     "typescript": "4.9.5",

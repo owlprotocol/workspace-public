@@ -168,7 +168,8 @@ chainIds.forEach((c) => NETWORK_ENVVARS.push(...getEnvVarsForNetworkId(`${c}`)))
 export const ENVVARS: EnvVarDef[] = [
     { name: "LOG_LEVEL", defaultValue: "warn", enumValues: ["trace", "debug", "info", "warn", "error"] },
     { name: "TITLE" },
-    { name: "API_BASE_URL", defaultValue: "http://localhost:3000/api" },
+    { name: "API_REST_BASE_URL", defaultValue: "http://localhost:3000/api" },
+    { name: "API_TRPC_BASE_URL", defaultValue: "http://localhost:3000/api/trpc" },
     { name: "CORS_PROXY" },
     { name: "README_SECRET" },
     { name: "CLERK_PUBLISHABLE_KEY" },
