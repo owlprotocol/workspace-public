@@ -24,7 +24,6 @@ module.exports = {
         "import/no-commonjs": "error",
         "import/no-default-export": "warn",
         "import/no-anonymous-default-export": "error",
-        "import/no-default-export": "warn",
         "import/no-cycle": "error",
         "import/no-self-import": "error",
         "import/no-unresolved": ["off", { ignore: [".js$"] }],
