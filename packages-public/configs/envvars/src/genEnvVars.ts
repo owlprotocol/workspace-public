@@ -34,6 +34,15 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
     { name: "FIREBASE_DATABASE_URL" },
     { name: "FIREBASE_STORAGE_BUCKET" },
 ];
+
+//Clerk config
+const CLERK_ENVVARS: EnvVarDef[] = [
+    { name: "CLERK_PUBLISHABLE_KEY" },
+    { name: "CLERK_SECRET_KEY" },
+    { name: "CLERK_WEBHOOK_SECRET_KEY" },
+    { name: "CLERK_JWT_KEY" },
+    { name: "CLERK_LOGGING", defaultValue: "true" },
+];
 //Shopify config
 const SHOPIFY_ENVVARS: EnvVarDef[] = [
     { name: "SHOPIFY_API_KEY" },
@@ -172,10 +181,9 @@ export const ENVVARS: EnvVarDef[] = [
     { name: "API_TRPC_BASE_URL", defaultValue: "http://localhost:3000/api/trpc" },
     { name: "CORS_PROXY" },
     { name: "README_SECRET" },
-    { name: "CLERK_PUBLISHABLE_KEY" },
-    { name: "CLERK_WEBHOOK_SECRET_KEY" },
     ...DFNS_ENVVARS,
     ...FIREBASE_ENVVARS,
+    ...CLERK_ENVVARS,
     ...SHOPIFY_ENVVARS,
     ...SCRIPT_ENVVARS,
     ...BLOCKCHAIN_ENVVARS,

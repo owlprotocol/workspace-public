@@ -10,7 +10,7 @@ describe("trpc client", () => {
     });
 
     test("/users/me", () => {
-        const me = client.users.me.query({});
+        const me = client.users.me.query();
         expect(me).toBeDefined();
     });
 
