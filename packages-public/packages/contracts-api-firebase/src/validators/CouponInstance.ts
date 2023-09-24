@@ -12,7 +12,7 @@ export const couponInstanceZod = z
         promotionCode: z.string().describe("promotion code").optional(),
         createdAt: z.number().describe("createdAt").optional(),
         couponStore: z.string().describe("coupon store"),
-        shopifyOrderId: z.string().describe("shopify order id"),
+        shopifyOrderId: z.number().describe("shopify order id"),
         orderStore: z.string().describe("order store"),
     })
     .describe("coupon instance");

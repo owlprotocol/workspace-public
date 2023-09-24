@@ -10,7 +10,7 @@ export interface CouponInstance {
     // Store where the coupon can be redeemed
     readonly couponStore: string;
     // The id of the Shopify order that generated the coupon
-    readonly shopifyOrderId: string;
+    readonly shopifyOrderId: number;
     // Store that executed the order
     readonly orderStore: string;
 }
