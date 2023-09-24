@@ -38,7 +38,7 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
 const SHOPIFY_ENVVARS: EnvVarDef[] = [
     { name: "SHOPIFY_API_KEY" },
     { name: "SHOPIFY_API_SECRET" },
-    { name: "SHOPIFY_SCOPES", defaultValue: "read_customers,read_orders" },
+    { name: "SHOPIFY_SCOPES", defaultValue: "read_customers,read_orders,price_rules" },
     { name: "SHOPIFY_HOSTNAME" },
 ];
 const SCRIPT_ENVVARS: EnvVarDef[] = [

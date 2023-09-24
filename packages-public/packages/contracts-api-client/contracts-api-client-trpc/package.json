@@ -50,11 +50,12 @@
     "lint:fix": "eslint --fix 'src/**/*.ts'"
   },
   "dependencies": {
-    "@trpc/client": "10.36",
-    "@trpc/server": "10.36",
+    "@trpc/client": "10.38.4",
+    "@trpc/server": "10.38.4",
     "cross-fetch": "^4.0.0"
   },
   "devDependencies": {
+    "@dfns/sdk": "0.1.0-beta.1",
     "@ethersproject/providers": "5.7.2",
     "@owlprotocol/contracts": "workspace:*",
     "@owlprotocol/contracts-api": "workspace:",
