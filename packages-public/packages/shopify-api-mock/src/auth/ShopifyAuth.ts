@@ -8,12 +8,12 @@ export interface ShopifyAuthInterface {
 
 export class ShopifyAuthMock implements ShopifyAuthInterface {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    callback(params: CallbackParams): Promise<{ headers: any; session: SessionInterface }> {
+    async callback(params: CallbackParams): Promise<{ headers: any; session: SessionInterface }> {
         throw new Error("Unimplemented");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    begin(params: BeginParams): Promise<any> {
-        throw new Error("Unimplemented");
+    async begin(params: BeginParams): Promise<any> {
+        params.rawResponse.send(200);
     }
 }

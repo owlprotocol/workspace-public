@@ -52,7 +52,8 @@
     "lint:staged": "lint-staged"
   },
   "dependencies": {
-    "zod": "3.21.4"
+    "zod": "3.21.4",
+    "lodash-es": "4.17.21"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",
@@ -60,6 +61,7 @@
     "@owlprotocol/prettier-config": "workspace:*",
     "@shopify/shopify-api": "^7.7.0",
     "@types/dotenv": "^8.2.0",
+    "@types/lodash-es": "4.17.6",
     "@types/node": "^20.5.6",
     "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
