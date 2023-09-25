@@ -17,13 +17,12 @@ export class ShopifyMock implements ShopifyInterface {
     utils: ShopifyUtilsInterface;
     webhooks: ShopifyWebhooksMock;
     session: ShopifySessionMock;
-    rest: RestMock;
+    rest = RestMock;
 
     constructor() {
         this.auth = new ShopifyAuthMock();
         this.utils = new ShopifyUtilsMock();
         this.webhooks = new ShopifyWebhooksMock();
         this.session = new ShopifySessionMock();
-        this.rest = new RestMock();
     }
 }

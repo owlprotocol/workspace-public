@@ -38,8 +38,23 @@ export interface PriceRuleResourceInterface extends BaseInterface, PriceRule {}
 export class PriceRuleResourceMock implements PriceRuleResourceInterface {
     session: SessionInterface;
 
-    constructor(session: SessionInterface) {
+    constructor({ session }: { session: SessionInterface }) {
         this.session = session;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    static async find({ session, id }: { session: SessionInterface; id: number }): Promise<PriceRuleResourceMock> {
+        throw new Error("Unimplemented");
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    static async all({ session }: { session: SessionInterface }): Promise<PriceRuleResourceMock[]> {
+        throw new Error("Unimplemented");
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    static async count({ session }: { session: SessionInterface }): Promise<number> {
+        throw new Error("Unimplemented");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
