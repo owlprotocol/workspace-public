@@ -65,10 +65,12 @@ export class ShopifyWebhooksMock implements ShopifyWebhooksInterface {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     addHandlers(handlersToAdd: AddHandlersParams): void {
         Object.entries(handlersToAdd).map(([topic, handlers]) => {
+            if (!this.webhooks[topic]) this.webhooks[topic] = [];
+
             if (Array.isArray(handlers)) {
-                this.webhooks[topic] = [...this.webhooks[topic], ...handlers];
+                this.webhooks[topic].push(...handlers);
             } else {
-                this.webhooks[topic] = [...this.webhooks[topic], handlers];
+                this.webhooks[topic].push(handlers);
             }
         });
     }
