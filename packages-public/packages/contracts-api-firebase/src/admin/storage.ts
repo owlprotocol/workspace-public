@@ -28,12 +28,13 @@ export async function uploadFile(
     try {
         await file.save(contentBuffer);
         await file.setMetadata({ metadata: { owner } });
+        await file.makePublic();
     } catch (e) {
         console.error("Error uploading file to Firebase Storage: ", e);
         throw new TRPCError({ message: "Error uploading file", code: "INTERNAL_SERVER_ERROR" });
     }
 
-    return { publicUrl: file.publicUrl(), name: name };
+    return { publicUrl: file.publicUrl(), name };
 }
 
 export async function getFileMetadata(bucket: Bucket, fileName: string): Promise<Record<string, any>> {

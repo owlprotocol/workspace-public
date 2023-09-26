@@ -15,7 +15,7 @@ export function getMetadataContractURI(id: string, baseUri?: string): string {
 }
 
 export function createMetadataContractData(name: string, userId: string, imageUrl?: string): MetadataContract {
-    const metadataJson = imageUrl ? { name, image_url: imageUrl } : { name };
+    const metadataJson = imageUrl ? { name, image: imageUrl } : { name };
     const metadataContract: MetadataContract = {
         id: crypto.randomUUID(),
         owner: userId,
