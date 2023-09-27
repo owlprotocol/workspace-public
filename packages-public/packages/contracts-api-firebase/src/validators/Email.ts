@@ -15,7 +15,15 @@ export const emailZod = z
         template: z
             .object({
                 name: z.string().describe("name"),
-                data: z.record(z.string(), z.string()),
+                data: z.object({
+                    coupons: z.array(
+                        z.object({
+                            storeName: z.string(),
+                            couponDescription: z.string(),
+                            img: z.string().optional(),
+                        }),
+                    ),
+                }),
             })
             .optional(),
     })

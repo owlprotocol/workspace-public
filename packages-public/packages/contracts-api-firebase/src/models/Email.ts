@@ -1,3 +1,9 @@
+export type CouponEmailData = {
+    storeName: string;
+    couponDescription: string;
+    img?: string;
+};
+
 export interface Email {
     readonly id: string;
     // Recipient
@@ -10,6 +16,6 @@ export interface Email {
     };
     readonly template?: {
         name: string;
-        data: Record<string, string>;
+        data: { coupons: CouponEmailData[] };
     };
 }
