@@ -49,7 +49,7 @@ export const UpgradeableBeaconDeploy = async ({ provider, signer, network }: Run
         }
     });
 
-    return results;
+    return results as any;
 };
 
 UpgradeableBeaconDeploy.tags = ["UpgradeableBeacon"];

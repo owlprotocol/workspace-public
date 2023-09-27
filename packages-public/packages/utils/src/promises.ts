@@ -7,9 +7,9 @@ export async function awaitAllObj<T extends Record<any, Promise<any>> = Record<s
     await Promise.all(Object.values(promises));
 
     //@ts-expect-error
-    const results: { [K in keyof T]: Awaited<T[K]> } = {}
-    for (let [k, p] of Object.entries(promises)) {
-        results[k as keyof T] = await p
+    const results: { [K in keyof T]: Awaited<T[K]> } = {};
+    for (const [k, p] of Object.entries(promises)) {
+        results[k as keyof T] = await p;
     }
 
     return results;

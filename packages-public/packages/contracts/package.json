@@ -79,9 +79,6 @@
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
     "madge": "madge src/index.ts -c",
-    "dotenv:login": "dotenv-vault login -y",
-    "dotenv:pull": "dotenv-vault pull -y",
-    "dotenv:push": "dotenv-vault push -y",
     "to:commonjs": "sed 's/\"type\": \"module\"/\"type\": \"commonjs\"/g' package.json > ./temp.package.json && mv ./temp.package.json package.json",
     "to:module": "sed 's/\"type\": \"commonjs\"/\"type\": \"module\"/g' package.json > ./temp.package.json && mv -f ./temp.package.json package.json"
   },
@@ -123,6 +120,7 @@
     "@owlprotocol/hardhat-config": "workspace:*",
     "@owlprotocol/utils": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",
+    "@owlprotocol/tsconfig": "workspace:*",
     "@safe-global/safe-core-sdk-types": "^2.2.0",
     "@typechain/ethers-v5": "^11.1.1",
     "@typechain/web3-v1": "^6.0.6",

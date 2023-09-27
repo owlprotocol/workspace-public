@@ -1,9 +1,9 @@
 import { ESLint } from "eslint";
 import { writeFileSync } from "fs";
 
-export enum ModuleType {
-    CJS = "CJS",
-    ESM = "ESM",
+export enum Platform {
+    NODE = "NODE",
+    BROWSER = "BROWSER"
 }
 
 /** Define an envvar, defaultValues, and enum values if applicable */
@@ -11,85 +11,88 @@ export interface EnvVarDef {
     readonly name: string;
     readonly defaultValue?: string;
     readonly enumValues?: string[];
+    /** Which platform envvar is supported on neutral = both browser and node */
+    readonly platform: "browser" | "node" | "neutral"
 }
 
 //DFNS MPC Config
 const DFNS_ENVVARS: EnvVarDef[] = [
-    { name: "DFNS_PRIVATE_KEY" },
-    { name: "DFNS_AUTH_TOKEN" },
-    { name: "DFNS_CRED_ID" },
-    { name: "DFNS_APP_ORIGIN" },
-    { name: "DFNS_APP_ID" },
-    { name: "DFNS_API_URL", defaultValue: "https://api.dfns.io" },
+    { name: "DFNS_PRIVATE_KEY", platform: "node" },
+    { name: "DFNS_AUTH_TOKEN", platform: "node" },
+    { name: "DFNS_CRED_ID", platform: "node" },
+    { name: "DFNS_APP_ORIGIN", platform: "node" },
+    { name: "DFNS_APP_ID", platform: "node" },
+    { name: "DFNS_API_URL", platform: "node", defaultValue: "https://api.dfns.io" },
 ];
 //Firebase config (admin & web sdks)
 const FIREBASE_ENVVARS: EnvVarDef[] = [
-    { name: "FIREBASE_API_KEY" },
-    { name: "FIREBASE_AUTH_DOMAIN" },
-    { name: "FIREBASE_PROJECT_ID", defaultValue: "owl-protocol" },
-    { name: "FIREBASE_APP_ID", defaultValue: "owl-protocol" },
-    { name: "FIREBASE_MEASUREMENT_ID" },
-    { name: "FIREBASE_SERVICE_EMAIL" },
-    { name: "FIREBASE_PRIVATE_KEY" },
-    { name: "FIREBASE_DATABASE_URL" },
-    { name: "FIREBASE_STORAGE_BUCKET" },
+    { name: "FIREBASE_API_KEY", platform: "neutral" },
+    { name: "FIREBASE_AUTH_DOMAIN", platform: "neutral" },
+    { name: "FIREBASE_PROJECT_ID", platform: "neutral", defaultValue: "owl-protocol" },
+    { name: "FIREBASE_APP_ID", platform: "neutral", defaultValue: "owl-protocol" },
+    { name: "FIREBASE_MEASUREMENT_ID", platform: "neutral" },
+    { name: "FIREBASE_SERVICE_EMAIL", platform: "node" },
+    { name: "FIREBASE_PRIVATE_KEY", platform: "node" },
+    { name: "FIREBASE_DATABASE_URL", platform: "neutral" },
+    { name: "FIREBASE_STORAGE_BUCKET", platform: "neutral"},
 ];
 
 //Clerk config
 const CLERK_ENVVARS: EnvVarDef[] = [
-    { name: "CLERK_PUBLISHABLE_KEY" },
-    { name: "CLERK_SECRET_KEY" },
-    { name: "CLERK_WEBHOOK_SECRET_KEY" },
-    { name: "CLERK_JWT_KEY" },
-    { name: "CLERK_LOGGING", defaultValue: "true" },
+    { name: "CLERK_PUBLISHABLE_KEY", platform: "browser" },
+    { name: "CLERK_SECRET_KEY", platform: "node" },
+    { name: "CLERK_WEBHOOK_SECRET_KEY", platform: "node" },
+    { name: "CLERK_JWT_KEY", platform: "node" },
+    { name: "CLERK_LOGGING", platform: "neutral", defaultValue: "true" },
 ];
 //Shopify config
 const SHOPIFY_ENVVARS: EnvVarDef[] = [
-    { name: "SHOPIFY_API_KEY" },
-    { name: "SHOPIFY_API_SECRET" },
-    { name: "SHOPIFY_SCOPES", defaultValue: "read_customers,read_orders,price_rules" },
-    { name: "SHOPIFY_HOSTNAME" },
+    { name: "SHOPIFY_API_KEY", platform: "node" },
+    { name: "SHOPIFY_API_SECRET", platform: "node" },
+    { name: "SHOPIFY_SCOPES", platform: "node", defaultValue: "read_customers,read_orders,price_rules" },
+    { name: "SHOPIFY_HOSTNAME", platform: "node" },
 ];
 const SCRIPT_ENVVARS: EnvVarDef[] = [
     //Cold-storage admin for beacons
-    { name: "BEACON_ADMIN", defaultValue: "0xad839Bc20a349b2502468c9d6ba47531f435491f" },
+    { name: "BEACON_ADMIN", platform: "node", defaultValue: "0xad839Bc20a349b2502468c9d6ba47531f435491f" },
     //Hot-wallet for contracts-api relayer
-    { name: "PRIVATE_KEY_RELAYER" },
+    { name: "PRIVATE_KEY_RELAYER", platform: "node" },
     {
         name: "PRIVATE_KEY_RELAYER_LOCAL",
+        platform: "node",
         defaultValue: "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
     },
-    { name: "PUBLIC_ADDRESS_RELAYER_LOCAL", defaultValue: "0xb92702b3EeFB3c2049aEB845B0335b283e11E9c6" },
+    { name: "PUBLIC_ADDRESS_RELAYER_LOCAL", platform: "node", defaultValue: "0xb92702b3EeFB3c2049aEB845B0335b283e11E9c6" },
     //Hot-wallet for deployment
-    { name: "PRIVATE_KEY_0" },
-    { name: "PUBLIC_ADDRESS_0" },
-    { name: "PRIVATE_KEY_1" },
-    { name: "PUBLIC_ADDRESS_1" },
+    { name: "PRIVATE_KEY_0", platform: "node" },
+    { name: "PUBLIC_ADDRESS_0", platform: "node" },
+    { name: "PRIVATE_KEY_1", platform: "node" },
+    { name: "PUBLIC_ADDRESS_1", platform: "node" },
     //Local private keys
-    { name: "PRIVATE_KEY_ANVIL", defaultValue: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" },
-    { name: "PRIVATE_KEY_0_LOCAL", defaultValue: "0x0000000000000000000000000000000000000000000000000000000000000001" },
-    { name: "PUBLIC_ADDRESS_0_LOCAL", defaultValue: "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf" },
-    { name: "PRIVATE_KEY_1_LOCAL", defaultValue: "0x0000000000000000000000000000000000000000000000000000000000000002" },
-    { name: "PUBLIC_ADDRESS_1_LOCAL", defaultValue: "0x2B5AD5c4795c026514f8317c7a215E218DcCD6cF" },
+    { name: "PRIVATE_KEY_ANVIL", platform: "node", defaultValue: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" },
+    { name: "PRIVATE_KEY_0_LOCAL", platform: "node", defaultValue: "0x0000000000000000000000000000000000000000000000000000000000000001" },
+    { name: "PUBLIC_ADDRESS_0_LOCAL", platform: "node", defaultValue: "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf" },
+    { name: "PRIVATE_KEY_1_LOCAL", platform: "node", defaultValue: "0x0000000000000000000000000000000000000000000000000000000000000002" },
+    { name: "PUBLIC_ADDRESS_1_LOCAL", platform: "node", defaultValue: "0x2B5AD5c4795c026514f8317c7a215E218DcCD6cF" },
     //Singleton factory
-    { name: "PRIVATE_KEY_FACTORY_DEPLOYER" },
-    { name: "PUBLIC_ADDRESS_FACTORY_DEPLOYER", defaultValue: "0x9E6e5DfD101CF9a3f063D396Bbc92F67940cae4a" },
+    { name: "PRIVATE_KEY_FACTORY_DEPLOYER", platform: "node" },
+    { name: "PUBLIC_ADDRESS_FACTORY_DEPLOYER", platform: "node", defaultValue: "0x9E6e5DfD101CF9a3f063D396Bbc92F67940cae4a" },
 ];
 /** Add public defaults that are free */
 const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
-    { name: "INFURA_API_KEY", defaultValue: "f47a5c2dfc1f4c4385f6372fade38618" },
-    { name: "THIRDWEB_API_KEY", defaultValue: "50072e65e03dfde6c855d89392bad2b6" },
-    { name: "ANKR_API_KEY" },
-    { name: "ETHERSCAN_API_KEY" },
-    { name: "BYTE4_URL", defaultValue: "https://www.4byte.directory/api/v1" },
-    { name: "IPFS_URL", defaultValue: "http://localhost:5001" },
+    { name: "INFURA_API_KEY", platform: "node", defaultValue: "f47a5c2dfc1f4c4385f6372fade38618" },
+    { name: "THIRDWEB_API_KEY", platform: "node", defaultValue: "50072e65e03dfde6c855d89392bad2b6" },
+    { name: "ANKR_API_KEY", platform: "node" },
+    { name: "ETHERSCAN_API_KEY", platform: "node" },
+    { name: "BYTE4_URL", platform: "node", defaultValue: "https://www.4byte.directory/api/v1" },
+    { name: "IPFS_URL", platform: "node", defaultValue: "http://localhost:5001" },
     {
-        name: "PINATA_JWT",
+        name: "PINATA_JWT", platform: "node",
         defaultValue:
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJlMzMxZDljZC05MDk4LTRkOTctOGI4Zi03ODY3NTFkZTQxYjgiLCJlbWFpbCI6Imxlby52aWduYUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNzZmYTgwY2I2ZWRmMTkxNTVjODUiLCJzY29wZWRLZXlTZWNyZXQiOiI2YTM1MTkxYThjOTMxMzU3MGFmOGU3NGEyZWQzZmVhYWYxYjFhZDUxY2FkY2ZkNGFhZTc1YjNjMmQ0YzQwMWI3IiwiaWF0IjoxNjgxMDk1ODM3fQ.As9jjfv7BoPF9pTY_Lqj67iMWZXp9EIoGs50zcXaF5Y",
     },
-    { name: "INFURA_IPFS_PROJECT_ID", defaultValue: "2OAhenU1T1fxTGyQMTTFDwdyW5p" },
-    { name: "INFURA_IPFS_PROJECT_SECRET", defaultValue: "8ffddfdc95f32ea7aa43ee3ba9d2d603" },
+    { name: "INFURA_IPFS_PROJECT_ID", platform: "node", defaultValue: "2OAhenU1T1fxTGyQMTTFDwdyW5p" },
+    { name: "INFURA_IPFS_PROJECT_SECRET", platform: "node", defaultValue: "8ffddfdc95f32ea7aa43ee3ba9d2d603" },
 ];
 
 /** Chainlist data sufficient mostly, we just override here for localhost */
@@ -160,11 +163,11 @@ const EXPLORER_API_KEY_DEFAULTS: Record<string, string | undefined> = {
 export function getEnvVarsForNetworkId(networkId: string): EnvVarDef[] {
     const network = `NETWORK_${networkId}`;
     return [
-        { name: `${network}_RPC`, defaultValue: RPC_DEFAULTS[networkId] },
-        { name: `${network}_WS`, defaultValue: WS_DEFAULTS[networkId] },
-        { name: `${network}_EXPLORER` },
-        { name: `${network}_EXPLORER_API`, defaultValue: EXPLORER_API_DEFAULTS[networkId] },
-        { name: `${network}_EXPLORER_API_KEY`, defaultValue: EXPLORER_API_KEY_DEFAULTS[networkId] },
+        { name: `${network}_RPC`, platform: "node",  defaultValue: RPC_DEFAULTS[networkId] },
+        { name: `${network}_WS`, platform: "node", defaultValue: WS_DEFAULTS[networkId] },
+        { name: `${network}_EXPLORER`, platform: "node" },
+        { name: `${network}_EXPLORER_API`, platform: "node", defaultValue: EXPLORER_API_DEFAULTS[networkId] },
+        { name: `${network}_EXPLORER_API_KEY`, platform: "node", defaultValue: EXPLORER_API_KEY_DEFAULTS[networkId] },
     ];
 }
 
@@ -175,12 +178,12 @@ const NETWORK_ENVVARS: EnvVarDef[] = [];
 chainIds.forEach((c) => NETWORK_ENVVARS.push(...getEnvVarsForNetworkId(`${c}`)));
 
 export const ENVVARS: EnvVarDef[] = [
-    { name: "LOG_LEVEL", defaultValue: "warn", enumValues: ["trace", "debug", "info", "warn", "error"] },
-    { name: "TITLE" },
-    { name: "API_REST_BASE_URL", defaultValue: "http://localhost:3000/api" },
-    { name: "API_TRPC_BASE_URL", defaultValue: "http://localhost:3000/api/trpc" },
-    { name: "CORS_PROXY" },
-    { name: "README_SECRET" },
+    { name: "LOG_LEVEL", platform: "neutral", defaultValue: "warn", enumValues: ["trace", "debug", "info", "warn", "error"] },
+    { name: "TITLE", platform: "browser" },
+    { name: "API_REST_BASE_URL", platform: "neutral", defaultValue: "http://localhost:3000/api" },
+    { name: "API_TRPC_BASE_URL", platform: "neutral", defaultValue: "http://localhost:3000/api/trpc" },
+    { name: "CORS_PROXY", platform: "browser" },
+    { name: "README_SECRET", platform: "node" },
     ...DFNS_ENVVARS,
     ...FIREBASE_ENVVARS,
     ...CLERK_ENVVARS,
@@ -202,23 +205,20 @@ const NODE_ENV_VAR = {
  * @param defaultValue default hard-coded value
  * @returns
  */
-export function genEnvVarStatement(name: string, moduleType: ModuleType, defaultValue?: string): string {
+export function genEnvVarStatement(name: string, platform: Platform, defaultValue?: string): string {
     const varName = `export const ${name}`;
     let varValue: string;
-    if (moduleType === ModuleType.CJS) {
+    if (platform === Platform.NODE) {
         //value as process.env (NodeJS only)
         varValue = `process.env.${name}`;
-    } else if (moduleType === ModuleType.ESM) {
-        //value as import.meta.env (NodeJS ESM or Vite bundler)
-        //import.meta.env is used by Vite (transform)
-        //process.env is used by NodeJS (runtime)
-        varValue = `import.meta.env ? (import.meta.env.${name} ?? import.meta.env.VITE_${name}) : process.env.${name}`;
+    } else if (platform === Platform.BROWSER){
+        varValue = `import.meta.env.VITE_${name}`;
     } else {
-        throw new Error(`Invalid moduleType ${moduleType}`);
+        throw new Error(`Invalid moduleType ${platform}`);
     }
     //Add default value
     if (defaultValue) {
-        varValue = `(${varValue}) ?? "${defaultValue}"`;
+        varValue = `${varValue} ?? "${defaultValue}"`;
     }
     return `${varName} = ${varValue};`;
 }
@@ -230,28 +230,42 @@ export function genEnvVarTypeDef(name: string, enumValues?: string[]) {
 }
 
 /** Generate envvar exports */
-export function genEnvVarsFile(envvars: EnvVarDef[], moduleType: ModuleType) {
-    const exports = envvars.map((e) => genEnvVarStatement(e.name, moduleType, e.defaultValue)).join("\n");
+export function genEnvVarsExports(envvars: EnvVarDef[], platform: Platform) {
+    envvars = envvars.filter((e) => {
+        if (platform === Platform.NODE) {
+            return e.platform === "node" || e.platform === "neutral"
+        } else if (platform === Platform.BROWSER) {
+            return e.platform === "browser" || e.platform === "neutral"
+        }
+    })
+
+    const exports = envvars.map((e) => genEnvVarStatement(e.name, platform, e.defaultValue)).join("\n");
     return exports;
 }
 
-export function genEnvDtsFile(envvars: EnvVarDef[], moduleType: ModuleType): string {
-    const dtsFilePrefix = `
+/** Prefix data for the file */
+export function genEnvVarsPrelude(envvars: EnvVarDef[], platform: Platform): string {
+    envvars = envvars.filter((e) => {
+        if (platform === Platform.NODE) {
+            return e.platform === "node" || e.platform === "neutral"
+        } else if (platform === Platform.BROWSER) {
+            return e.platform === "browser" || e.platform === "neutral"
+        }
+    })
+
+    const comment = `
 /**
  * Environment variables. We use a hybrid solution that supports both import.meta.env for static
  * replacement used by client bundlers (Vite, Webpack...) and process.env for NodeJS libraries.
  * @module Environment
  */
+console.debug("Loading ${platform} envvars")
 `;
 
-    const NODE_ENV_EXPORT_CJS = `export const NODE_ENV = (import.meta.env ? import.meta.env.NODE_ENV : process.env.NODE_ENV) ?? "development";`;
-    const NODE_ENV_EXPORT_ESM = `export const NODE_ENV = process.env.NODE_ENV ?? "development";`;
-    const NODE_ENV_EXPORT = moduleType === ModuleType.CJS ? NODE_ENV_EXPORT_CJS : NODE_ENV_EXPORT_ESM;
-
-    //NODE_ENV loaded before .env file
-    const dtsFileSuffix = `
-${NODE_ENV_EXPORT}
-
+    if (platform === Platform.NODE) {
+        const NODE_ENV_EXPORT= `export const NODE_ENV = process.env.NODE_ENV ?? "development";`;
+        //NODE_ENV loaded before .env file
+    const dotenvLoad = `
 const isClient = () => typeof window !== "undefined";
 
 import dotenv from "dotenv";
@@ -274,12 +288,10 @@ if (!isClient()) {
     }
 }`;
 
-    const types = [
+        const types = [
         genEnvVarTypeDef(NODE_ENV_VAR.name, NODE_ENV_VAR.enumValues),
         ...envvars.map((e) => genEnvVarTypeDef(e.name, e.enumValues)),
     ];
-    const typesWithVITE = [...envvars.map((e) => genEnvVarTypeDef(`VITE_${e.name}`, e.enumValues))];
-    if (moduleType === ModuleType.CJS) {
         const globalNameSpace = `declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace NodeJS {
@@ -289,26 +301,27 @@ if (!isClient()) {
     }
 }
 `;
-        return [dtsFilePrefix, globalNameSpace, dtsFileSuffix].join("\n");
-    } else if (moduleType === ModuleType.ESM) {
+        return [comment, globalNameSpace, NODE_ENV_EXPORT, dotenvLoad].join("\n");
+    } else if (platform === Platform.BROWSER) {
+            const NODE_ENV_EXPORT = `export const NODE_ENV = import.meta.env.NODE_ENV ?? "development";`;
+
+            const typesWithVITE = [genEnvVarTypeDef(NODE_ENV_VAR.name, NODE_ENV_VAR.enumValues), ...envvars.map((e) => genEnvVarTypeDef(`VITE_${e.name}`, e.enumValues))];
         const globalNameSpace = `declare global {
     interface ImportMetaEnv {
-        ${types.join("\n            ")}
-        ${typesWithVITE.join("\n            ")}
+        ${typesWithVITE.join("\n        ")}
     }
 }
 `;
         //Define Import Meta
-        const dtsFileImportMetaEnv = `/// <reference types="vite/client" />`;
-
-        return [dtsFileImportMetaEnv, dtsFilePrefix, globalNameSpace, dtsFileSuffix].join("\n");
+        const viteClientDTS = `/// <reference types="vite/client" />`;
+        return [viteClientDTS, comment, globalNameSpace, NODE_ENV_EXPORT].join("\n");
     } else {
-        throw new Error(`Invalid moduleType ${moduleType}`);
+        throw new Error(`Invalid moduleType ${platform}`);
     }
 }
 
-export async function writeEnvVarFile(envvars: EnvVarDef[], moduleType: ModuleType, envVarsPath: string) {
-    const file = `${genEnvDtsFile(envvars, moduleType)}\n${genEnvVarsFile(envvars, moduleType)}`;
+export async function writeEnvVarFile(envvars: EnvVarDef[], moduleType: Platform, envVarsPath: string) {
+    const file = `${genEnvVarsPrelude(envvars, moduleType)}\n${genEnvVarsExports(envvars, moduleType)}`;
     writeFileSync(envVarsPath, file);
 
     //Lint files
@@ -319,8 +332,8 @@ export async function writeEnvVarFile(envvars: EnvVarDef[], moduleType: ModuleTy
 
 export async function main() {
     await Promise.all([
-        writeEnvVarFile(ENVVARS, ModuleType.CJS, "src/envvars.cts"),
-        writeEnvVarFile(ENVVARS, ModuleType.ESM, "src/envvars.mts"),
+        writeEnvVarFile(ENVVARS, Platform.BROWSER, "src/envvars.browser.ts"),
+        writeEnvVarFile(ENVVARS, Platform.NODE, "src/envvars.ts"),
     ]);
 }
 

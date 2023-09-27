@@ -1,6 +1,7 @@
 /***** Generics for Firebase Web CRUD *****/
 import { CollectionReference, DocumentData, DocumentSnapshot, QuerySnapshot, limit, orderBy } from "firebase/firestore";
 import { doc, query, where, QueryConstraint } from "firebase/firestore";
+//@ts-expect-error
 import { useFirestoreCollection, useFirestoreDoc, ObservableStatus } from "reactfire";
 import { Contract } from "../models/Contract.js";
 import { CouponCampaign } from "../models/CouponCampaign.js";
@@ -69,7 +70,8 @@ export function getFirebaseHooks<T extends Record<string, any> & { id: string }>
         const snapshot = result.data;
         const data = (
             snapshot
-                ? snapshot.docs.map((d) => {
+                ? //TODO: Remove any
+                  snapshot.docs.map((d: any) => {
                       return { ...d.data(), id: d.id };
                   })
                 : undefined
@@ -102,7 +104,8 @@ export function getFirebaseHooks<T extends Record<string, any> & { id: string }>
         const snapshot = result.data;
         const data = (
             snapshot
-                ? snapshot.docs.map((d) => {
+                ? //TODO: Remove any
+                  snapshot.docs.map((d: any) => {
                       return { ...d.data(), id: d.id };
                   })
                 : undefined

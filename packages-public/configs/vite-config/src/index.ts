@@ -2,12 +2,12 @@ import { defineConfig, Plugin, UserConfig } from "vite";
 
 //ESBuild Plugins
 //https://medium.com/@ftaioli/using-node-js-builtin-modules-with-vite-6194737c2cd2
-import { NodeGlobalsPolyfillPlugin as esbuildGlobals } from "@esbuild-plugins/node-globals-polyfill";
-import { NodeModulesPolyfillPlugin as esbuildPolyfills } from "@esbuild-plugins/node-modules-polyfill";
+//import { NodeGlobalsPolyfillPlugin as esbuildGlobals } from "@esbuild-plugins/node-globals-polyfill";
+//import { NodeModulesPolyfillPlugin as esbuildPolyfills } from "@esbuild-plugins/node-modules-polyfill";
 
 //Rollup Plugins
-import rollupPolyfills from "rollup-plugin-node-polyfills";
-import rollupInject from "@rollup/plugin-inject";
+//import rollupPolyfills from "rollup-plugin-node-polyfills";
+//import rollupInject from "@rollup/plugin-inject";
 
 //Vite Plugins
 import ReactPlugin from "@vitejs/plugin-react-swc";
@@ -15,6 +15,9 @@ import CheckerPlugin from "vite-plugin-checker";
 import SVGRPlugin from "vite-plugin-svgr";
 import DTSPlugin from "vite-plugin-dts";
 //import { nodePolyfills as vitePolyfills } from "vite-plugin-node-polyfills";
+
+//import { createRequire } from "node:module";
+//const require = createRequire(import.meta.url)
 
 //const NODE_ENV = process.env.NODE_ENV ?? "development"; /// process.env.MODE
 export const define = {
@@ -33,7 +36,30 @@ export const plugins = [
      * - vite-plugin-node-polyfills breaks because cannot import buffer
      *   - under the hood imported by node-stdlib-browser
      */
-    //vitePolyfills(),
+    /*
+    vitePolyfills({
+            overrides: {
+                //buffer: require.resolve("rollup-plugin-node-polyfills/polyfills/buffer-es6"),
+                //Not work because string_decoder import
+                //crypto: require.resolve("rollup-plugin-node-polyfills/polyfills/crypto-browserify"),
+                //events: require.resolve("rollup-plugin-node-polyfills/polyfills/events"),
+                //http: require.resolve("rollup-plugin-node-polyfills/polyfills/http"),
+                //https: require.resolve("rollup-plugin-node-polyfills/polyfills/http"),
+                //process: require.resolve("rollup-plugin-node-polyfills/polyfills/process-es6"),
+                //stream: require.resolve("rollup-plugin-node-polyfills/polyfills/stream"),
+                //util: require.resolve("rollup-plugin-node-polyfills/polyfills/util"),
+                //querystring: require.resolve("rollup-plugin-node-polyfills/polyfills/qs"),
+                //url: require.resolve("rollup-plugin-node-polyfills/polyfills/url"),
+                //path: require.resolve("rollup-plugin-node-polyfills/polyfills/path"),
+                //string_decoder: require.resolve("rollup-plugin-node-polyfills/polyfills/string-decoder"),
+                //punycode: require.resolve("rollup-plugin-node-polyfills/polyfills/punycode"),
+            },
+            protocolImports: true,
+            globals: {
+                Buffer: true
+            }
+        }),
+        */
     ReactPlugin(),
     SVGRPlugin({
         svgrOptions: {
@@ -52,6 +78,7 @@ export const plugins = [
     }),
 ] as Plugin[];
 
+/*
 export const esbuildPlugins = [
     esbuildGlobals({
         process: true,
@@ -66,21 +93,25 @@ export const rollupPlugins = [
         Buffer: ["buffer", "Buffer"],
     }),
 ] as any[];
+*/
 
+//No work since dependencies require cjs polyfills
 export const alias = {
-    //buffer: "rollup-plugin-node-polyfills/polyfills/buffer-es6",
-    events: "rollup-plugin-node-polyfills/polyfills/events",
-    http: "rollup-plugin-node-polyfills/polyfills/http",
-    https: "rollup-plugin-node-polyfills/polyfills/http",
-    process: "rollup-plugin-node-polyfills/polyfills/process-es6",
-    stream: "rollup-plugin-node-polyfills/polyfills/stream",
-    util: "rollup-plugin-node-polyfills/polyfills/util",
-    querystring: "rollup-plugin-node-polyfills/polyfills/qs",
-    url: "rollup-plugin-node-polyfills/polyfills/url",
-    path: "rollup-plugin-node-polyfills/polyfills/path",
-    "string_decoder/": "rollup-plugin-node-polyfills/polyfills/string-decoder",
-    string_decoder: "rollup-plugin-node-polyfills/polyfills/string-decoder",
-    punycode: "rollup-plugin-node-polyfills/polyfills/punycode",
+    //buffer: require.resolve("rollup-plugin-node-polyfills/polyfills/buffer-es6"),
+    //Not work because string_decoder import
+    //crypto: require.resolve("rollup-plugin-node-polyfills/polyfills/crypto-browserify"),
+    //events: require.resolve("rollup-plugin-node-polyfills/polyfills/events"),
+    //http: require.resujjjjjjuuuuuuolve("rollup-plugin-node-polyfills/polyfills/http"),
+    //https: require.resolve("rollup-plugin-node-polyfills/polyfills/http"),
+    //process: require.resolve("rollup-plugin-node-polyfills/polyfills/process-es6"),
+    //stream: require.resolve("rollup-plugin-node-polyfills/polyfills/stream"),
+    //util: require.resolve("rollup-plugin-node-polyfills/polyfills/util"),
+    //querystring: require.resolve("rollup-plugin-node-polyfills/polyfills/qs"),
+    //url: require.resolve("rollup-plugin-node-polyfills/polyfills/url"),
+    //path: require.resolve("rollup-plugin-node-polyfills/polyfills/path"),
+    //string_decoder: require.resolve("rollup-plugin-node-polyfills/polyfills/string-decoder"),
+    //punycode: require.resolve("rollup-plugin-node-polyfills/polyfills/punycode"),
+    //"string_decoder/": "rollup-plugin-node-polyfills/polyfills/string-decoder",
 };
 
 //https://sambitsahoo.com/blog/vite-code-splitting-that-works.html
@@ -116,6 +147,7 @@ export const config = defineConfig({
         alias,
     },
     optimizeDeps: {
+        include: [],
         esbuildOptions: {
             plugins: [], //esbuildPlugins
         },

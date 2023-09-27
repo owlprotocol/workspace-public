@@ -6,6 +6,7 @@ import {
     FIREBASE_PROJECT_ID,
     FIREBASE_STORAGE_BUCKET,
     NODE_ENV,
+    isProductionOrStaging,
 } from "@owlprotocol/envvars";
 import { FirebaseOptions, initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getFirestore, collection, CollectionReference, connectFirestoreEmulator, Firestore } from "firebase/firestore";
@@ -29,7 +30,7 @@ import { Email } from "../models/Email.js";
 
 function getFirebaseConfig() {
     let firebaseConfig: FirebaseOptions = {};
-    if (NODE_ENV === "production") {
+    if (isProductionOrStaging()) {
         //Live Firebase Config
         firebaseConfig = {
             apiKey: FIREBASE_API_KEY,
@@ -69,7 +70,7 @@ function getFirebaseApp(): { firebaseApp: FirebaseApp; firestore: Firestore; aut
 
         //Initial setup & running in non-prod
         //Initialize Emulator
-        if (NODE_ENV !== "production") {
+        if (NODE_ENV !== "production" && NODE_ENV !== "staging") {
             connectFirestoreEmulator(firestore, "127.0.0.1", 8080);
             connectAuthEmulator(auth, "http://127.0.0.1:9099");
             connectStorageEmulator(storage, "127.0.0.1", 9199);

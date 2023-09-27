@@ -59,6 +59,7 @@
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
+    "@owlprotocol/tsconfig": "workspace:*",
     "@shopify/shopify-api": "^7.7.0",
     "@types/dotenv": "^8.2.0",
     "@types/lodash-es": "4.17.6",

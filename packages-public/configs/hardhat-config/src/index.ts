@@ -8,6 +8,7 @@ import "hardhat-deploy-ethers";
 import "solidity-docgen";
 import "solidity-coverage";
 
+//@ts-expect-error
 import { PRIVATE_KEY_0, PRIVATE_KEY_0_LOCAL, getChainWithDataByChainId } from "@owlprotocol/envvars";
 import { allChains } from "@owlprotocol/chains";
 
@@ -44,7 +45,7 @@ export function getHardhatConfig(
     const chains = networkIds.map((id) => getChainWithDataByChainId(id)).filter((c) => c.rpcDefault != undefined);
     const networkEntries = chains.map((c) => {
         const accountsPkeys = c.slug === "localhost" ? accountsLocal : accounts;
-        const eip1559 = !!c.features?.find((f) => f.name === "EIP1559");
+        const eip1559 = !!c.features?.find((f: any) => f.name === "EIP1559");
         const slug = c.slug;
         const network = {
             chainId: c.chainId,

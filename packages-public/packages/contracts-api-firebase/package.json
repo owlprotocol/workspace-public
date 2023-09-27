@@ -85,9 +85,6 @@
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
     "lint:staged": "lint-staged",
-    "dotenv:login": "dotenv-vault login -y",
-    "dotenv:pull": "dotenv-vault pull -y",
-    "dotenv:push": "dotenv-vault push -y",
     "firebase-emulator": "firebase emulators:start --only firestore,storage,auth --project demo-owl-protocol",
     "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol"
   },
@@ -111,6 +108,7 @@
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
+    "@owlprotocol/tsconfig": "workspace:*",
     "@testing-library/react-hooks": "^8.0.1",
     "@trpc/server": "10.38.4",
     "@types/dotenv": "^8.2.0",

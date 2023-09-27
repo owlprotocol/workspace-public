@@ -4,7 +4,7 @@ import {
     FIREBASE_PROJECT_ID,
     FIREBASE_SERVICE_EMAIL,
     FIREBASE_STORAGE_BUCKET,
-    NODE_ENV,
+    isProductionOrStaging,
 } from "@owlprotocol/envvars";
 import { initializeApp, getApp, getApps } from "firebase-admin/app";
 import { getFirestore, CollectionReference } from "firebase-admin/firestore";
@@ -28,7 +28,7 @@ import { Email } from "../models/Email.js";
 
 function getFirebaseConfig() {
     let firebaseConfig: AppOptions = {};
-    if (NODE_ENV === "production") {
+    if (isProductionOrStaging()) {
         //Live Firebase Config
         if (
             !FIREBASE_PROJECT_ID ||

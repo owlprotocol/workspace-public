@@ -147,7 +147,7 @@ const factories2 = getFactoriesWithSigner(factories);
 const factoriesImplementationsBase = factories2.factoriesImplementations;
 export const factoriesDeterministic = factories2.factoriesDeterministic;
 export const factoriesClone = factories2.factoriesClone;
-export const factoriesBeacons = factories2.factoriesBeacons;
+export const factoriesBeacons = factories2.factoriesBeacons as any;
 export const factoriesBeaconProxies = factories2.factoriesBeaconProxies;
 
 //Factories
@@ -209,7 +209,7 @@ export const factoriesAll = mapValues(factoriesWithInitializeUtils, ({ factory, 
             Parameters<(typeof factoriesWithInitializeUtils)[K]["initializeUtil"]>[0]
         >
     >;
-};
+} as any;
 
 export interface DeployedLinkReferences {
     [libraryFileName: string]: {

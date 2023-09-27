@@ -15,7 +15,7 @@ import type {
     SignatureStatus,
 } from "@dfns/sdk/codegen/datamodel/Wallets/types.js";
 import { Signature as EthersSignature, ethers } from "ethers";
-import { HDNode } from "ethers/lib/utils";
+import { utils } from "ethers";
 
 //Type Guards
 export function isSignHash(body: GenerateSignatureBody): body is SignHash {
@@ -48,7 +48,7 @@ export interface WalletsClientInterface {
 }
 
 export class WalletsClientMock implements WalletsClientInterface {
-    private hdNode: HDNode;
+    private hdNode: utils.HDNode;
     private signaturesCount = 0;
     private walletsCount = 0;
     private wallets: Record<string, Wallet | undefined> = {};
@@ -56,9 +56,7 @@ export class WalletsClientMock implements WalletsClientInterface {
     private signatures: Record<string, SignatureRequest | undefined> = {};
 
     constructor(mnemonic?: string) {
-        this.hdNode = mnemonic
-            ? ethers.utils.HDNode.fromMnemonic(mnemonic)
-            : ethers.utils.HDNode.fromSeed(ethers.utils.randomBytes(32));
+        this.hdNode = mnemonic ? utils.HDNode.fromMnemonic(mnemonic) : utils.HDNode.fromSeed(utils.randomBytes(32));
     }
 
     /**
@@ -186,7 +184,7 @@ export class WalletsClientMock implements WalletsClientInterface {
         if (isSignHash(body)) {
             const { hash } = body;
             //See Note on signing hashes https://docs.ethers.org/v5/api/signer/#Signer--signing-methods
-            const hashBytes = ethers.utils.arrayify(hash);
+            const hashBytes = utils.arrayify(hash);
             ethersSignature = signingKey.signDigest(hashBytes);
         } else if (isSignMessage(body)) {
             throw new Error("Unimplemented");

@@ -61,6 +61,7 @@
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
+    "@owlprotocol/tsconfig": "workspace:*",
     "@types/dotenv": "^8.2.0",
     "@types/eslint": "^8.44.2",
     "@types/node": "^20.5.6",

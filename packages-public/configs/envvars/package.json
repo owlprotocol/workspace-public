@@ -20,9 +20,14 @@
   "types": "./lib/types/index.d.mts",
   "exports": {
     ".": {
-      "types": "./lib/types/index.d.mts",
-      "require": "./lib/cjs/index.cjs",
-      "import": "./lib/esm/index.mjs"
+      "types": "./lib/types/index.d.ts",
+      "browser": "./lib/esm/index.browser.js",
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    },
+    "./browser": {
+      "types": "./lib/types/index.browser.d.ts",
+      "browser": "./lib/esm/index.browser.js"
     }
   },
   "files": [
@@ -52,6 +57,7 @@
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
+    "@owlprotocol/tsconfig": "workspace:*",
     "@types/node": "^20.5.6",
     "@types/dotenv": "^8.2.0",
     "dotenv": "^16.3.1",
