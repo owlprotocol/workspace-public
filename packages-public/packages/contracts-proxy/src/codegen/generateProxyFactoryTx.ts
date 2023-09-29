@@ -4,6 +4,12 @@ import { allChains } from "@owlprotocol/chains";
 import { writeFileSync } from "fs";
 import { ERC1167Factory__factory } from "../typechain/ethers/index.js";
 
+export const ETH_TX_BASE_GAS = 21000;
+export const PROXY_FACTORY_DEPLOY_GAS_LIMIT = 600000;
+export const PROXY_FACTORY_DEPLOY_GAS_PRICE = utils.parseUnits("100", "gwei");
+export const PROXY_FACTORY_ETH_COST = PROXY_FACTORY_DEPLOY_GAS_PRICE.mul(
+    PROXY_FACTORY_DEPLOY_GAS_LIMIT + ETH_TX_BASE_GAS,
+);
 /**
  * Generates a proxy factory deploy transaction with fixed config:
  * nonce: 0, make sure address is the same across networks
@@ -19,8 +25,8 @@ export async function proxyFactoryDeployTx(signer: Signer, chainId: number) {
         data: ERC1167Factory__factory.bytecode,
         chainId,
         nonce: 0,
-        gasPrice: utils.parseUnits("100", "gwei").toNumber(),
-        gasLimit: 600000,
+        gasPrice: PROXY_FACTORY_DEPLOY_GAS_PRICE,
+        gasLimit: PROXY_FACTORY_DEPLOY_GAS_LIMIT,
         type: 0,
     });
 }

@@ -1,6 +1,6 @@
+import { mapValues } from "lodash-es";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { dirname } from "path";
-import { mapValues } from "../lodash.js";
 
 export function writeFiles(files: Record<string, string>) {
     mapValues(files, (content, path) => {

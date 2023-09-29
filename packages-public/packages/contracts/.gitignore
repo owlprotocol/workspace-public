@@ -61,6 +61,7 @@ src/typechain
 src/artifacts
 docs-contracts-reference
 traceOutputDir
+src/factories
 
 # forge
 forge-cache

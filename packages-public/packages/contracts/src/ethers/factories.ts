@@ -202,14 +202,14 @@ const factoriesWithInitializeUtils = {
 
 export const factoriesAll = mapValues(factoriesWithInitializeUtils, ({ factory, initializeUtil }) => {
     return getFactoryWithInitializeUtil(getDeployFactories(factory), initializeUtil as any);
-}) as {
+}) as any; /*as {
     [K in keyof typeof factoriesWithInitializeUtils]: ReturnType<
         typeof getFactoryWithInitializeUtil<
             (typeof factoriesWithInitializeUtils)[K]["factory"],
             Parameters<(typeof factoriesWithInitializeUtils)[K]["initializeUtil"]>[0]
         >
     >;
-} as any;
+} */
 
 export interface DeployedLinkReferences {
     [libraryFileName: string]: {

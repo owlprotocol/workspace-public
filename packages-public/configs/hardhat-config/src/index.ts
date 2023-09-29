@@ -9,7 +9,7 @@ import "solidity-docgen";
 import "solidity-coverage";
 
 //@ts-expect-error
-import { PRIVATE_KEY_0, PRIVATE_KEY_0_LOCAL, getChainWithDataByChainId } from "@owlprotocol/envvars";
+import { PRIVATE_KEY_0, getChainWithDataByChainId } from "@owlprotocol/envvars";
 import { allChains } from "@owlprotocol/chains";
 
 /** Default config */
@@ -39,12 +39,20 @@ const defaultNetworkIds = allChains.map((c) => c.chainId);
 
 export function getHardhatConfig(
     networkIds: number[] = defaultNetworkIds,
-    accounts: string[] = PRIVATE_KEY_0 ? [PRIVATE_KEY_0] : [],
-    accountsLocal: string[] = [PRIVATE_KEY_0_LOCAL],
+    accountsProduction: string[] = PRIVATE_KEY_0 ? [PRIVATE_KEY_0] : [],
 ) {
     const chains = networkIds.map((id) => getChainWithDataByChainId(id)).filter((c) => c.rpcDefault != undefined);
     const networkEntries = chains.map((c) => {
-        const accountsPkeys = c.slug === "localhost" ? accountsLocal : accounts;
+        const accounts =
+            c.slug === "localhost"
+                ? {
+                      mnemonic: "test test test test test test test test test test test junk",
+                      path: "m/44'/60'/0'/0",
+                      initialIndex: 0,
+                      count: 10,
+                      passphrase: "",
+                  }
+                : accountsProduction;
         const eip1559 = !!c.features?.find((f: any) => f.name === "EIP1559");
         const slug = c.slug;
         const network = {
@@ -52,7 +60,7 @@ export function getHardhatConfig(
             url: c.rpcDefault,
             testnet: c.testnet,
             eip1559,
-            accounts: accountsPkeys,
+            accounts,
         };
         return [slug, network] as const;
     });

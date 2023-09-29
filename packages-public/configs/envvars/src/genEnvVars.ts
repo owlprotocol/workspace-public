@@ -3,7 +3,7 @@ import { writeFileSync } from "fs";
 
 export enum Platform {
     NODE = "NODE",
-    BROWSER = "BROWSER"
+    BROWSER = "BROWSER",
 }
 
 /** Define an envvar, defaultValues, and enum values if applicable */
@@ -12,7 +12,7 @@ export interface EnvVarDef {
     readonly defaultValue?: string;
     readonly enumValues?: string[];
     /** Which platform envvar is supported on neutral = both browser and node */
-    readonly platform: "browser" | "node" | "neutral"
+    readonly platform: "browser" | "node" | "neutral";
 }
 
 //DFNS MPC Config
@@ -34,7 +34,7 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
     { name: "FIREBASE_SERVICE_EMAIL", platform: "node" },
     { name: "FIREBASE_PRIVATE_KEY", platform: "node" },
     { name: "FIREBASE_DATABASE_URL", platform: "neutral" },
-    { name: "FIREBASE_STORAGE_BUCKET", platform: "neutral"},
+    { name: "FIREBASE_STORAGE_BUCKET", platform: "neutral" },
 ];
 
 //Clerk config
@@ -57,26 +57,33 @@ const SCRIPT_ENVVARS: EnvVarDef[] = [
     { name: "BEACON_ADMIN", platform: "node", defaultValue: "0xad839Bc20a349b2502468c9d6ba47531f435491f" },
     //Hot-wallet for contracts-api relayer
     { name: "PRIVATE_KEY_RELAYER", platform: "node" },
-    {
-        name: "PRIVATE_KEY_RELAYER_LOCAL",
-        platform: "node",
-        defaultValue: "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
-    },
-    { name: "PUBLIC_ADDRESS_RELAYER_LOCAL", platform: "node", defaultValue: "0xb92702b3EeFB3c2049aEB845B0335b283e11E9c6" },
     //Hot-wallet for deployment
     { name: "PRIVATE_KEY_0", platform: "node" },
     { name: "PUBLIC_ADDRESS_0", platform: "node" },
     { name: "PRIVATE_KEY_1", platform: "node" },
     { name: "PUBLIC_ADDRESS_1", platform: "node" },
     //Local private keys
-    { name: "PRIVATE_KEY_ANVIL", platform: "node", defaultValue: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" },
-    { name: "PRIVATE_KEY_0_LOCAL", platform: "node", defaultValue: "0x0000000000000000000000000000000000000000000000000000000000000001" },
-    { name: "PUBLIC_ADDRESS_0_LOCAL", platform: "node", defaultValue: "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf" },
-    { name: "PRIVATE_KEY_1_LOCAL", platform: "node", defaultValue: "0x0000000000000000000000000000000000000000000000000000000000000002" },
-    { name: "PUBLIC_ADDRESS_1_LOCAL", platform: "node", defaultValue: "0x2B5AD5c4795c026514f8317c7a215E218DcCD6cF" },
+    {
+        name: "PRIVATE_KEY_ANVIL",
+        platform: "node",
+        defaultValue: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+    },
     //Singleton factory
     { name: "PRIVATE_KEY_FACTORY_DEPLOYER", platform: "node" },
-    { name: "PUBLIC_ADDRESS_FACTORY_DEPLOYER", platform: "node", defaultValue: "0x9E6e5DfD101CF9a3f063D396Bbc92F67940cae4a" },
+    {
+        name: "PUBLIC_ADDRESS_FACTORY_DEPLOYER",
+        platform: "node",
+        defaultValue: "0x9E6e5DfD101CF9a3f063D396Bbc92F67940cae4a",
+    },
+    {
+        name: "PRIVATE_KEY_CREATE2FACTORY_DEPLOYER",
+        platform: "node",
+    },
+    {
+        name: "PUBLIC_ADDRESS_CREATE2FACTORY_DEPLOYER",
+        platform: "node",
+        defaultValue: "0x6efA2F40d59e3DA02e56Ff5a1daB6201b86f8aCF",
+    },
 ];
 /** Add public defaults that are free */
 const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
@@ -87,7 +94,8 @@ const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
     { name: "BYTE4_URL", platform: "node", defaultValue: "https://www.4byte.directory/api/v1" },
     { name: "IPFS_URL", platform: "node", defaultValue: "http://localhost:5001" },
     {
-        name: "PINATA_JWT", platform: "node",
+        name: "PINATA_JWT",
+        platform: "node",
         defaultValue:
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJlMzMxZDljZC05MDk4LTRkOTctOGI4Zi03ODY3NTFkZTQxYjgiLCJlbWFpbCI6Imxlby52aWduYUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNzZmYTgwY2I2ZWRmMTkxNTVjODUiLCJzY29wZWRLZXlTZWNyZXQiOiI2YTM1MTkxYThjOTMxMzU3MGFmOGU3NGEyZWQzZmVhYWYxYjFhZDUxY2FkY2ZkNGFhZTc1YjNjMmQ0YzQwMWI3IiwiaWF0IjoxNjgxMDk1ODM3fQ.As9jjfv7BoPF9pTY_Lqj67iMWZXp9EIoGs50zcXaF5Y",
     },
@@ -163,7 +171,7 @@ const EXPLORER_API_KEY_DEFAULTS: Record<string, string | undefined> = {
 export function getEnvVarsForNetworkId(networkId: string): EnvVarDef[] {
     const network = `NETWORK_${networkId}`;
     return [
-        { name: `${network}_RPC`, platform: "node",  defaultValue: RPC_DEFAULTS[networkId] },
+        { name: `${network}_RPC`, platform: "node", defaultValue: RPC_DEFAULTS[networkId] },
         { name: `${network}_WS`, platform: "node", defaultValue: WS_DEFAULTS[networkId] },
         { name: `${network}_EXPLORER`, platform: "node" },
         { name: `${network}_EXPLORER_API`, platform: "node", defaultValue: EXPLORER_API_DEFAULTS[networkId] },
@@ -178,7 +186,12 @@ const NETWORK_ENVVARS: EnvVarDef[] = [];
 chainIds.forEach((c) => NETWORK_ENVVARS.push(...getEnvVarsForNetworkId(`${c}`)));
 
 export const ENVVARS: EnvVarDef[] = [
-    { name: "LOG_LEVEL", platform: "neutral", defaultValue: "warn", enumValues: ["trace", "debug", "info", "warn", "error"] },
+    {
+        name: "LOG_LEVEL",
+        platform: "neutral",
+        defaultValue: "warn",
+        enumValues: ["trace", "debug", "info", "warn", "error"],
+    },
     { name: "TITLE", platform: "browser" },
     { name: "API_REST_BASE_URL", platform: "neutral", defaultValue: "http://localhost:3000/api" },
     { name: "API_TRPC_BASE_URL", platform: "neutral", defaultValue: "http://localhost:3000/api/trpc" },
@@ -211,7 +224,7 @@ export function genEnvVarStatement(name: string, platform: Platform, defaultValu
     if (platform === Platform.NODE) {
         //value as process.env (NodeJS only)
         varValue = `process.env.${name}`;
-    } else if (platform === Platform.BROWSER){
+    } else if (platform === Platform.BROWSER) {
         varValue = `import.meta.env.VITE_${name}`;
     } else {
         throw new Error(`Invalid moduleType ${platform}`);
@@ -233,11 +246,11 @@ export function genEnvVarTypeDef(name: string, enumValues?: string[]) {
 export function genEnvVarsExports(envvars: EnvVarDef[], platform: Platform) {
     envvars = envvars.filter((e) => {
         if (platform === Platform.NODE) {
-            return e.platform === "node" || e.platform === "neutral"
+            return e.platform === "node" || e.platform === "neutral";
         } else if (platform === Platform.BROWSER) {
-            return e.platform === "browser" || e.platform === "neutral"
+            return e.platform === "browser" || e.platform === "neutral";
         }
-    })
+    });
 
     const exports = envvars.map((e) => genEnvVarStatement(e.name, platform, e.defaultValue)).join("\n");
     return exports;
@@ -247,11 +260,11 @@ export function genEnvVarsExports(envvars: EnvVarDef[], platform: Platform) {
 export function genEnvVarsPrelude(envvars: EnvVarDef[], platform: Platform): string {
     envvars = envvars.filter((e) => {
         if (platform === Platform.NODE) {
-            return e.platform === "node" || e.platform === "neutral"
+            return e.platform === "node" || e.platform === "neutral";
         } else if (platform === Platform.BROWSER) {
-            return e.platform === "browser" || e.platform === "neutral"
+            return e.platform === "browser" || e.platform === "neutral";
         }
-    })
+    });
 
     const comment = `
 /**
@@ -263,9 +276,9 @@ console.debug("Loading ${platform} envvars")
 `;
 
     if (platform === Platform.NODE) {
-        const NODE_ENV_EXPORT= `export const NODE_ENV = process.env.NODE_ENV ?? "development";`;
+        const NODE_ENV_EXPORT = `export const NODE_ENV = process.env.NODE_ENV ?? "development";`;
         //NODE_ENV loaded before .env file
-    const dotenvLoad = `
+        const dotenvLoad = `
 const isClient = () => typeof window !== "undefined";
 
 import dotenv from "dotenv";
@@ -289,9 +302,9 @@ if (!isClient()) {
 }`;
 
         const types = [
-        genEnvVarTypeDef(NODE_ENV_VAR.name, NODE_ENV_VAR.enumValues),
-        ...envvars.map((e) => genEnvVarTypeDef(e.name, e.enumValues)),
-    ];
+            genEnvVarTypeDef(NODE_ENV_VAR.name, NODE_ENV_VAR.enumValues),
+            ...envvars.map((e) => genEnvVarTypeDef(e.name, e.enumValues)),
+        ];
         const globalNameSpace = `declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace NodeJS {
@@ -303,9 +316,12 @@ if (!isClient()) {
 `;
         return [comment, globalNameSpace, NODE_ENV_EXPORT, dotenvLoad].join("\n");
     } else if (platform === Platform.BROWSER) {
-            const NODE_ENV_EXPORT = `export const NODE_ENV = import.meta.env.NODE_ENV ?? "development";`;
+        const NODE_ENV_EXPORT = `export const NODE_ENV = import.meta.env.NODE_ENV ?? "development";`;
 
-            const typesWithVITE = [genEnvVarTypeDef(NODE_ENV_VAR.name, NODE_ENV_VAR.enumValues), ...envvars.map((e) => genEnvVarTypeDef(`VITE_${e.name}`, e.enumValues))];
+        const typesWithVITE = [
+            genEnvVarTypeDef(NODE_ENV_VAR.name, NODE_ENV_VAR.enumValues),
+            ...envvars.map((e) => genEnvVarTypeDef(`VITE_${e.name}`, e.enumValues)),
+        ];
         const globalNameSpace = `declare global {
     interface ImportMetaEnv {
         ${typesWithVITE.join("\n        ")}

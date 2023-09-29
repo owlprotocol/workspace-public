@@ -20,7 +20,7 @@ const factoriesWithInitializeUtils = {
 
 export const factoriesAll = mapValues(factoriesWithInitializeUtils, ({ factory, initializeUtil }) => {
     return getFactoryWithInitializeUtil(getDeployFactories(factory), initializeUtil as any);
-}) as {
+}) as any; /*{
     [K in keyof typeof factoriesWithInitializeUtils]: ReturnType<
         typeof getFactoryWithInitializeUtil<
             (typeof factoriesWithInitializeUtils)[K]["factory"],
@@ -28,3 +28,4 @@ export const factoriesAll = mapValues(factoriesWithInitializeUtils, ({ factory, 
         >
     >;
 };
+*/

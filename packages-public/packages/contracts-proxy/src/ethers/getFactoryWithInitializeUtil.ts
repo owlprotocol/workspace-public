@@ -8,7 +8,6 @@ import {
     isDeploymentArgsBeaconOwl,
 } from "./deploymentArgs.js";
 import type { getDeployFactories } from "./getFactory.js";
-import { ContractParameters } from "../utils/ERC1167Factory/factory.js";
 
 /**
  *
@@ -17,10 +16,14 @@ import { ContractParameters } from "../utils/ERC1167Factory/factory.js";
  * Some parameters may be optional as the utility function may have sensible defaults.
  * @returns
  */
-export function getFactoryWithInitializeUtil<F extends ContractFactory, K extends Record<string, any>>(
+export function getFactoryWithInitializeUtil<
+    F extends ContractFactory,
+    K extends Record<string, any>,
+    U extends (args: K) => any,
+>(
     // eslint-disable-next-line prettier/prettier
     contractFactory: ReturnType<typeof getDeployFactories<F>>,
-    initializeUtil: (args: K) => ContractParameters<ReturnType<F["attach"]>, "initialize">,
+    initializeUtil: U, //ContractParameters<ReturnType<F["attach"]>, "initialize">,
 ) {
     /**
      *
@@ -120,4 +123,5 @@ export function getFactoryWithInitializeUtil<F extends ContractFactory, K extend
 export type FactoryWithInitializeUtil<
     F extends ContractFactory = ContractFactory,
     K extends Record<string, any> = Record<string, any>,
-> = ReturnType<typeof getFactoryWithInitializeUtil<F, K>>;
+    U extends (args: K) => any = (args: K) => any,
+> = ReturnType<typeof getFactoryWithInitializeUtil<F, K, U>>;

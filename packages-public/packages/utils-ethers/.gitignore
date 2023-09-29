@@ -1,4 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+cache/
+
 # dependencies
 node_modules
 .pnp
@@ -17,6 +20,9 @@ dist
 dist-ssr
 lib
 .serverless
+
+# local deployments
+packages/contracts/packages/owlprotocol-contracts/deployments/ganache/*
 
 # misc
 .DS_Store
@@ -37,7 +43,6 @@ logs
 .env.test
 .env.production
 .env
-!.env.example
 
 # turbo
 .turbo
@@ -51,26 +56,3 @@ logs
 .datastore_fs
 .datastore_level
 .datastore_s3
-
-# hardhat
-zsol
-typechain
-cache
-factory
-src/typechain
-src/artifacts
-docs-contracts-reference
-traceOutputDir
-src/factories
-
-# forge
-forge-cache
-out
-soljson-v*.js
-.openzeppelin/unknown-*.json
-*.py
-
-.env*
-.flaskenv*
-!.env.project
-!.env.vault
