@@ -78,6 +78,7 @@
     "@owlprotocol/safe-kit": "workspace:*",
     "@owlprotocol/shopify-api-mock": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
+    "@owlprotocol/envvars": "workspace:*",
     "@shopify/shopify-api": "^7.7.0",
     "@tanstack/react-query": "^4.29.7",
     "@trpc/react-query": "^10.38.4",
