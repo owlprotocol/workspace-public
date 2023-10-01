@@ -1,9 +1,8 @@
-import { mapValues } from "lodash-es";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { dirname } from "path";
 
 export function writeFiles(files: Record<string, string>) {
-    mapValues(files, (content, path) => {
+    Object.entries(files).forEach(([path, content]) => {
         const dir = dirname(path);
         if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
         writeFileSync(path, content);

@@ -1,9 +1,9 @@
 import { Signer } from "ethers";
 import { Deploy as DeployProxy } from "@owlprotocol/contracts-proxy";
 import { BaseProvider } from "@ethersproject/providers";
-import { ImplementationsDeploy } from "./deploy/common/Implementations.js";
 export { testNetworkId, testSigner, testNetwork } from "@owlprotocol/utils-ethers";
 import { testSigner, testNetwork } from "@owlprotocol/utils-ethers";
+import { ImplementationsDeploy } from "./deploy/Implementations.js";
 
 export interface DeployNetwork {
     name: string;
@@ -20,6 +20,6 @@ export async function contractsSetup(signer: Signer = testSigner, network: Deplo
     const provider = signer.provider as BaseProvider;
 
     //Deploy Proxy Factory
-    await DeployProxy.ProxyFactoryDeploy({ provider, network });
+    await DeployProxy.Create2FactoryDeploy({ provider, network });
     await ImplementationsDeploy({ provider, signer, network });
 }

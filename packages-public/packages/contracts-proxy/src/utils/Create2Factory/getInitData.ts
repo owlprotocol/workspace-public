@@ -1,7 +1,8 @@
 /**
  * Typescript implementation of ERC1167 library pure functions
  */
-import type { BaseContract } from "ethers";
+
+import { Interface } from "@ethersproject/abi";
 
 export const INIT_SIGNATURE = "initialize";
 /**
@@ -10,14 +11,7 @@ export const INIT_SIGNATURE = "initialize";
  * @param initArgs
  * @returns
  */
-export function getInitData<ContractTyped extends BaseContract = BaseContract>(
-    contractInterface: ContractTyped["interface"],
-    //@ts-expect-error
-    initArgs?: Parameters<ContractTyped["initialize"]>,
-) {
-    if (!initArgs) {
-        return contractInterface.encodeFunctionData(INIT_SIGNATURE);
-    } else {
-        return contractInterface.encodeFunctionData(INIT_SIGNATURE, initArgs);
-    }
+export function getInitData<InitArgs>(contractInterface: Interface, initArgs: InitArgs) {
+    //@ts-expect-error tuple conversion fails
+    return contractInterface.encodeFunctionData(INIT_SIGNATURE, initArgs);
 }

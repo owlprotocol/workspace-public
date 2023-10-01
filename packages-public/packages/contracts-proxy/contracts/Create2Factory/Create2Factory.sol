@@ -7,14 +7,14 @@ import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/Addr
 
 import {ICreate2Factory} from "./ICreate2Factory.sol";
 
-error InvalidSender(address expected, address actual);
-error CodeDataInitDataUnequalLength(uint256 codeDataLength, uint256 initDataLength);
-
 /**
  * @dev CREATE2 Factory
  * Deploys contracts deterministically, adds optional salt that can be tied to msg.sender address
  */
 contract Create2Factory is ICreate2Factory {
+    error InvalidSender(address expected, address actual);
+    error CodeDataInitDataUnequalLength(uint256 codeDataLength, uint256 initDataLength);
+
     /**
      * @dev Compute salt based keccak256(salt, msgSender, initData)
      * Pass msgSender = address(0) if contract can be deployed by anyone

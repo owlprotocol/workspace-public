@@ -7,6 +7,7 @@
 /// <reference types="@owlprotocol/contracts-proxy" />
 /// <reference types="@owlprotocol/contracts-api" />
 /// <reference types="@owlprotocol/contracts-api-firebase" />
+/// <reference types="@owlprotocol/envvars" />
 /// <reference types="@owlprotocol/dfns-sdk-mock" />
 /// <reference types="@owlprotocol/safe-kit" />
 /// <reference types="@owlprotocol/shopify-api-mock" />

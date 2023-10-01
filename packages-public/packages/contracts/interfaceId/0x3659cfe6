@@ -1,0 +1,1 @@
+{"name":"IUpgradeableBeacon","interfaceId":"0x3659cfe6","abi":[{"type":"function","name":"upgradeTo","constant":false,"payable":false,"inputs":[{"type":"address","name":"newImplementation"}],"outputs":[]}]}

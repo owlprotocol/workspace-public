@@ -19,6 +19,6 @@ export async function contractsSetup(signer: Signer = testSigner, network: Deplo
     const provider = signer.provider as BaseProvider;
 
     //Deploy Proxy Factory
-    await DeployProxy.ProxyFactoryDeploy({ provider, network });
+    await DeployProxy.Create2FactoryDeploy({ provider, network });
     await Deploy.ImplementationsDeploy({ provider, signer, network });
 }

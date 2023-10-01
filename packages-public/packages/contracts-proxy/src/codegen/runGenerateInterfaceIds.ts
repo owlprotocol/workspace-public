@@ -1,4 +1,4 @@
 import { generateInterfaceIds } from "./generateInterfaceIds.js";
-import { factories } from "../ethers/factories.js";
+import * as factoryInterfaceClasses from "../ethers/factoryInterfaceClasses.js";
 
-generateInterfaceIds(factories);
+generateInterfaceIds(factoryInterfaceClasses as any);

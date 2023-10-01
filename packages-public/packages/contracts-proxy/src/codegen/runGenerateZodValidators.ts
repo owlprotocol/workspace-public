@@ -1,4 +1,10 @@
 import { writeZodValidatorFilesForContracts } from "@owlprotocol/zod-sol";
-import { abis, abisInterface } from "../ethers/factories.js";
+import * as factoryClassesInitializable from "../ethers/factoryClassesInitializable.js";
+import * as factoryInterfaceClasses from "../ethers/factoryInterfaceClasses.js";
+import { mapValues } from "../lodash.js";
 
-writeZodValidatorFilesForContracts({ ...abis, ...abisInterface }, "./src/zsol");
+const abis = mapValues({ ...factoryClassesInitializable, ...factoryInterfaceClasses }, (f) => {
+    return f.abi;
+});
+
+writeZodValidatorFilesForContracts(abis, "./src/zsol");

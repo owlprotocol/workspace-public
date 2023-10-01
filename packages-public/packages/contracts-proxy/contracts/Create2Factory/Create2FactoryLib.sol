@@ -5,8 +5,6 @@ import {ClonesUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/Clone
 import {Create2Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/Create2Upgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 
-error InvalidSender(address expected, address actual);
-
 /**
  * @dev CREATE2 Factory Library
  * Helper functions to get deployed addresses of Create2 Factory

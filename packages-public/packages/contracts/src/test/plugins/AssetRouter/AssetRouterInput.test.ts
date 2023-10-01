@@ -16,7 +16,7 @@ import ProxyFactoryDeploy from "../../../deploy-hre/common/ProxyFactory.js";
 import { ERC20MintableInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC20Mintable.js";
 import { ERC721MintableInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC721Mintable.js";
 import { ERC1155MintableInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC1155Mintable.js";
-import { Factories, getFactories } from "../../../ethers/factories.js";
+import { Factories, getFactories } from "../../../ethers/libraries.js";
 import {
     getDeterministicFactories,
     getDeterministicInitializeFactories,

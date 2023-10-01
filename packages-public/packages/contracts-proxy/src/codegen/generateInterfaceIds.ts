@@ -1,9 +1,9 @@
 import { FormatTypes } from "@ethersproject/abi";
-import type { ContractFactory } from "ethers";
 import { writeFileSync, existsSync, mkdirSync } from "fs";
 import { interfaceId } from "../utils/IERC165.js";
+import { ContractFactoryClass } from "../utils/Create2Factory/ContractFactoryClass.js";
 
-export function generateInterfaceIds(factories: { [k: string]: ContractFactory }) {
+export function generateInterfaceIds(factories: { [k: string]: ContractFactoryClass }) {
     const interfaceIdFolder = "interfaceId";
     if (!existsSync(interfaceIdFolder)) {
         mkdirSync(interfaceIdFolder);
@@ -15,7 +15,6 @@ export function generateInterfaceIds(factories: { [k: string]: ContractFactory }
         if (!(factory as any).bytecode) {
             const name = factoryName.replace("__factory", "");
 
-            //@ts-expect-error
             const iface = factory.createInterface();
             const ifaceId = interfaceId(iface.fragments);
             ifaceIds.push(ifaceId);

@@ -9,7 +9,7 @@ import type {
     CreateCall,
 } from "@owlprotocol/contracts/typechain/ethers";
 
-import { factoriesImplementations } from "@owlprotocol/contracts";
+import { Create2Factories } from "@owlprotocol/contracts";
 
 export interface SafeCoreContractAddresses {
     /** safeMasterCopyAddress - Address of the Safe Master Copy contract deployed on a specific network */
@@ -31,13 +31,13 @@ export interface SafeCoreContractAddresses {
 }
 
 export const defaultSafeCoreContractAddresses: SafeCoreContractAddresses = {
-    safeMasterCopyAddress: factoriesImplementations.SafeL2.getAddress(),
-    safeProxyFactoryAddress: factoriesImplementations.SafeProxyFactory.getAddress(),
-    multiSendAddress: factoriesImplementations.Multisend.getAddress(),
-    multiSendCallOnlyAddress: factoriesImplementations.MultisendCallOnly.getAddress(),
-    fallbackHandlerAddress: factoriesImplementations.CompatibilityFallbackHandler.getAddress(),
-    signMessageLibAddress: factoriesImplementations.SignMessageLib.getAddress(),
-    createCallAddress: factoriesImplementations.CreateCall.getAddress(),
+    safeMasterCopyAddress: Create2Factories.SafeL2__factory__create2.defaultImplementation,
+    safeProxyFactoryAddress: Create2Factories.SafeProxyFactory__factory__create2.defaultImplementation,
+    multiSendAddress: Create2Factories.MultiSend__factory__create2.defaultImplementation,
+    multiSendCallOnlyAddress: Create2Factories.MultiSendCallOnly__factory__create2.defaultImplementation,
+    fallbackHandlerAddress: Create2Factories.CompatibilityFallbackHandler__factory__create2.defaultImplementation,
+    signMessageLibAddress: Create2Factories.SignMessageLib__factory__create2.defaultImplementation,
+    createCallAddress: Create2Factories.CreateCall__factory__create2.defaultImplementation,
 };
 
 /**

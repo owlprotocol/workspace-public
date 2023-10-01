@@ -1,0 +1,1 @@
+{"name":"IBeacon","interfaceId":"0x5c60da1b","abi":[{"type":"function","name":"implementation","constant":true,"stateMutability":"view","payable":false,"inputs":[],"outputs":[{"type":"address"}]}]}

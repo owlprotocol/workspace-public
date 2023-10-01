@@ -8,7 +8,7 @@ import deployProxyNick from "../../../deploy-hre/common/DeterministicDeployer.js
 import ProxyFactoryDeploy from "../../../deploy-hre/common/ProxyFactory.js";
 import ERC1820Deploy from "../../../deploy-hre/common/ERC1820.js";
 import { ERC721MintableInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC721Mintable.js";
-import { Factories, getFactories } from "../../../ethers/factories.js";
+import { Factories, getFactories } from "../../../ethers/libraries.js";
 import { getDeterministicInitializeFactories, InitializeFactories } from "../../../ethers/deterministicFactories.js";
 import {
     IAccessControlInterfaceId,

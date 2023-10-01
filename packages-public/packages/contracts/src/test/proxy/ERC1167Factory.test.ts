@@ -14,7 +14,7 @@ import { proxy1167Factory } from "../../utils/ERC1167Factory/getContractFactory.
 import deployProxyNick from "../../deploy-hre/common/DeterministicDeployer.js";
 import ProxyFactoryDeploy from "../../deploy-hre/common/ProxyFactory.js";
 import ImplementationsDeploy from "../../deploy-hre/common/Implementations.js";
-import { Factories, getFactories } from "../../ethers/factories.js";
+import { Factories, getFactories } from "../../ethers/libraries.js";
 import { getProxy1167InitializeFactories } from "../../ethers/proxy1167Factories.js";
 import { DEFAULT_SALT } from "../../utils/ERC1167Factory/getSalt.js";
 import {

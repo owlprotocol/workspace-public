@@ -13,7 +13,7 @@ import deployProxyNick from "../../../deploy-hre/common/DeterministicDeployer.js
 import ProxyFactoryDeploy from "../../../deploy-hre/common/ProxyFactory.js";
 import { ERC20MintableInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC20Mintable.js";
 import { ERC1155MintableInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/ERC1155Mintable.js";
-import { factories, Factories, getFactories } from "../../../ethers/factories.js";
+import { factories, Factories, getFactories } from "../../../ethers/libraries.js";
 import { getDeterministicInitializeFactories, InitializeFactories } from "../../../ethers/deterministicFactories.js";
 import { AssetRouterOutputInitializeArgs, initializeUtil } from "../../../utils/initializeUtils/AssetRouterOutput.js";
 import { MINTER_ROLE } from "../../../utils/IAccessControl.js";
