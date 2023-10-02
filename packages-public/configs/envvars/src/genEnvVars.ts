@@ -197,6 +197,7 @@ export const ENVVARS: EnvVarDef[] = [
         enumValues: ["trace", "debug", "info", "warn", "error"],
     },
     { name: "TITLE", platform: "browser" },
+    { name: "API_VERSION", platform: "browser" },
     { name: "API_REST_BASE_URL", platform: "neutral", defaultValue: "http://localhost:3000/api" },
     { name: "API_TRPC_BASE_URL", platform: "neutral", defaultValue: "http://localhost:3000/api/trpc" },
     { name: "CORS_PROXY", platform: "browser" },
