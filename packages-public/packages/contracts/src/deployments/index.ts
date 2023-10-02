@@ -1,4 +1,3 @@
-export * as anvil from "./anvil/index.js";
 export * as bnb from "./bnb/index.js";
 export * as bnbOpTestnet from "./bnbOpTestnet/index.js";
 export * as bnbTestnet from "./bnbTestnet/index.js";

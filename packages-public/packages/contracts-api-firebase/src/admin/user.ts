@@ -20,7 +20,7 @@ export function createUserDataWithDefaults(email: string, id?: string | undefine
             "80001": {
                 native: "0",
             },
-            "31337": {
+            "1337": {
                 native: "0",
             },
         },
@@ -31,7 +31,7 @@ export function createUserDataWithDefaults(email: string, id?: string | undefine
                 //LINK
                 "0x326C977E6efc84E512bB9C30f76E30c160eD06FB": ethers.utils.parseUnits("1.0").toString(),
             },
-            "31337": {
+            "1337": {
                 native: ethers.constants.MaxUint256.toString(),
             },
         },

@@ -58,8 +58,8 @@ function getFirebaseConfig() {
         firebaseConfig = {
             //https://firebase.google.com/docs/emulator-suite/connect_firestore#admin_sdks
             //Demo prefix forces connection to emulator
-            projectId: `demo-${FIREBASE_PROJECT_ID}`,
-            storageBucket: `demo-${FIREBASE_STORAGE_BUCKET}`,
+            projectId: FIREBASE_PROJECT_ID.startsWith("demo-") ? FIREBASE_PROJECT_ID : `demo-${FIREBASE_PROJECT_ID}`,
+            storageBucket: FIREBASE_STORAGE_BUCKET,
         };
         // Connect to emulator (if test). Do NOT use localhost as breaks in CI
         process.env["FIRESTORE_EMULATOR_HOST"] = "127.0.0.1:8080";

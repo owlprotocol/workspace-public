@@ -46,8 +46,8 @@ function getFirebaseConfig() {
             apiKey: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
             //https://firebase.google.com/docs/emulator-suite/connect_firestore#admin_sdks
             //Demo prefix forces connection to emulator
-            projectId: `demo-${FIREBASE_PROJECT_ID}`,
-            storageBucket: `demo-${FIREBASE_STORAGE_BUCKET}`,
+            projectId: FIREBASE_PROJECT_ID.startsWith("demo-") ? FIREBASE_PROJECT_ID : `demo-${FIREBASE_PROJECT_ID}`,
+            storageBucket: FIREBASE_STORAGE_BUCKET,
         };
     }
 

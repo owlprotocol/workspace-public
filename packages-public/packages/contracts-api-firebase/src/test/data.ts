@@ -4,7 +4,7 @@ import { ProjectTemplate } from "../models/ProjectTemplate.js";
 import { UserPrivate } from "../models/UserPrivate.js";
 import { UserPersonal } from "../models/UserPersonal.js";
 
-export const testNetworkId = "31337";
+export const testNetworkId = "1337";
 
 const uuid1 = "00000000-0000-0000-0000-000000000001";
 const uuid2 = "00000000-0000-0000-0000-000000000002";

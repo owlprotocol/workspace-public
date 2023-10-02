@@ -13,8 +13,8 @@ export function getAnvilSigner(id: AnvilSignerId) {
     return new Wallet(pkey);
 }
 
-export const testChainId = 31337;
-export const testNetworkId = "31337";
+export const testChainId = 1337;
+export const testNetworkId = "1337";
 export const testSigner = getAnvilSigner(1);
 export const testNetwork = {
     name: "localhost",

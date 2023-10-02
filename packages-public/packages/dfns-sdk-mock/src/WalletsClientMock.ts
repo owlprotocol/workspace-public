@@ -89,18 +89,24 @@ export class WalletsClientMock implements WalletsClientInterface {
 
     /**
      * Create wallet similar to DFNS request, uses stored hdNode
-     * @param request
+     * @param request (if externalId passed, pkey is deterministic)
      * @returns
      */
     async createWallet(request: T.CreateWalletRequest): Promise<T.CreateWalletResponse> {
         //Request Body
         const { network, externalId, tags, name } = request.body;
-        //Id
-        const id = `${this.walletsCount++}`;
+        //Id: if external id, derive address deterministically, else bump wallets count
+        const walletsCount = this.walletsCount++;
+        const id = externalId ? utils.keccak256(utils.toUtf8Bytes(externalId)) : `${walletsCount}`;
+        if (this.wallets[id]) {
+            return this.wallets[id]!;
+        }
+        //mod to max key derivation index
+        const keyDerivation = externalId ? ethers.BigNumber.from(id).mod(1000000000).toString() : `${walletsCount}`;
         //Status
         const status = "Active" as WalletStatus.Active;
         //Signing Key
-        const pkey = this.hdNode.derivePath(`m/44'/60'/0'/0/${id}`).privateKey;
+        const pkey = this.hdNode.derivePath(`m/44'/60'/0'/0/${keyDerivation}`).privateKey;
         const signer = new ethers.Wallet(pkey);
         //curve hard coded as secp256k1 on ethers
         //privateKey only returned in mock (not required once signing mock SDK is implemented)

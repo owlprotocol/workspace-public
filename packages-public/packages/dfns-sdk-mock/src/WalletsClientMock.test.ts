@@ -29,6 +29,21 @@ describe("WalletClient.test.ts", () => {
         client = new WalletsClientMock(mnemonic);
     });
 
+    describe("deterministic wallet using external id", () => {
+        test("externalId", async () => {
+            const network = "Ethereum" as BlockchainNetwork.Ethereum;
+            //Wallet Create Test
+            const wallet = await client.createWallet({
+                body: {
+                    network,
+                    externalId: "wallet-1",
+                },
+            });
+            expect(wallet).toBeDefined();
+            expect(wallet.address).not.toBe(signerAddress);
+        });
+    });
+
     describe("add hardcoded wallet", () => {
         const network = "KeyECDSA" as BlockchainNetwork.KeyECDSA;
 
