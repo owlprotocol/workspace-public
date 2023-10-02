@@ -47,10 +47,11 @@ const CLERK_ENVVARS: EnvVarDef[] = [
 ];
 //Shopify config
 const SHOPIFY_ENVVARS: EnvVarDef[] = [
+    { name: "SHOPIFY_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
     { name: "SHOPIFY_API_KEY", platform: "node" },
     { name: "SHOPIFY_API_SECRET", platform: "node" },
-    { name: "SHOPIFY_SCOPES", platform: "node", defaultValue: "read_customers,read_orders,price_rules" },
-    { name: "SHOPIFY_HOSTNAME", platform: "node" },
+    { name: "SHOPIFY_SCOPES", platform: "node", defaultValue: "read_customers,read_orders,write_price_rules" },
+    { name: "SHOPIFY_HOSTNAME", platform: "neutral" },
 ];
 const SCRIPT_ENVVARS: EnvVarDef[] = [
     //Cold-storage admin for beacons
