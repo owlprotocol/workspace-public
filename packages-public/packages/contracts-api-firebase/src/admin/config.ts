@@ -1,10 +1,10 @@
 import {
     FIREBASE_DATABASE_URL,
+    FIREBASE_MOCK,
     FIREBASE_PRIVATE_KEY,
     FIREBASE_PROJECT_ID,
     FIREBASE_SERVICE_EMAIL,
     FIREBASE_STORAGE_BUCKET,
-    isProductionOrStaging,
 } from "@owlprotocol/envvars";
 import { initializeApp, getApp, getApps } from "firebase-admin/app";
 import { getFirestore, CollectionReference } from "firebase-admin/firestore";
@@ -28,7 +28,8 @@ import { Email } from "../models/Email.js";
 
 function getFirebaseConfig() {
     let firebaseConfig: AppOptions = {};
-    if (isProductionOrStaging()) {
+    if (FIREBASE_MOCK === "false") {
+        console.debug("Running production Firebase with API Keys");
         //Live Firebase Config
         if (
             !FIREBASE_PROJECT_ID ||
@@ -54,6 +55,7 @@ function getFirebaseConfig() {
             storageBucket: FIREBASE_STORAGE_BUCKET,
         };
     } else {
+        console.debug("Running development Firebase with emulator");
         //Emulator Firebase Config
         firebaseConfig = {
             //https://firebase.google.com/docs/emulator-suite/connect_firestore#admin_sdks

@@ -1,13 +1,17 @@
-import hre from "hardhat";
+import * as hre from "hardhat";
 
 async function verify() {
     const deployments = await hre.deployments.all();
-
     for (const [k, v] of Object.entries(deployments)) {
-        let name: string | undefined;
-        if (k === "ProxyFactory") {
-            name = "ERC1167Factory";
+        let name = k;
+        if (k.endsWith("Implementation")) {
+            name = k.replace("Implementation", "");
+        } else if (k.endsWith("Beacon")) {
+            name = "UpgradeableBeacon";
+        } else {
+            name = k;
         }
+
         if (name) {
             const artifact = await hre.artifacts.readArtifact(name);
             const fqn = `${artifact.sourceName}:${name}`;

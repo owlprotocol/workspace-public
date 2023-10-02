@@ -7,7 +7,7 @@ import { pick } from "../lodash.js";
  * many contracts and beacons.
  */
 
-//Split into 2 migrations due to gas limit
+//Split into 3 migrations due to gas limit
 export const migration0 = pick(
     Create2Factories,
     "ChainlinkAnyApiClient",
@@ -16,12 +16,15 @@ export const migration0 = pick(
     "ERC721MintableAutoId__factory__create2",
     "ERC1155Mintable__factory__create2",
     "ERC2981Setter__factory__create2",
+);
+export const migration1 = pick(
+    Create2Factories,
     "TokenDna__factory__create2",
     "TokenURI__factory__create2",
     "TokenURIBaseURI__factory__create2",
     "TokenURIDna__factory__create2",
 );
-export const migration1 = pick(
+export const migration2 = pick(
     Create2Factories,
     "SafeL2__factory__create2",
     "SafeProxyFactory__factory__create2",

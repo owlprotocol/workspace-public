@@ -1,15 +1,32 @@
-import hre from "hardhat";
+import * as hre from "hardhat";
 
+const CONTRACTS_VERIFY = [
+    "ERC20Mintable",
+    "ERC721Mintable",
+    "ERC721MintableAutoId",
+    "ERC1155Mintable",
+    "ERC1820Registry",
+    "ERC2981Setter",
+    "TokenDna",
+    "TokenURIBaseURI",
+    "TokenURIDna",
+];
 async function verify() {
     const deployments = await hre.deployments.all();
-
     for (const [k, v] of Object.entries(deployments)) {
-        let name: string | undefined;
+        let name: string | undefined = k;
         if (k.endsWith("Implementation")) {
             name = k.replace("Implementation", "");
-        } else if (k === "ProxyFactory") {
-            name = "ERC1167Factory";
+        } else if (k.endsWith("Beacon")) {
+            name = "UpgradeableBeacon";
+        } else {
+            name = k;
         }
+
+        if (!CONTRACTS_VERIFY.includes(name)) {
+            name = undefined;
+        }
+
         if (name) {
             const artifact = await hre.artifacts.readArtifact(name);
             const fqn = `${artifact.sourceName}:${name}`;

@@ -7,6 +7,7 @@ import { Create2Factory__factory } from "../typechain/ethers/index.js";
 export const ETH_TX_BASE_GAS = 21000;
 export const CREATE2_FACTORY_DEPLOY_GAS_LIMIT = 600000;
 export const CREATE2_FACTORY_DEPLOY_GAS_PRICE = utils.parseUnits("100", "gwei");
+//0.0621 ETH
 export const CREATE2_FACTORY_ETH_COST = CREATE2_FACTORY_DEPLOY_GAS_PRICE.mul(
     CREATE2_FACTORY_DEPLOY_GAS_LIMIT + ETH_TX_BASE_GAS,
 );

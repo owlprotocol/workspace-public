@@ -12,6 +12,7 @@ export * as BlockNumberImplementation from "./BlockNumberImplementation.js";
 export * as ChainlinkAnyApiClientBeacon from "./ChainlinkAnyApiClientBeacon.js";
 export * as ChainlinkAnyApiClientImplementation from "./ChainlinkAnyApiClientImplementation.js";
 export * as CompatibilityFallbackHandlerImplementation from "./CompatibilityFallbackHandlerImplementation.js";
+export * as Create2Factory from "./Create2Factory.js";
 export * as CreateCallImplementation from "./CreateCallImplementation.js";
 export * as DeterministicDeployer from "./DeterministicDeployer.js";
 export * as ERC1155MintableBeacon from "./ERC1155MintableBeacon.js";
@@ -26,6 +27,8 @@ export * as ERC721MintableAutoIdImplementation from "./ERC721MintableAutoIdImple
 export * as ERC721MintableBeacon from "./ERC721MintableBeacon.js";
 export * as ERC721MintableImplementation from "./ERC721MintableImplementation.js";
 export * as FallbackImplementation from "./FallbackImplementation.js";
+export * as MultiSendCallOnlyImplementation from "./MultiSendCallOnlyImplementation.js";
+export * as MultiSendImplementation from "./MultiSendImplementation.js";
 export * as Multicall2Implementation from "./Multicall2Implementation.js";
 export * as MultisendCallOnlyImplementation from "./MultisendCallOnlyImplementation.js";
 export * as MultisendImplementation from "./MultisendImplementation.js";

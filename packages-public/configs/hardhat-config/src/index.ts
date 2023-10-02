@@ -9,7 +9,7 @@ import "solidity-docgen";
 import "solidity-coverage";
 
 //@ts-expect-error
-import { PRIVATE_KEY_0, getChainWithDataByChainId } from "@owlprotocol/envvars";
+import { PRIVATE_KEY_CONTRACT_DEPLOYER, getChainWithDataByChainId } from "@owlprotocol/envvars";
 import { allChains } from "@owlprotocol/chains";
 
 /** Default config */
@@ -39,7 +39,7 @@ const defaultNetworkIds = allChains.map((c) => c.chainId);
 
 export function getHardhatConfig(
     networkIds: number[] = defaultNetworkIds,
-    accountsProduction: string[] = PRIVATE_KEY_0 ? [PRIVATE_KEY_0] : [],
+    accountsProduction: string[] = PRIVATE_KEY_CONTRACT_DEPLOYER ? [PRIVATE_KEY_CONTRACT_DEPLOYER] : [],
 ) {
     const chains = networkIds.map((id) => getChainWithDataByChainId(id)).filter((c) => c.rpcDefault != undefined);
     const networkEntries = chains.map((c) => {
@@ -66,10 +66,12 @@ export function getHardhatConfig(
     });
     const networks = Object.fromEntries(networkEntries);
 
-    const etherscanApiKey = chains.map((c) => {
-        const slug = c.slug;
-        return [slug, c.explorerApiKey] as const;
-    });
+    const etherscanApiKey = Object.fromEntries(
+        chains.map((c) => {
+            const slug = c.slug;
+            return [slug, c.explorerApiKey] as const;
+        }),
+    );
 
     const etherscanCustomChains = chains.map((c) => {
         const network = {

@@ -3,10 +3,10 @@ import {
     FIREBASE_APP_ID,
     FIREBASE_AUTH_DOMAIN,
     FIREBASE_DATABASE_URL,
+    FIREBASE_MOCK,
     FIREBASE_PROJECT_ID,
     FIREBASE_STORAGE_BUCKET,
     NODE_ENV,
-    isProductionOrStaging,
 } from "@owlprotocol/envvars";
 import { FirebaseOptions, initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getFirestore, collection, CollectionReference, connectFirestoreEmulator, Firestore } from "firebase/firestore";
@@ -30,7 +30,8 @@ import { Email } from "../models/Email.js";
 
 function getFirebaseConfig() {
     let firebaseConfig: FirebaseOptions = {};
-    if (isProductionOrStaging()) {
+    if (FIREBASE_MOCK === "false") {
+        console.debug("Running production Firebase with API Keys");
         //Live Firebase Config
         firebaseConfig = {
             apiKey: FIREBASE_API_KEY,
@@ -41,6 +42,7 @@ function getFirebaseConfig() {
             appId: FIREBASE_APP_ID,
         };
     } else {
+        console.debug("Running development Firebase with emulator");
         //Emulator Firebase Config
         firebaseConfig = {
             apiKey: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",

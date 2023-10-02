@@ -17,6 +17,7 @@ export interface EnvVarDef {
 
 //DFNS MPC Config
 const DFNS_ENVVARS: EnvVarDef[] = [
+    { name: "DFNS_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
     { name: "DFNS_PRIVATE_KEY", platform: "node" },
     { name: "DFNS_AUTH_TOKEN", platform: "node" },
     { name: "DFNS_CRED_ID", platform: "node" },
@@ -26,6 +27,7 @@ const DFNS_ENVVARS: EnvVarDef[] = [
 ];
 //Firebase config (admin & web sdks)
 const FIREBASE_ENVVARS: EnvVarDef[] = [
+    { name: "FIREBASE_MOCK", platform: "neutral", defaultValue: "true", enumValues: ["true", "false"] },
     { name: "FIREBASE_API_KEY", platform: "neutral" },
     { name: "FIREBASE_AUTH_DOMAIN", platform: "neutral" },
     { name: "FIREBASE_PROJECT_ID", platform: "neutral", defaultValue: "owl-protocol" },
@@ -41,12 +43,21 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
 const CLERK_ENVVARS: EnvVarDef[] = [
     { name: "CLERK_PUBLISHABLE_KEY", platform: "browser" },
     { name: "CLERK_SECRET_KEY", platform: "node" },
+    { name: "CLERK_WEBHOOK_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
     { name: "CLERK_WEBHOOK_SECRET_KEY", platform: "node" },
     { name: "CLERK_JWT_KEY", platform: "node" },
     { name: "CLERK_LOGGING", platform: "neutral", defaultValue: "true" },
 ];
+//Readme config
+const README_ENVVARS: EnvVarDef[] = [
+    { name: "README_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
+    { name: "README_SECRET", platform: "node" },
+];
 //Shopify config
 const SHOPIFY_ENVVARS: EnvVarDef[] = [
+    { name: "SHOPIFY_DEMO_STORE_DOMAIN", platform: "node" },
+    { name: "SHOPIFY_DEMO_STORE_TOKEN", platform: "node" },
+    { name: "SHOPIFY_DEMO_STORE_STATE", platform: "node" },
     { name: "SHOPIFY_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
     { name: "SHOPIFY_API_KEY", platform: "node" },
     { name: "SHOPIFY_API_SECRET", platform: "node" },
@@ -59,10 +70,7 @@ const SCRIPT_ENVVARS: EnvVarDef[] = [
     //Hot-wallet for contracts-api relayer
     { name: "PRIVATE_KEY_RELAYER", platform: "node" },
     //Hot-wallet for deployment
-    { name: "PRIVATE_KEY_0", platform: "node" },
-    { name: "PUBLIC_ADDRESS_0", platform: "node" },
-    { name: "PRIVATE_KEY_1", platform: "node" },
-    { name: "PUBLIC_ADDRESS_1", platform: "node" },
+    { name: "PRIVATE_KEY_CONTRACT_DEPLOYER", platform: "node" },
     //Local private keys
     {
         name: "PRIVATE_KEY_ANVIL",
@@ -71,11 +79,6 @@ const SCRIPT_ENVVARS: EnvVarDef[] = [
     },
     //Singleton factory
     { name: "PRIVATE_KEY_FACTORY_DEPLOYER", platform: "node" },
-    {
-        name: "PUBLIC_ADDRESS_FACTORY_DEPLOYER",
-        platform: "node",
-        defaultValue: "0x9E6e5DfD101CF9a3f063D396Bbc92F67940cae4a",
-    },
     {
         name: "PRIVATE_KEY_CREATE2FACTORY_DEPLOYER",
         platform: "node",
@@ -197,7 +200,7 @@ export const ENVVARS: EnvVarDef[] = [
     { name: "API_REST_BASE_URL", platform: "neutral", defaultValue: "http://localhost:3000/api" },
     { name: "API_TRPC_BASE_URL", platform: "neutral", defaultValue: "http://localhost:3000/api/trpc" },
     { name: "CORS_PROXY", platform: "browser" },
-    { name: "README_SECRET", platform: "node" },
+    ...README_ENVVARS,
     ...DFNS_ENVVARS,
     ...FIREBASE_ENVVARS,
     ...CLERK_ENVVARS,
@@ -237,10 +240,10 @@ export function genEnvVarStatement(name: string, platform: Platform, defaultValu
     return `${varName} = ${varValue};`;
 }
 
-export function genEnvVarTypeDef(name: string, enumValues?: string[]) {
-    if (enumValues) return `readonly ${name}?: ${enumValues.map((e) => `"${e}"`).join("|")};`;
+export function genEnvVarTypeDef(name: string, enumValues?: string[], defined?: boolean) {
+    if (enumValues) return `readonly ${name}${defined ? "" : "?"}: ${enumValues.map((e) => `"${e}"`).join("|")};`;
 
-    return `readonly ${name}?: string;`;
+    return `readonly ${name}${defined ? "" : "?"}: string;`;
 }
 
 /** Generate envvar exports */
@@ -317,12 +320,9 @@ if (!isClient()) {
 `;
         return [comment, globalNameSpace, NODE_ENV_EXPORT, dotenvLoad].join("\n");
     } else if (platform === Platform.BROWSER) {
-        const NODE_ENV_EXPORT = `export const NODE_ENV = import.meta.env.NODE_ENV ?? "development";`;
+        const NODE_ENV_EXPORT = `export const NODE_ENV = import.meta.env.MODE ?? "development";`;
 
-        const typesWithVITE = [
-            genEnvVarTypeDef(NODE_ENV_VAR.name, NODE_ENV_VAR.enumValues),
-            ...envvars.map((e) => genEnvVarTypeDef(`VITE_${e.name}`, e.enumValues)),
-        ];
+        const typesWithVITE = [...envvars.map((e) => genEnvVarTypeDef(`VITE_${e.name}`, e.enumValues))];
         const globalNameSpace = `declare global {
     interface ImportMetaEnv {
         ${typesWithVITE.join("\n        ")}
