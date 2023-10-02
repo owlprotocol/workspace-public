@@ -36,7 +36,7 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
     { name: "FIREBASE_SERVICE_EMAIL", platform: "node" },
     { name: "FIREBASE_PRIVATE_KEY", platform: "node" },
     { name: "FIREBASE_DATABASE_URL", platform: "neutral" },
-    { name: "FIREBASE_STORAGE_BUCKET", platform: "neutral" },
+    { name: "FIREBASE_STORAGE_BUCKET", platform: "neutral", defaultValue: "owl-protocol" },
 ];
 
 //Clerk config
