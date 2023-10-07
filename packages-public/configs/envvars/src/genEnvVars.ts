@@ -281,30 +281,10 @@ console.debug("Loading ${platform} envvars")
 `;
 
     if (platform === Platform.NODE) {
-        const NODE_ENV_EXPORT = `export const NODE_ENV = process.env.NODE_ENV ?? "development";`;
         //NODE_ENV loaded before .env file
         const dotenvLoad = `
-const isClient = () => typeof window !== "undefined";
-
-import dotenv from "dotenv";
-import { resolve } from "path";
-if (!isClient()) {
-    const DOTENV_KEY = process.env.DOTENV_KEY;
-    if (DOTENV_KEY) {
-        //Load remote envvars
-        dotenv.config();
-    } else if (NODE_ENV === "development") {
-        dotenv.config({ path: resolve(process.cwd(), ".env") });
-    } else if (NODE_ENV === "test") {
-        dotenv.config({ path: resolve(process.cwd(), ".env") });
-    } else if (NODE_ENV === "ci") {
-        dotenv.config({ path: resolve(process.cwd(), ".env.ci") });
-    } else if (NODE_ENV === "staging") {
-        dotenv.config({ path: resolve(process.cwd(), ".env.staging") });
-    } else if (NODE_ENV === "production") {
-        dotenv.config({ path: resolve(process.cwd(), ".env.production") });
-    }
-}`;
+import { dotenvConfig } from "./dotenvConfig.js";
+dotenvConfig();`;
 
         const types = [
             genEnvVarTypeDef(NODE_ENV_VAR.name, NODE_ENV_VAR.enumValues),
@@ -319,7 +299,7 @@ if (!isClient()) {
     }
 }
 `;
-        return [comment, globalNameSpace, NODE_ENV_EXPORT, dotenvLoad].join("\n");
+        return [comment, globalNameSpace, dotenvLoad].join("\n");
     } else if (platform === Platform.BROWSER) {
         const NODE_ENV_EXPORT = `export const NODE_ENV = import.meta.env.MODE ?? "development";`;
 

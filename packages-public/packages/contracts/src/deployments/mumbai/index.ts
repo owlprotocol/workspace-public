@@ -28,8 +28,6 @@ export * as ERC721MintableBeacon from "./ERC721MintableBeacon.js";
 export * as ERC721MintableImplementation from "./ERC721MintableImplementation.js";
 export * as FallbackImplementation from "./FallbackImplementation.js";
 export * as Multicall2Implementation from "./Multicall2Implementation.js";
-export * as MultisendCallOnlyImplementation from "./MultisendCallOnlyImplementation.js";
-export * as MultisendImplementation from "./MultisendImplementation.js";
 export * as ProxyFactory from "./ProxyFactory.js";
 export * as SafeImplementation from "./SafeImplementation.js";
 export * as SafeL2Implementation from "./SafeL2Implementation.js";

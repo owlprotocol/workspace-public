@@ -73,7 +73,7 @@
   "scripts": {
     "test": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'pnpm run test:ci'",
     "test:watch": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'vitest'",
-    "test:ci": "DOTENV_KEY=$DOTENV_KEY_CONTRACTS_API_FIREBASE vitest --run",
+    "test:ci": "vitest --run",
     "build": "npm-run-all -p tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
     "esbuild": "node esbuild.config.mjs",

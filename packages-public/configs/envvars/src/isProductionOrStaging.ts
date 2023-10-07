@@ -1,4 +1,4 @@
-import { NODE_ENV } from "./envvars.js";
+import { NODE_ENV } from "./dotenvConfig.js";
 
 export function isProduction(env = NODE_ENV): env is "production" {
     return env === "production";
