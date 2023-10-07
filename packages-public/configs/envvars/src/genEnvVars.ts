@@ -53,6 +53,11 @@ const README_ENVVARS: EnvVarDef[] = [
     { name: "README_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
     { name: "README_SECRET", platform: "node" },
 ];
+//Resend config
+const RESEND_ENVVARS: EnvVarDef[] = [
+    { name: "RESEND_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
+    { name: "RESEND_API_KEY", platform: "node" },
+];
 //Shopify config
 const SHOPIFY_ENVVARS: EnvVarDef[] = [
     { name: "SHOPIFY_DEMO_STORE_DOMAIN", platform: "node" },
@@ -202,6 +207,7 @@ export const ENVVARS: EnvVarDef[] = [
     { name: "API_TRPC_BASE_URL", platform: "neutral", defaultValue: "http://localhost:3000/api/trpc" },
     { name: "CORS_PROXY", platform: "browser" },
     ...README_ENVVARS,
+    ...RESEND_ENVVARS,
     ...DFNS_ENVVARS,
     ...FIREBASE_ENVVARS,
     ...CLERK_ENVVARS,
