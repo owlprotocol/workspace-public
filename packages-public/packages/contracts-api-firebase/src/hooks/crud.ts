@@ -4,17 +4,17 @@ import { doc, query, where, QueryConstraint } from "firebase/firestore";
 //@ts-expect-error
 import { useFirestoreCollection, useFirestoreDoc, ObservableStatus } from "reactfire";
 import { Contract } from "../models/Contract.js";
-import { CouponCampaign } from "../models/CouponCampaign.js";
-import { CouponDefinition } from "../models/CouponDefinition.js";
-import { CouponInstance } from "../models/CouponInstance.js";
+import { CouponCampaign } from "../models/shopify/CouponCampaign.js";
+import { CouponDefinition } from "../models/shopify/CouponDefinition.js";
+import { CouponInstance } from "../models/shopify/CouponInstance.js";
 import { Email } from "../models/Email.js";
 import { MetadataContract } from "../models/MetadataContract.js";
-import { MetadataTokens } from "../models/MetadataTokens.js";
+import { MetadataTokens } from "../models/tokens/MetadataTokens.js";
 import { Project } from "../models/Project.js";
 import { ProjectTemplate } from "../models/ProjectTemplate.js";
 import { RequestTemplate } from "../models/RequestTemplate.js";
-import { Store } from "../models/Store.js";
-import { User } from "../models/User.js";
+import { Store } from "../models/shopify/Store.js";
+import { User } from "../models/users/User.js";
 import {
     contractsCol,
     couponCampaignsCol,

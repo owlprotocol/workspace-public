@@ -5,8 +5,8 @@ import { omit, mapValues, pick, isEmpty, zip } from "lodash-es";
 import { awaitAllObj } from "@owlprotocol/utils";
 import * as crypto from "crypto";
 import { firestore, usersPersonalCol, usersPrivateCol } from "./config.js";
-import { UserPersonal } from "../models/UserPersonal.js";
-import { UserPrivate } from "../models/UserPrivate.js";
+import { UserPersonal } from "../models/users/UserPersonal.js";
+import { UserPrivate } from "../models/users/UserPrivate.js";
 import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
 
 export interface QueryOptions {

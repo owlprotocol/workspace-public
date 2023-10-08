@@ -3,7 +3,7 @@ import * as jp from "jsonpath";
 import { isEmpty } from "lodash-es";
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
 import crypto from "node:crypto";
-import { MetadataTokens } from "../models/MetadataTokens.js";
+import { MetadataTokens } from "../models/tokens/MetadataTokens.js";
 
 export const metadataTokensBaseUriPrefix = `${API_REST_BASE_URL}/metadata/tokens`;
 

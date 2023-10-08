@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TypeEqual, expectType } from "ts-expect";
-import { TokenMetadataAttribute } from "../models/TokenMetadataAttribute.js";
+import { TokenMetadataAttribute } from "../../models/tokens/TokenMetadataAttribute.js";
 
 /**
  * Token attributes/properties as documented

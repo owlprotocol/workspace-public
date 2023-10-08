@@ -1,8 +1,8 @@
-import { User } from "../models/User.js";
+import { User } from "../models/users/User.js";
 import { Project } from "../models/Project.js";
 import { ProjectTemplate } from "../models/ProjectTemplate.js";
-import { UserPrivate } from "../models/UserPrivate.js";
-import { UserPersonal } from "../models/UserPersonal.js";
+import { UserPrivate } from "../models/users/UserPrivate.js";
+import { UserPersonal } from "../models/users/UserPersonal.js";
 
 export const testNetworkId = "1337";
 

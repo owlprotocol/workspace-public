@@ -4,7 +4,9 @@ import {
     CollectionReference,
     DocumentData,
     DocumentReference,
+    Firestore,
     QueryConstraint,
+    collection,
     deleteDoc,
     doc,
     getDoc,
@@ -19,24 +21,39 @@ import {
 } from "firebase/firestore";
 import { omit, zip } from "lodash-es";
 import * as crypto from "crypto";
-import {
-    contractsCol,
-    couponCampaignsCol,
-    couponDefinitionsCol,
-    couponInstancesCol,
-    emailsCol,
-    firestore,
-    metadataContractsCol,
-    metadataTokensCol,
-    projectTemplatesCol,
-    projectsCol,
-    requestTemplatesCol,
-    storePrivatesCol,
-    storesCol,
-    usersCol,
-} from "./config.js";
+import { firestore } from "./config.js";
 import { getFirestorePathValue } from "../utils/getFirestorePathValue.js";
 import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
+import {
+    ApiKeyPersonal,
+    Contract,
+    CouponCampaign,
+    CouponDefinition,
+    CouponInstance,
+    DfnsWalletReadOnly,
+    SafeWalletReadOnly,
+    Email,
+    EthLog,
+    EthLogAbi,
+    EthTransaction,
+    InviteCodeReadOnly,
+    MetadataContract,
+    MetadataTokens,
+    OrganizationReadOnly,
+    Project,
+    ProjectTemplate,
+    RequestTemplate,
+    Store,
+    StorePrivate,
+    TokenLazyMintReadOnly,
+    User,
+    GasExpenseDailyPublic,
+    GasExpenseMonthlyPublic,
+    GasExpenseDailyReadOnly,
+    GasExpenseMonthlyReadOnly,
+    GasBudgetRuleGlobalReadOnly,
+    GasBudgetRuleByContractReadOnly,
+} from "../models/index.js";
 
 export interface QueryOptions {
     limit?: number;
@@ -46,14 +63,17 @@ export interface QueryOptions {
 /**
  * Firebase CRUD Wrappers. create, get, getAll, update, rdelete, deleteAll
  * @template T Generic type for collection data (inlcudes id but this is implicit in Firebase database as path)
- * @param collection
+ * @param col
  * @returns
  */
 export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
-    collection: CollectionReference<Omit<T, "id">>,
+    firestore: Firestore,
+    collectionPath: string,
 ) {
+    const col = collection(firestore, collectionPath) as CollectionReference<Omit<T, "id">>;
+
     const getDocRef = (id: string): DocumentReference<Omit<T, "id">, DocumentData> => {
-        return doc(collection, id);
+        return doc(col, id);
     };
 
     /**
@@ -62,11 +82,11 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
      * @returns doc by id
      */
     const get = async (id: string): Promise<T> => {
-        const ref = doc(collection, id);
+        const ref = doc(col, id);
         const refSnapshot = await getDoc(ref);
 
         if (!refSnapshot.exists()) {
-            throw new Error(`${collection.path}/${id} not found`);
+            throw new Error(`${col.path}/${id} not found`);
         }
 
         return { ...refSnapshot.data(), id: ref.id } as T;
@@ -81,7 +101,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
     const getBatch = async (ids: string[]): Promise<(T | undefined)[]> => {
         const refSnapshots = await runTransaction(firestore, async (transaction) => {
             const operations = ids.map((id) => {
-                const ref = doc(collection, id);
+                const ref = doc(col, id);
                 return transaction.get(ref);
             });
 
@@ -98,7 +118,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
      * @returns docs
      */
     const getAll = async (): Promise<T[]> => {
-        const snapshot = await getDocs(collection);
+        const snapshot = await getDocs(col);
         return snapshot.docs.map((refSnapshot) => {
             return { ...refSnapshot.data(), id: refSnapshot.id } as T;
         });
@@ -121,7 +141,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
             queryFilterConstraints.push(limit(options.limit));
         }
 
-        const querySnapshot = await getDocs(query(collection, ...queryFilterConstraints));
+        const querySnapshot = await getDocs(query(col, ...queryFilterConstraints));
         return querySnapshot.docs.map((refSnapshot) => {
             return { ...refSnapshot.data(), id: refSnapshot.id } as T;
         });
@@ -148,7 +168,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
      */
     const set = async (item: Omit<T, "id"> & { id?: string }): Promise<string> => {
         const idDefined = item.id ?? crypto.randomUUID();
-        const ref = doc(collection, idDefined);
+        const ref = doc(col, idDefined);
         await setDoc(ref, omit(item, "id"));
         return idDefined;
     };
@@ -161,7 +181,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
         const idsDefined = items.map((item) => item.id ?? crypto.randomUUID());
         await runTransaction(firestore, async (transaction) => {
             const operations = zip(items, idsDefined).map(([item, id]) => {
-                const ref = doc(collection, id);
+                const ref = doc(col, id);
                 return transaction.set(ref, omit(item, "id"));
             });
 
@@ -179,7 +199,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
      */
     const getOrCreate = async (id: string, initialValue: Omit<T, "id">): Promise<T> => {
         const dataExisting = await runTransaction(firestore, async (transaction) => {
-            const ref = doc(collection, id);
+            const ref = doc(col, id);
             const refSnapshot = await transaction.get(ref);
             if (!refSnapshot.exists()) {
                 await transaction.set(ref, initialValue);
@@ -220,7 +240,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
      * @returns
      */
     const update = async (item: Partial<T> & { id: string }): Promise<void> => {
-        const ref = doc(collection, item.id);
+        const ref = doc(col, item.id);
         await updateDoc(ref, getFirestoreUpdateData(omit(item, "id")));
     };
 
@@ -232,7 +252,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
     const updateBatch = async (items: (Partial<T> & { id: string })[]): Promise<void> => {
         await runTransaction(firestore, async (transaction) => {
             const operations = items.map((item) => {
-                const ref = doc(collection, item.id);
+                const ref = doc(col, item.id);
                 return transaction.update(ref, getFirestoreUpdateData(omit(item, "id")));
             });
 
@@ -246,7 +266,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
      * @returns
      */
     const deleteById = async (id: string): Promise<void> => {
-        const ref = doc(collection, id);
+        const ref = doc(col, id);
         return deleteDoc(ref);
     };
 
@@ -256,7 +276,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
     const deleteBatch = async (ids: string[]): Promise<void> => {
         await runTransaction(firestore, async (transaction) => {
             const operations = ids.map((id) => {
-                const ref = doc(collection, id);
+                const ref = doc(col, id);
                 return transaction.delete(ref);
             });
 
@@ -269,9 +289,9 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
      */
     const deleteAll = async (): Promise<void> => {
         await runTransaction(firestore, async (transaction) => {
-            const snapshot = await getDocs(collection);
+            const snapshot = await getDocs(col);
             const operations = snapshot.docs.map((d) => {
-                const ref = doc(collection, d.id);
+                const ref = doc(col, d.id);
                 return transaction.delete(ref);
             });
 
@@ -287,10 +307,10 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
      */
     const increment = async (id: string, path: string, value: BigNumberish): Promise<void> => {
         await runTransaction(firestore, async (transaction) => {
-            const ref = doc(collection, id);
+            const ref = doc(col, id);
             const refSnapshot = await transaction.get(ref);
             if (!refSnapshot.exists()) {
-                throw new Error(`${collection.path}/${id} not found`);
+                throw new Error(`${col.path}/${id} not found`);
             }
             const incrValue = BigNumber.from(value);
             const currValueStr: BigNumberish = getFirestorePathValue(refSnapshot.data(), path) ?? "0";
@@ -312,7 +332,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
     };
 
     return {
-        collection,
+        collection: col,
         doc: getDocRef,
         get,
         getBatch,
@@ -333,16 +353,52 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
     };
 }
 
-export const usersCRUD = getFirebaseCRUD(usersCol);
-export const projectTemplatesCRUD = getFirebaseCRUD(projectTemplatesCol);
-export const requestTemplatesCRUD = getFirebaseCRUD(requestTemplatesCol);
-export const contractsCRUD = getFirebaseCRUD(contractsCol);
-export const projectsCRUD = getFirebaseCRUD(projectsCol);
-export const metadataContractsCRUD = getFirebaseCRUD(metadataContractsCol);
-export const metadataTokensCRUD = getFirebaseCRUD(metadataTokensCol);
-export const storesCRUD = getFirebaseCRUD(storesCol);
-export const storePrivatesCRUD = getFirebaseCRUD(storePrivatesCol);
-export const couponCampaignsCRUD = getFirebaseCRUD(couponCampaignsCol);
-export const couponDefinitionsCRUD = getFirebaseCRUD(couponDefinitionsCol);
-export const couponInstancesCRUD = getFirebaseCRUD(couponInstancesCol);
-export const emailsCRUD = getFirebaseCRUD(emailsCol);
+//ethmodels
+export const ethLogsCRUD = getFirebaseCRUD<EthLog>(firestore, "ethLogs");
+export const ethLogAbisCRUD = getFirebaseCRUD<EthLogAbi>(firestore, "ethLogAbis");
+export const ethTransactionsCRUD = getFirebaseCRUD<EthTransaction>(firestore, "ethTransactions");
+//shopify
+export const storesCRUD = getFirebaseCRUD<Store>(firestore, "stores");
+export const storePrivatesCRUD = getFirebaseCRUD<StorePrivate>(firestore, "storePrivates");
+export const couponCampaignsCRUD = getFirebaseCRUD<CouponCampaign>(firestore, "couponCampaigns");
+export const couponDefinitionsCRUD = getFirebaseCRUD<CouponDefinition>(firestore, "couponDefinitions");
+export const couponInstancesCRUD = getFirebaseCRUD<CouponInstance>(firestore, "couponInstances");
+//tokens
+export const metadataTokensCRUD = getFirebaseCRUD<MetadataTokens>(firestore, "metadataTokens");
+export const tokenLazyMintsReadOnlyCRUD = getFirebaseCRUD<TokenLazyMintReadOnly>(firestore, "tokenLazyMintsReadOnly");
+//users
+export const apiKeysPersonalCRUD = getFirebaseCRUD<ApiKeyPersonal>(firestore, "apiKeysPersonal");
+export const inviteCodesReadOnlyCRUD = getFirebaseCRUD<InviteCodeReadOnly>(firestore, "inviteCodesReadOnly");
+export const organizationsReadOnlyCRUD = getFirebaseCRUD<OrganizationReadOnly>(firestore, "organizationsReadOnly");
+export const usersCRUD = getFirebaseCRUD<User>(firestore, "users");
+export const dfnsWalletsReadOnlyCRUD = getFirebaseCRUD<DfnsWalletReadOnly>(firestore, "dfnsWalletsReadOnly");
+export const safeWalletsReadOnlyCRUD = getFirebaseCRUD<SafeWalletReadOnly>(firestore, "safeWalletsReadOnly");
+//gasexpense
+export const gasExpensesDailyPublicCRUD = getFirebaseCRUD<GasExpenseDailyPublic>(firestore, "gasExpensesDailyPublic");
+export const gasExpensesMonthlyPublicCRUD = getFirebaseCRUD<GasExpenseMonthlyPublic>(
+    firestore,
+    "gasExpensesMonthlyPublic",
+);
+export const gasExpensesDailyReadOnlyCRUD = getFirebaseCRUD<GasExpenseDailyReadOnly>(
+    firestore,
+    "gasExpensesDailyReadOnly",
+);
+export const gasExpensesMonthlyReadOnlyCRUD = getFirebaseCRUD<GasExpenseMonthlyReadOnly>(
+    firestore,
+    "gasExpensesMonthlyReadOnly",
+);
+export const gasBudgetRulesGlobalReadOnlyCRUD = getFirebaseCRUD<GasBudgetRuleGlobalReadOnly>(
+    firestore,
+    "gasBudgetRulesGlobalReadOnly",
+);
+export const gasBudgetRulesByContractReadOnlyCRUD = getFirebaseCRUD<GasBudgetRuleByContractReadOnly>(
+    firestore,
+    "gasBudgetRulesByContractReadOnly",
+);
+//other
+export const projectTemplatesCRUD = getFirebaseCRUD<ProjectTemplate>(firestore, "projectTemplates");
+export const requestTemplatesCRUD = getFirebaseCRUD<RequestTemplate>(firestore, "requestTemplates");
+export const contractsCRUD = getFirebaseCRUD<Contract>(firestore, "contracts");
+export const projectsCRUD = getFirebaseCRUD<Project>(firestore, "projects");
+export const metadataContractsCRUD = getFirebaseCRUD<MetadataContract>(firestore, "metadataContracts");
+export const emailsCRUD = getFirebaseCRUD<Email>(firestore, "emails");

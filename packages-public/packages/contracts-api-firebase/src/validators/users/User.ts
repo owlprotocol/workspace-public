@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TypeEqual, expectType } from "ts-expect";
-import type { User } from "../models/User.js";
+import type { User } from "../../models/users/User.js";
 
 const userZodInternal = z
     .object({

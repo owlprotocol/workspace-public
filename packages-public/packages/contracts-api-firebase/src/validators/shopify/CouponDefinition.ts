@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TypeEqual, expectType } from "ts-expect";
-import type { CouponDefinition } from "../models/CouponDefinition.js";
+import type { CouponDefinition } from "../../models/shopify/CouponDefinition.js";
 
 export const couponDefinition = z
     .object({

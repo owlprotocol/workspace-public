@@ -12,19 +12,21 @@ import { getAuth } from "firebase-admin/auth";
 import { getStorage } from "firebase-admin/storage";
 import type { AppOptions } from "firebase-admin";
 import { cert } from "firebase-admin/app";
-import { User } from "../models/User.js";
-import { Contract } from "../models/Contract.js";
-import { MetadataContract } from "../models/MetadataContract.js";
-import { MetadataTokens } from "../models/MetadataTokens.js";
-import { RequestTemplate } from "../models/RequestTemplate.js";
-import { ProjectTemplate } from "../models/ProjectTemplate.js";
-import { Project } from "../models/Project.js";
-import { Store } from "../models/Store.js";
-import { StorePrivate } from "../models/StorePrivate.js";
-import { CouponDefinition } from "../models/CouponDefinition.js";
-import { CouponCampaign } from "../models/CouponCampaign.js";
-import { CouponInstance } from "../models/CouponInstance.js";
-import { Email } from "../models/Email.js";
+import {
+    User,
+    Contract,
+    MetadataContract,
+    MetadataTokens,
+    RequestTemplate,
+    ProjectTemplate,
+    Project,
+    Store,
+    StorePrivate,
+    CouponDefinition,
+    CouponCampaign,
+    CouponInstance,
+    Email,
+} from "../models/index.js";
 
 function getFirebaseConfig() {
     let firebaseConfig: AppOptions = {};

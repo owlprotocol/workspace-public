@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import crypto from "node:crypto";
 import { usersCRUD } from "./crud.js";
-import { User } from "../models/User.js";
+import { User } from "../models/users/User.js";
 
 /**
  * Create user data with defaults

@@ -1,39 +1,41 @@
 /***** Generics for Firebase Admin CRUD *****/
-import { CollectionReference, Query, DocumentReference, UpdateData } from "firebase-admin/firestore";
+import { CollectionReference, Query, DocumentReference, UpdateData, Firestore } from "firebase-admin/firestore";
 import { zip, omit, reduce } from "lodash-es";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import crypto from "node:crypto";
-import {
-    contractsCol,
-    couponCampaignsCol,
-    couponDefinitionsCol,
-    couponInstancesCol,
-    firestore,
-    metadataContractsCol,
-    metadataTokensCol,
-    projectTemplatesCol,
-    projectsCol,
-    requestTemplatesCol,
-    storesCol,
-    storePrivatesCol,
-    usersCol,
-    emailsCol,
-} from "./config.js";
+import { firestore } from "./config.js";
 import { Contract } from "../models/Contract.js";
-import { User } from "../models/User.js";
+import { User } from "../models/users/User.js";
 import { Project } from "../models/Project.js";
 import { ProjectTemplate } from "../models/ProjectTemplate.js";
 import { RequestTemplate } from "../models/RequestTemplate.js";
 import { MetadataContract } from "../models/MetadataContract.js";
-import { MetadataTokens } from "../models/MetadataTokens.js";
+import { MetadataTokens } from "../models/tokens/MetadataTokens.js";
 import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
 import { getFirestorePathValue } from "../utils/getFirestorePathValue.js";
-import { Store } from "../models/Store.js";
-import { StorePrivate } from "../models/StorePrivate.js";
-import { CouponCampaign } from "../models/CouponCampaign.js";
-import { CouponDefinition } from "../models/CouponDefinition.js";
-import { CouponInstance } from "../models/CouponInstance.js";
+import { Store } from "../models/shopify/Store.js";
+import { StorePrivate } from "../models/shopify/StorePrivate.js";
+import { CouponCampaign } from "../models/shopify/CouponCampaign.js";
+import { CouponDefinition } from "../models/shopify/CouponDefinition.js";
+import { CouponInstance } from "../models/shopify/CouponInstance.js";
 import { Email } from "../models/Email.js";
+import {
+    ApiKeyPersonal,
+    DfnsWalletReadOnly,
+    EthLog,
+    EthLogAbi,
+    EthTransaction,
+    GasBudgetRuleByContractReadOnly,
+    GasBudgetRuleGlobalReadOnly,
+    GasExpenseDailyPublic,
+    GasExpenseDailyReadOnly,
+    GasExpenseMonthlyPublic,
+    GasExpenseMonthlyReadOnly,
+    InviteCodeReadOnly,
+    OrganizationReadOnly,
+    SafeWalletReadOnly,
+    TokenLazyMintReadOnly,
+} from "../models/index.js";
 
 export interface AccessControl<T, AccessControlParams extends any[] = []> {
     readAccessCheck?: (item: T, ...params: AccessControlParams) => boolean;
@@ -51,19 +53,21 @@ export interface QueryOptions {
 /**
  * Firebase CRUD Wrappers. create, get, getAll, update, rdelete, deleteAll
  * @template T Generic type for collection data (inlcudes id but this is implicit in Firebase database as path)
- * @param collection
+ * @param col
  * @param readAccessCheck admin sdk has no security rules. This wraps functions to check if it can read.
  * @param writeAccessCheck admin sdk has no security rules. This wraps functions to check if it can write.
  * @returns
  */
 export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, AccessControlParams extends any[] = []>(
-    collection: CollectionReference<Omit<T, "id">>,
+    firestore: Firestore,
+    collectionPath: string,
     options?: AccessControl<T, AccessControlParams>,
 ) {
+    const col = firestore.collection(collectionPath) as CollectionReference<Omit<T, "id">>;
     const { readAccessCheck, setAccessCheck, updateAccessCheck, deleteAccessCheck } = options ?? {};
 
     const getDocRef = (id: string): DocumentReference<Omit<T, "id">> => {
-        return collection.doc(id);
+        return col.doc(id);
     };
 
     /**
@@ -72,11 +76,11 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
      * @returns doc by id
      */
     const _get = async (id: string): Promise<T> => {
-        const ref = collection.doc(id);
+        const ref = col.doc(id);
         const refSnapshot = await ref.get();
 
         if (!refSnapshot.exists) {
-            throw new Error(`${collection.path}/${id} not found`);
+            throw new Error(`${col.path}/${id} not found`);
         }
 
         return { ...refSnapshot.data(), id: ref.id } as T;
@@ -92,7 +96,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
         const data = await _get(id);
         //check read access
         if (readAccessCheck && !readAccessCheck(data, ...params)) {
-            throw new Error(`${collection.path}/${id} permission-denied`);
+            throw new Error(`${col.path}/${id} permission-denied`);
         }
 
         return data;
@@ -107,7 +111,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
     const _getBatch = async (ids: string[]): Promise<(T | undefined)[]> => {
         const refSnapshots = await firestore.runTransaction(async (transaction) => {
             const operations = ids.map((id) => {
-                const ref = collection.doc(id);
+                const ref = col.doc(id);
                 return transaction.get(ref);
             });
 
@@ -140,7 +144,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
      * @returns docs
      */
     const _getAll = async (): Promise<T[]> => {
-        const snapshot = await collection.get();
+        const snapshot = await col.get();
         return snapshot.docs.map((refSnapshot) => {
             return { ...refSnapshot.data(), id: refSnapshot.id } as T;
         });
@@ -169,9 +173,9 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
      * @returns docs
      */
     const _getWhere = async (filter: Partial<Omit<T, "id">>, options?: QueryOptions): Promise<T[]> => {
-        let query: Query | CollectionReference = collection;
+        let query: Query | CollectionReference = col;
         Object.entries(filter).forEach(([key, value]) => {
-            if (!query) query = collection.where(key, "==", value);
+            if (!query) query = col.where(key, "==", value);
             else query = query.where(key, "==", value);
         });
         if (options?.orderBy) {
@@ -238,7 +242,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
 
         //check read access
         if (data && readAccessCheck && !readAccessCheck(data, ...params)) {
-            throw new Error(`${collection.path}/${data.id} permission-denied`);
+            throw new Error(`${col.path}/${data.id} permission-denied`);
         }
 
         return data;
@@ -251,7 +255,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
      */
     const _set = async (item: Omit<T, "id"> & { id?: string }): Promise<string> => {
         const idDefined = item.id ?? crypto.randomUUID();
-        const ref = collection.doc(idDefined);
+        const ref = col.doc(idDefined);
         await ref.set(omit(item, "id") as Omit<T, "id">);
         return idDefined;
     };
@@ -266,25 +270,25 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
         if (setAccessCheck) {
             //check write access on new data
             if (!item.id && !setAccessCheck(item, ...params)) {
-                throw new Error(`${collection.path}/${item.id ?? `${JSON.stringify(item)}`} permission-denied`);
+                throw new Error(`${col.path}/${item.id ?? `${JSON.stringify(item)}`} permission-denied`);
             }
 
             return await firestore.runTransaction(async (transaction) => {
                 if (item.id) {
                     //if item can exists (has id), check permissions
-                    const ref = collection.doc(item.id);
+                    const ref = col.doc(item.id);
                     const refSnapshot = await transaction.get(ref);
                     if (refSnapshot.exists) {
                         const data = { ...refSnapshot.data()!, id: refSnapshot.id } as T;
                         //check write access on existing data
                         if (!setAccessCheck(data, ...params)) {
-                            throw new Error(`${collection.path}/${ref.id} permission-denied`);
+                            throw new Error(`${col.path}/${ref.id} permission-denied`);
                         }
                     }
                 }
 
                 const idDefined = item.id ?? crypto.randomUUID();
-                const ref = collection.doc(idDefined);
+                const ref = col.doc(idDefined);
                 await transaction.set(ref, omit(item, "id") as Omit<T, "id">);
 
                 return idDefined;
@@ -303,7 +307,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
         const idsDefined = items.map((item) => item.id ?? crypto.randomUUID());
         await firestore.runTransaction(async (transaction) => {
             const operations = zip(items, idsDefined).map(([item, id]) => {
-                const ref = collection.doc(id!);
+                const ref = col.doc(id!);
                 return transaction.set(ref, omit(item, "id") as Omit<T, "id">);
             });
 
@@ -324,7 +328,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
             items.forEach((item) => {
                 //check write access on new data
                 if (!item.id && !setAccessCheck(item, ...params)) {
-                    throw new Error(`${collection.path}/${`${JSON.stringify(item)}`} permission-denied`);
+                    throw new Error(`${col.path}/${`${JSON.stringify(item)}`} permission-denied`);
                 }
             });
 
@@ -335,7 +339,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
                     //if items can exists (has id), check permissions
                     const snapshot = await Promise.all(
                         idsDefined.map((id) => {
-                            const ref = collection.doc(id);
+                            const ref = col.doc(id);
                             return transaction.get(ref);
                         }),
                     );
@@ -344,14 +348,14 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
                             const data = { ...ref.data()!, id: ref.id } as T;
                             //check write access on existing data
                             if (!setAccessCheck(data, ...params)) {
-                                throw new Error(`${collection.path}/${ref.id} permission-denied`);
+                                throw new Error(`${col.path}/${ref.id} permission-denied`);
                             }
                         }
                     });
                 }
 
                 const operations = zip(items, idsDefined).map(([item, id]) => {
-                    const ref = collection.doc(id!);
+                    const ref = col.doc(id!);
                     return transaction.set(ref, omit(item, "id") as Omit<T, "id">);
                 });
 
@@ -372,7 +376,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
      */
     const _getOrCreate = async (id: string, initalValue: Omit<T, "id">): Promise<T> => {
         const dataExisting = await firestore.runTransaction(async (transaction) => {
-            const ref = collection.doc(id);
+            const ref = col.doc(id);
             const refSnapshot = await transaction.get(ref);
             if (!refSnapshot.exists) {
                 await transaction.set(ref, initalValue);
@@ -394,13 +398,13 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
      */
     const getOrCreate = async (id: string, initialValue: Omit<T, "id">, ...params: AccessControlParams): Promise<T> => {
         const dataExisting = await firestore.runTransaction(async (transaction) => {
-            const ref = collection.doc(id);
+            const ref = col.doc(id);
             const refSnapshot = await transaction.get(ref);
             if (!refSnapshot.exists) {
                 if (setAccessCheck) {
                     //check write access on new data
                     if (!setAccessCheck(initialValue, ...params)) {
-                        throw new Error(`${collection.path}/${id} permission-denied`);
+                        throw new Error(`${col.path}/${id} permission-denied`);
                     }
                 }
                 await transaction.set(ref, initialValue);
@@ -410,7 +414,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
                 if (readAccessCheck) {
                     //check write access on new data
                     if (!readAccessCheck({ ...data, id } as T, ...params)) {
-                        throw new Error(`${collection.path}/${id} permission-denied`);
+                        throw new Error(`${col.path}/${id} permission-denied`);
                     }
                 }
 
@@ -471,7 +475,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
      * @returns
      */
     const _update = async (item: Partial<T> & { id: string }): Promise<void> => {
-        const ref = collection.doc(item.id);
+        const ref = col.doc(item.id);
         await ref.update(getFirestoreUpdateData(omit(item, "id")) as UpdateData<Omit<T, "id">>);
     };
 
@@ -484,16 +488,16 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
     const update = async (item: Partial<T> & { id: string }, ...params: AccessControlParams): Promise<void> => {
         if (updateAccessCheck) {
             await firestore.runTransaction(async (transaction) => {
-                const ref = collection.doc(item.id);
+                const ref = col.doc(item.id);
                 const refSnapshot = await transaction.get(ref);
                 if (!refSnapshot.exists) {
-                    throw new Error(`${collection.path}/${ref.id} not found`);
+                    throw new Error(`${col.path}/${ref.id} not found`);
                 }
 
                 const data = { ...refSnapshot.data()!, id: refSnapshot.id } as T;
                 //check write access on existing data
                 if (!updateAccessCheck(data, ...params)) {
-                    throw new Error(`${collection.path}/${ref.id} permission-denied`);
+                    throw new Error(`${col.path}/${ref.id} permission-denied`);
                 }
 
                 await transaction.update(ref, getFirestoreUpdateData(omit(item, "id")));
@@ -511,7 +515,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
     const _updateBatch = async (items: (Partial<T> & { id: string })[]): Promise<void> => {
         await firestore.runTransaction(async (transaction) => {
             const operations = items.map((item) => {
-                const ref = collection.doc(item.id);
+                const ref = col.doc(item.id);
                 return transaction.update(ref, getFirestoreUpdateData(omit(item, "id")));
             });
 
@@ -534,23 +538,23 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
             await firestore.runTransaction(async (transaction) => {
                 const snapshot = await Promise.all(
                     idsDefined.map((id) => {
-                        const ref = collection.doc(id);
+                        const ref = col.doc(id);
                         return transaction.get(ref);
                     }),
                 );
                 snapshot.forEach((ref) => {
                     if (!ref.exists) {
-                        throw new Error(`${collection.path}/${ref.id} not found`);
+                        throw new Error(`${col.path}/${ref.id} not found`);
                     }
                     const data = { ...ref.data()!, id: ref.id } as T;
                     //check write access on existing data
                     if (!updateAccessCheck(data, ...params)) {
-                        throw new Error(`${collection.path}/${ref.id} permission-denied`);
+                        throw new Error(`${col.path}/${ref.id} permission-denied`);
                     }
                 });
 
                 const operations = zip(items, idsDefined).map(([item, id]) => {
-                    const ref = collection.doc(id!);
+                    const ref = col.doc(id!);
                     return transaction.update(ref, getFirestoreUpdateData(omit(item, "id")));
                 });
 
@@ -567,7 +571,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
      * @returns
      */
     const _deleteById = async (id: string): Promise<FirebaseFirestore.WriteResult> => {
-        const ref = collection.doc(id);
+        const ref = col.doc(id);
         return ref.delete();
     };
 
@@ -580,16 +584,16 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
     const deleteById = async (id: string, ...params: AccessControlParams): Promise<void> => {
         if (deleteAccessCheck) {
             await firestore.runTransaction(async (transaction) => {
-                const ref = collection.doc(id);
+                const ref = col.doc(id);
                 const refSnapshot = await transaction.get(ref);
                 if (!refSnapshot.exists) {
-                    throw new Error(`${collection.path}/${ref.id} not found`);
+                    throw new Error(`${col.path}/${ref.id} not found`);
                 }
 
                 const data = { ...refSnapshot.data()!, id: refSnapshot.id } as T;
                 //check write access on existing data
                 if (!deleteAccessCheck(data, ...params)) {
-                    throw new Error(`${collection.path}/${ref.id} permission-denied`);
+                    throw new Error(`${col.path}/${ref.id} permission-denied`);
                 }
 
                 await transaction.delete(ref);
@@ -605,7 +609,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
     const _deleteBatch = async (ids: string[]): Promise<void> => {
         await firestore.runTransaction(async (transaction) => {
             const operations = ids.map((id) => {
-                const ref = collection.doc(id);
+                const ref = col.doc(id);
                 return transaction.delete(ref);
             });
 
@@ -624,23 +628,23 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
             await firestore.runTransaction(async (transaction) => {
                 const snapshot = await Promise.all(
                     ids.map((id) => {
-                        const ref = collection.doc(id);
+                        const ref = col.doc(id);
                         return transaction.get(ref);
                     }),
                 );
                 snapshot.forEach((ref) => {
                     if (!ref.exists) {
-                        throw new Error(`${collection.path}/${ref.id} not found`);
+                        throw new Error(`${col.path}/${ref.id} not found`);
                     }
                     const data = { ...ref.data()!, id: ref.id } as T;
                     //check write access on existing data
                     if (!deleteAccessCheck(data, ...params)) {
-                        throw new Error(`${collection.path}/${ref.id} permission-denied`);
+                        throw new Error(`${col.path}/${ref.id} permission-denied`);
                     }
                 });
 
                 const operations = ids.map((id) => {
-                    const ref = collection.doc(id);
+                    const ref = col.doc(id);
                     return transaction.delete(ref);
                 });
 
@@ -656,9 +660,9 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
      */
     const _deleteAll = async (): Promise<void> => {
         await firestore.runTransaction(async (transaction) => {
-            const snapshot = await collection.get();
+            const snapshot = await col.get();
             const operations = snapshot.docs.map((doc) => {
-                const ref = collection.doc(doc.id);
+                const ref = col.doc(doc.id);
                 return transaction.delete(ref);
             });
 
@@ -674,18 +678,18 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
     const deleteAll = async (...params: AccessControlParams): Promise<void> => {
         if (deleteAccessCheck) {
             await firestore.runTransaction(async (transaction) => {
-                const snapshot = await collection.get();
+                const snapshot = await col.get();
 
                 snapshot.forEach((ref) => {
                     const data = { ...ref.data()!, id: ref.id } as T;
                     //check write access on existing data
                     if (!deleteAccessCheck(data, ...params)) {
-                        throw new Error(`${collection.path}/${ref.id} permission-denied`);
+                        throw new Error(`${col.path}/${ref.id} permission-denied`);
                     }
                 });
 
                 const operations = snapshot.docs.map((doc) => {
-                    const ref = collection.doc(doc.id);
+                    const ref = col.doc(doc.id);
                     return transaction.delete(ref);
                 });
 
@@ -704,10 +708,10 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
      */
     const _increment = async (id: string, path: string, value: BigNumberish): Promise<void> => {
         await firestore.runTransaction(async (transaction) => {
-            const ref = collection.doc(id);
+            const ref = col.doc(id);
             const refSnapshot = await transaction.get(ref);
             if (!refSnapshot.exists) {
-                throw new Error(`${collection.path}/${id} not found`);
+                throw new Error(`${col.path}/${id} not found`);
             }
 
             const incrValue = BigNumber.from(value);
@@ -733,15 +737,15 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
         ...params: AccessControlParams
     ): Promise<void> => {
         await firestore.runTransaction(async (transaction) => {
-            const ref = collection.doc(id);
+            const ref = col.doc(id);
             const refSnapshot = await transaction.get(ref);
             if (!refSnapshot.exists) {
-                throw new Error(`${collection.path}/${id} not found`);
+                throw new Error(`${col.path}/${id} not found`);
             }
             const data = { ...refSnapshot.data()!, id: refSnapshot.id } as T;
             //check write access on existing data
             if (updateAccessCheck && !updateAccessCheck(data, ...params)) {
-                throw new Error(`${collection.path}/${ref.id} permission-denied`);
+                throw new Error(`${col.path}/${ref.id} permission-denied`);
             }
 
             const incrValue = BigNumber.from(value);
@@ -780,7 +784,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
     };
 
     return {
-        collection,
+        collection: col,
         doc: getDocRef,
         _get,
         get,
@@ -817,100 +821,150 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
     };
 }
 
-export enum AdminRoles {
-    ADMIN = "ADMIN",
-}
+const ownerCheck = ({ owner }: { owner?: string }, userId: string) => owner === userId;
+const ownerOnlyChecks = {
+    readAccessCheck: ownerCheck,
+    setAccessCheck: ownerCheck,
+    updateAccessCheck: ownerCheck,
+    deleteAccessCheck: ownerCheck,
+};
+const readOnlyChecks = {
+    readAccessCheck: () => true,
+    setAccessCheck: () => false,
+    updateAccessCheck: () => false,
+    deleteAccessCheck: () => false,
+};
+const ownerOnlyWriteChecks = {
+    readAccessCheck: () => true,
+    setAccessCheck: ownerCheck,
+    updateAccessCheck: ownerCheck,
+    deleteAccessCheck: ownerCheck,
+};
 
-export const usersCRUD = getFirebaseCRUD<User, [userId: AdminRoles | string]>(usersCol, {
-    readAccessCheck: (user, userId) => userId === AdminRoles.ADMIN || user.id === userId,
-    setAccessCheck: (user, userId) => userId === AdminRoles.ADMIN || user.id === undefined || user.id === userId,
-    updateAccessCheck: (user, userId) => userId === AdminRoles.ADMIN || user.id === userId,
-    deleteAccessCheck: (user, userId) => userId === AdminRoles.ADMIN || user.id === userId,
-});
-export const projectTemplatesCRUD = getFirebaseCRUD<ProjectTemplate, [userId: AdminRoles | string]>(
-    projectTemplatesCol,
-    {
-        readAccessCheck: () => true,
-        setAccessCheck: (_, userId) => userId === AdminRoles.ADMIN,
-        updateAccessCheck: (_, userId) => userId === AdminRoles.ADMIN,
-        deleteAccessCheck: (_, userId) => userId === AdminRoles.ADMIN,
-    },
+//ethmodels
+export const ethLogsCRUD = getFirebaseCRUD<EthLog, [userId: string]>(firestore, "ethLogs", readOnlyChecks);
+export const ethLogAbisCRUD = getFirebaseCRUD<EthLogAbi, [userId: string]>(firestore, "ethLogAbis", readOnlyChecks);
+export const ethTransactionsCRUD = getFirebaseCRUD<EthTransaction, [userId: string]>(
+    firestore,
+    "ethTransactions",
+    readOnlyChecks,
 );
-export const requestTemplatesCRUD = getFirebaseCRUD<RequestTemplate, [userId: AdminRoles | string]>(
-    requestTemplatesCol,
-    {
-        readAccessCheck: (requestTemplate, userId) => userId === AdminRoles.ADMIN || requestTemplate.owner === userId,
-        setAccessCheck: (requestTemplate, userId) => userId === AdminRoles.ADMIN || requestTemplate.owner === userId,
-        updateAccessCheck: (requestTemplate, userId) => userId === AdminRoles.ADMIN || requestTemplate.owner === userId,
-        deleteAccessCheck: (requestTemplate, userId) => userId === AdminRoles.ADMIN || requestTemplate.owner === userId,
-    },
+//shopify
+export const storesCRUD = getFirebaseCRUD<Store, [userId: string]>(firestore, "stores", ownerOnlyWriteChecks);
+export const storePrivatesCRUD = getFirebaseCRUD<StorePrivate, [userId: string]>(
+    firestore,
+    "storePrivates",
+    ownerOnlyChecks,
 );
-export const contractsCRUD = getFirebaseCRUD<Contract, [userId: AdminRoles | string]>(contractsCol, {
-    readAccessCheck: (contract, userId) => userId === AdminRoles.ADMIN || contract.owner === userId,
-    setAccessCheck: (contract, userId) => userId === AdminRoles.ADMIN || contract.owner === userId,
-    updateAccessCheck: (contract, userId) => userId === AdminRoles.ADMIN || contract.owner === userId,
-    deleteAccessCheck: (contract, userId) => userId === AdminRoles.ADMIN || contract.owner === userId,
-});
-export const projectsCRUD = getFirebaseCRUD<Project, [userId: AdminRoles | string]>(projectsCol, {
-    readAccessCheck: (project, userId) => userId === AdminRoles.ADMIN || project.owner === userId,
-    setAccessCheck: (project, userId) => userId === AdminRoles.ADMIN || project.owner === userId,
-    updateAccessCheck: (project, userId) => userId === AdminRoles.ADMIN || project.owner === userId,
-    deleteAccessCheck: (project, userId) => userId === AdminRoles.ADMIN || project.owner === userId,
-});
-export const metadataContractsCRUD = getFirebaseCRUD<MetadataContract, [userId: AdminRoles | string]>(
-    metadataContractsCol,
-    {
-        readAccessCheck: (metadataContract, userId) => userId === AdminRoles.ADMIN || metadataContract.owner === userId,
-        setAccessCheck: (metadataContract, userId) => userId === AdminRoles.ADMIN || metadataContract.owner === userId,
-        updateAccessCheck: (metadataContract, userId) =>
-            userId === AdminRoles.ADMIN || metadataContract.owner === userId,
-        deleteAccessCheck: (metadataContract, userId) =>
-            userId === AdminRoles.ADMIN || metadataContract.owner === userId,
-    },
+export const couponCampaignsCRUD = getFirebaseCRUD<CouponCampaign, [userId: string]>(
+    firestore,
+    "couponCampaigns",
+    ownerOnlyWriteChecks,
 );
-export const metadataTokensCRUD = getFirebaseCRUD<MetadataTokens, [userId: AdminRoles | string]>(metadataTokensCol, {
-    readAccessCheck: (metadataTokens, userId) => userId === AdminRoles.ADMIN || metadataTokens.owner === userId,
-    setAccessCheck: (metadataTokens, userId) => userId === AdminRoles.ADMIN || metadataTokens.owner === userId,
-    updateAccessCheck: (metadataTokens, userId) => userId === AdminRoles.ADMIN || metadataTokens.owner === userId,
-    deleteAccessCheck: (metadataTokens, userId) => userId === AdminRoles.ADMIN || metadataTokens.owner === userId,
-});
-export const storesCRUD = getFirebaseCRUD<Store, [userId: AdminRoles | string]>(storesCol, {
-    readAccessCheck: () => true,
-    setAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
-    updateAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
-    deleteAccessCheck: (store, userId) => userId === AdminRoles.ADMIN || store.owner === userId,
-});
-export const storePrivatesCRUD = getFirebaseCRUD<StorePrivate, [userId: AdminRoles | string]>(storePrivatesCol, {
-    readAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
-    setAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
-    updateAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
-    deleteAccessCheck: (storePrivate, userId) => userId === AdminRoles.ADMIN || storePrivate.owner === userId,
-});
-export const couponCampaignsCRUD = getFirebaseCRUD<CouponCampaign, [userId: AdminRoles | string]>(couponCampaignsCol, {
-    readAccessCheck: () => true,
-    setAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
-    updateAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
-    deleteAccessCheck: (couponCampaign, userId) => userId === AdminRoles.ADMIN || couponCampaign.owner === userId,
-});
-export const couponDefinitionsCRUD = getFirebaseCRUD<CouponDefinition, [userId: AdminRoles | string]>(
-    couponDefinitionsCol,
-    {
-        readAccessCheck: () => true,
-        setAccessCheck: (couponDefinition, userId) => userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
-        updateAccessCheck: (couponDefinition, userId) =>
-            userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
-        deleteAccessCheck: (couponDefinition, userId) =>
-            userId === AdminRoles.ADMIN || couponDefinition.owner === userId,
-    },
+export const couponDefinitionsCRUD = getFirebaseCRUD<CouponDefinition, [userId: string]>(
+    firestore,
+    "couponDefinitions",
+    ownerOnlyWriteChecks,
 );
-export const couponInstancesCRUD = getFirebaseCRUD<CouponInstance, [userId: AdminRoles | string]>(couponInstancesCol, {
-    readAccessCheck: () => true,
-    setAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
-    updateAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
-    deleteAccessCheck: (couponInstance, userId) => userId === AdminRoles.ADMIN || couponInstance.owner === userId,
+export const couponInstancesCRUD = getFirebaseCRUD<CouponInstance, [userId: string]>(
+    firestore,
+    "couponInstances",
+    ownerOnlyWriteChecks,
+);
+//tokens
+export const metadataTokensCRUD = getFirebaseCRUD<MetadataTokens, [userId: string]>(
+    firestore,
+    "metadataTokens",
+    ownerOnlyChecks,
+);
+export const tokenLazyMintsReadOnlyCRUD = getFirebaseCRUD<TokenLazyMintReadOnly, [userId: string]>(
+    firestore,
+    "tokenLazyMintsReadOnly",
+    ownerOnlyChecks,
+);
+//users
+export const apiKeysPersonalCRUD = getFirebaseCRUD<ApiKeyPersonal, [userId: string]>(
+    firestore,
+    "apiKeysPersonal",
+    ownerOnlyChecks,
+);
+export const inviteCodesReadOnlyCRUD = getFirebaseCRUD<InviteCodeReadOnly, [userId: string]>(
+    firestore,
+    "inviteCodesReadOnly",
+    ownerOnlyChecks,
+);
+export const organizationsReadOnlyCRUD = getFirebaseCRUD<OrganizationReadOnly, [userId: string]>(
+    firestore,
+    "organizationsReadOnly",
+    ownerOnlyChecks,
+);
+export const usersCRUD = getFirebaseCRUD<User, [userId: string]>(firestore, "users", {
+    readAccessCheck: (user, userId) => user.id === userId,
+    setAccessCheck: (user, userId) => user.id === undefined || user.id === userId,
+    updateAccessCheck: (user, userId) => user.id === userId,
+    deleteAccessCheck: (user, userId) => user.id === userId,
 });
+export const dfnsWalletsReadOnlyCRUD = getFirebaseCRUD<DfnsWalletReadOnly, [userId: string]>(
+    firestore,
+    "dfnsWalletsReadOnly",
+    ownerOnlyChecks,
+);
+export const safeWalletsReadOnlyCRUD = getFirebaseCRUD<SafeWalletReadOnly, [userId: string]>(
+    firestore,
+    "safeWalletsReadOnly",
+    ownerOnlyChecks,
+);
+//gasexpense
+export const gasExpensesDailyPublicCRUD = getFirebaseCRUD<GasExpenseDailyPublic, [userId: string]>(
+    firestore,
+    "gasExpensesDailyPublic",
+    readOnlyChecks,
+);
+export const gasExpensesMonthlyPublicCRUD = getFirebaseCRUD<GasExpenseMonthlyPublic, [userId: string]>(
+    firestore,
+    "gasExpensesMonthlyPublic",
+    readOnlyChecks,
+);
+export const gasExpensesDailyReadOnlyCRUD = getFirebaseCRUD<GasExpenseDailyReadOnly, [userId: string]>(
+    firestore,
+    "gasExpensesDailyReadOnly",
+    ownerOnlyChecks,
+);
+export const gasExpensesMonthlyReadOnlyCRUD = getFirebaseCRUD<GasExpenseMonthlyReadOnly, [userId: string]>(
+    firestore,
+    "gasExpensesMonthlyReadOnly",
+    ownerOnlyChecks,
+);
+export const gasBudgetRulesGlobalReadOnlyCRUD = getFirebaseCRUD<GasBudgetRuleGlobalReadOnly, [userId: string]>(
+    firestore,
+    "gasBudgetRulesGlobalReadOnly",
+    ownerOnlyChecks,
+);
+export const gasBudgetRulesByContractReadOnlyCRUD = getFirebaseCRUD<GasBudgetRuleByContractReadOnly, [userId: string]>(
+    firestore,
+    "gasBudgetRulesByContractReadOnly",
+    ownerOnlyChecks,
+);
+//other
+export const projectTemplatesCRUD = getFirebaseCRUD<ProjectTemplate, [userId: string]>(
+    firestore,
+    "projectTemplates",
+    readOnlyChecks,
+);
+export const requestTemplatesCRUD = getFirebaseCRUD<RequestTemplate, [userId: string]>(
+    firestore,
+    "requestTemplates",
+    ownerOnlyChecks,
+);
+export const contractsCRUD = getFirebaseCRUD<Contract, [userId: string]>(firestore, "contracts", ownerOnlyChecks);
+export const projectsCRUD = getFirebaseCRUD<Project, [userId: string]>(firestore, "projects", ownerOnlyChecks);
+export const metadataContractsCRUD = getFirebaseCRUD<MetadataContract, [userId: string]>(
+    firestore,
+    "metadataContracts",
+    ownerOnlyChecks,
+);
 
-export const emailsCRUD = getFirebaseCRUD<Email, [userId: AdminRoles | string]>(emailsCol, {
+export const emailsCRUD = getFirebaseCRUD<Email, [userId: string]>(firestore, "emails", {
     readAccessCheck: () => false,
     setAccessCheck: () => true,
     updateAccessCheck: () => false,

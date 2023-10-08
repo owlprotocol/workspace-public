@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TypeEqual, expectType } from "ts-expect";
-import type { StorePrivate } from "../models/StorePrivate.js";
+import type { StorePrivate } from "../../models/shopify/StorePrivate.js";
 
 export const storePrivateZod = z
     .object({

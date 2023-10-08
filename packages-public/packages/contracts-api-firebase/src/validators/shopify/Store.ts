@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TypeEqual, expectType } from "ts-expect";
-import type { Store } from "../models/Store.js";
+import type { Store } from "../../models/shopify/Store.js";
 
 export const storeZod = z
     .object({

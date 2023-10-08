@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { TypeEqual, expectType } from "ts-expect";
 import { tokenMetadataAttributeZod } from "./TokenMetadataAttribute.js";
-import type { TokenMetadataLocalization, TokenMetadata } from "../models/TokenMetadata.js";
+import type { TokenMetadataLocalization, TokenMetadata } from "../../models/tokens/TokenMetadata.js";
 
 export const tokenMetadataLocalizationZod = z
     .object({

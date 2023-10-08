@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TypeEqual, expectType } from "ts-expect";
-import type { MetadataTokens } from "../models/MetadataTokens.js";
+import type { MetadataTokens } from "../../models/tokens/MetadataTokens.js";
 
 export const metadataTokensZod = z
     .object({
