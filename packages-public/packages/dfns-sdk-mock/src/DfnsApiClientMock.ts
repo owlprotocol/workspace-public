@@ -23,8 +23,8 @@ export interface DfnsApiClientInterface {
 export class DfnsApiClientMock implements DfnsApiClientInterface {
     private _wallets: WalletsClientMock;
 
-    constructor(mnemonic?: string) {
-        this._wallets = new WalletsClientMock(mnemonic);
+    constructor(mnemonic?: string, createTimeout = 0) {
+        this._wallets = new WalletsClientMock(mnemonic, createTimeout);
     }
 
     get assets(): AssetsClient {

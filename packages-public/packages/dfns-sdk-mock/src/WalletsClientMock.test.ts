@@ -431,4 +431,32 @@ describe("WalletClient.test.ts", () => {
             expect(txSignedDfns, "tsSignedDfns != txSignedEthers").toBe(txSignedEthers);
         });
     });
+
+    describe("WalletsClient async", () => {
+        const network = "Ethereum" as BlockchainNetwork.Ethereum;
+
+        test("getWallet", async () => {
+            const client = new WalletsClientMock(mnemonic, 10);
+            //Wallet Create Test
+            const wallet = await client.createWallet({
+                body: {
+                    network,
+                },
+            });
+            expect(wallet).toBeDefined();
+            expect(wallet.status).toBe("Creating");
+
+            const walletGet = await client.getWallet({ walletId: wallet.id });
+            expect(walletGet).toBeDefined();
+            expect(walletGet.status).toBe("Creating");
+            expect(walletGet.address).toBeUndefined();
+
+            //Wait for async resolve to switch to Active
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            const walletGet2 = await client.getWallet({ walletId: wallet.id });
+            expect(walletGet2).toBeDefined();
+            expect(walletGet2.status).toBe("Active");
+            expect(walletGet2.address).toBe(signerAddress);
+        });
+    });
 });

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type * as T from "@dfns/sdk/codegen/Wallets/types.js";
-import type {
+import {
     GenerateSignatureBody,
     KeyCurve,
     KeyScheme,
@@ -54,9 +54,16 @@ export class WalletsClientMock implements WalletsClientInterface {
     private wallets: Record<string, Wallet | undefined> = {};
     private privateKeys: Record<string, string | undefined> = {};
     private signatures: Record<string, SignatureRequest | undefined> = {};
+    private createTimeout: number;
 
-    constructor(mnemonic?: string) {
+    /**
+     * Create mock wallet client
+     * @param mnemonic key generation mnemonic
+     * @param createTimeout wallet creation timeout in ms
+     */
+    constructor(mnemonic?: string, createTimeout = 0) {
         this.hdNode = mnemonic ? utils.HDNode.fromMnemonic(mnemonic) : utils.HDNode.fromSeed(utils.randomBytes(32));
+        this.createTimeout = createTimeout;
     }
 
     /**
@@ -101,10 +108,11 @@ export class WalletsClientMock implements WalletsClientInterface {
         if (this.wallets[id]) {
             return this.wallets[id]!;
         }
+        const dateCreated = new Date().toISOString();
+
+        //Private Key
         //mod to max key derivation index
         const keyDerivation = externalId ? ethers.BigNumber.from(id).mod(1000000000).toString() : `${walletsCount}`;
-        //Status
-        const status = "Active" as WalletStatus.Active;
         //Signing Key
         const pkey = this.hdNode.derivePath(`m/44'/60'/0'/0/${keyDerivation}`).privateKey;
         const signer = new ethers.Wallet(pkey);
@@ -119,23 +127,49 @@ export class WalletsClientMock implements WalletsClientInterface {
         };
         //Similar to API behaviour, address undefined for non-blockchain network
         const address = network === "KeyECDSA" || network === "KeyEdDSA" ? undefined : await signer.getAddress();
-        const dateCreated = new Date().toISOString();
-        const wallet = {
-            id,
-            network,
-            status,
-            signingKey,
-            address,
-            name,
-            externalId,
-            tags: tags ?? [],
-            dateCreated,
-        };
 
-        this.wallets[id] = wallet;
-        this.privateKeys[id] = pkey;
+        if (this.createTimeout === 0) {
+            //No timeout
+            const status = "Active" as WalletStatus.Active;
 
-        return wallet;
+            const wallet = {
+                id,
+                network,
+                status,
+                signingKey,
+                address,
+                name,
+                externalId,
+                tags: tags ?? [],
+                dateCreated,
+            };
+
+            this.wallets[id] = wallet;
+            this.privateKeys[id] = pkey;
+            return wallet;
+        } else {
+            //Timeout, set wallet as creating
+            const status = "Creating" as WalletStatus.Creating;
+
+            const wallet = {
+                id,
+                network,
+                status,
+                name,
+                externalId,
+                tags: tags ?? [],
+                dateCreated,
+            };
+            this.wallets[id] = wallet;
+
+            setTimeout(() => {
+                const walletNew = { ...wallet, signingKey, address, status: "Active" as WalletStatus.Active };
+                this.wallets[id] = walletNew;
+                this.privateKeys[id] = pkey;
+            }, this.createTimeout);
+
+            return wallet;
+        }
     }
     //TODO: implement this
     async getWallet(request: T.GetWalletRequest): Promise<T.GetWalletResponse> {
@@ -181,6 +215,8 @@ export class WalletsClientMock implements WalletsClientInterface {
         const { walletId, body } = request;
         const wallet = this.wallets[walletId];
         if (!wallet) throw new Error(`Wallet ${walletId} not found!`);
+        if (wallet.status != ("Active" as WalletStatus.Active)) throw new Error(`Wallet ${walletId} not Active!`);
+
         const privateKey = this.privateKeys[walletId];
         if (!privateKey) throw new Error(`Private key for wallet ${walletId} not found!`);
         const signer = new ethers.Wallet(privateKey);
@@ -230,6 +266,7 @@ export class WalletsClientMock implements WalletsClientInterface {
         const { walletId, signatureId } = request;
         const wallet = this.wallets[walletId];
         if (!wallet) throw new Error(`Wallet ${walletId} not found!`);
+        if (wallet.status != ("Active" as WalletStatus.Active)) throw new Error(`Wallet ${walletId} not Active!`);
         const response = this.signatures[signatureId];
         if (!response) throw new Error(`Signature ${signatureId} not found!`);
 
