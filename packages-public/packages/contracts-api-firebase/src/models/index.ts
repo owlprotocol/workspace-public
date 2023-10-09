@@ -16,3 +16,4 @@ export * from "./RelayMethod.js";
 export * from "./RequestTemplate.js";
 export * from "./users/User.js";
 export * from "./Email.js";
+export * from "./Blog.js";

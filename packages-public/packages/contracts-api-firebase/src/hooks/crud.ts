@@ -28,7 +28,9 @@ import {
     storesCol,
     usersCol,
     emailsCol,
+    blogsCol,
 } from "../web/config.js";
+import { Blog } from "../index.js";
 
 export interface QueryOptions {
     limit?: number;
@@ -149,3 +151,4 @@ export const couponCampaignsHooks = getFirebaseHooks<CouponCampaign>(couponCampa
 export const couponDefinitionsHooks = getFirebaseHooks<CouponDefinition>(couponDefinitionsCol);
 export const couponInstancesHooks = getFirebaseHooks<CouponInstance>(couponInstancesCol);
 export const emailsHooks = getFirebaseHooks<Email>(emailsCol);
+export const blogsHooks = getFirebaseHooks<Blog>(blogsCol);
