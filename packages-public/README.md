@@ -69,9 +69,9 @@ pnpm i
 
 Packages have different licenses depending on their nature & forks.
 
--   @owlprotocol/contracts-api: All Rights Reserved. (More opensource license under research)
--   @owlprotocol/chains: Apache-2. Forked from @thirdweb-dev/chains which is Apache-2.
--   All other packages: MIT License
+- @owlprotocol/contracts-api: All Rights Reserved. (More opensource license under research)
+- @owlprotocol/chains: Apache-2. Forked from @thirdweb-dev/chains which is Apache-2.
+- All other packages: MIT License
 
 ## Docs
 
