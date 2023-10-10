@@ -89,7 +89,7 @@ export const firebaseApp = getFirebaseApp();
 export const firestore = getFirestore(firebaseApp);
 export const auth = getAuth(firebaseApp);
 
-// NOTE: storage.apiEndponit stores the prefix of each file's publicUrl
+// NOTE: storage.apiEndpoint stores the prefix of each file's publicUrl
 export const storage = getStorage(firebaseApp);
 export const bucket = storage.bucket();
 

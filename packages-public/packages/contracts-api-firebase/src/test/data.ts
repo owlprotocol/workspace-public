@@ -15,7 +15,7 @@ const uuid5 = "00000000-0000-0000-0000-000000000005";
 export const testUserId = uuid1;
 export const testUserPersonal: UserPersonal = {
     id: testUserId,
-    email: "johndoe@gmail.com",
+    email: "johndoe@owlprotocol.xyz",
     apiKey: uuid2,
     gnosisAddress: {},
     topupTotals: {
@@ -35,7 +35,7 @@ export const testUserPrivate: UserPrivate = {
 };
 export const testUser: User = {
     id: testUserId,
-    email: "johndoe@gmail.com",
+    email: "johndoe@owlprotocol.xyz",
     apiKey: uuid2,
     dfnsId: uuid3,
     gnosisAddress: {},
