@@ -7,11 +7,8 @@ export function generateDeploymentsExport() {
     }
 
     const networks = readdirSync(deploymentsFolder);
-    let networksExport = "";
     networks.forEach((n) => {
         if (n != "index.ts") {
-            networksExport = `${networksExport}export * as ${n} from "./${n}/index.js";\n`;
-
             let deploymentsExport = "";
             deploymentsExport = `${deploymentsExport}/* eslint-disable import/no-unresolved */\n`;
             deploymentsExport = `${deploymentsExport}// @ts-nocheck\n`;
@@ -29,10 +26,4 @@ export function generateDeploymentsExport() {
             writeFileSync(`${deploymentsFolder}/${n}/index.ts`, deploymentsExport);
         }
     });
-
-    writeFileSync(`${deploymentsFolder}/index.ts`, networksExport);
-
-    if (networksExport.length === 0) {
-        writeFileSync(`${deploymentsFolder}/index.ts`, `export {};`);
-    }
 }
