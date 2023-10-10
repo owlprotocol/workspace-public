@@ -56,10 +56,10 @@
     "lodash-es": "4.17.21"
   },
   "devDependencies": {
-    "@owlprotocol/esbuild-config": "2.0.2",
-    "@owlprotocol/eslint-config": "2.0.2",
-    "@owlprotocol/prettier-config": "2.0.2",
-    "@owlprotocol/tsconfig": "2.0.2",
+    "@owlprotocol/esbuild-config": "workspace:*",
+    "@owlprotocol/eslint-config": "workspace:*",
+    "@owlprotocol/prettier-config": "workspace:*",
+    "@owlprotocol/tsconfig": "workspace:*",
     "@shopify/shopify-api": "^7.7.0",
     "@types/dotenv": "^8.2.0",
     "@types/lodash-es": "4.17.6",
