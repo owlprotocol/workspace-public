@@ -19,4 +19,5 @@ export interface Contract {
     readonly contractName: string;
     readonly owner: string;
     readonly projectId?: string;
+    readonly createdAt: number;
 }

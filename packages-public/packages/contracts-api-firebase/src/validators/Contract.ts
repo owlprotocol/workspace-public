@@ -27,6 +27,7 @@ export const contractZod = z
         owner: z.string().describe("owner's user id"),
         contractName: z.string().describe("name of the contract deployed"),
         projectId: z.string().describe("projectId").optional(),
+        createdAt: z.number().int().positive().describe("timestamp of contract creation"),
     })
     .describe("contract");
 
