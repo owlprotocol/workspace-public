@@ -1,6 +1,5 @@
 {
     "name": "@owlprotocol/tsconfig",
-    "private": true,
     "version": "2.0.2",
     "main": "./tsconfig.json",
     "module": "./tsconfig.json",
