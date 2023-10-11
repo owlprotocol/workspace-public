@@ -29,6 +29,7 @@ import {
     UserPersonal,
     UserPrivate,
     Blog,
+    Invites,
 } from "../models/index.js";
 
 function getFirebaseConfig() {
@@ -115,3 +116,4 @@ export const couponCampaignsCol = collection(firestore, "couponCampaigns") as Co
 export const couponInstancesCol = collection(firestore, "couponInstances") as CollectionReference<CouponInstance>;
 export const emailsCol = collection(firestore, "emails") as CollectionReference<Email>;
 export const blogsCol = collection(firestore, "blogs") as CollectionReference<Blog>;
+export const invitesCol = collection(firestore, "invites") as CollectionReference<Invites>;

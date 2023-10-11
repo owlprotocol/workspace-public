@@ -8,6 +8,7 @@ import { CouponCampaign } from "../models/shopify/CouponCampaign.js";
 import { CouponDefinition } from "../models/shopify/CouponDefinition.js";
 import { CouponInstance } from "../models/shopify/CouponInstance.js";
 import { Email } from "../models/Email.js";
+import { Invites } from "../models/Invites.js";
 import { MetadataContract } from "../models/MetadataContract.js";
 import { MetadataTokens } from "../models/tokens/MetadataTokens.js";
 import { Project } from "../models/Project.js";
@@ -29,6 +30,7 @@ import {
     usersCol,
     emailsCol,
     blogsCol,
+    invitesCol,
 } from "../web/config.js";
 import { Blog } from "../index.js";
 
@@ -152,3 +154,4 @@ export const couponDefinitionsHooks = getFirebaseHooks<CouponDefinition>(couponD
 export const couponInstancesHooks = getFirebaseHooks<CouponInstance>(couponInstancesCol);
 export const emailsHooks = getFirebaseHooks<Email>(emailsCol);
 export const blogsHooks = getFirebaseHooks<Blog>(blogsCol);
+export const invitesHooks = getFirebaseHooks<Invites>(invitesCol);

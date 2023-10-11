@@ -19,6 +19,7 @@ import { CouponCampaign } from "../models/shopify/CouponCampaign.js";
 import { CouponDefinition } from "../models/shopify/CouponDefinition.js";
 import { CouponInstance } from "../models/shopify/CouponInstance.js";
 import { Email } from "../models/Email.js";
+import { Invites } from "../models/Invites.js";
 import {
     ApiKeyPersonal,
     DfnsWalletReadOnly,
@@ -965,6 +966,12 @@ export const metadataContractsCRUD = getFirebaseCRUD<MetadataContract, [userId: 
 );
 
 export const emailsCRUD = getFirebaseCRUD<Email, [userId: string]>(firestore, "emails", {
+    readAccessCheck: () => false,
+    setAccessCheck: () => true,
+    updateAccessCheck: () => false,
+    deleteAccessCheck: () => false,
+});
+export const invitesCRUD = getFirebaseCRUD<Invites, [userId: string]>(firestore, "invites", {
     readAccessCheck: () => false,
     setAccessCheck: () => true,
     updateAccessCheck: () => false,

@@ -26,6 +26,7 @@ import {
     CouponCampaign,
     CouponInstance,
     Email,
+    Invites,
 } from "../models/index.js";
 
 function getFirebaseConfig() {
@@ -107,3 +108,4 @@ export const couponDefinitionsCol = firestore.collection("couponDefinitions") as
 export const couponCampaignsCol = firestore.collection("couponCampaigns") as CollectionReference<CouponCampaign>;
 export const couponInstancesCol = firestore.collection("couponInstances") as CollectionReference<CouponInstance>;
 export const emailsCol = firestore.collection("emails") as CollectionReference<Email>;
+export const invitesCol = firestore.collection("invites") as CollectionReference<Invites>;

@@ -54,6 +54,7 @@ import {
     GasBudgetRuleGlobalReadOnly,
     GasBudgetRuleByContractReadOnly,
     Blog,
+    Invites,
 } from "../models/index.js";
 
 export interface QueryOptions {
@@ -404,3 +405,4 @@ export const projectsCRUD = getFirebaseCRUD<Project>(firestore, "projects");
 export const metadataContractsCRUD = getFirebaseCRUD<MetadataContract>(firestore, "metadataContracts");
 export const emailsCRUD = getFirebaseCRUD<Email>(firestore, "emails");
 export const blogsCRUD = getFirebaseCRUD<Blog>(firestore, "blogs");
+export const invitesCRUD = getFirebaseCRUD<Invites>(firestore, "invites");
