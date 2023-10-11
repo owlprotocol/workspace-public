@@ -8,6 +8,7 @@ export const invitesZod = z
         senderEmail: z.string().describe("senderEmail"),
         recipientEmail: z.string().describe("recipientEmail"),
         timestamp: z.number().describe("timestamp"),
+        // status: z.enum(["pending", "accepted", "declined", "expired"]).describe("status"),
     })
     .describe("invites");
 
