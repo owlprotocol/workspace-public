@@ -10,6 +10,7 @@ export * from "./Email.js";
 export * from "./GasExpense.js";
 export * from "./Invites.js";
 export * from "./MetadataContract.js";
+export * from "./Network.js";
 export * from "./OnlineTrait.js";
 export * from "./Project.js";
 export * from "./ProjectTemplate.js";

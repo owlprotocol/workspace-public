@@ -4,38 +4,41 @@ import { zip, omit, reduce } from "lodash-es";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import crypto from "node:crypto";
 import { firestore } from "./config.js";
-import { Contract } from "../models/Contract.js";
-import { User } from "../models/users/User.js";
-import { Project } from "../models/Project.js";
-import { ProjectTemplate } from "../models/ProjectTemplate.js";
-import { RequestTemplate } from "../models/RequestTemplate.js";
-import { MetadataContract } from "../models/MetadataContract.js";
-import { MetadataTokens } from "../models/tokens/MetadataTokens.js";
-import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
 import { getFirestorePathValue } from "../utils/getFirestorePathValue.js";
-import { Store } from "../models/shopify/Store.js";
-import { StorePrivate } from "../models/shopify/StorePrivate.js";
-import { CouponCampaign } from "../models/shopify/CouponCampaign.js";
-import { CouponDefinition } from "../models/shopify/CouponDefinition.js";
-import { CouponInstance } from "../models/shopify/CouponInstance.js";
-import { Email } from "../models/Email.js";
+import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
 import { Invites } from "../models/Invites.js";
 import {
     ApiKeyPersonal,
+    Contract,
+    CouponCampaign,
+    CouponDefinition,
+    CouponInstance,
     DfnsWalletReadOnly,
+    SafeWalletReadOnly,
+    Email,
     EthLog,
     EthLogAbi,
     EthTransaction,
-    GasBudgetRuleByContractReadOnly,
-    GasBudgetRuleGlobalReadOnly,
-    GasExpenseDailyPublic,
-    GasExpenseDailyReadOnly,
-    GasExpenseMonthlyPublic,
-    GasExpenseMonthlyReadOnly,
     InviteCodeReadOnly,
+    MetadataContract,
+    MetadataTokens,
+    NetworkPrivate,
+    NetworkReadOnly,
     OrganizationReadOnly,
-    SafeWalletReadOnly,
+    Project,
+    ProjectTemplate,
+    RequestTemplate,
+    Store,
+    StorePrivate,
     TokenLazyMintReadOnly,
+    User,
+    GasExpenseDailyPublic,
+    GasExpenseMonthlyPublic,
+    GasExpenseDailyReadOnly,
+    GasExpenseMonthlyReadOnly,
+    GasBudgetRuleGlobalReadOnly,
+    GasBudgetRuleByContractReadOnly,
+    Blog,
 } from "../models/index.js";
 
 export interface AccessControl<T, AccessControlParams extends any[] = []> {
@@ -54,7 +57,8 @@ export interface QueryOptions {
 /**
  * Firebase CRUD Wrappers. create, get, getAll, update, rdelete, deleteAll
  * @template T Generic type for collection data (inlcudes id but this is implicit in Firebase database as path)
- * @param col
+ * @param firestore
+ * @param collectionPath
  * @param readAccessCheck admin sdk has no security rules. This wraps functions to check if it can read.
  * @param writeAccessCheck admin sdk has no security rules. This wraps functions to check if it can write.
  * @returns
@@ -915,6 +919,9 @@ export const safeWalletsReadOnlyCRUD = getFirebaseCRUD<SafeWalletReadOnly, [user
     "safeWalletsReadOnly",
     ownerOnlyChecks,
 );
+//networks
+export const networksReadOnlyCRUD = getFirebaseCRUD<NetworkReadOnly>(firestore, "networksReadOnly", readOnlyChecks);
+export const networksPrivateCRUD = getFirebaseCRUD<NetworkPrivate>(firestore, "networksPrivate", readOnlyChecks);
 //gasexpense
 export const gasExpensesDailyPublicCRUD = getFirebaseCRUD<GasExpenseDailyPublic, [userId: string]>(
     firestore,
@@ -971,6 +978,7 @@ export const emailsCRUD = getFirebaseCRUD<Email, [userId: string]>(firestore, "e
     updateAccessCheck: () => false,
     deleteAccessCheck: () => false,
 });
+export const blogsCRUD = getFirebaseCRUD<Blog>(firestore, "blogs");
 export const invitesCRUD = getFirebaseCRUD<Invites, [userId: string]>(firestore, "invites", {
     readAccessCheck: () => false,
     setAccessCheck: () => true,

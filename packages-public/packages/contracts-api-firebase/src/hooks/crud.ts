@@ -1,38 +1,52 @@
 /***** Generics for Firebase Web CRUD *****/
-import { CollectionReference, DocumentData, DocumentSnapshot, QuerySnapshot, limit, orderBy } from "firebase/firestore";
+import {
+    CollectionReference,
+    DocumentData,
+    DocumentSnapshot,
+    Firestore,
+    QuerySnapshot,
+    collection,
+    limit,
+    orderBy,
+} from "firebase/firestore";
 import { doc, query, where, QueryConstraint } from "firebase/firestore";
 //@ts-expect-error
 import { useFirestoreCollection, useFirestoreDoc, ObservableStatus } from "reactfire";
-import { Contract } from "../models/Contract.js";
-import { CouponCampaign } from "../models/shopify/CouponCampaign.js";
-import { CouponDefinition } from "../models/shopify/CouponDefinition.js";
-import { CouponInstance } from "../models/shopify/CouponInstance.js";
-import { Email } from "../models/Email.js";
+import { firestore } from "../web/config.js";
 import { Invites } from "../models/Invites.js";
-import { MetadataContract } from "../models/MetadataContract.js";
-import { MetadataTokens } from "../models/tokens/MetadataTokens.js";
-import { Project } from "../models/Project.js";
-import { ProjectTemplate } from "../models/ProjectTemplate.js";
-import { RequestTemplate } from "../models/RequestTemplate.js";
-import { Store } from "../models/shopify/Store.js";
-import { User } from "../models/users/User.js";
 import {
-    contractsCol,
-    couponCampaignsCol,
-    couponDefinitionsCol,
-    couponInstancesCol,
-    metadataContractsCol,
-    metadataTokensCol,
-    projectTemplatesCol,
-    projectsCol,
-    requestTemplatesCol,
-    storesCol,
-    usersCol,
-    emailsCol,
-    blogsCol,
-    invitesCol,
-} from "../web/config.js";
-import { Blog } from "../index.js";
+    ApiKeyPersonal,
+    Contract,
+    CouponCampaign,
+    CouponDefinition,
+    CouponInstance,
+    DfnsWalletReadOnly,
+    SafeWalletReadOnly,
+    Email,
+    EthLog,
+    EthLogAbi,
+    EthTransaction,
+    InviteCodeReadOnly,
+    MetadataContract,
+    MetadataTokens,
+    NetworkPrivate,
+    NetworkReadOnly,
+    OrganizationReadOnly,
+    Project,
+    ProjectTemplate,
+    RequestTemplate,
+    Store,
+    StorePrivate,
+    TokenLazyMintReadOnly,
+    User,
+    GasExpenseDailyPublic,
+    GasExpenseMonthlyPublic,
+    GasExpenseDailyReadOnly,
+    GasExpenseMonthlyReadOnly,
+    GasBudgetRuleGlobalReadOnly,
+    GasBudgetRuleByContractReadOnly,
+    Blog,
+} from "../models/index.js";
 
 export interface QueryOptions {
     limit?: number;
@@ -43,12 +57,16 @@ export interface QueryOptions {
 /**
  * Firebase CRUD Wrappers. create, get, getAll, update, rdelete, deleteAll
  * @template T Generic type for collection data (inlcudes id but this is implicit in Firebase database as path)
- * @param collection
+ * @param firestore
+ * @param collectionPath
  * @returns
  */
 export function getFirebaseHooks<T extends Record<string, any> & { id: string }>(
-    collection: CollectionReference<Omit<T, "id">>,
+    firestore: Firestore,
+    collectionPath: string,
 ) {
+    const col = collection(firestore, collectionPath) as CollectionReference<Omit<T, "id">>;
+
     /**
      * Get doc by id
      * @param id
@@ -58,7 +76,7 @@ export function getFirebaseHooks<T extends Record<string, any> & { id: string }>
         id: string | undefined,
     ): [T | undefined, ObservableStatus<DocumentSnapshot<Omit<T, "id">, DocumentData>>] => {
         //undefined | "" path breaks, we set it to empty
-        const result = useFirestoreDoc(doc(collection, id ?? "empty"));
+        const result = useFirestoreDoc(doc(col, id ?? "empty"));
         const refSnapshot = result.data;
         const data = (refSnapshot ? { ...refSnapshot.data(), id } : undefined) as T | undefined;
 
@@ -70,7 +88,7 @@ export function getFirebaseHooks<T extends Record<string, any> & { id: string }>
      * @returns docs
      */
     const useGetAll = (): [T[] | undefined, ObservableStatus<QuerySnapshot<Omit<T, "id">, DocumentData>>] => {
-        const result = useFirestoreCollection(collection);
+        const result = useFirestoreCollection(col);
         const snapshot = result.data;
         const data = (
             snapshot
@@ -104,7 +122,7 @@ export function getFirebaseHooks<T extends Record<string, any> & { id: string }>
             queryFilterConstraints.push(limit(options.limit));
         }
 
-        const result = useFirestoreCollection(query(collection, ...queryFilterConstraints));
+        const result = useFirestoreCollection(query(col, ...queryFilterConstraints));
         const snapshot = result.data;
         const data = (
             snapshot
@@ -141,17 +159,57 @@ export function getFirebaseHooks<T extends Record<string, any> & { id: string }>
     };
 }
 
-export const usersHooks = getFirebaseHooks<User>(usersCol);
-export const projectTemplatesHooks = getFirebaseHooks<ProjectTemplate>(projectTemplatesCol);
-export const requestTemplatesHooks = getFirebaseHooks<RequestTemplate>(requestTemplatesCol);
-export const contractsHooks = getFirebaseHooks<Contract>(contractsCol);
-export const projectsHooks = getFirebaseHooks<Project>(projectsCol);
-export const metadataContractsHooks = getFirebaseHooks<MetadataContract>(metadataContractsCol);
-export const metadataTokensHooks = getFirebaseHooks<MetadataTokens>(metadataTokensCol);
-export const storesHooks = getFirebaseHooks<Store>(storesCol);
-export const couponCampaignsHooks = getFirebaseHooks<CouponCampaign>(couponCampaignsCol);
-export const couponDefinitionsHooks = getFirebaseHooks<CouponDefinition>(couponDefinitionsCol);
-export const couponInstancesHooks = getFirebaseHooks<CouponInstance>(couponInstancesCol);
-export const emailsHooks = getFirebaseHooks<Email>(emailsCol);
-export const blogsHooks = getFirebaseHooks<Blog>(blogsCol);
-export const invitesHooks = getFirebaseHooks<Invites>(invitesCol);
+//ethmodels
+export const ethLogsHooks = getFirebaseHooks<EthLog>(firestore, "ethLogs");
+export const ethLogAbisHooks = getFirebaseHooks<EthLogAbi>(firestore, "ethLogAbis");
+export const ethTransactionsHooks = getFirebaseHooks<EthTransaction>(firestore, "ethTransactions");
+//shopify
+export const storesHooks = getFirebaseHooks<Store>(firestore, "stores");
+export const storePrivatesHooks = getFirebaseHooks<StorePrivate>(firestore, "storePrivates");
+export const couponCampaignsHooks = getFirebaseHooks<CouponCampaign>(firestore, "couponCampaigns");
+export const couponDefinitionsHooks = getFirebaseHooks<CouponDefinition>(firestore, "couponDefinitions");
+export const couponInstancesHooks = getFirebaseHooks<CouponInstance>(firestore, "couponInstances");
+//tokens
+export const metadataTokensHooks = getFirebaseHooks<MetadataTokens>(firestore, "metadataTokens");
+export const tokenLazyMintsReadOnlyHooks = getFirebaseHooks<TokenLazyMintReadOnly>(firestore, "tokenLazyMintsReadOnly");
+//users
+export const apiKeysPersonalHooks = getFirebaseHooks<ApiKeyPersonal>(firestore, "apiKeysPersonal");
+export const inviteCodesReadOnlyHooks = getFirebaseHooks<InviteCodeReadOnly>(firestore, "inviteCodesReadOnly");
+export const organizationsReadOnlyHooks = getFirebaseHooks<OrganizationReadOnly>(firestore, "organizationsReadOnly");
+export const usersHooks = getFirebaseHooks<User>(firestore, "users");
+export const dfnsWalletsReadOnlyHooks = getFirebaseHooks<DfnsWalletReadOnly>(firestore, "dfnsWalletsReadOnly");
+export const safeWalletsReadOnlyHooks = getFirebaseHooks<SafeWalletReadOnly>(firestore, "safeWalletsReadOnly");
+//networks
+export const networksReadOnlyHooks = getFirebaseHooks<NetworkReadOnly>(firestore, "networksReadOnly");
+export const networksPrivateHooks = getFirebaseHooks<NetworkPrivate>(firestore, "networksPrivate");
+//gasexpense
+export const gasExpensesDailyPublicHooks = getFirebaseHooks<GasExpenseDailyPublic>(firestore, "gasExpensesDailyPublic");
+export const gasExpensesMonthlyPublicHooks = getFirebaseHooks<GasExpenseMonthlyPublic>(
+    firestore,
+    "gasExpensesMonthlyPublic",
+);
+export const gasExpensesDailyReadOnlyHooks = getFirebaseHooks<GasExpenseDailyReadOnly>(
+    firestore,
+    "gasExpensesDailyReadOnly",
+);
+export const gasExpensesMonthlyReadOnlyHooks = getFirebaseHooks<GasExpenseMonthlyReadOnly>(
+    firestore,
+    "gasExpensesMonthlyReadOnly",
+);
+export const gasBudgetRulesGlobalReadOnlyHooks = getFirebaseHooks<GasBudgetRuleGlobalReadOnly>(
+    firestore,
+    "gasBudgetRulesGlobalReadOnly",
+);
+export const gasBudgetRulesByContractReadOnlyHooks = getFirebaseHooks<GasBudgetRuleByContractReadOnly>(
+    firestore,
+    "gasBudgetRulesByContractReadOnly",
+);
+//other
+export const projectTemplatesHooks = getFirebaseHooks<ProjectTemplate>(firestore, "projectTemplates");
+export const requestTemplatesHooks = getFirebaseHooks<RequestTemplate>(firestore, "requestTemplates");
+export const contractsHooks = getFirebaseHooks<Contract>(firestore, "contracts");
+export const projectsHooks = getFirebaseHooks<Project>(firestore, "projects");
+export const metadataContractsHooks = getFirebaseHooks<MetadataContract>(firestore, "metadataContracts");
+export const emailsHooks = getFirebaseHooks<Email>(firestore, "emails");
+export const blogsHooks = getFirebaseHooks<Blog>(firestore, "blogs");
+export const invitesHooks = getFirebaseHooks<Invites>(firestore, "invites");

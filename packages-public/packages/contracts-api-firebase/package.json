@@ -86,7 +86,8 @@
     "lint:fix": "eslint --fix 'src/**/*.ts'",
     "lint:staged": "lint-staged",
     "firebase-emulator": "firebase emulators:start --only firestore,storage,auth --project demo-owl-protocol",
-    "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol"
+    "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol",
+    "scripts:uploadNetworks": "tsx src/scripts/runUploadNetworks.ts"
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.6.2",
@@ -105,6 +106,7 @@
   },
   "devDependencies": {
     "@google-cloud/storage": "^6.12.0",
+    "@owlprotocol/chains": "workspace:*",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",

@@ -102,6 +102,7 @@ const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
     { name: "ETHERSCAN_API_KEY", platform: "node" },
     { name: "BYTE4_URL", platform: "node", defaultValue: "https://www.4byte.directory/api/v1" },
     { name: "IPFS_URL", platform: "node", defaultValue: "http://localhost:5001" },
+    { name: "IPFS_GATEWAY_URL", platform: "neutral", defaultValue: "https://public-owlprotocol.infura-ipfs.io" },
     {
         name: "PINATA_JWT",
         platform: "node",

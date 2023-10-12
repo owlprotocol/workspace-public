@@ -39,6 +39,8 @@ import {
     InviteCodeReadOnly,
     MetadataContract,
     MetadataTokens,
+    NetworkPrivate,
+    NetworkReadOnly,
     OrganizationReadOnly,
     Project,
     ProjectTemplate,
@@ -56,7 +58,6 @@ import {
     Blog,
     Invites,
 } from "../models/index.js";
-
 export interface QueryOptions {
     limit?: number;
     orderBy?: string;
@@ -65,7 +66,8 @@ export interface QueryOptions {
 /**
  * Firebase CRUD Wrappers. create, get, getAll, update, rdelete, deleteAll
  * @template T Generic type for collection data (inlcudes id but this is implicit in Firebase database as path)
- * @param col
+ * @param firestore
+ * @param collectionPath
  * @returns
  */
 export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
@@ -375,6 +377,9 @@ export const organizationsReadOnlyCRUD = getFirebaseCRUD<OrganizationReadOnly>(f
 export const usersCRUD = getFirebaseCRUD<User>(firestore, "users");
 export const dfnsWalletsReadOnlyCRUD = getFirebaseCRUD<DfnsWalletReadOnly>(firestore, "dfnsWalletsReadOnly");
 export const safeWalletsReadOnlyCRUD = getFirebaseCRUD<SafeWalletReadOnly>(firestore, "safeWalletsReadOnly");
+//networks
+export const networksReadOnlyCRUD = getFirebaseCRUD<NetworkReadOnly>(firestore, "networksReadOnly");
+export const networksPrivateCRUD = getFirebaseCRUD<NetworkPrivate>(firestore, "networksPrivate");
 //gasexpense
 export const gasExpensesDailyPublicCRUD = getFirebaseCRUD<GasExpenseDailyPublic>(firestore, "gasExpensesDailyPublic");
 export const gasExpensesMonthlyPublicCRUD = getFirebaseCRUD<GasExpenseMonthlyPublic>(

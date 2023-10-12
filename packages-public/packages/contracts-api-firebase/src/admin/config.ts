@@ -80,18 +80,27 @@ function getFirebaseApp() {
     if (getApps().length === 0) {
         const config = getFirebaseConfig();
         //Initialize firestore
-        return initializeApp(config);
+        const firebaseApp = initializeApp(config);
+        const firestore = getFirestore(firebaseApp);
+        firestore.settings({ ignoreUndefinedProperties: true });
+        const auth = getAuth(firebaseApp);
+        // NOTE: storage.apiEndpoint stores the prefix of each file's publicUrl
+        const storage = getStorage(firebaseApp);
+
+        return { firebaseApp, firestore, auth, storage };
     } else {
-        return getApp();
+        const firebaseApp = getApp();
+        const firestore = getFirestore(firebaseApp);
+        const auth = getAuth(firebaseApp);
+        // NOTE: storage.apiEndpoint stores the prefix of each file's publicUrl
+        const storage = getStorage(firebaseApp);
+
+        return { firebaseApp, firestore, auth, storage };
     }
 }
 
-export const firebaseApp = getFirebaseApp();
-export const firestore = getFirestore(firebaseApp);
-export const auth = getAuth(firebaseApp);
+export const { firebaseApp, firestore, auth, storage } = getFirebaseApp();
 
-// NOTE: storage.apiEndpoint stores the prefix of each file's publicUrl
-export const storage = getStorage(firebaseApp);
 export const bucket = storage.bucket();
 
 //Collections
