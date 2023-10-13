@@ -1,5 +1,7 @@
+import { Signer } from "ethers";
+import { deployImplementationsAndBeacons, deployCreate2Factory } from "@owlprotocol/contracts-proxy";
 import * as Create2Factories from "../factories/index.js";
-import { pick } from "../lodash.js";
+import { pick, flatten } from "../lodash.js";
 
 /**
  * Migrations define a batch of contracts that are deployed.
@@ -39,3 +41,31 @@ export const migration4 = pick(
     "SignMessageLib__factory__create2",
     "CreateCall__factory__create2",
 );
+
+export async function deployContractsMigrations(signer: Signer, networkName: string) {
+    const provider = signer.provider;
+    if (!provider) throw new Error("signer.provider undefined");
+
+    const response0 = await deployImplementationsAndBeacons(signer, networkName, migration0 as any);
+    const response1 = await deployImplementationsAndBeacons(signer, networkName, migration1 as any);
+    const response2 = await deployImplementationsAndBeacons(signer, networkName, migration2 as any);
+    const response3 = await deployImplementationsAndBeacons(signer, networkName, migration3 as any);
+    const response4 = await deployImplementationsAndBeacons(signer, networkName, migration4 as any);
+    const responses = [response0, response1, response2, response3, response4];
+
+    return {
+        contracts: flatten(responses.map((r) => r.contracts)),
+        tx: responses.map((r) => r.tx),
+        txResponse: responses.map((r) => r.txResponse),
+    };
+}
+
+export async function deployContractsAll(signer: Signer, networkName: string, networkChainId: number) {
+    const create2Factory = await deployCreate2Factory(signer, networkName, networkChainId);
+    const migrations = await deployContractsMigrations(signer, networkName);
+
+    return {
+        create2Factory,
+        migrations,
+    };
+}

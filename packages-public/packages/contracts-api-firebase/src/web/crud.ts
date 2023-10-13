@@ -57,6 +57,7 @@ import {
     GasBudgetRuleByContractReadOnly,
     Blog,
     Invites,
+    NetworkCreate2FactoryTransaction,
 } from "../models/index.js";
 export interface QueryOptions {
     limit?: number;
@@ -402,6 +403,10 @@ export const safeWalletsReadOnlyCRUD = getFirebaseCRUD<SafeWalletReadOnly>(fires
 //networks
 export const networksReadOnlyCRUD = getFirebaseCRUD<NetworkReadOnly>(firestore, "networksReadOnly");
 export const networksPrivateCRUD = getFirebaseCRUD<NetworkPrivate>(firestore, "networksPrivate");
+export const networkCreate2FactoryTransactionsCRUD = getFirebaseCRUD<NetworkCreate2FactoryTransaction>(
+    firestore,
+    "networkCreate2FactoryTransactions",
+);
 //gasexpense
 export const gasExpensesDailyPublicCRUD = getFirebaseCRUD<GasExpenseDailyPublic>(firestore, "gasExpensesDailyPublic");
 export const gasExpensesMonthlyPublicCRUD = getFirebaseCRUD<GasExpenseMonthlyPublic>(

@@ -6,7 +6,7 @@ import { flatten } from "../lodash.js";
  * Deployment is always the same regardless of contract.
  * We get the bytecode & name for a deterministic deployment from the Proxy Factory.
  */
-export const ImplementationsDeploy = async ({ signer, network }: RunTimeEnvironment) => {
+export const ImplementationsDeploy = async ({ signer, network }: Omit<RunTimeEnvironment, "provider">) => {
     const response0 = await deployImplementationsAndBeacons(signer, network.name, migration0 as any);
     const response1 = await deployImplementationsAndBeacons(signer, network.name, migration1 as any);
     const response2 = await deployImplementationsAndBeacons(signer, network.name, migration2 as any);

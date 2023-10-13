@@ -107,6 +107,7 @@
   "devDependencies": {
     "@google-cloud/storage": "^6.12.0",
     "@owlprotocol/chains": "workspace:*",
+    "@owlprotocol/contracts-proxy": "workspace:*",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",

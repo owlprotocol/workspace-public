@@ -39,6 +39,7 @@ import {
     GasBudgetRuleGlobalReadOnly,
     GasBudgetRuleByContractReadOnly,
     Blog,
+    NetworkCreate2FactoryTransaction,
 } from "../models/index.js";
 
 export interface AccessControl<T, AccessControlParams extends any[] = []> {
@@ -946,6 +947,11 @@ export const safeWalletsReadOnlyCRUD = getFirebaseCRUD<SafeWalletReadOnly, [user
 //networks
 export const networksReadOnlyCRUD = getFirebaseCRUD<NetworkReadOnly>(firestore, "networksReadOnly", readOnlyChecks);
 export const networksPrivateCRUD = getFirebaseCRUD<NetworkPrivate>(firestore, "networksPrivate", readOnlyChecks);
+export const networkCreate2FactoryTransactionsCRUD = getFirebaseCRUD<NetworkCreate2FactoryTransaction>(
+    firestore,
+    "networkCreate2FactoryTransactions",
+    readOnlyChecks,
+);
 //gasexpense
 export const gasExpensesDailyPublicCRUD = getFirebaseCRUD<GasExpenseDailyPublic, [userId: string]>(
     firestore,

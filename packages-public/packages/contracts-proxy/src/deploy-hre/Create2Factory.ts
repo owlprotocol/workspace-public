@@ -3,7 +3,7 @@ import { HRE } from "../utils.js";
 
 const deploy = async ({ ethers, network, deployments }: HRE) => {
     const cloneFactoryAddress = await Create2FactoryDeploy({
-        provider: ethers.provider,
+        signer: (await ethers.getSigners())[0],
         network,
     });
 

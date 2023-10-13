@@ -6,7 +6,7 @@ import { RunTimeEnvironment } from "../utils.js";
  * Deployment is always the same regardless of contract.
  * We get the bytecode & name for a deterministic deployment from the Proxy Factory.
  */
-export const ImplementationsDeploy = async ({ signer, network }: RunTimeEnvironment) => {
+export const ImplementationsDeploy = async ({ signer, network }: Omit<RunTimeEnvironment, "provider">) => {
     return deployImplementationsAndBeacons(signer, network.name, Create2Factories as any);
 };
 

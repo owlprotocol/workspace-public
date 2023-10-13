@@ -21,11 +21,7 @@ describe("SampleContract.test.ts", () => {
         signer = testSigner.connect(provider);
         signerAddress = await signer.getAddress();
 
-        const create2FactoryAddress = await deployCreate2Factory(
-            provider,
-            testNetwork.name,
-            testNetwork.config.chainId,
-        );
+        const create2FactoryAddress = await deployCreate2Factory(signer, testNetwork.name, testNetwork.config.chainId);
         Create2Factory = ICreate2Factory__factory.connect(create2FactoryAddress, signer);
         await deployImplementationsAndBeacons(signer, testNetwork.name, Create2Factories as any);
     });

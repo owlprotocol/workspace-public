@@ -5,7 +5,6 @@ const deploy = async ({ ethers, network, deployments }: HRE) => {
     const { save, getOrNull } = deployments;
 
     const { contracts } = await ImplementationsDeploy({
-        provider: ethers.provider,
         network,
         signer: (await ethers.getSigners())[0],
     });

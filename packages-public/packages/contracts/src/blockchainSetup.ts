@@ -1,6 +1,5 @@
 import { Signer } from "ethers";
 import { Deploy as DeployProxy } from "@owlprotocol/contracts-proxy";
-import { BaseProvider } from "@ethersproject/providers";
 export { testNetworkId, testSigner, testNetwork } from "@owlprotocol/utils-ethers";
 import { testSigner, testNetwork } from "@owlprotocol/utils-ethers";
 import { ImplementationsDeploy } from "./deploy/Implementations.js";
@@ -17,9 +16,8 @@ export interface DeployNetwork {
  */
 export async function contractsSetup(signer: Signer = testSigner, network: DeployNetwork = testNetwork) {
     if (!signer.provider) throw new Error("signer.provider === undefined");
-    const provider = signer.provider as BaseProvider;
 
     //Deploy Proxy Factory
-    await DeployProxy.Create2FactoryDeploy({ provider, network });
-    await ImplementationsDeploy({ provider, signer, network });
+    await DeployProxy.Create2FactoryDeploy({ signer, network });
+    await ImplementationsDeploy({ signer, network });
 }

@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { TypeEqual, expectType } from "ts-expect";
+import { NetworkReadOnly } from "../models/Network.js";
 
 export const iconZod = z.object({
     url: z.string(),
@@ -44,11 +46,13 @@ export const chainZod = z
         slip44: z.number().optional(),
         status: z.string().optional(),
         redFlags: z.array(z.string()).optional(),
-        parent: z.object({
-            chain: z.string(),
-            type: z.string(),
-            bridges: z.array(z.object({ url: z.string() })),
-        }),
+        parent: z
+            .object({
+                chain: z.string(),
+                type: z.string(),
+                bridges: z.array(z.object({ url: z.string() })),
+            })
+            .optional(),
     })
     .describe("chain");
 
@@ -76,7 +80,17 @@ export const chainWithDataZod = chainZod
     })
     .describe("chainWithData");
 
-export const networkZod = chainWithDataZod.extend({
+const networkZodInternal = chainWithDataZod.extend({
     id: z.string(),
     enabled: z.boolean(),
+    rank: z.number(),
 });
+
+export const networkZod = networkZodInternal as Omit<typeof networkZodInternal, "_output"> & {
+    _output: NetworkReadOnly;
+};
+
+//TODO: Explore using https://zod.dev/?id=readonly (enforces read-only with Object.freeze)
+//Check zod validator matches interface
+type NetworkZodInferred = z.infer<typeof networkZod>;
+expectType<TypeEqual<NetworkReadOnly, NetworkZodInferred>>(true);

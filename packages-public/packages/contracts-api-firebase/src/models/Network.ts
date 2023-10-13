@@ -21,3 +21,12 @@ export interface NetworkPrivate extends ChainWithData {
     /** Network rank sorting in terms of relevance, lower = higher priority in search result */
     readonly rank: number;
 }
+
+/**
+ * Pre-signed create2 factory transaction for network
+ */
+export interface NetworkCreate2FactoryTransaction {
+    readonly id: string;
+    /** Pre-signed Create2Factory deploy transaction */
+    readonly tx: string;
+}
