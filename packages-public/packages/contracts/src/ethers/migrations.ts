@@ -16,6 +16,7 @@ export const migration0 = pick(
 );
 export const migration1 = pick(
     Create2Factories,
+    "ERC1820Registry__factory__create2",
     "ERC1155Mintable__factory__create2",
     "ERC2981Setter__factory__create2",
 );

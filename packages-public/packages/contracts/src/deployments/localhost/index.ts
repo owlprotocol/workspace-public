@@ -8,6 +8,7 @@ export * as Create2Factory from "./Create2Factory.js";
 export * as CreateCallImplementation from "./CreateCallImplementation.js";
 export * as ERC1155MintableBeacon from "./ERC1155MintableBeacon.js";
 export * as ERC1155MintableImplementation from "./ERC1155MintableImplementation.js";
+export * as ERC1820RegistryImplementation from "./ERC1820RegistryImplementation.js";
 export * as ERC20MintableBeacon from "./ERC20MintableBeacon.js";
 export * as ERC20MintableImplementation from "./ERC20MintableImplementation.js";
 export * as ERC2981SetterBeacon from "./ERC2981SetterBeacon.js";

@@ -14,7 +14,7 @@ contract ERC1820RegistryConsumer is IERC165Upgradeable {
     //EIP1820 is not deployable on networks that enfore EIP-150 at consensus-level
     //Instead, we use the same implementation, but deployed using our universal ERC1176ProxyFactory
     //that lives on the same address across networks and deploys contracts using CREATE2
-    address internal constant ERC1820_REGISTRY = 0x90995B03B0F579e9B69E5f1F06059Ac57a2C46eA;
+    address internal constant ERC1820_REGISTRY = 0x452dEAe031F08e0EB33cA7b17adAc346674a64B3;
     bytes32 internal constant ONE = 0x00000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
     IERC1820RegistryUpgradeable internal constant registry = IERC1820RegistryUpgradeable(ERC1820_REGISTRY);

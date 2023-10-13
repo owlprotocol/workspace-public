@@ -24,6 +24,7 @@ export async function main() {
         "CompatibilityFallbackHandler",
         "SignMessageLib",
         "CreateCall",
+        "ERC1820Registry",
     ];
     const includeContracts = [...includeContractsInitializable, ...includeContractsImplementations];
     const files = await generateCreate2FactoryWrappers(
