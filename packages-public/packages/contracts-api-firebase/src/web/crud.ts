@@ -9,6 +9,7 @@ import {
     collection,
     deleteDoc,
     doc,
+    getCountFromServer,
     getDoc,
     getDocs,
     limit,
@@ -20,7 +21,6 @@ import {
     where,
 } from "firebase/firestore";
 import { omit, zip } from "lodash-es";
-import * as crypto from "crypto";
 import { firestore } from "./config.js";
 import { getFirestorePathValue } from "../utils/getFirestorePathValue.js";
 import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
@@ -149,6 +149,27 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
         return querySnapshot.docs.map((refSnapshot) => {
             return { ...refSnapshot.data(), id: refSnapshot.id } as T;
         });
+    };
+
+    /**
+     * Get docs that match filter count
+     * @param filter
+     * @param options limit, orderBy, order
+     * @returns docs
+     */
+    const getWhereCount = async (filter: Partial<Omit<T, "id">>, options?: QueryOptions): Promise<number> => {
+        const queryFilterConstraints: QueryConstraint[] = Object.entries(filter).map(([key, value]) => {
+            return where(key, "==", value);
+        });
+        if (options?.orderBy) {
+            queryFilterConstraints.push(orderBy(options.orderBy, options.order ?? "asc"));
+        }
+        if (options?.limit) {
+            queryFilterConstraints.push(limit(options.limit));
+        }
+
+        const querySnapshot = await getCountFromServer(query(col, ...queryFilterConstraints));
+        return querySnapshot.data().count;
     };
 
     /**
@@ -342,6 +363,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }>(
         getBatch,
         getAll,
         getWhere,
+        getWhereCount,
         getWhereFirst,
         set,
         setBatch,

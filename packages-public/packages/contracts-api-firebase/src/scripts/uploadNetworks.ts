@@ -1,4 +1,4 @@
-import { GetChainWithDataOptions, allChains, getChainWithData } from "@owlprotocol/chains";
+import { GetChainWithDataOptions, allChains, getChainByChainId, getChainWithData } from "@owlprotocol/chains";
 import * as envvars from "@owlprotocol/envvars";
 import { networksPrivateCRUD, networksReadOnlyCRUD } from "../admin/crud.js";
 import { NetworkReadOnly } from "../models/index.js";
@@ -10,8 +10,19 @@ export const ranksByNetworkDefault = {
     59140: 2,
 } as Record<number, number>;
 
-export function uploadNetworks(enabledNetworks = enabledNetworksDefault, ranksByNetwork = ranksByNetworkDefault) {
-    const networksReadOnly: NetworkReadOnly[] = allChains.map((c) => {
+/**
+ * Upload chain configurations to firebase
+ * @param chains
+ * @param enabledNetworks
+ * @param ranksByNetwork
+ * @returns
+ */
+export function uploadNetworks(
+    chains = allChains,
+    enabledNetworks = enabledNetworksDefault,
+    ranksByNetwork = ranksByNetworkDefault,
+) {
+    const networksReadOnly: NetworkReadOnly[] = chains.map((c) => {
         const chainId = c.chainId;
         return {
             ...getChainWithData(c),
@@ -21,7 +32,7 @@ export function uploadNetworks(enabledNetworks = enabledNetworksDefault, ranksBy
         };
     });
 
-    const networksPrivate: NetworkReadOnly[] = allChains.map((c) => {
+    const networksPrivate: NetworkReadOnly[] = chains.map((c) => {
         const chainId = c.chainId;
         const options: GetChainWithDataOptions = {
             THIRDWEB_API_KEY: envvars.THIRDWEB_API_KEY,
@@ -48,4 +59,12 @@ export function uploadNetworks(enabledNetworks = enabledNetworksDefault, ranksBy
         networksReadOnlyCRUD._setBatch(networksReadOnly),
         networksPrivateCRUD._setBatch(networksPrivate),
     ]);
+}
+
+/**
+ * Upload localhost chain config to firebase
+ * @returns
+ */
+export function uploadLocalNetwork() {
+    return uploadNetworks([getChainByChainId(1337)]);
 }

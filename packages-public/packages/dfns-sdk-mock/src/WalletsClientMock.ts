@@ -104,7 +104,7 @@ export class WalletsClientMock implements WalletsClientInterface {
         const { network, externalId, tags, name } = request.body;
         //Id: if external id, derive address deterministically, else bump wallets count
         const walletsCount = this.walletsCount++;
-        const id = externalId ? utils.keccak256(utils.toUtf8Bytes(externalId)) : `${walletsCount}`;
+        const id = externalId ?? `${walletsCount}`;
         if (this.wallets[id]) {
             return this.wallets[id]!;
         }
@@ -112,7 +112,11 @@ export class WalletsClientMock implements WalletsClientInterface {
 
         //Private Key
         //mod to max key derivation index
-        const keyDerivation = externalId ? ethers.BigNumber.from(id).mod(1000000000).toString() : `${walletsCount}`;
+        const keyDerivation = externalId
+            ? ethers.BigNumber.from(utils.keccak256(utils.toUtf8Bytes(externalId)))
+                  .mod(1000000000)
+                  .toString()
+            : `${walletsCount}`;
         //Signing Key
         const pkey = this.hdNode.derivePath(`m/44'/60'/0'/0/${keyDerivation}`).privateKey;
         const signer = new ethers.Wallet(pkey);
@@ -150,6 +154,7 @@ export class WalletsClientMock implements WalletsClientInterface {
         } else {
             //Timeout, set wallet as creating
             const status = "Creating" as WalletStatus.Creating;
+            console.debug(`Wallet ${id} status Creating`);
 
             const wallet = {
                 id,
@@ -163,6 +168,7 @@ export class WalletsClientMock implements WalletsClientInterface {
             this.wallets[id] = wallet;
 
             setTimeout(() => {
+                console.debug(`Wallet ${id} status Active`);
                 const walletNew = { ...wallet, signingKey, address, status: "Active" as WalletStatus.Active };
                 this.wallets[id] = walletNew;
                 this.privateKeys[id] = pkey;

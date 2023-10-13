@@ -3,7 +3,6 @@ import { CollectionReference } from "firebase/firestore";
 import { doc, runTransaction, getDocs } from "firebase/firestore";
 import { omit, mapValues, pick, isEmpty, zip } from "lodash-es";
 import { awaitAllObj } from "@owlprotocol/utils";
-import * as crypto from "crypto";
 import { firestore, usersPersonalCol, usersPrivateCol } from "./config.js";
 import { UserPersonal } from "../models/users/UserPersonal.js";
 import { UserPrivate } from "../models/users/UserPrivate.js";

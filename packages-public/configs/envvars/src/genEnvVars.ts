@@ -18,6 +18,8 @@ export interface EnvVarDef {
 //DFNS MPC Config
 const DFNS_ENVVARS: EnvVarDef[] = [
     { name: "DFNS_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
+    //Mock latency for creating wallets from "Creating" -> "Active"
+    { name: "DFNS_MOCK_TIMEOUT", platform: "node", defaultValue: "0" },
     { name: "DFNS_PRIVATE_KEY", platform: "node" },
     { name: "DFNS_AUTH_TOKEN", platform: "node" },
     { name: "DFNS_CRED_ID", platform: "node" },

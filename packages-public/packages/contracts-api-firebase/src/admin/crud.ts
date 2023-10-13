@@ -218,6 +218,29 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
     };
 
     /**
+     * Get docs that match filter count, no security checks
+     * @param filter
+     * @param options limit, orderBy, order
+     * @returns docs
+     */
+    const _getWhereCount = async (filter: Partial<Omit<T, "id">>, options?: QueryOptions): Promise<number> => {
+        let query: Query | CollectionReference = col;
+        Object.entries(filter).forEach(([key, value]) => {
+            if (!query) query = col.where(key, "==", value);
+            else query = query.where(key, "==", value);
+        });
+        if (options?.orderBy) {
+            query = query.orderBy(options.orderBy, options.order ?? "asc");
+        }
+        if (options?.limit) {
+            query.limit(options.limit);
+        }
+
+        const querySnapshot = await query.count().get();
+        return querySnapshot.data().count;
+    };
+
+    /**
      * Get first doc that matches filter, no security checks
      * @param filter
      * @param options orderBy, order
@@ -799,6 +822,7 @@ export function getFirebaseCRUD<T extends Record<string, any> & { id: string }, 
         getAll,
         _getWhere,
         getWhere,
+        _getWhereCount,
         _getWhereFirst,
         getWhereFirst,
         _set,
