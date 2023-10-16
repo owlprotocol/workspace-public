@@ -8,6 +8,10 @@ export interface QueryOptions {
     order?: "asc" | "desc";
 }
 
+export function identity<T>(item: T): T {
+    return item;
+}
+
 export function omitIdDefault<T>(item: T): T {
     return omit(item as any, "id");
 }

@@ -1,4 +1,4 @@
-import { ItemIdDefault } from "@owlprotocol/crud-firebase";
+import { ItemIdDefault, identity } from "@owlprotocol/crud-firebase";
 import { firestore, getFirebaseCRUD } from "@owlprotocol/crud-firebase/admin";
 import {
     ApiKeyPersonalData,
@@ -108,6 +108,7 @@ export const ethLogsCRUD = getFirebaseCRUD<EthLog, EthLogId, [userId: string]>(
     {
         getId: getEthLogId,
         getIdParams: getEthLogIdParams,
+        validateId: identity,
     },
     readOnlyChecks,
 );
@@ -123,6 +124,7 @@ export const ethTransactionsCRUD = getFirebaseCRUD<EthTransaction, EthTransactio
     {
         getId: getEthTransactionId,
         getIdParams: getEthTransactionIdParams,
+        validateId: identity,
     },
     readOnlyChecks,
 );

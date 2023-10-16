@@ -1,5 +1,6 @@
 import { firestore } from "@owlprotocol/crud-firebase/web";
 import { getFirebaseHooks } from "@owlprotocol/crud-firebase/hooks";
+import { identity } from "@owlprotocol/crud-firebase";
 import { InvitesData } from "../models/Invites.js";
 import {
     ApiKeyPersonalData,
@@ -82,11 +83,13 @@ import {
 export const ethLogsHooks = getFirebaseHooks<EthLog, EthLogId>(firestore, ethLogsPath, {
     getId: getEthLogId,
     getIdParams: getEthLogIdParams,
+    validateId: identity,
 });
 export const ethLogAbisHooks = getFirebaseHooks<EthLogAbiData>(firestore, ethLogAbisPath);
 export const ethTransactionsHooks = getFirebaseHooks<EthTransaction, EthTransactionId>(firestore, ethTransactionsPath, {
     getId: getEthTransactionId,
     getIdParams: getEthTransactionIdParams,
+    validateId: identity,
 });
 //shopify
 export const storesHooks = getFirebaseHooks<StoreData>(firestore, storesPath);

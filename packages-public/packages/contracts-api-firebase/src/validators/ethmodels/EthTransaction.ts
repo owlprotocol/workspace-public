@@ -10,13 +10,16 @@ export const ethTransactionZod = z
         to: addressZod.describe("to"),
         data: z.string().describe("data"),
         hash: bytes32Zod.describe("hash"),
-        gas: z.string().describe("gas"),
-        effectiveGasPrice: z.string().describe("effective gas price"),
-        blockNumber: z.number().describe("block number"),
-        blockHash: bytes32Zod.describe("block hash"),
+        gasLimit: z.string().describe("gasLimit"),
+        gasPrice: z.string().describe("gasPrice"),
+        gas: z.string().describe("gas").optional(),
+        effectiveGasPrice: z.string().describe("effective gas price").optional(),
+        blockNumber: z.number().describe("block number").optional(),
+        blockHash: bytes32Zod.describe("block hash").optional(),
         confirmations: z.number().describe("confirmations"),
-        ethCost: z.string().describe("eth cost"),
-        usdCost: z.string().describe("usd cost"),
+        ethCost: z.string().describe("eth cost").optional(),
+        usdCost: z.string().describe("usd cost").optional(),
+        addressTouched: z.record(addressZod, z.boolean()).describe("addresses touched by transaction").optional(),
     })
     .describe("eth transaction");
 

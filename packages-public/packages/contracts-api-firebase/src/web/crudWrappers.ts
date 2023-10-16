@@ -1,4 +1,5 @@
 import { firestore, getFirebaseCRUD } from "@owlprotocol/crud-firebase/web";
+import { identity } from "@owlprotocol/crud-firebase";
 import {
     ApiKeyPersonalData,
     Contract,
@@ -84,11 +85,13 @@ import {
 export const ethLogsCRUD = getFirebaseCRUD<EthLog, EthLogId>(firestore, ethLogsPath, {
     getId: getEthLogId,
     getIdParams: getEthLogIdParams,
+    validateId: identity,
 });
 export const ethLogAbisCRUD = getFirebaseCRUD<EthLogAbiData>(firestore, ethLogAbisPath);
 export const ethTransactionsCRUD = getFirebaseCRUD<EthTransaction, EthTransactionId>(firestore, ethTransactionsPath, {
     getId: getEthTransactionId,
     getIdParams: getEthTransactionIdParams,
+    validateId: identity,
 });
 //shopify
 export const storesCRUD = getFirebaseCRUD<StoreData>(firestore, storesPath);
