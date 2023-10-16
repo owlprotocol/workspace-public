@@ -1,8 +1,19 @@
-export interface EthLog {
-    readonly id: string;
+export interface EthLogId {
     readonly networkId: string;
     readonly blockNumber: number;
     readonly logIndex: number;
+}
+
+export function getEthLogId({ networkId, blockNumber, logIndex }: EthLogId): string {
+    return [networkId, blockNumber, logIndex].join("-");
+}
+
+export function getEthLogIdParams(id: string): EthLogId {
+    const [networkId, blockNumber, logIndex] = id.split("-");
+    return { networkId, blockNumber: parseInt(blockNumber), logIndex: parseInt(logIndex) };
+}
+
+export interface EthLog extends EthLogId {
     readonly blockHash: string;
     readonly transactionIndex: number;
     readonly transactionHash: string;

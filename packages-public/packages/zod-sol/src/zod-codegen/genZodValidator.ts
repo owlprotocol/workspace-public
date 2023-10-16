@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { ESLint } from "eslint";
 import { writeFiles } from "@owlprotocol/utils";
 import { join } from "path";
 import { existsSync, rmdirSync } from "fs";
@@ -255,6 +254,7 @@ export async function writeZodValidatorFilesForContracts(
     basePath = "./zsol",
     zSolPackage = "@owlprotocol/zod-sol",
 ) {
+    const { ESLint } = await import("eslint");
     //Remove files
     if (existsSync(basePath)) rmdirSync(basePath, { recursive: true });
     //Generate files data

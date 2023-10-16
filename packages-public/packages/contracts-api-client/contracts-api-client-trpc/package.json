@@ -70,6 +70,7 @@
     "@owlprotocol/contracts": "workspace:*",
     "@owlprotocol/contracts-api": "workspace:",
     "@owlprotocol/contracts-api-firebase": "workspace:",
+    "@owlprotocol/crud-firebase": "workspace:*",
     "@owlprotocol/contracts-proxy": "workspace:*",
     "@owlprotocol/dfns-sdk-mock": "workspace:*",
     "@owlprotocol/esbuild-config": "workspace:*",

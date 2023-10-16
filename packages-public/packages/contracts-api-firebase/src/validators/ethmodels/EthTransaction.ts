@@ -5,7 +5,6 @@ import { EthTransaction } from "../../models/ethmodels/EthTransaction.js";
 
 export const ethTransactionZod = z
     .object({
-        id: z.string().describe("id"),
         networkId: z.string().describe("networkId"),
         from: addressZod.describe("from"),
         to: addressZod.describe("to"),

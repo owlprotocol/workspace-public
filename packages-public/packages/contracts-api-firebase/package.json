@@ -49,11 +49,6 @@
       "require": "./lib/cjs/validators/index.js",
       "import": "./lib/esm/validators/index.js"
     },
-    "./utils": {
-      "types": "./lib/types/utils/index.d.ts",
-      "require": "./lib/cjs/utils/index.js",
-      "import": "./lib/esm/utils/index.js"
-    },
     "./test": {
       "types": "./lib/types/test/index.d.ts",
       "require": "./lib/cjs/test/index.js",
@@ -91,6 +86,7 @@
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.6.2",
+    "@owlprotocol/crud-firebase": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/utils": "workspace:^",
     "@owlprotocol/zod-sol": "workspace:*",

@@ -1,8 +1,8 @@
 import { describe, test, expect } from "vitest";
 import fetch from "node-fetch";
+import { bucket } from "@owlprotocol/crud-firebase/admin";
 import { readFileSync } from "fs";
 import { uploadFile } from "./storage.js";
-import { bucket } from "./config.js";
 
 describe("storage.test.ts", async () => {
     const testFilePath = "./testdata/owl.jpg";

@@ -23,6 +23,11 @@
       "types": "./lib/types/index.d.ts",
       "require": "./lib/cjs/index.js",
       "import": "./lib/esm/index.js"
+    },
+    "./zod-codegen": {
+      "types": "./lib/types/zod-codegen/index.d.ts",
+      "require": "./lib/cjs/zod-codegen/index.js",
+      "import": "./lib/esm/zod-codegen/index.js"
     }
   },
   "files": [

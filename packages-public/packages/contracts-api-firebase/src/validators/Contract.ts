@@ -7,7 +7,6 @@ import type { Contract } from "../models/Contract.js";
 
 export const contractZod = z
     .object({
-        id: z.string().describe("id"),
         /** Blockchain Data */
         networkId: z.string().describe("id of the network that the contract is deployed on"),
         address: addressZod.describe("address of the deployed contract"),

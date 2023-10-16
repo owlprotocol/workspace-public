@@ -1,5 +1,4 @@
-export interface CouponInstance {
-    readonly id: string;
+export interface CouponInstanceData {
     // The user that received the coupon
     readonly owner: string;
     readonly couponDefinition: string;
@@ -13,4 +12,8 @@ export interface CouponInstance {
     readonly shopifyOrderId: number;
     // Store that executed the order
     readonly orderStore: string;
+}
+
+export interface CouponInstance extends CouponInstanceData {
+    readonly id: string;
 }

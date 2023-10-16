@@ -2,9 +2,7 @@
  * The metadata for an NFT contract.
  * `metadataJson` is a JSON object that can returned by a contract's `contractURI` method
  */
-export interface MetadataContract {
-    //TODO: make read-only
-    id: string;
+export interface MetadataContractData {
     // The userId of the owner
     owner: string;
     // A user defined identifier, not unique
@@ -12,4 +10,8 @@ export interface MetadataContract {
     metadataJson: Record<string, any>;
     ipfsHash?: string;
     type: "ipfs" | "firebase";
+}
+
+export interface MetadataContract extends MetadataContractData {
+    id: string;
 }

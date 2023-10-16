@@ -5,7 +5,6 @@ import { EthLog } from "../../models/ethmodels/EthLog.js";
 
 export const ethLogZod = z
     .object({
-        id: z.string().describe("id"),
         networkId: z.string().describe("networkId"),
         blockNumber: z.number().describe("blockNumber"),
         logIndex: z.number().describe("logIndex"),

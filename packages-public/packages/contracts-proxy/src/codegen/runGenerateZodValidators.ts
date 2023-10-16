@@ -1,4 +1,4 @@
-import { writeZodValidatorFilesForContracts } from "@owlprotocol/zod-sol";
+import { writeZodValidatorFilesForContracts } from "@owlprotocol/zod-sol/zod-codegen";
 import * as factoryClassesInitializable from "../ethers/factoryClassesInitializable.js";
 import * as factoryInterfaceClasses from "../ethers/factoryInterfaceClasses.js";
 import { mapValues } from "../lodash.js";

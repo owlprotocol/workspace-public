@@ -3,16 +3,8 @@ import { CollectionReference } from "firebase/firestore";
 import { doc, runTransaction, getDocs } from "firebase/firestore";
 import { omit, mapValues, pick, isEmpty, zip } from "lodash-es";
 import { awaitAllObj } from "@owlprotocol/utils";
-import { firestore, usersPersonalCol, usersPrivateCol } from "./config.js";
-import { UserPersonal } from "../models/users/UserPersonal.js";
-import { UserPrivate } from "../models/users/UserPrivate.js";
+import { firestore } from "./config.js";
 import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
-
-export interface QueryOptions {
-    limit?: number;
-    orderBy?: string;
-    order?: "asc" | "desc";
-}
 
 export type SplitSetFn<
     TMerged extends Record<string, any> & { id: string },
@@ -329,14 +321,3 @@ export function getFirebaseCRUDMerged<
         deleteAll,
     };
 }
-
-export const usersCRUDMerged = getFirebaseCRUDMerged<
-    UserPersonal & UserPrivate,
-    { personal: UserPersonal; private: UserPrivate }
->(
-    { personal: usersPersonalCol, private: usersPrivateCol },
-    {
-        personal: ["email", "type", "apiKey", "dfnsAddress", "gnosisAddress", "topupTotals", "topupMax"],
-        private: ["dfnsId"],
-    },
-);

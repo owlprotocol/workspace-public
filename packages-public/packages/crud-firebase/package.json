@@ -1,0 +1,114 @@
+{
+  "name": "@owlprotocol/crud-firebase",
+  "version": "2.0.1",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/owlprotocol/crud-firebase.git"
+  },
+  "homepage": "https://owlprotocol.github.io/crud-firebase",
+  "copyright": "Copyright 2023 Owl Protocol",
+  "author": {
+    "name": "Leo Vigna",
+    "email": "leo.vigna@gmail.com",
+    "url": "https://github.com/owlprotocol"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "./lib/cjs/index.cjs",
+  "module": "./lib/esm/index.mjs",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "require": "./lib/cjs/index.js",
+      "import": "./lib/esm/index.js"
+    },
+    "./admin": {
+      "types": "./lib/types/admin/index.d.ts",
+      "require": "./lib/cjs/admin/index.js",
+      "import": "./lib/esm/admin/index.js"
+    },
+    "./web": {
+      "types": "./lib/types/web/index.d.ts",
+      "require": "./lib/cjs/web/index.js",
+      "import": "./lib/esm/web/index.js"
+    },
+    "./hooks": {
+      "types": "./lib/types/hooks/index.d.ts",
+      "require": "./lib/cjs/hooks/index.js",
+      "import": "./lib/esm/hooks/index.js"
+    },
+    "./utils": {
+      "types": "./lib/types/utils/index.d.ts",
+      "require": "./lib/cjs/utils/index.js",
+      "import": "./lib/esm/utils/index.js"
+    }
+  },
+  "files": [
+    "dist/*",
+    "lib/*",
+    "src/*",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": "^18.0.0"
+  },
+  "scripts": {
+    "test": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'pnpm run test:ci'",
+    "test:watch": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'vitest'",
+    "test:ci": "vitest --run",
+    "build": "npm-run-all -p tsc esbuild",
+    "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
+    "esbuild": "node esbuild.config.mjs",
+    "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
+    "tsc": "tsc",
+    "tsc:watch": "tsc -w",
+    "clean": "rimraf lib dist",
+    "madge": "madge src/index.ts -c",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "eslint --fix 'src/**/*.ts'",
+    "lint:staged": "lint-staged",
+    "firebase-emulator": "firebase emulators:start --only firestore,storage,auth --project demo-owl-protocol",
+    "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol"
+  },
+  "dependencies": {
+    "@ethersproject/bignumber": "^5.6.2",
+    "@owlprotocol/envvars": "workspace:*",
+    "@owlprotocol/utils": "workspace:*",
+    "jsonpath": "^1.1.1",
+    "lodash-es": "4.17.21"
+  },
+  "peerDependencies": {
+    "firebase": "^10.3.1",
+    "firebase-admin": "^11.10.1",
+    "react": "^18.2.0",
+    "reactfire": "^4.2.3"
+  },
+  "devDependencies": {
+    "@google-cloud/storage": "^6.12.0",
+    "@owlprotocol/esbuild-config": "workspace:*",
+    "@owlprotocol/eslint-config": "workspace:*",
+    "@owlprotocol/prettier-config": "workspace:*",
+    "@owlprotocol/tsconfig": "workspace:*",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@types/node": "^20.5.6",
+    "@types/jsonpath": "^0.2.0",
+    "@types/lodash-es": "4.17.6",
+    "firebase": "^10.3.1",
+    "firebase-admin": "^11.10.1",
+    "firebase-tools": "^12.5.2",
+    "lint-staged": "^11.1.2",
+    "madge": "^5.0.2",
+    "npm-run-all": "^4.1.5",
+    "react": "^18.2.0",
+    "react-test-renderer": "^18.2.0",
+    "reactfire": "^4.2.3",
+    "rimraf": "^3.0.2",
+    "tsx": "^3.12.7",
+    "typescript": "4.9.5",
+    "vite": "^4.4.9",
+    "vitest": "^0.34.2"
+  }
+}

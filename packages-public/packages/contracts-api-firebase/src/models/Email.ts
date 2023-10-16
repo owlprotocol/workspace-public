@@ -4,8 +4,7 @@ export type CouponEmailData = {
     img?: string;
 };
 
-export interface Email {
-    readonly id: string;
+export interface EmailData {
     // Recipient
     readonly to: string[];
     readonly message?: {
@@ -18,4 +17,8 @@ export interface Email {
         name: string;
         data: { coupons: CouponEmailData[] };
     };
+}
+
+export interface Email extends EmailData {
+    readonly id: string;
 }

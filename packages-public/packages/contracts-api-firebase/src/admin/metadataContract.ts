@@ -1,6 +1,5 @@
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
-import crypto from "node:crypto";
-import { MetadataContract } from "../models/MetadataContract.js";
+import { MetadataContractData } from "../models/MetadataContract.js";
 
 export const metadataContractBaseUriPrefix = `${API_REST_BASE_URL}/metadata/contract`;
 
@@ -14,10 +13,9 @@ export function getMetadataContractURI(id: string, baseUri?: string): string {
     return `${baseUri ?? metadataContractBaseUriPrefix}/${id}`;
 }
 
-export function createMetadataContractData(name: string, userId: string, imageUrl?: string): MetadataContract {
+export function createMetadataContractData(name: string, userId: string, imageUrl?: string): MetadataContractData {
     const metadataJson = imageUrl ? { name, image: imageUrl } : { name };
-    const metadataContract: MetadataContract = {
-        id: crypto.randomUUID(),
+    const metadataContract: MetadataContractData = {
         owner: userId,
         metadataJson: metadataJson,
         type: "firebase",

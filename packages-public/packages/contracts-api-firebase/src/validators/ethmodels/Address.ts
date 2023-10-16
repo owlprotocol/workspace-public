@@ -4,7 +4,6 @@ import { z } from "zod";
 import { AddressPublic, AddressPersonal } from "../../models/ethmodels/Address.js";
 
 export const addressPublicZod = z.object({
-    id: z.string().describe("id"),
     networkId: z.string().describe("networkId"),
     address: addressZod,
     ens: z.string().describe("ens").optional(),
@@ -14,7 +13,6 @@ type AddressPublicZodInferred = Readonly<z.infer<typeof addressPublicZod>>;
 expectType<TypeEqual<AddressPublic, AddressPublicZodInferred>>(true);
 
 export const addressPersonalZod = z.object({
-    id: z.string().describe("id"),
     networkId: z.string().describe("networkId"),
     address: addressZod,
     owner: z.string().describe("owner"),

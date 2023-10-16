@@ -1,7 +1,11 @@
 import { GetChainWithDataOptions, allChains, getChainByChainId, getChainWithData } from "@owlprotocol/chains";
 import * as envvars from "@owlprotocol/envvars";
 import { Create2FactoryTx } from "@owlprotocol/contracts-proxy";
-import { networkCreate2FactoryTransactionsCRUD, networksPrivateCRUD, networksReadOnlyCRUD } from "../admin/crud.js";
+import {
+    networkCreate2FactoryTransactionsCRUD,
+    networksPrivateCRUD,
+    networksReadOnlyCRUD,
+} from "../admin/crudWrappers.js";
 import { NetworkCreate2FactoryTransaction, NetworkReadOnly } from "../models/index.js";
 
 export const enabledNetworksDefault = [1337, 80001, 59140] as number[];

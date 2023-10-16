@@ -1,5 +1,4 @@
-export interface CouponDefinition {
-    readonly id: string;
+export interface CouponDefinitionData {
     readonly owner: string;
     readonly couponCampaign?: string;
     readonly shopifyPriceRuleId?: string;
@@ -17,4 +16,8 @@ export interface CouponDefinition {
     readonly status: "active" | "inactive";
     //store
     readonly store?: string;
+}
+
+export interface CouponDefinition extends CouponDefinitionData {
+    readonly id: string;
 }

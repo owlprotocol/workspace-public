@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import crypto from "node:crypto";
-import { usersCRUD } from "./crud.js";
+import { usersCRUD } from "./crudWrappers.js";
 import { User } from "../models/users/User.js";
 
 /**

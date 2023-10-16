@@ -7,27 +7,11 @@ import {
     FIREBASE_STORAGE_BUCKET,
 } from "@owlprotocol/envvars";
 import { initializeApp, getApp, getApps } from "firebase-admin/app";
-import { getFirestore, CollectionReference } from "firebase-admin/firestore";
+import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
 import { getStorage } from "firebase-admin/storage";
 import type { AppOptions } from "firebase-admin";
 import { cert } from "firebase-admin/app";
-import {
-    User,
-    Contract,
-    MetadataContract,
-    MetadataTokens,
-    RequestTemplate,
-    ProjectTemplate,
-    Project,
-    Store,
-    StorePrivate,
-    CouponDefinition,
-    CouponCampaign,
-    CouponInstance,
-    Email,
-    Invites,
-} from "../models/index.js";
 
 function getFirebaseConfig() {
     let firebaseConfig: AppOptions = {};
@@ -102,19 +86,3 @@ function getFirebaseApp() {
 export const { firebaseApp, firestore, auth, storage } = getFirebaseApp();
 
 export const bucket = storage.bucket();
-
-//Collections
-export const usersCol = firestore.collection("users") as CollectionReference<User>;
-export const projectTemplatesCol = firestore.collection("projectTempalates") as CollectionReference<ProjectTemplate>;
-export const projectsCol = firestore.collection("projects") as CollectionReference<Project>;
-export const requestTemplatesCol = firestore.collection("requestTemplates") as CollectionReference<RequestTemplate>;
-export const contractsCol = firestore.collection("contracts") as CollectionReference<Contract>;
-export const metadataContractsCol = firestore.collection("metadataContracts") as CollectionReference<MetadataContract>;
-export const metadataTokensCol = firestore.collection("metadataTokens") as CollectionReference<MetadataTokens>;
-export const storesCol = firestore.collection("stores") as CollectionReference<Store>;
-export const storePrivatesCol = firestore.collection("storePrivates") as CollectionReference<StorePrivate>;
-export const couponDefinitionsCol = firestore.collection("couponDefinitions") as CollectionReference<CouponDefinition>;
-export const couponCampaignsCol = firestore.collection("couponCampaigns") as CollectionReference<CouponCampaign>;
-export const couponInstancesCol = firestore.collection("couponInstances") as CollectionReference<CouponInstance>;
-export const emailsCol = firestore.collection("emails") as CollectionReference<Email>;
-export const invitesCol = firestore.collection("invites") as CollectionReference<Invites>;
