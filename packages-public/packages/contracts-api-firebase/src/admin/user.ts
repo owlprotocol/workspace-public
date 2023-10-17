@@ -7,9 +7,12 @@ import { User } from "../models/users/User.js";
  * Create user data with defaults
  * @param email
  */
-export function createUserDataWithDefaults(email: string, id?: string | undefined): User {
-    //create api key
-    const apiKey = crypto.randomUUID();
+export function createUserDataWithDefaults(email: string, id?: string, apiKey?: string): User {
+    // TODO: remove once apiKey is not used in User anymore
+    if (!apiKey) {
+        apiKey = crypto.randomUUID();
+    }
+
     //initial user data
     const user: User = {
         id: id ?? crypto.randomUUID(),
