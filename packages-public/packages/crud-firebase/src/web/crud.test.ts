@@ -126,6 +126,15 @@ describe("web/crud.test.ts", () => {
             expect(items[0]).toStrictEqual(testItem);
         });
 
+        test("where, nested key", async () => {
+            const testItem2 = { ...testItem, map: { keyA: "valueA", keyB: "valueB" } };
+            await itemsCRUD.set(testItem2);
+            const items = await itemsCRUD.getWhere({ map: { keyA: "valueA" } });
+
+            expect(items.length).toBe(1);
+            expect(items[0]).toStrictEqual(testItem2);
+        });
+
         test("where, orderBy", async () => {
             await itemsCRUD.set(testItem);
             const items = await itemsCRUD.getWhere({ name: testItem.name }, { orderBy: "name" });

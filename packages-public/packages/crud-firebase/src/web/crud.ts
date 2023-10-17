@@ -5,6 +5,7 @@ import {
     DocumentData,
     DocumentReference,
     Firestore,
+    Query,
     QueryConstraint,
     collection,
     deleteDoc,
@@ -120,13 +121,16 @@ export function getFirebaseCRUD<
     };
 
     /**
-     * Get docs that match filter
-     * @param filter
+     * Returns filter query that can be used to get items, count the query or compose with additional queries.
+     * @param filter, will try to match the key-value pairs of this object as `where(key, "==", value)` queries.
+     *      For nested keys, this gets reformated as `where(key.subkey, "==", value)` similar as to the update function
      * @param options limit, orderBy, order
-     * @returns docs
+     * @returns firebase query object
      */
-    const getWhere = async (filter: Partial<ItemData>, options?: QueryOptions): Promise<Item[]> => {
-        const queryFilterConstraints: QueryConstraint[] = Object.entries(validateData(filter)).map(([key, value]) => {
+    const getWhereQuery = (filter: Partial<ItemData>, options?: QueryOptions): Query<ItemData, DocumentData> => {
+        const filterNested = getFirestoreUpdateData(validateData(filter));
+
+        const queryFilterConstraints: QueryConstraint[] = Object.entries(filterNested).map(([key, value]) => {
             return where(key, "==", value);
         });
         if (options?.orderBy) {
@@ -136,7 +140,18 @@ export function getFirebaseCRUD<
             queryFilterConstraints.push(limit(options.limit));
         }
 
-        const querySnapshot = await getDocs(query(col, ...queryFilterConstraints));
+        return query(col, ...queryFilterConstraints);
+    };
+
+    /**
+     * Get docs that match filter
+     * @param filter, will try to match the key-value pairs of this object as `where(key, "==", value)` queries.
+     *      For nested keys, this gets reformated as `where(key.subkey, "==", value)` similar as to the update function
+     * @param options limit, orderBy, order
+     * @returns docs
+     */
+    const getWhere = async (filter: Partial<ItemData>, options?: QueryOptions): Promise<Item[]> => {
+        const querySnapshot = await getDocs(getWhereQuery(filter, options));
         return querySnapshot.docs.map((refSnapshot) => {
             return { ...refSnapshot.data(), ...getIdParams(refSnapshot.id) } as Item;
         });
@@ -149,17 +164,7 @@ export function getFirebaseCRUD<
      * @returns docs
      */
     const getWhereCount = async (filter: Partial<ItemData>, options?: QueryOptions): Promise<number> => {
-        const queryFilterConstraints: QueryConstraint[] = Object.entries(validateData(filter)).map(([key, value]) => {
-            return where(key, "==", value);
-        });
-        if (options?.orderBy) {
-            queryFilterConstraints.push(orderBy(options.orderBy, options.order ?? "asc"));
-        }
-        if (options?.limit) {
-            queryFilterConstraints.push(limit(options.limit));
-        }
-
-        const querySnapshot = await getCountFromServer(query(col, ...queryFilterConstraints));
+        const querySnapshot = await getCountFromServer(getWhereQuery(filter, options));
         return querySnapshot.data().count;
     };
 
@@ -358,6 +363,7 @@ export function getFirebaseCRUD<
         get,
         getBatch,
         getAll,
+        getWhereQuery,
         getWhere,
         getWhereCount,
         getWhereFirst,

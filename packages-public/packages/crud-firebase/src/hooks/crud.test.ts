@@ -106,5 +106,21 @@ describe("hooks/crud.test.ts", () => {
             expect(result1).toStrictEqual([testItem]);
             expect(options1.status).toBe("success");
         });
+
+        test("useGetWhere, nested key", async () => {
+            const testItem2 = { ...testItem, map: { keyA: "valueA", keyB: "valueB" } };
+            await itemsCRUD.set(testItem2);
+            const { result, waitForNextUpdate } = renderHook(() => itemsHooks.useGetWhere({ map: { keyA: "valueA" } }));
+
+            const [result0, options0] = result.current;
+            expect(result0).toStrictEqual(undefined);
+            expect(options0.status).toBe("loading");
+
+            await waitForNextUpdate();
+
+            const [result1, options1] = result.current;
+            expect(result1).toStrictEqual([testItem2]);
+            expect(options1.status).toBe("success");
+        });
     });
 });

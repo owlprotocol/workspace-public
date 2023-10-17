@@ -5,6 +5,7 @@ import {
     DocumentReference,
     DocumentSnapshot,
     Firestore,
+    Query,
     QuerySnapshot,
     collection,
     limit,
@@ -14,6 +15,7 @@ import { doc, query, where, QueryConstraint } from "firebase/firestore";
 //@ts-expect-error
 import { useFirestoreCollection, useFirestoreDoc, ObservableStatus } from "reactfire";
 import { CrudValidators, QueryOptions, getIdParamsDefault, joinSorted } from "../crud.js";
+import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
 
 export function generateUUID({ id }: { id?: string }) {
     return {
@@ -95,16 +97,17 @@ export function getFirebaseHooks<
     };
 
     /**
-     * Get docs that match filter
-     * @param filter
+     * Returns filter query that can be used to get items, count the query or compose with additional queries.
+     * @param filter, will try to match the key-value pairs of this object as `where(key, "==", value)` queries.
+     *      For nested keys, this gets reformated as `where(key.subkey, "==", value)` similar as to the update function
      * @param options limit, orderBy, order
-     * @returns docs
+     * @returns firebase query object
      */
-    const useGetWhere = (
-        filter: Partial<ItemData>,
-        options?: QueryOptions,
-    ): [Item[] | undefined, ObservableStatus<QuerySnapshot<ItemData, DocumentData>>] => {
-        const queryFilterConstraints: QueryConstraint[] = Object.entries(filter).map(([key, value]) => {
+    const getWhereQuery = (filter: Partial<ItemData>, options?: QueryOptions): Query<ItemData, DocumentData> => {
+        //TODO: Add validate data similar to web sdk
+        const filterNested = getFirestoreUpdateData(filter);
+
+        const queryFilterConstraints: QueryConstraint[] = Object.entries(filterNested).map(([key, value]) => {
             return where(key, "==", value);
         });
         if (options?.orderBy) {
@@ -114,7 +117,20 @@ export function getFirebaseHooks<
             queryFilterConstraints.push(limit(options.limit));
         }
 
-        const result = useFirestoreCollection(query(col, ...queryFilterConstraints));
+        return query(col, ...queryFilterConstraints);
+    };
+
+    /**
+     * Get docs that match filter
+     * @param filter
+     * @param options limit, orderBy, order
+     * @returns docs
+     */
+    const useGetWhere = (
+        filter: Partial<ItemData>,
+        options?: QueryOptions,
+    ): [Item[] | undefined, ObservableStatus<QuerySnapshot<ItemData, DocumentData>>] => {
+        const result = useFirestoreCollection(getWhereQuery(filter, options));
         const snapshot = result.data;
         const data = (
             snapshot
@@ -144,6 +160,7 @@ export function getFirebaseHooks<
     };
 
     return {
+        getWhereQuery,
         useGet,
         useGetAll,
         useGetWhere,

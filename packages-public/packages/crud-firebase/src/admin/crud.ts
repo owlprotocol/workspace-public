@@ -169,14 +169,17 @@ export function getFirebaseCRUD<
     };
 
     /**
-     * Get docs that match filter, no security checks
-     * @param filter
+     * Returns filter query that can be used to get items, count the query or compose with additional queries.
+     * @param filter, will try to match the key-value pairs of this object as `where(key, "==", value)` queries.
+     *      For nested keys, this gets reformated as `where(key.subkey, "==", value)` similar as to the update function
      * @param options limit, orderBy, order
-     * @returns docs
+     * @returns firebase query object
      */
-    const _getWhere = async (filter: Partial<ItemData>, options?: QueryOptions): Promise<Item[]> => {
+    const _getWhereQuery = (filter: Partial<ItemData>, options?: QueryOptions): Query<ItemData> => {
+        const filterNested = getFirestoreUpdateData(validateData(filter));
+
         let query: Query | CollectionReference = col;
-        Object.entries(filter).forEach(([key, value]) => {
+        Object.entries(filterNested).forEach(([key, value]) => {
             if (!query) query = col.where(key, "==", value);
             else query = query.where(key, "==", value);
         });
@@ -187,7 +190,18 @@ export function getFirebaseCRUD<
             query.limit(options.limit);
         }
 
-        const querySnapshot = await query.get();
+        return query as Query<ItemData>;
+    };
+
+    /**
+     * Get docs that match filter, no security checks
+     * @param filter, will try to match the key-value pairs of this object as `where(key, "==", value)` queries.
+     *      For nested keys, this gets reformated as `where(key.subkey, "==", value)` similar as to the update function
+     * @param options limit, orderBy, order
+     * @returns docs
+     */
+    const _getWhere = async (filter: Partial<ItemData>, options?: QueryOptions): Promise<Item[]> => {
+        const querySnapshot = await _getWhereQuery(filter, options).get();
         return querySnapshot.docs.map((refSnapshot) => {
             return { ...refSnapshot.data(), ...getIdParams(refSnapshot.id) } as Item;
         });
@@ -221,19 +235,7 @@ export function getFirebaseCRUD<
      * @returns docs
      */
     const _getWhereCount = async (filter: Partial<ItemData>, options?: QueryOptions): Promise<number> => {
-        let query: Query | CollectionReference = col;
-        Object.entries(filter).forEach(([key, value]) => {
-            if (!query) query = col.where(key, "==", value);
-            else query = query.where(key, "==", value);
-        });
-        if (options?.orderBy) {
-            query = query.orderBy(options.orderBy, options.order ?? "asc");
-        }
-        if (options?.limit) {
-            query.limit(options.limit);
-        }
-
-        const querySnapshot = await query.count().get();
+        const querySnapshot = await _getWhereQuery(filter, options).count().get();
         return querySnapshot.data().count;
     };
 
@@ -827,6 +829,7 @@ export function getFirebaseCRUD<
         getBatch,
         _getAll,
         getAll,
+        _getWhereQuery,
         _getWhere,
         getWhere,
         _getWhereCount,
