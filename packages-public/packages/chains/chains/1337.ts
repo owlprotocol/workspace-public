@@ -3,7 +3,7 @@ export default {
   "name": "Localhost",
   "chain": "ETH",
   "rpc": [
-    "http://localhost:8545"
+    "http://127.0.0.1:8545"
   ],
   "faucets": [],
   "nativeCurrency": {

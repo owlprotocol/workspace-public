@@ -117,10 +117,10 @@ const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
 
 /** Chainlist data sufficient mostly, we just override here for localhost */
 const RPC_DEFAULTS: Record<string, string | undefined> = {
-    1337: "http://localhost:8545",
+    1337: "http://127.0.0.1:8545",
 };
 const WS_DEFAULTS: Record<string, string | undefined> = {
-    1337: "ws://localhost:8545",
+    1337: "ws://127.0.0.1:8545",
 };
 /** API endpoints are not stable. Usually testnet and mainnet are on same domain. */
 const EXPLORER_API_DEFAULTS: Record<string, string | undefined> = {
