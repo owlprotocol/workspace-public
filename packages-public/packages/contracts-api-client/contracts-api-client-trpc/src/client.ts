@@ -8,17 +8,27 @@ import fetch from "cross-fetch";
  * @param url
  * @returns
  */
-export function createClient(apiKey: string, url = "https://contracts-api.owlprotocol.xyz/api/trpc"): AppClient {
+export function createClient(
+    auth?: {
+        apiKey?: string;
+        jwt?: string;
+    },
+    url = "https://contracts-api.owlprotocol.xyz/api/trpc",
+): AppClient {
     const client = createTRPCProxyClient<AppRouter>({
         links: [
             httpBatchLink({
                 url,
                 fetch,
                 // You can pass any HTTP headers you wish here
-                async headers() {
-                    return {
-                        "x-api-key": apiKey,
-                    };
+                headers() {
+                    if (auth?.apiKey) {
+                        return { "x-api-key": auth.apiKey };
+                    } else if (auth?.jwt) {
+                        return { authorization: auth.jwt };
+                    } else {
+                        return {};
+                    }
                 },
             }),
         ],

@@ -6,7 +6,7 @@ describe("trpc client", () => {
     let client: AppClient;
 
     beforeAll(() => {
-        client = createClient("");
+        client = createClient();
     });
 
     test("/users/me", () => {
