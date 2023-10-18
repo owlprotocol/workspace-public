@@ -7,18 +7,11 @@ import { User } from "../models/users/User.js";
  * Create user data with defaults
  * @param email
  */
-export function createUserDataWithDefaults(email: string, id?: string, apiKey?: string): User {
-    // TODO: remove once apiKey is not used in User anymore
-    if (!apiKey) {
-        apiKey = crypto.randomUUID();
-    }
-
+export function createUserDataWithDefaults(email: string, id?: string): User {
     //initial user data
     const user: User = {
         id: id ?? crypto.randomUUID(),
         email,
-        apiKey,
-        gnosisAddress: {},
         topupTotals: {
             "80001": {
                 native: "0",

@@ -8,7 +8,7 @@ import {
     CouponCampaignData,
     CouponDefinitionData,
     CouponInstance,
-    DfnsWalletReadOnly,
+    DfnsWalletReadOnlyData,
     SafeWalletReadOnly,
     EmailData,
     EthLog,
@@ -44,6 +44,10 @@ import {
     getEthTransactionId,
     getEthTransactionIdParams,
     validateContractId,
+    SafeWalletId,
+    getSafeWalletIdParams,
+    getSafeWalletId,
+    validateSafeWalletId,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -111,8 +115,16 @@ export const organizationsReadOnlyHooks = getFirebaseHooks<OrganizationReadOnlyD
     organizationsReadOnlyPath,
 );
 export const usersHooks = getFirebaseHooks<UserData>(firestore, "users");
-export const dfnsWalletsReadOnlyHooks = getFirebaseHooks<DfnsWalletReadOnly>(firestore, dfnsWalletsReadOnlyPath);
-export const safeWalletsReadOnlyHooks = getFirebaseHooks<SafeWalletReadOnly>(firestore, safeWalletsReadOnlyPath);
+export const dfnsWalletsReadOnlyHooks = getFirebaseHooks<DfnsWalletReadOnlyData>(firestore, dfnsWalletsReadOnlyPath);
+export const safeWalletsReadOnlyHooks = getFirebaseHooks<SafeWalletReadOnly, SafeWalletId>(
+    firestore,
+    safeWalletsReadOnlyPath,
+    {
+        getId: getSafeWalletId,
+        getIdParams: getSafeWalletIdParams,
+        validateId: validateSafeWalletId,
+    },
+);
 //networks
 export const networksReadOnlyHooks = getFirebaseHooks<NetworkReadOnly>(firestore, networksReadOnlyPath);
 export const networksPrivateHooks = getFirebaseHooks<NetworkPrivate>(firestore, networksPrivatePath);

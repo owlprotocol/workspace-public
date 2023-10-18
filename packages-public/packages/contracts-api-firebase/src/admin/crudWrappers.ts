@@ -5,7 +5,7 @@ import {
     Contract,
     CouponCampaignData,
     CouponDefinitionData,
-    DfnsWalletReadOnly,
+    DfnsWalletReadOnlyData,
     SafeWalletReadOnly,
     EmailData,
     EthLog,
@@ -44,6 +44,10 @@ import {
     getContractId,
     getContractIdParams,
     validateContractId,
+    getSafeWalletId,
+    getSafeWalletIdParams,
+    validateSafeWalletId,
+    SafeWalletId,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -202,16 +206,20 @@ export const usersCRUD = getFirebaseCRUD<UserData, ItemIdDefault, [userId: strin
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     deleteAccessCheck: (_user, _userId) => true,
 });
-export const dfnsWalletsReadOnlyCRUD = getFirebaseCRUD<DfnsWalletReadOnly, ItemIdDefault, [userId: string]>(
+export const dfnsWalletsReadOnlyCRUD = getFirebaseCRUD<DfnsWalletReadOnlyData, ItemIdDefault, [userId: string]>(
     firestore,
     dfnsWalletsReadOnlyPath,
     undefined,
     ownerOnlyChecks,
 );
-export const safeWalletsReadOnlyCRUD = getFirebaseCRUD<SafeWalletReadOnly, ItemIdDefault, [userId: string]>(
+export const safeWalletsReadOnlyCRUD = getFirebaseCRUD<SafeWalletReadOnly, SafeWalletId, [userId: string]>(
     firestore,
     safeWalletsReadOnlyPath,
-    undefined,
+    {
+        getId: getSafeWalletId,
+        getIdParams: getSafeWalletIdParams,
+        validateId: validateSafeWalletId,
+    },
     ownerOnlyChecks,
 );
 //networks

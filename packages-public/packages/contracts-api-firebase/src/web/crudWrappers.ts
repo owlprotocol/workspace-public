@@ -6,7 +6,7 @@ import {
     CouponCampaignData,
     CouponDefinitionData,
     CouponInstance,
-    DfnsWalletReadOnly,
+    DfnsWalletReadOnlyData,
     SafeWalletReadOnly,
     EmailData,
     EthLog,
@@ -44,6 +44,10 @@ import {
     getContractId,
     getContractIdParams,
     validateContractId,
+    getSafeWalletId,
+    getSafeWalletIdParams,
+    validateSafeWalletId,
+    SafeWalletId,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -113,8 +117,16 @@ export const organizationsReadOnlyCRUD = getFirebaseCRUD<OrganizationReadOnlyDat
     organizationsReadOnlyPath,
 );
 export const usersCRUD = getFirebaseCRUD<UserData>(firestore, usersPath);
-export const dfnsWalletsReadOnlyCRUD = getFirebaseCRUD<DfnsWalletReadOnly>(firestore, dfnsWalletsReadOnlyPath);
-export const safeWalletsReadOnlyCRUD = getFirebaseCRUD<SafeWalletReadOnly>(firestore, safeWalletsReadOnlyPath);
+export const dfnsWalletsReadOnlyCRUD = getFirebaseCRUD<DfnsWalletReadOnlyData>(firestore, dfnsWalletsReadOnlyPath);
+export const safeWalletsReadOnlyCRUD = getFirebaseCRUD<SafeWalletReadOnly, SafeWalletId>(
+    firestore,
+    safeWalletsReadOnlyPath,
+    {
+        getId: getSafeWalletId,
+        getIdParams: getSafeWalletIdParams,
+        validateId: validateSafeWalletId,
+    },
+);
 //networks
 export const networksReadOnlyCRUD = getFirebaseCRUD<NetworkReadOnly>(firestore, networksReadOnlyPath);
 export const networksPrivateCRUD = getFirebaseCRUD<NetworkPrivate>(firestore, networksPrivatePath);

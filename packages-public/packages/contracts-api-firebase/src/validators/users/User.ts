@@ -7,10 +7,6 @@ const userZodInternal = z
         id: z.string().describe("id"),
         email: z.string().describe("email"),
         type: z.enum(["dev", "user"]).describe("user type").optional(),
-        apiKey: z.string().describe("apiKey").optional(),
-        dfnsAddress: z.string().describe("dfnsAddress").optional(),
-        dfnsId: z.string().describe("dfnsId").optional(),
-        gnosisAddress: z.record(z.string().describe("networkId"), z.string().describe("address")),
         topupTotals: z.record(
             z.string().describe("networkId"),
             z.record(z.string().describe("nativeOrERC20Address"), z.string().describe("value")),

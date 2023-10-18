@@ -22,7 +22,6 @@ expectType<TypeEqual<DfnsWalletReadOnly, DfnsWalletReadOnlyZodInferred>>(true);
 
 export const safeWalletReadOnlyZod = z
     .object({
-        id: z.string().describe("id"),
         networkId: z.string().describe("networkId"),
         address: addressZod.describe("address"),
         owner: z.string().describe("owner"),

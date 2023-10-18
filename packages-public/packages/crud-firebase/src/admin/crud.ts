@@ -314,7 +314,7 @@ export function getFirebaseCRUD<
                     }
                 }
 
-                await transaction.set(ref, validateData(item) as ItemData);
+                transaction.set(ref, validateData(item) as ItemData);
 
                 return getId(id);
             });
@@ -400,7 +400,7 @@ export function getFirebaseCRUD<
         const dataExisting = await firestore.runTransaction(async (transaction) => {
             const refSnapshot = await transaction.get(ref);
             if (!refSnapshot.exists) {
-                await transaction.set(ref, initialValueValidated);
+                transaction.set(ref, initialValueValidated);
                 return undefined;
             } else {
                 return refSnapshot.data();
@@ -439,7 +439,7 @@ export function getFirebaseCRUD<
                             throw new Error(`${col.path}/${id} permission-denied`);
                         }
                     }
-                    await transaction.set(ref, initialValueValidated);
+                    transaction.set(ref, initialValueValidated);
                     return undefined;
                 } else {
                     const data = refSnapshot.data()!;
@@ -537,7 +537,7 @@ export function getFirebaseCRUD<
                     throw new Error(`${col.path}/${ref.id} permission-denied`);
                 }
 
-                await transaction.update(ref, getFirestoreUpdateData(validateData(item)) as UpdateData<ItemData>);
+                transaction.update(ref, getFirestoreUpdateData(validateData(item)) as UpdateData<ItemData>);
             });
         }
     };
@@ -633,7 +633,7 @@ export function getFirebaseCRUD<
                     throw new Error(`${col.path}/${ref.id} permission-denied`);
                 }
 
-                await transaction.delete(ref);
+                transaction.delete(ref);
             });
         }
     };
