@@ -1,6 +1,7 @@
 import { GetChainWithDataOptions, allChains, getChainByChainId, getChainWithData } from "@owlprotocol/chains";
 import * as envvars from "@owlprotocol/envvars";
 import { Create2FactoryTx } from "@owlprotocol/contracts-proxy";
+import { NODE_ENV } from "@owlprotocol/envvars";
 import {
     networkCreate2FactoryTransactionsCRUD,
     networksPrivateCRUD,
@@ -8,12 +9,18 @@ import {
 } from "../admin/crudWrappers.js";
 import { NetworkCreate2FactoryTransaction, NetworkPrivate, NetworkReadOnly } from "../models/index.js";
 
-export const enabledNetworksDefault = [1337, 80001, 59140] as number[];
-export const ranksByNetworkDefault = {
-    1337: 0,
-    80001: 1,
-    59140: 2,
-} as Record<number, number>;
+export const enabledNetworksDefault = NODE_ENV === "development" ? [1337, 80001, 59140] : [80001, 59140];
+export const ranksByNetworkDefault: Record<number, number> =
+    NODE_ENV === "development"
+        ? {
+              1337: 0,
+              80001: 1,
+              59140: 2,
+          }
+        : {
+              80001: 0,
+              59140: 1,
+          };
 
 export function uploadCreate2FactoryTransactions(chains = allChains.map((c) => c.chainId)) {
     const create2FactoryTransactions: NetworkCreate2FactoryTransaction[] = chains.map((chainId) => {

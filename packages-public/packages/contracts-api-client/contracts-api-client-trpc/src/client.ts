@@ -1,6 +1,7 @@
 import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
 import type { AppRouter } from "@owlprotocol/contracts-api";
 import fetch from "cross-fetch";
+import { API_TRPC_BASE_URL } from "@owlprotocol/envvars";
 
 /**
  * Create JS TRPC Client
@@ -13,7 +14,7 @@ export function createClient(
         apiKey?: string;
         jwt?: string;
     },
-    url = "https://contracts-api.owlprotocol.xyz/api/trpc",
+    url = API_TRPC_BASE_URL,
 ): AppClient {
     const client = createTRPCProxyClient<AppRouter>({
         links: [
