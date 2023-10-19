@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TypeEqual, expectType } from "ts-expect";
-import { NetworkReadOnly } from "../models/Network.js";
+import { NetworkPrivate, NetworkReadOnly } from "../models/Network.js";
 
 export const iconZod = z.object({
     url: z.string(),
@@ -80,17 +80,28 @@ export const chainWithDataZod = chainZod
     })
     .describe("chainWithData");
 
-const networkZodInternal = chainWithDataZod.extend({
+const networkPublicZod = chainWithDataZod.extend({
+    id: z.string(),
+    enabled: z.boolean(),
+    rank: z.number(),
+    default: z.boolean(),
+});
+const NetworkPrivateZod = chainWithDataZod.extend({
     id: z.string(),
     enabled: z.boolean(),
     rank: z.number(),
 });
 
-export const networkZod = networkZodInternal as Omit<typeof networkZodInternal, "_output"> & {
+export const networkZod = networkPublicZod as Omit<typeof networkPublicZod, "_output"> & {
     _output: NetworkReadOnly;
+};
+export const networkPrivateZod = NetworkPrivateZod as Omit<typeof NetworkPrivateZod, "_output"> & {
+    _output: NetworkPrivate;
 };
 
 //TODO: Explore using https://zod.dev/?id=readonly (enforces read-only with Object.freeze)
 //Check zod validator matches interface
-type NetworkZodInferred = z.infer<typeof networkZod>;
-expectType<TypeEqual<NetworkReadOnly, NetworkZodInferred>>(true);
+type networkZod = z.infer<typeof networkZod>;
+expectType<TypeEqual<NetworkReadOnly, networkZod>>(true);
+type networkPrivateZod = z.infer<typeof networkPrivateZod>;
+expectType<TypeEqual<NetworkPrivate, networkPrivateZod>>(true);

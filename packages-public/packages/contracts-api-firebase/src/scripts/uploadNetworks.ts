@@ -6,7 +6,7 @@ import {
     networksPrivateCRUD,
     networksReadOnlyCRUD,
 } from "../admin/crudWrappers.js";
-import { NetworkCreate2FactoryTransaction, NetworkReadOnly } from "../models/index.js";
+import { NetworkCreate2FactoryTransaction, NetworkPrivate, NetworkReadOnly } from "../models/index.js";
 
 export const enabledNetworksDefault = [1337, 80001, 59140] as number[];
 export const ranksByNetworkDefault = {
@@ -52,10 +52,11 @@ export function uploadNetworks(
             enabled: enabledNetworks.includes(chainId),
             rank: ranksByNetwork[chainId] ?? 9999,
             id: `${chainId}`,
+            default: false,
         };
     });
 
-    const networksPrivate: NetworkReadOnly[] = chains.map((c) => {
+    const networksPrivate: NetworkPrivate[] = chains.map((c) => {
         const chainId = c.chainId;
         const options: GetChainWithDataOptions = {
             THIRDWEB_API_KEY: envvars.THIRDWEB_API_KEY,

@@ -9,6 +9,7 @@ export interface NetworkReadOnly extends ChainWithData {
     readonly enabled: boolean;
     /** Network rank sorting in terms of relevance, lower = higher priority in search result */
     readonly rank: number;
+    readonly default: boolean;
 }
 
 /**
