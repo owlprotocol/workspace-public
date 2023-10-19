@@ -19,6 +19,9 @@ export function createUserDataWithDefaults(email: string, id?: string): User {
             "1337": {
                 native: "0",
             },
+            "59140": {
+                native: "0",
+            },
         },
         topupMax: {
             "80001": {
@@ -29,6 +32,9 @@ export function createUserDataWithDefaults(email: string, id?: string): User {
             },
             "1337": {
                 native: ethers.constants.MaxUint256.toString(),
+            },
+            "59140": {
+                native: ethers.utils.parseUnits("1.0").toString(),
             },
         },
     };
