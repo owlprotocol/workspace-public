@@ -209,7 +209,6 @@ export const ENVVARS: EnvVarDef[] = [
     { name: "API_REST_BASE_URL", platform: "neutral", defaultValue: "http://localhost:3000/api" },
     { name: "API_TRPC_BASE_URL", platform: "neutral", defaultValue: "http://localhost:3000/api/trpc" },
     { name: "CORS_PROXY", platform: "browser" },
-    { name: "CHAIN_ID_DEFAULT", platform: "browser", defaultValue: "80001" },
     ...README_ENVVARS,
     ...RESEND_ENVVARS,
     ...DFNS_ENVVARS,
