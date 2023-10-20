@@ -5,6 +5,8 @@ import { deploymentMethodZod } from "./DeploymentMethod.js";
 import { relayMethodZod } from "./RelayMethod.js";
 import type { Contract } from "../models/Contract.js";
 
+export const contractAddressZod = addressZod.describe("contract address");
+
 export const contractZod = z
     .object({
         /** Blockchain Data */

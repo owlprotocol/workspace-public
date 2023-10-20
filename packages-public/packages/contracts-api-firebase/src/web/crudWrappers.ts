@@ -48,6 +48,11 @@ import {
     getSafeWalletIdParams,
     validateSafeWalletId,
     SafeWalletId,
+    Collection,
+    CollectionId,
+    getCollectionId,
+    getCollectionIdParams,
+    validateCollectionId,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -83,6 +88,7 @@ import {
     storesPath,
     tokenLazyMintsReadOnlyPath,
     usersPath,
+    collectionsPath,
 } from "../crud.js";
 
 //ethmodels
@@ -166,6 +172,11 @@ export const contractsCRUD = getFirebaseCRUD<Contract, ContractId>(firestore, co
     getId: getContractId,
     getIdParams: getContractIdParams,
     validateId: validateContractId,
+});
+export const collectionsCRUD = getFirebaseCRUD<Collection, CollectionId>(firestore, collectionsPath, {
+    getId: getCollectionId,
+    getIdParams: getCollectionIdParams,
+    validateId: validateCollectionId,
 });
 export const projectsCRUD = getFirebaseCRUD<Project>(firestore, projectsPath);
 export const metadataContractsCRUD = getFirebaseCRUD<MetadataContractData>(firestore, metadataContractsPath);

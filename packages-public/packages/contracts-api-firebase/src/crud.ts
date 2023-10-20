@@ -34,6 +34,7 @@ export const gasBudgetRulesByContractReadOnlyPath = "gasBudgetRulesByContractRea
 //other
 export const projectTemplatesPath = "projectTemplates";
 export const requestTemplatesPath = "requestTemplates";
+export const collectionsPath = "collections";
 export const contractsPath = "contracts";
 export const projectsPath = "projects";
 export const metadataContractsPath = "metadataContracts";

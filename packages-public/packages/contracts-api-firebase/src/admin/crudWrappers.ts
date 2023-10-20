@@ -48,6 +48,11 @@ import {
     getSafeWalletIdParams,
     validateSafeWalletId,
     SafeWalletId,
+    Collection,
+    CollectionId,
+    getCollectionId,
+    getCollectionIdParams,
+    validateCollectionId,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -83,6 +88,7 @@ import {
     storesPath,
     tokenLazyMintsReadOnlyPath,
     usersPath,
+    collectionsPath,
 } from "../crud.js";
 
 const ownerCheck = ({ owner }: { owner?: string }, userId: string) => owner === userId;
@@ -293,6 +299,16 @@ export const contractsCRUD = getFirebaseCRUD<Contract, ContractId, [userId: stri
         getId: getContractId,
         getIdParams: getContractIdParams,
         validateId: validateContractId,
+    },
+    ownerOnlyChecks,
+);
+export const collectionsCRUD = getFirebaseCRUD<Collection, CollectionId, [userId: string]>(
+    firestore,
+    collectionsPath,
+    {
+        getId: getCollectionId,
+        getIdParams: getCollectionIdParams,
+        validateId: validateCollectionId,
     },
     ownerOnlyChecks,
 );
