@@ -23,11 +23,10 @@ function getFirebaseConfig() {
             !FIREBASE_PRIVATE_KEY ||
             !FIREBASE_SERVICE_EMAIL ||
             !FIREBASE_PROJECT_ID ||
-            !FIREBASE_DATABASE_URL ||
             !FIREBASE_STORAGE_BUCKET
         ) {
             const message =
-                "FIREBASE_PRIVATE_KEY, FIREBASE_SERVICE_EMAIL, FIREBASE_PROJECT_ID, FIREBASE_DATABASE_URL, and FIREBASE_STORAGE_BUCKET required for production";
+                "FIREBASE_PRIVATE_KEY, FIREBASE_SERVICE_EMAIL, FIREBASE_PROJECT_ID, and FIREBASE_STORAGE_BUCKET required for production";
             throw new Error(message);
         }
 
