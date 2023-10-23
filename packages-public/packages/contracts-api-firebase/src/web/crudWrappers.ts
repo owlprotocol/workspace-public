@@ -18,7 +18,6 @@ import {
     NetworkPrivate,
     NetworkReadOnly,
     OrganizationReadOnlyData,
-    Project,
     ProjectTemplate,
     RequestTemplate,
     StoreData,
@@ -53,6 +52,7 @@ import {
     getCollectionId,
     getCollectionIdParams,
     validateCollectionId,
+    ProjectData,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -178,7 +178,7 @@ export const collectionsCRUD = getFirebaseCRUD<Collection, CollectionId>(firesto
     getIdParams: getCollectionIdParams,
     validateId: validateCollectionId,
 });
-export const projectsCRUD = getFirebaseCRUD<Project>(firestore, projectsPath);
+export const projectsCRUD = getFirebaseCRUD<ProjectData>(firestore, projectsPath);
 export const metadataContractsCRUD = getFirebaseCRUD<MetadataContractData>(firestore, metadataContractsPath);
 export const emailsCRUD = getFirebaseCRUD<EmailData>(firestore, emailsPath);
 export const blogsCRUD = getFirebaseCRUD<BlogData>(firestore, blogsPath);

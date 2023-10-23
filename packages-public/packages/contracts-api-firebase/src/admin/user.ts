@@ -12,6 +12,7 @@ export function createUserDataWithDefaults(email: string, id?: string): User {
     const user: User = {
         id: id ?? crypto.randomUUID(),
         email,
+        defaultProjectId: "",
         topupTotals: {
             "80001": {
                 native: "0",

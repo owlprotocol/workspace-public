@@ -20,7 +20,7 @@ import {
     NetworkPrivate,
     NetworkReadOnly,
     OrganizationReadOnlyData,
-    Project,
+    ProjectData,
     ProjectTemplate,
     RequestTemplate,
     StoreData,
@@ -172,7 +172,7 @@ export const collectionsHooks = getFirebaseHooks<Collection, CollectionId>(fires
     getIdParams: getCollectionIdParams,
     validateId: validateCollectionId,
 });
-export const projectsHooks = getFirebaseHooks<Project>(firestore, projectsPath);
+export const projectsHooks = getFirebaseHooks<ProjectData>(firestore, projectsPath);
 export const metadataContractsHooks = getFirebaseHooks<MetadataContractData>(firestore, metadataContractsPath);
 export const emailsHooks = getFirebaseHooks<EmailData>(firestore, emailsPath);
 export const blogsHooks = getFirebaseHooks<BlogData>(firestore, blogsPath);

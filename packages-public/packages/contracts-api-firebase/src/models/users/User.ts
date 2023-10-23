@@ -11,6 +11,7 @@ export interface UserData {
             [nativeOrERC20Address: string]: string;
         };
     };
+    readonly defaultProjectId: string;
 }
 
 export interface User extends UserData {

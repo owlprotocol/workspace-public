@@ -17,7 +17,6 @@ import {
     NetworkPrivate,
     NetworkReadOnly,
     OrganizationReadOnlyData,
-    Project,
     ProjectTemplate,
     RequestTemplate,
     StoreData,
@@ -53,6 +52,7 @@ import {
     getCollectionId,
     getCollectionIdParams,
     validateCollectionId,
+    ProjectData,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -312,7 +312,7 @@ export const collectionsCRUD = getFirebaseCRUD<Collection, CollectionId, [userId
     },
     ownerOnlyChecks,
 );
-export const projectsCRUD = getFirebaseCRUD<Project, ItemIdDefault, [userId: string]>(
+export const projectsCRUD = getFirebaseCRUD<ProjectData, ItemIdDefault, [userId: string]>(
     firestore,
     projectsPath,
     undefined,

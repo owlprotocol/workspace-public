@@ -13,6 +13,7 @@ export const testUserId = uuid1;
 export const testUser: User = {
     id: testUserId,
     email: "johndoe@owlprotocol.xyz",
+    defaultProjectId: "",
     topupTotals: {
         [testNetworkId]: {
             native: "0",
