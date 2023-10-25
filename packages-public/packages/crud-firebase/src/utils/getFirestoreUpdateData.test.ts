@@ -75,4 +75,35 @@ describe("getFirestoreUpdateData.test.ts", () => {
         const updateData = getFirestoreUpdateData(item);
         expect(updateData).toStrictEqual(updateDataExpected);
     });
+
+    test("two entries, depth two", () => {
+        const item = { metadata: { name: "Bob", image: "http://example.com" }, id: "1" };
+        const updateData = getFirestoreUpdateData(item);
+        const updateDataExpected = { id: "1", "metadata.name": "Bob", "metadata.image": item.metadata.image };
+        console.log(updateData);
+        expect(updateData).toStrictEqual(updateDataExpected);
+    });
+
+    test("mixed, two keys per depth", () => {
+        const item = {
+            msg2: "hi",
+            msg: "hello",
+            payload: { msg2: "hi", msg: "hello" },
+            result: { payload: { msg2: "hi", msg: "hello" } },
+            wrapper: { result: { payload: { msg2: "hi", msg: "hello" } } },
+        };
+
+        const updateDataExpected = {
+            msg: "hello",
+            msg2: "hi",
+            "payload.msg": "hello",
+            "payload.msg2": "hi",
+            "result.payload.msg": "hello",
+            "result.payload.msg2": "hi",
+            "wrapper.result.payload.msg": "hello",
+            "wrapper.result.payload.msg2": "hi",
+        };
+        const updateData = getFirestoreUpdateData(item);
+        expect(updateData).toStrictEqual(updateDataExpected);
+    });
 });

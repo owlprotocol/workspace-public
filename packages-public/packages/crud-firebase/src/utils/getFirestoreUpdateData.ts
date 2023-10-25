@@ -41,15 +41,26 @@ export function getFirestoreUpdateData<T extends Primitive | Record<string, any>
         //Nested
         const valueUpdate = getFirestoreUpdateData<Record<string, any>>(value!);
         const valueEntries = Object.entries(valueUpdate).map(([keyChild, value]) => [`${key}.${keyChild}`, value]);
+        console.log({ valueEntries });
 
         return valueEntries;
     });
 
-    const entriesFlat = entries
+    // TODO: figure out type
+    const entriesFlat: any[] = [];
+    entries
         .filter((entryOrEntryArrayOrEmpty) => entryOrEntryArrayOrEmpty.length != 0)
-        .map((entryOrEntryArray) =>
-            Array.isArray(entryOrEntryArray[0]) ? flattenDeep(entryOrEntryArray) : entryOrEntryArray,
-        );
+        .forEach((entryOrEntryArray) => {
+            if (!Array.isArray(entryOrEntryArray[0])) {
+                entriesFlat.push(entryOrEntryArray);
+                return;
+            }
+
+            // TODO: figure out type
+            const entryArray = entryOrEntryArray as Array<Array<any>>;
+            entryArray.forEach((entry) => entriesFlat.push(entry));
+        });
+
     const itemUpdate = Object.fromEntries(entriesFlat);
     return itemUpdate as UpdateData<T>;
 }
