@@ -1,5 +1,4 @@
 import type { UpdateData, Primitive } from "firebase/firestore";
-import { flattenDeep } from "lodash-es";
 
 /**
  * Convert a nested object, key-value object (depth=1), or primitive Firestore Update data format.
