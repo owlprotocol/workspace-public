@@ -5,7 +5,7 @@ import { API_REST_BASE_URL } from "@owlprotocol/envvars";
 import crypto from "node:crypto";
 import { MetadataTokens } from "../models/tokens/MetadataTokens.js";
 
-export const metadataTokensBaseUriPrefix = `${API_REST_BASE_URL}/metadata/tokens`;
+export const metadataTokensBaseUriPrefix = `${API_REST_BASE_URL}/metadataTokens`;
 
 /**
  * Get tokens metadata base uri

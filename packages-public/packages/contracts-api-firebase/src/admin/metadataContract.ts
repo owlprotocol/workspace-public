@@ -1,7 +1,7 @@
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
 import { MetadataContractData } from "../models/MetadataContract.js";
 
-export const metadataContractBaseUriPrefix = `${API_REST_BASE_URL}/metadata/contract`;
+export const metadataContractBaseUriPrefix = `${API_REST_BASE_URL}/metadataContract`;
 
 /**
  * Get contract metadata base uri
