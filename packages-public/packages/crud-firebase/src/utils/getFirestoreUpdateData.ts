@@ -40,7 +40,6 @@ export function getFirestoreUpdateData<T extends Primitive | Record<string, any>
         //Nested
         const valueUpdate = getFirestoreUpdateData<Record<string, any>>(value!);
         const valueEntries = Object.entries(valueUpdate).map(([keyChild, value]) => [`${key}.${keyChild}`, value]);
-        console.log({ valueEntries });
 
         return valueEntries;
     });

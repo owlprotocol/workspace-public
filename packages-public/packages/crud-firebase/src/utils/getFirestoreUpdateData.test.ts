@@ -80,7 +80,6 @@ describe("getFirestoreUpdateData.test.ts", () => {
         const item = { metadata: { name: "Bob", image: "http://example.com" }, id: "1" };
         const updateData = getFirestoreUpdateData(item);
         const updateDataExpected = { id: "1", "metadata.name": "Bob", "metadata.image": item.metadata.image };
-        console.log(updateData);
         expect(updateData).toStrictEqual(updateDataExpected);
     });
 
