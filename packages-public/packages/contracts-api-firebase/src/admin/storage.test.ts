@@ -11,7 +11,7 @@ describe("storage.test.ts", async () => {
     test("uploadFile", async () => {
         const file = readFileSync(testFilePath);
         const content = file.toString("base64");
-        const owner = "owner";
+        const owner = "test-owner";
         const { publicUrl, name } = await uploadFile(bucket, content, testFileSuffix, owner);
         expect(publicUrl).toBeDefined();
         expect(name).toBeDefined();

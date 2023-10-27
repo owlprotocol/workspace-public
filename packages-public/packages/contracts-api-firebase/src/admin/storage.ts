@@ -23,7 +23,7 @@ export async function uploadFile(
 ): Promise<{ publicUrl: string; name: string }> {
     const contentBuffer = Buffer.from(content, "base64");
     const uuid = crypto.randomUUID();
-    const name = `${uuid}.${fileSuffix}`;
+    const name = `users/${owner}/photos/${uuid}.${fileSuffix}`;
     const file = bucket.file(name);
     try {
         await file.save(contentBuffer);
