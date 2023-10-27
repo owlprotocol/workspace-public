@@ -79,13 +79,31 @@ describe("genZodValidatorTest", function () {
     });
 
     describe("genZodValidatorForFunction", () => {
-        //TODO: Re-enable after fixing since refactor
-        test.skip("fnAbis.uint256", () => {
-            const expected =
-                '{ inputs: z.object({ amount: zSol.uint256Zod }), inputsExample: {"amount":"0"}, outputs: z.object({  }), outputsExample: {} }';
+        test("fnAbis.uint256", () => {
+            const expected = `{ inputs: z.object({ "amount": zSol.uint256Zod }),
+    inputsArrayify: z.object({ "amount": zSol.uint256Zod }).transform((val) => [val["amount"]] as const),
+    inputsDefined: z.object({ "amount": zSol.uint256Zod }),
+    inputsDefinedArrayify: z.object({ "amount": zSol.uint256Zod }).transform((val) => [val["amount"]] as const),
+    inputsExample: {"amount":"0"},
+    outputs: z.object({  }),
+    outputsExample: {}
+}`;
             assert.equal(genZodValidatorForFunction(fnAbis.uint256.inputs, fnAbis.uint256.outputs), expected);
         });
 
+        test("fnAbis.empty", () => {
+            const expected = `{ inputs: z.object({  }).optional(),
+    inputsArrayify: z.object({  }).transform((val) => [] as const).optional(),
+    inputsDefined: z.object({  }).optional(),
+    inputsDefinedArrayify: z.object({  }).transform((val) => [] as const).optional(),
+    inputsExample: {},
+    outputs: z.object({  }),
+    outputsExample: {}
+}`;
+            assert.equal(genZodValidatorForFunction(fnAbis.empty.inputs, fnAbis.empty.outputs), expected);
+        });
+
+        //TODO: Re-enable after fixing since refactor
         test.skip("fnAbis.address", () => {
             const expected = `{ inputs: z.object({ to: zSol.addressZod }), inputsExample: {"to":"${constants.AddressZero}"}, outputs: z.object({  }), outputsExample: {} }`;
             assert.equal(genZodValidatorForFunction(fnAbis.address.inputs, fnAbis.address.outputs), expected);

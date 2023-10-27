@@ -134,10 +134,8 @@ export function genZodValidatorForFunction(inputs: AbiFunction["inputs"], output
             return `${key}: ${val}`;
         })
         .join(", ");
-    const inputZod = `z.object({ ${inputInternals} })`;
-    const inputZodArrayify = `${inputZod}.transform((val) => [${inputKeys
-        .map((k) => `val[${k}]`)
-        .join(",")}] as const)`;
+    let inputZod = `z.object({ ${inputInternals} })`;
+    let inputZodArrayify = `${inputZod}.transform((val) => [${inputKeys.map((k) => `val[${k}]`).join(",")}] as const)`;
 
     //Inputs with defaults
     const inputInternalsDefined = inputs
@@ -148,12 +146,19 @@ export function genZodValidatorForFunction(inputs: AbiFunction["inputs"], output
             return `${key}: ${val}`;
         })
         .join(", ");
-    const inputZodDefined = `z.object({ ${inputInternalsDefined} })`;
+    let inputZodDefined = `z.object({ ${inputInternalsDefined} })`;
 
     //Arrayify input params
-    const inputZodDefinedArrayify = `${inputZodDefined}.transform((val) => [${inputKeys
+    let inputZodDefinedArrayify = `${inputZodDefined}.transform((val) => [${inputKeys
         .map((k) => `val[${k}]`)
         .join(",")}] as const)`;
+
+    if (inputs.length === 0) {
+        inputZod += ".optional()";
+        inputZodArrayify += ".optional()";
+        inputZodDefined += ".optional()";
+        inputZodDefinedArrayify += ".optional()";
+    }
 
     const outputInternals = outputs
         .map((p, idx) => {
@@ -162,8 +167,8 @@ export function genZodValidatorForFunction(inputs: AbiFunction["inputs"], output
             return `${key}: ${val}`;
         })
         .join(", ");
-    const outputZod = `z.object({ ${outputInternals} })`;
 
+    const outputZod = `z.object({ ${outputInternals} })`;
     const { inputsExample, outputsExample } = zodExampleForFunction(inputs, outputs);
 
     return `{ inputs: ${inputZod},
