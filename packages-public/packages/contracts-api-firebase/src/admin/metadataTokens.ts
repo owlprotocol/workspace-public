@@ -14,7 +14,7 @@ export const metadataTokensBaseUriPrefix = `${API_REST_BASE_URL}/metadataTokens`
  * @returns
  */
 export function getMetadataTokensUri(id: string, baseUri?: string): string {
-    return `${baseUri ?? metadataTokensBaseUriPrefix}/${id}`;
+    return `${baseUri ?? metadataTokensBaseUriPrefix}/${id}/`;
 }
 export const isOwlMetadataTokensBaseUri = (uri: string) => uri.startsWith(metadataTokensBaseUriPrefix);
 export const getMetadataTokensIdFromBaseUri = (uri: string, baseUri?: string) =>
