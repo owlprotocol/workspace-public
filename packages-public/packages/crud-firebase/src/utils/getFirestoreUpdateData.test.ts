@@ -23,6 +23,13 @@ describe("getFirestoreUpdateData.test.ts", () => {
         expect(updateData).toStrictEqual(updateDataExpected);
     });
 
+    test("array attribute depth=1", () => {
+        const item = { messages: ["hello", "hi"] };
+        const updateDataExpected = { messages: ["hello", "hi"] };
+        const updateData = getFirestoreUpdateData(item);
+        expect(updateData).toStrictEqual(updateDataExpected);
+    });
+
     test("key-value depth=1, with empty", () => {
         const item = { msg: "hello", empty: {} };
         const updateDataExpected = { msg: "hello" };
@@ -33,6 +40,13 @@ describe("getFirestoreUpdateData.test.ts", () => {
     test("key-value depth=2", () => {
         const item = { payload: { msg: "hello" } };
         const updateDataExpected = { "payload.msg": "hello" };
+        const updateData = getFirestoreUpdateData(item);
+        expect(updateData).toStrictEqual(updateDataExpected);
+    });
+
+    test("array attribute depth=2", () => {
+        const item = { payload: { messages: ["hello", "hi"] } };
+        const updateDataExpected = { "payload.messages": ["hello", "hi"] };
         const updateData = getFirestoreUpdateData(item);
         expect(updateData).toStrictEqual(updateDataExpected);
     });

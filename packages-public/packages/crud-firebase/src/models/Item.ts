@@ -5,6 +5,7 @@ export interface ItemData {
     readonly map: {
         [k: string]: string;
     };
+    readonly objectArray: Array<Record<string, any>>;
 }
 
 export interface ItemId {

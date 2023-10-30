@@ -11,6 +11,7 @@ export const testItem: Item = {
     map: {
         keyA: "valueA",
     },
+    objectArray: [{ name: "A" }, { name: "B" }],
 };
 
 export const testItemComposite: ItemComposite = {
@@ -22,4 +23,5 @@ export const testItemComposite: ItemComposite = {
     map: {
         keyA: "valueA",
     },
+    objectArray: [{ name: "A" }, { name: "B" }],
 };

@@ -4,7 +4,8 @@ import type { UpdateData, Primitive } from "firebase/firestore";
  * Convert a nested object, key-value object (depth=1), or primitive Firestore Update data format.
  *  - primitive: return primitive
  *  - key-value: return key-value
- *  - nested: return key-value (for depth=1 keys) & key.subkey (for depth>1) recursively
+ *  - nested: return key-value (for depth=1 keys) & key.subkey (for depth>1) recursively'
+ *  NOTE: arrays are set as is, and don't get merged
  *
  * Example:
  * ```typescript
@@ -24,6 +25,7 @@ export function getFirestoreUpdateData<T extends Primitive | Record<string, any>
     else if (typeof item === "number") return item as UpdateData<T>;
     else if (typeof item === "boolean") return item as UpdateData<T>;
     else if (typeof item === "undefined") return item as UpdateData<T>;
+    else if (Array.isArray(item)) return item as UpdateData<T>;
     else if (item === null) return item as UpdateData<T>;
 
     //Key-value & Nested
@@ -35,6 +37,7 @@ export function getFirestoreUpdateData<T extends Primitive | Record<string, any>
         else if (typeof value === "number") return [key, value];
         else if (typeof value === "boolean") return [key, value];
         else if (typeof value === "undefined") return [key, value];
+        else if (Array.isArray(value)) return [key, value];
         else if (value === null) return [key, value];
 
         //Nested
