@@ -2,7 +2,6 @@ import { FirebaseStorage, getDownloadURL, ref, uploadBytes } from "firebase/stor
 
 /*
  * Uploads a file to a storage bucket and returns the image's url.
- * Assumes `content` is a base64 string
  */
 export async function uploadFile(
     storage: FirebaseStorage,
