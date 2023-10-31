@@ -9,6 +9,7 @@ export * from "./ContractMetadata.js";
 export * from "./DeploymentMethod.js";
 export * from "./Email.js";
 export * from "./GasExpense.js";
+export * from "./LazyMint.js";
 export * from "./MetadataContract.js";
 export * from "./Network.js";
 export * from "./OnlineTrait.js";

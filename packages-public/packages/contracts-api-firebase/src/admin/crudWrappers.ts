@@ -53,6 +53,7 @@ import {
     getCollectionIdParams,
     validateCollectionId,
     ProjectData,
+    LazyMintData,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -89,6 +90,7 @@ import {
     tokenLazyMintsReadOnlyPath,
     usersPath,
     collectionsPath,
+    lazyMintsPath,
 } from "../crud.js";
 
 const ownerCheck = ({ owner }: { owner?: string }, userId: string) => owner === userId;
@@ -347,4 +349,10 @@ export const invitesCRUD = getFirebaseCRUD<InvitesData, ItemIdDefault, [userId: 
         updateAccessCheck: () => false,
         deleteAccessCheck: () => false,
     },
+);
+export const lazyMintsCRUD = getFirebaseCRUD<LazyMintData, ItemIdDefault, [userId: string]>(
+    firestore,
+    lazyMintsPath,
+    undefined,
+    ownerOnlyWriteChecks,
 );
