@@ -54,6 +54,7 @@ import {
     getCollectionIdParams,
     validateCollectionId,
     LazyMintData,
+    LazyMintInstanceData,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -89,6 +90,7 @@ import {
     tokenLazyMintsReadOnlyPath,
     collectionsPath,
     lazyMintsPath,
+    lazyMintInstancesPath,
 } from "../crud.js";
 
 //ethmodels
@@ -180,3 +182,4 @@ export const emailsHooks = getFirebaseHooks<EmailData>(firestore, emailsPath);
 export const blogsHooks = getFirebaseHooks<BlogData>(firestore, blogsPath);
 export const invitesHooks = getFirebaseHooks<InvitesData>(firestore, invitesPath);
 export const lazyMintsHooks = getFirebaseHooks<LazyMintData>(firestore, lazyMintsPath);
+export const lazyMintInstancesHooks = getFirebaseHooks<LazyMintInstanceData>(firestore, lazyMintInstancesPath);

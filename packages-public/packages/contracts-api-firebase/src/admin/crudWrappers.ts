@@ -54,6 +54,7 @@ import {
     validateCollectionId,
     ProjectData,
     LazyMintData,
+    LazyMintInstanceData,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -91,6 +92,7 @@ import {
     usersPath,
     collectionsPath,
     lazyMintsPath,
+    lazyMintInstancesPath,
 } from "../crud.js";
 
 const ownerCheck = ({ owner }: { owner?: string }, userId: string) => owner === userId;
@@ -102,6 +104,12 @@ const ownerOnlyChecks = {
 };
 const readOnlyChecks = {
     readAccessCheck: () => true,
+    setAccessCheck: () => false,
+    updateAccessCheck: () => false,
+    deleteAccessCheck: () => false,
+};
+const ownerOnlyReadChecks = {
+    readAccessCheck: ownerCheck,
     setAccessCheck: () => false,
     updateAccessCheck: () => false,
     deleteAccessCheck: () => false,
@@ -355,4 +363,10 @@ export const lazyMintsCRUD = getFirebaseCRUD<LazyMintData, ItemIdDefault, [userI
     lazyMintsPath,
     undefined,
     ownerOnlyWriteChecks,
+);
+export const lazyMintInstancesCRUD = getFirebaseCRUD<LazyMintInstanceData, ItemIdDefault, [userId: string]>(
+    firestore,
+    lazyMintInstancesPath,
+    undefined,
+    ownerOnlyReadChecks,
 );
