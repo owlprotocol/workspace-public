@@ -9,9 +9,8 @@ export async function uploadFile(
     fileSuffix: string,
     owner: string,
 ): Promise<{ publicUrl: string; name: string }> {
-    const filePrefix = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
-    const fileName = `${filePrefix}.${fileSuffix}`;
-    const name = `users/${owner}/photos/${fileName}`;
+    const uuid = crypto.randomUUID();
+    const name = `users/${owner}/photos/${uuid}.${fileSuffix}`;
     const storageRef = ref(storage, name);
 
     let publicUrl: string;

@@ -1,13 +1,20 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect, beforeAll } from "vitest";
 import fetch from "node-fetch";
 import { storage } from "@owlprotocol/crud-firebase/web";
 import { getMetadata, ref } from "firebase/storage";
+import crypto from "node:crypto";
 import { readFileSync } from "fs";
 import { uploadFile } from "./storage.js";
 
 describe("storage.test.ts", async () => {
     const testFilePath = "./testdata/owl.jpg";
     const testFileSuffix = "jpg";
+
+    beforeAll(() => {
+        //TODO: Fix, using global crypto in web sdk
+        //@ts-expect-error
+        global.crypto = crypto;
+    });
 
     test("uploadFile", async () => {
         const file = readFileSync(testFilePath);
