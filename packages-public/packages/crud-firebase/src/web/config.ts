@@ -76,6 +76,3 @@ function getFirebaseApp(): { firebaseApp: FirebaseApp; firestore: Firestore; aut
 }
 
 export const { firebaseApp, firestore, auth, storage } = getFirebaseApp();
-
-//TODO: Doesn't work, maybe see compat api?
-//export const bucket: ReturnType<typeof storage.bucket> = storage.bucket();
