@@ -4,7 +4,6 @@ export interface LazyMintData {
     networkId: string;
     address: string;
     owner: string;
-    collectionId: string;
     collectionContractType: CollectionContractType;
     tokenId?: string;
     amount?: string;

@@ -11,7 +11,6 @@ export const lazyMintZod = z
         address: addressZod.describe("address of the deployed collection"),
         /** User Data */
         owner: z.string().describe("owner's user id"),
-        collectionId: z.string().describe("id of the collection"),
 
         collectionContractType: collectionContractTypeZod,
         tokenId: z.string().describe("the tokenId to mint").optional(),

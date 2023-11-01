@@ -8,7 +8,6 @@ export interface LazyMintInstanceData {
     receiverAddress: string;
     tokenId: string;
     amount?: string;
-    collectionId: string;
     collectionContractType: CollectionContractType;
 }
 
