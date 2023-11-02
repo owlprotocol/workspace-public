@@ -49,5 +49,5 @@ export async function incrementUserExpense(
     amount: string,
     token = "native",
 ): Promise<void> {
-    return usersCRUD._increment(userId, `topupTotals.${networkId}.${token}`, amount);
+    return usersCRUD._incrementStr(userId, `topupTotals.${networkId}.${token}`, amount);
 }

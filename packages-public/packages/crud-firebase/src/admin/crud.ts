@@ -735,12 +735,12 @@ export function getFirebaseCRUD<
     };
 
     /**
-     * Increment value, no security checks
+     * Increment string value, no security checks
      * @param id
      * @param path key or nested key
      * @param value
      */
-    const _increment = async (id: ItemId | string, path: string, value: BigNumberish): Promise<void> => {
+    const _incrementStr = async (id: ItemId | string, path: string, value: BigNumberish): Promise<void> => {
         await firestore.runTransaction(async (transaction) => {
             const ref = getDocRef(id);
             const refSnapshot = await transaction.get(ref);
@@ -758,20 +758,20 @@ export function getFirebaseCRUD<
     };
 
     /**
-     * Increment value
+     * Increment string value
      * @param id
      * @param path key or nested key
      * @param value
      * @params security checks
      */
-    const increment = async (
+    const incrementStr = async (
         id: ItemId | string,
         path: string,
         value: BigNumberish,
         ...params: AccessControlParams
     ): Promise<void> => {
         if (!updateAccessCheck) {
-            return _increment(id, path, value);
+            return _incrementStr(id, path, value);
         } else {
             await firestore.runTransaction(async (transaction) => {
                 const ref = getDocRef(id);
@@ -795,29 +795,112 @@ export function getFirebaseCRUD<
     };
 
     /**
-     * Decrement value, no security checks
+     * Decrement string value, no security checks
      * @param id
      * @param path key or nested key
      * @param value
      * @params security checks
      */
-    const _decrement = async (id: ItemId | string, path: string, value: BigNumberish): Promise<void> => {
-        return _increment(id, path, BigNumber.from("0").sub(BigNumber.from(value)));
+    const _decrementStr = async (id: ItemId | string, path: string, value: BigNumberish): Promise<void> => {
+        return _incrementStr(id, path, BigNumber.from("0").sub(BigNumber.from(value)));
     };
 
     /**
-     * Decrement value
+     * Decrement string value
      * @param id
      * @param path key or nested key
      * @param value
      */
-    const decrement = async (
+    const decrementStr = async (
         id: ItemId | string,
         path: string,
         value: BigNumberish,
         ...params: AccessControlParams
     ): Promise<void> => {
-        return increment(id, path, BigNumber.from("0").sub(BigNumber.from(value)), ...params);
+        return incrementStr(id, path, BigNumber.from("0").sub(BigNumber.from(value)), ...params);
+    };
+
+    /**
+     * Increment number value, no security checks
+     * @param id
+     * @param path key or nested key
+     * @param value
+     */
+    const _incrementNumber = async (id: ItemId | string, path: string, value: number): Promise<void> => {
+        await firestore.runTransaction(async (transaction) => {
+            const ref = getDocRef(id);
+            const refSnapshot = await transaction.get(ref);
+            if (!refSnapshot.exists) {
+                throw new Error(`${col.path}/${id} not found`);
+            }
+
+            const currValue: number = getFirestorePathValue(refSnapshot.data(), path) ?? 0;
+            const newValue = currValue + value;
+
+            transaction.update(ref, { [path]: newValue } as UpdateData<ItemData>);
+        });
+    };
+
+    /**
+     * Increment number value
+     * @param id
+     * @param path key or nested key
+     * @param value
+     * @params security checks
+     */
+    const incrementNumber = async (
+        id: ItemId | string,
+        path: string,
+        value: number,
+        ...params: AccessControlParams
+    ): Promise<void> => {
+        if (!updateAccessCheck) {
+            return _incrementNumber(id, path, value);
+        } else {
+            await firestore.runTransaction(async (transaction) => {
+                const ref = getDocRef(id);
+                const refSnapshot = await transaction.get(ref);
+                if (!refSnapshot.exists) {
+                    throw new Error(`${col.path}/${id} not found`);
+                }
+
+                // Check write access on existing data
+                if (updateAccessCheck && !updateAccessCheck(refSnapshot.data()!, ...params)) {
+                    throw new Error(`${col.path}/${ref.id} permission-denied`);
+                }
+
+                const currValue: number = getFirestorePathValue(refSnapshot.data(), path) ?? 0;
+                const newValue = currValue + value;
+
+                transaction.update(ref, { [path]: newValue } as UpdateData<ItemData>);
+            });
+        }
+    };
+
+    /**
+     * Decrement number value, no security checks
+     * @param id
+     * @param path key or nested key
+     * @param value
+     * @params security checks
+     */
+    const _decrementNumber = async (id: ItemId | string, path: string, value: number): Promise<void> => {
+        return _incrementNumber(id, path, value * -1);
+    };
+
+    /**
+     * Decrement number value
+     * @param id
+     * @param path key or nested key
+     * @param value
+     */
+    const decrementNumber = async (
+        id: ItemId | string,
+        path: string,
+        value: number,
+        ...params: AccessControlParams
+    ): Promise<void> => {
+        return incrementNumber(id, path, value * -1, ...params);
     };
 
     return {
@@ -853,9 +936,13 @@ export function getFirebaseCRUD<
         deleteBatch,
         _deleteAll,
         deleteAll,
-        _increment,
-        increment,
-        _decrement,
-        decrement,
+        _incrementStr,
+        incrementStr,
+        _decrementStr,
+        decrementStr,
+        _incrementNumber,
+        incrementNumber,
+        _decrementNumber,
+        decrementNumber,
     } satisfies CrudAdminWrapper<ItemData, ItemIdPartial>;
 }

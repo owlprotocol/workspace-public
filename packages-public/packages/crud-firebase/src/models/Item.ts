@@ -1,6 +1,7 @@
 export interface ItemData {
     readonly name: string;
     readonly value: string;
+    readonly count: number;
     readonly owner: string;
     readonly map: {
         [k: string]: string;

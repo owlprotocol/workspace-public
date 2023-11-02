@@ -326,12 +326,12 @@ export function getFirebaseCRUD<
     };
 
     /**
-     * Increment value
+     * Increment string value
      * @param id
      * @param path key or nested key
      * @param value
      */
-    const increment = async (id: ItemId | string, path: string, value: BigNumberish): Promise<void> => {
+    const incrementStr = async (id: ItemId | string, path: string, value: BigNumberish): Promise<void> => {
         await runTransaction(firestore, async (transaction) => {
             const ref = getDocRef(id);
             const refSnapshot = await transaction.get(ref);
@@ -348,13 +348,43 @@ export function getFirebaseCRUD<
     };
 
     /**
-     * Decrement value
+     * Decrement str value
      * @param id
      * @param path key or nested key
      * @param value
      */
-    const decrement = async (id: ItemId | string, path: string, value: BigNumberish): Promise<void> => {
-        return increment(id, path, BigNumber.from("0").sub(BigNumber.from(value)));
+    const decrementStr = async (id: ItemId | string, path: string, value: BigNumberish): Promise<void> => {
+        return incrementStr(id, path, BigNumber.from("0").sub(BigNumber.from(value)));
+    };
+
+    /**
+     * Increment number value
+     * @param id
+     * @param path key or nested key
+     * @param value
+     */
+    const incrementNumber = async (id: ItemId | string, path: string, value: number): Promise<void> => {
+        await runTransaction(firestore, async (transaction) => {
+            const ref = getDocRef(id);
+            const refSnapshot = await transaction.get(ref);
+            if (!refSnapshot.exists()) {
+                throw new Error(`${col.path}/${id} not found`);
+            }
+            const currValue: number = getFirestorePathValue(refSnapshot.data(), path) ?? 0;
+            const newValue = currValue + value;
+
+            transaction.update(ref, { [path]: newValue });
+        });
+    };
+
+    /**
+     * Decrement number value
+     * @param id
+     * @param path key or nested key
+     * @param value
+     */
+    const decrementNumber = async (id: ItemId | string, path: string, value: number): Promise<void> => {
+        return incrementNumber(id, path, value * -1);
     };
 
     return {
@@ -376,7 +406,9 @@ export function getFirebaseCRUD<
         deleteBatch,
         delete: deleteById,
         deleteAll,
-        increment,
-        decrement,
+        incrementStr,
+        decrementStr,
+        incrementNumber,
+        decrementNumber,
     } satisfies CrudWebWrapper<ItemData, ItemIdPartial>;
 }

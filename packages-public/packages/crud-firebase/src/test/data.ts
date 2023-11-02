@@ -7,6 +7,7 @@ export const testItem: Item = {
     id: testItemId,
     name: "john",
     value: "0",
+    count: 0,
     owner: testItemId,
     map: {
         keyA: "valueA",
@@ -19,6 +20,7 @@ export const testItemComposite: ItemComposite = {
     idSuffix: "1",
     name: "john",
     value: "0",
+    count: 0,
     owner: testItemId,
     map: {
         keyA: "valueA",

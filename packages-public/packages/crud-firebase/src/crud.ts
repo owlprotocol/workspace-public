@@ -71,8 +71,10 @@ export type CrudWebWrapper<
     delete: (id: Required<ItemIdPartial> | string) => Promise<void>;
     deleteBatch: (ids: Required<ItemIdPartial>[] | string[]) => Promise<void>;
     deleteAll: () => Promise<void>;
-    increment: (id: Required<ItemIdPartial> | string, path: string, value: BigNumberish) => Promise<void>;
-    decrement: (id: Required<ItemIdPartial> | string, path: string, value: BigNumberish) => Promise<void>;
+    incrementStr: (id: Required<ItemIdPartial> | string, path: string, value: BigNumberish) => Promise<void>;
+    decrementStr: (id: Required<ItemIdPartial> | string, path: string, value: BigNumberish) => Promise<void>;
+    incrementNumber: (id: Required<ItemIdPartial> | string, path: string, value: number) => Promise<void>;
+    decrementNumber: (id: Required<ItemIdPartial> | string, path: string, value: number) => Promise<void>;
     [k: string]: any;
 };
 
@@ -107,8 +109,10 @@ export type CrudAdminWrapper<
     _delete: (id: Required<ItemIdPartial> | string) => Promise<void>;
     _deleteBatch: (ids: Required<ItemIdPartial>[] | string[]) => Promise<void>;
     _deleteAll: () => Promise<void>;
-    _increment: (id: Required<ItemIdPartial> | string, path: string, value: BigNumberish) => Promise<void>;
-    _decrement: (id: Required<ItemIdPartial> | string, path: string, value: BigNumberish) => Promise<void>;
+    _incrementStr: (id: Required<ItemIdPartial> | string, path: string, value: BigNumberish) => Promise<void>;
+    _decrementStr: (id: Required<ItemIdPartial> | string, path: string, value: BigNumberish) => Promise<void>;
+    _incrementNumber: (id: Required<ItemIdPartial> | string, path: string, value: number) => Promise<void>;
+    _decrementNumber: (id: Required<ItemIdPartial> | string, path: string, value: number) => Promise<void>;
     [k: string]: any;
 };
 

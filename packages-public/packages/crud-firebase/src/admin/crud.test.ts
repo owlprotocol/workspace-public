@@ -5,6 +5,7 @@ import { itemsCRUD, itemsCompositeCRUD } from "../test/crudAdminWrappers.js";
 describe("admin/crud.test.ts", async () => {
     describe("itemComposite", () => {
         beforeEach(async () => {
+            await itemsCRUD._deleteAll();
             await itemsCompositeCRUD._deleteAll();
         });
 
@@ -184,20 +185,36 @@ describe("admin/crud.test.ts", async () => {
                 expect(item).toStrictEqual(testItemUpdated);
             });
 
-            test("_increment", async () => {
+            test("_incrementStr", async () => {
                 await itemsCRUD._set(testItem);
-                await itemsCRUD._increment(testItem.id, "value", "10");
+                await itemsCRUD._incrementStr(testItem.id, "value", "10");
 
                 const item = await itemsCRUD._get(testItem.id);
                 expect(item.value).toStrictEqual("10");
             });
 
-            test("_decrement", async () => {
+            test("_decrementStr", async () => {
                 await itemsCRUD._set(testItem);
-                await itemsCRUD._decrement(testItem.id, "value", "10");
+                await itemsCRUD._decrementStr(testItem.id, "value", "10");
 
                 const item = await itemsCRUD._get(testItem.id);
                 expect(item.value).toStrictEqual("-10");
+            });
+
+            test("_incrementNumber", async () => {
+                await itemsCRUD._set(testItem);
+                await itemsCRUD._incrementNumber(testItem.id, "count", 10);
+
+                const item = await itemsCRUD._get(testItem.id);
+                expect(item.count).toStrictEqual(10);
+            });
+
+            test("_decrementNumber", async () => {
+                await itemsCRUD._set(testItem);
+                await itemsCRUD._decrementNumber(testItem.id, "count", 10);
+
+                const item = await itemsCRUD._get(testItem.id);
+                expect(item.count).toStrictEqual(-10);
             });
         });
 
