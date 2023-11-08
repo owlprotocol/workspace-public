@@ -1,11 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Signer, TypedDataDomain, TypedDataField } from "@ethersproject/abstract-signer";
-import { BlockTag, FeeData, Provider, TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
-import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
-import { Bytes, BytesLike } from "@ethersproject/bytes";
+import {
+    BlockTag,
+    Provider,
+    TransactionReceipt,
+    TransactionRequest,
+    TransactionResponse,
+} from "@ethersproject/abstract-provider";
+import { BigNumber } from "@ethersproject/bignumber";
+import { Bytes, hexlify } from "@ethersproject/bytes";
 import { Deferrable, defineReadOnly, resolveProperties, shallowCopy } from "@ethersproject/properties";
 import { Logger } from "@ethersproject/logger";
 import { isAddress } from "@ethersproject/address";
+import { AppClient, createClient } from "@owlprotocol/contracts-api-client-trpc/client";
+import { API_TRPC_BASE_URL } from "@owlprotocol/envvars";
 import { version } from "./_version.js";
 const logger = new Logger(version);
 
@@ -26,9 +34,6 @@ const allowedTransactionKeys: Array<string> = [
     "value",
 ];
 
-//TODO: Add Default API URL
-const DEFAULT_OWL_API = "";
-
 //TODO: Overrride remove unused fields
 export type OwlTransactionRequest = Omit<
     TransactionRequest,
@@ -36,34 +41,45 @@ export type OwlTransactionRequest = Omit<
 >;
 
 /**
- * Owl Protocol Signer
- * Connected to Owl Protocol API
- *  - getAddress() returns user's safe wallet
- *  - sendTransaction() Sends transactions as meta transactions from user's safe wallet
+ * OwlSigner is the official Owl Protocol API Signer.
+ * This signer is connected to the Owl Protocol API.
+ * Given an API key, the signer will send gasless transactions using the user's safe wallet,
+ * and the Owl Protocol relayer.
+ * We recommend pairing it with the OwlProvider.
+ *
+ * The signer currently only supports sending transactions and getting your address.
+ *  - getAddress(): returns user's safe wallet
+ *  - sendTransaction(): Sends transactions as meta transactions from user's safe wallet
  *  - signTransaction() => Errors (TODO: Safe Meta Transaction signature protocol)
  *  - signMessage()     => Errors (TODO: Safe Meta Transaction signature protocol)
  *  - _signTypedData()  => Errors (TODO: Safe Meta Transaction signature protocol)
  */
 export class OwlSigner extends Signer {
-    //@ts-expect-error
+    // @ts-expect-error
     readonly apiKey: string;
-    //@ts-expect-error
+    // @ts-expect-error
     readonly apiUrl: string;
-    readonly provider = undefined;
+    // @ts-expect-error
+    readonly txWait: number;
+    // @ts-expect-error
+    readonly trpcClient: AppClient;
 
-    constructor(apiKey: string, apiUrl = DEFAULT_OWL_API) {
+    constructor(apiKey: string, apiUrl = API_TRPC_BASE_URL, txWait = 1, provider?: Provider) {
         super();
         defineReadOnly(this, "apiKey", apiKey);
         defineReadOnly(this, "apiUrl", apiUrl);
+        defineReadOnly(this, "trpcClient", createClient({ apiKey }));
+        defineReadOnly(this, "txWait", txWait);
+        defineReadOnly(this, "provider", provider);
     }
 
     /**
      * TODO: Get nonce of safe wallet
      * `blockTag` parameter ignored
-     * @param blockTag
+     * @param _blockTag
      * @returns
      */
-    async getTransactionCount(blockTag?: BlockTag): Promise<number> {
+    async getTransactionCount(_blockTag?: BlockTag): Promise<number> {
         //TODO
         throw new Error("Unimplemented");
     }
@@ -73,17 +89,17 @@ export class OwlSigner extends Signer {
      * @param transaction
      * @returns
      */
-    async estimateGas(transaction: Deferrable<OwlTransactionRequest>): Promise<BigNumber> {
+    async estimateGas(_transaction: Deferrable<OwlTransactionRequest>): Promise<BigNumber> {
         return this._fail("OwlSigner cannot estimate gas for transacton", "estimateGas");
     }
 
     /**
      * Disabled as unsupported
-     * @param transaction
-     * @param blockTag
+     * @param _transaction
+     * @param _blockTag
      * @returns
      */
-    async call(transaction: Deferrable<OwlTransactionRequest>, blockTag?: BlockTag): Promise<string> {
+    async call(_transaction: Deferrable<OwlTransactionRequest>, _blockTag?: BlockTag): Promise<string> {
         return this._fail("OwlSigner cannot call transaction", "call");
     }
 
@@ -113,18 +129,18 @@ export class OwlSigner extends Signer {
 
         const tx = shallowCopy(transaction);
 
-        if (tx.from == null) {
-            tx.from = this.getAddress();
-        } else {
-            // Make sure any provided address matches this signer
-            tx.from = Promise.all([Promise.resolve(tx.from), this.getAddress()]).then((result) => {
-                //@ts-expect-error
-                if (result[0].toLowerCase() !== result[1].toLowerCase()) {
-                    logger.throwArgumentError("from address mismatch", "transaction", transaction);
-                }
-                return result[0];
-            });
-        }
+        // if (tx.from == null) {
+        //     tx.from = this.getAddress();
+        // } else {
+        //     // Make sure any provided address matches this signer
+        //     tx.from = Promise.all([Promise.resolve(tx.from), this.getAddress()]).then((result) => {
+        //         //@ts-expect-error
+        //         if (result[0].toLowerCase() !== result[1].toLowerCase()) {
+        //             logger.throwArgumentError("from address mismatch", "transaction", transaction);
+        //         }
+        //         return result[0];
+        //     });
+        // }
 
         return tx;
     }
@@ -148,21 +164,25 @@ export class OwlSigner extends Signer {
                 if (to == null) {
                     return null;
                 }
+                // TODO: resolve ENS addresses
                 if (!isAddress(to)) logger.throwArgumentError("provided address invalid", "tx.to", to);
+
+                return to;
             });
 
             // Prevent this error from causing an UnhandledPromiseException
             //@ts-expect-error
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            tx.to.catch((error) => {});
+            tx.to.catch((_error) => {});
         }
 
-        if (tx.nonce == null) {
-            tx.nonce = this.getTransactionCount("pending");
-        }
+        // if (!tx.nonce) {
+        console.log({ txto: tx.to, transactionto: transaction.to });
+        //     tx.nonce = this.getTransactionCount("pending");
+        // }
 
-        if (tx.chainId == null) {
-            tx.chainId = this.getChainId();
+        if (!tx.chainId) {
+            tx.chainId = await this.getChainId();
         } else {
             tx.chainId = Promise.all([Promise.resolve(tx.chainId), this.getChainId()]).then((results) => {
                 if (results[1] !== 0 && results[0] !== results[1]) {
@@ -181,8 +201,25 @@ export class OwlSigner extends Signer {
      */
     async sendTransaction(transaction: Deferrable<OwlTransactionRequest>): Promise<TransactionResponse> {
         const tx = await this.populateTransaction(transaction);
-        //TODO:
-        throw new Error("Unimplemented");
+        if (!tx.to) {
+            return this._fail("Transaction 'to' required", "sendTransaction");
+        }
+
+        if (!tx.data) {
+            return this._fail("Transaction 'data' required", "sendTransaction");
+        }
+
+        const result = await this.trpcClient.safe.signTransaction.mutate({
+            networkId: tx.chainId!.toString(),
+            to: tx.to,
+            data: hexlify(tx.data),
+            value: tx.value?.toString(),
+            txWait: this.txWait,
+        });
+
+        const wait = async () => result.txReceipt as TransactionReceipt;
+        const txResponse = { ...result.txResponse, wait };
+        return txResponse;
     }
 
     //Abstract unimplemented
@@ -192,7 +229,7 @@ export class OwlSigner extends Signer {
      * @param operation
      * @returns
      */
-    _fail(message: string, operation: string): Promise<any> {
+    async _fail(message: string, operation: string): Promise<any> {
         return Promise.resolve().then(() => {
             logger.throwError(message, Logger.errors.UNSUPPORTED_OPERATION, { operation: operation });
         });
@@ -201,26 +238,32 @@ export class OwlSigner extends Signer {
     /**
      * Get user Safe address
      */
-    getAddress(): Promise<string> {
-        throw new Error("Method not implemented.");
+    async getAddress(): Promise<string> {
+        const chainId: number = await this.getChainId();
+        const result = await this.trpcClient.safe.safeInfo.safeAddress.query({ networkId: chainId.toString() });
+        return result.address;
     }
 
     /**
      * Disabled as unsupported
-     * @param message
+     * @param _message
      * @returns
      */
-    signMessage(message: Bytes | string): Promise<string> {
+    signMessage(_message: Bytes | string): Promise<string> {
         return this._fail("OwlSigner cannot sign messages", "signMessage");
     }
 
     /**
-     * Disabled as unsupported
+     * signTransaction signs a transaction using the user's Safe
+     * TODO: handle cusotm nonce
      * @param transaction
+        V
+
+
      * @returns
      */
-    signTransaction(transaction: Deferrable<OwlTransactionRequest>): Promise<string> {
-        return this._fail("OwlSigner cannot sign transactions", "signTransaction");
+    signTransaction(_transaction: Deferrable<OwlTransactionRequest>): Promise<string> {
+        return this._fail("OwlSigner cannot only send transactions, not sign them", "signTransaction");
     }
 
     /**
@@ -230,10 +273,10 @@ export class OwlSigner extends Signer {
      * @param value
      * @returns
      */
-    _signTypedData(
-        domain: TypedDataDomain,
-        types: Record<string, Array<TypedDataField>>,
-        value: Record<string, any>,
+    async _signTypedData(
+        _domain: TypedDataDomain,
+        _types: Record<string, Array<TypedDataField>>,
+        _value: Record<string, any>,
     ): Promise<string> {
         return this._fail("OwlSigner cannot sign typed data", "signTypedData");
     }
@@ -243,8 +286,6 @@ export class OwlSigner extends Signer {
      * @param provider
      */
     connect(provider: Provider): OwlSigner {
-        throw logger.throwError("OwlSigner cannot connect to provider", Logger.errors.UNSUPPORTED_OPERATION, {
-            operation: "connect",
-        });
+        return new OwlSigner(this.apiKey, this.apiUrl, this.txWait, provider);
     }
 }
