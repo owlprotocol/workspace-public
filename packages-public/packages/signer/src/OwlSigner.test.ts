@@ -60,10 +60,10 @@ describe("OwlSigner.test.ts", async () => {
 
         const apiKeyPersonal = await apiKeysPersonalCRUD._getWhereFirst({ owner: users[1].user.id });
         expect(apiKeyPersonal).toBeDefined();
-        const apiKey = apiKeyPersonal!.apiKey;
+        const auth = { apiKey: apiKeyPersonal!.apiKey };
         const apiUrl = "http://localhost:3000/api/trpc";
         const txWait = 1;
-        const signer = new OwlSigner(apiKey, apiUrl, txWait, provider);
+        const signer = new OwlSigner(auth, apiUrl, txWait, provider);
         const result = await signer.sendTransaction({ data, to: CREATE2_FACTORY_ADDRESS });
 
         expect(result).toBeDefined();

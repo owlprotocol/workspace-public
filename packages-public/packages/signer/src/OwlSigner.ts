@@ -56,7 +56,7 @@ export type OwlTransactionRequest = Omit<
  */
 export class OwlSigner extends Signer {
     // @ts-expect-error
-    readonly apiKey: string;
+    readonly auth: { jwt: string } | { apiKey: string };
     // @ts-expect-error
     readonly apiUrl: string;
     // @ts-expect-error
@@ -64,11 +64,16 @@ export class OwlSigner extends Signer {
     // @ts-expect-error
     readonly trpcClient: AppClient;
 
-    constructor(apiKey: string, apiUrl = API_TRPC_BASE_URL, txWait = 1, provider?: Provider) {
+    constructor(
+        auth: { jwt: string } | { apiKey: string },
+        apiUrl = API_TRPC_BASE_URL,
+        txWait = 1,
+        provider?: Provider,
+    ) {
         super();
-        defineReadOnly(this, "apiKey", apiKey);
+        defineReadOnly(this, "auth", auth);
         defineReadOnly(this, "apiUrl", apiUrl);
-        defineReadOnly(this, "trpcClient", createClient({ apiKey }));
+        defineReadOnly(this, "trpcClient", createClient(auth));
         defineReadOnly(this, "txWait", txWait);
         defineReadOnly(this, "provider", provider);
     }
@@ -286,6 +291,6 @@ export class OwlSigner extends Signer {
      * @param provider
      */
     connect(provider: Provider): OwlSigner {
-        return new OwlSigner(this.apiKey, this.apiUrl, this.txWait, provider);
+        return new OwlSigner(this.auth, this.apiUrl, this.txWait, provider);
     }
 }

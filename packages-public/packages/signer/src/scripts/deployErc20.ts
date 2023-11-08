@@ -14,7 +14,7 @@ export async function deployERC20() {
 
     const txWait = 1;
     const provider = new OwlProvider(1337, API_TRPC_BASE_URL);
-    const signer = new OwlSigner(API_KEY, API_TRPC_BASE_URL, txWait, provider);
+    const signer = new OwlSigner({ apiKey: API_KEY }, API_TRPC_BASE_URL, txWait, provider);
 
     // 1. Deploy ERC20Mintable contract
     // NOTE: We need to craft the deploy transaction
