@@ -250,6 +250,20 @@ export class OwlSigner extends Signer {
     }
 
     /**
+     * Get user Safe balance.
+     * Assumes trpcClient endpoint returns the Safe balance as a string `BigNumber.from` can parse
+     */
+    async getBalance(blockTag?: BlockTag): Promise<BigNumber> {
+        if (blockTag && blockTag !== "latest") {
+            return this._fail("OwlSigner cannot return historical balances", "getBalance");
+        }
+
+        const chainId: number = await this.getChainId();
+        const result = await this.trpcClient.safe.safeInfo.safeBalance.query({ networkId: chainId.toString() });
+        return BigNumber.from(result.balance);
+    }
+
+    /**
      * Disabled as unsupported
      * @param _message
      * @returns
@@ -262,9 +276,6 @@ export class OwlSigner extends Signer {
      * signTransaction signs a transaction using the user's Safe
      * TODO: handle cusotm nonce
      * @param transaction
-        V
-
-
      * @returns
      */
     signTransaction(_transaction: Deferrable<OwlTransactionRequest>): Promise<string> {
