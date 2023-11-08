@@ -58,8 +58,6 @@ export async function deployERC20() {
     const mint = await contract.mint(receiver, 100);
 
     return { contractAddress, deployHash: result.hash, mint };
-
-    // return { contract, mint, balance };
 }
 
 async function main() {
