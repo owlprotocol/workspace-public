@@ -20,15 +20,19 @@ export async function* getEthLogAbisFromDirGen(
         if (d.isFile()) {
             const topicFile = join(topicsDir, d.name);
             for (const e of getEventFormatsFromFile(topicFile)) {
-                const eventFragment = utils.EventFragment.from(e);
-                const indexedFieldsCount = eventFragment.inputs.filter((input) => input.indexed).length;
-                const ethLogAbi: EthLogAbi = {
-                    eventFormat: e,
-                    eventName: eventFragment.name,
-                    eventSighash: d.name,
-                    indexedFieldsCount,
-                };
-                yield ethLogAbi;
+                try {
+                    const eventFragment = utils.EventFragment.from(e);
+                    const indexedFieldsCount = eventFragment.inputs.filter((input) => input.indexed).length;
+                    const ethLogAbi: EthLogAbi = {
+                        eventFormat: e,
+                        eventName: eventFragment.name,
+                        eventSighash: "0x" + d.name,
+                        indexedFieldsCount,
+                    };
+                    yield ethLogAbi;
+                } catch (error) {
+                    console.error(`Could not create EventFragment for ${e}`);
+                }
             }
         }
     }

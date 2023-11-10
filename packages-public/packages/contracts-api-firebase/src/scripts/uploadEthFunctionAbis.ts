@@ -25,11 +25,11 @@ export async function* getEthFunctionAbisFromDirGen(
                     const ethFunctionAbi: EthFunctionAbi = {
                         functionFormat: e,
                         functionName: functionFragment.name,
-                        functionSighash: d.name,
+                        functionSighash: "0x" + d.name,
                     };
                     yield ethFunctionAbi;
                 } catch (error) {
-                    console.error(error);
+                    console.error(`Could not create FunctionFragment for ${e}`);
                 }
             }
         }

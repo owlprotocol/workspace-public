@@ -1,12 +1,7 @@
-import { uploadEthLogAbis } from "./uploadEthLogAbis.js";
-import { uploadEthFunctionAbis } from "./uploadEthFunctionAbis.js";
-import { uploadCreate2FactoryTransactions, uploadNetworks } from "./uploadNetworks.js";
+import { uploadFirebaseData } from "./uploadFirebaseData.js";
 
 export async function main() {
-    await uploadNetworks();
-    await uploadCreate2FactoryTransactions();
-    await uploadEthLogAbis();
-    await uploadEthFunctionAbis();
+    await uploadFirebaseData();
 }
 
 main().catch(console.error);

@@ -1,7 +1,7 @@
 //contractmodels
 export const erc20Path = "erc20";
 export const erc20AllowancePath = "erc20Allowance";
-export const erc20BalancePath = "erc20";
+export const erc20BalancePath = "erc20Balance";
 export const erc721Path = "erc721";
 export const erc1155Path = "erc1155";
 export const erc1155BalancePath = "erc1155Balance";
