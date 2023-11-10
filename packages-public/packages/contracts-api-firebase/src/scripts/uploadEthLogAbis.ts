@@ -31,7 +31,8 @@ export async function* getEthLogAbisFromDirGen(
                     };
                     yield ethLogAbi;
                 } catch (error) {
-                    console.error(`Could not create EventFragment for ${e}`);
+                    //Simply ignore, avoid spamming console
+                    //console.error(`Could not create EventFragment for ${e}`);
                 }
             }
         }

@@ -21,12 +21,44 @@ service cloud.firestore {
         }
 
         //contractmodels
-        match /{erc20|erc20Balance|erc20Allowance|erc721|erc1155|erc1155Balance|operator}/{id} {
+        match /erc20/{id} {
+            allow read: if true;
+            allow write: if false;
+        }
+        match /erc20Balance/{id} {
+            allow read: if true;
+            allow write: if false;
+        }
+        match /erc20Allowance/{id} {
+            allow read: if true;
+            allow write: if false;
+        }
+        match /erc721/{id} {
+            allow read: if true;
+            allow write: if false;
+        }
+        match /erc1155/{id} {
+            allow read: if true;
+            allow write: if false;
+        }
+        match /erc1155Balance/{id} {
+            allow read: if true;
+            allow write: if false;
+        }
+        match /operator/{id} {
             allow read: if true;
             allow write: if false;
         }
         //ethmodels
-        match /{ethLogs|ethLogAbis|ethTransactions}/{id} {
+        match /ethLogs/{id} {
+            allow read: if true;
+            allow write: if false;
+        }
+        match /ethLogAbis/{id} {
+            allow read: if true;
+            allow write: if false;
+        }
+        match /ethTransactions/{id} {
             allow read: if true;
             allow write: if false;
         }

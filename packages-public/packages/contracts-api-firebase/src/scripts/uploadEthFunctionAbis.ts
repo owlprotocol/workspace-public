@@ -29,7 +29,8 @@ export async function* getEthFunctionAbisFromDirGen(
                     };
                     yield ethFunctionAbi;
                 } catch (error) {
-                    console.error(`Could not create FunctionFragment for ${e}`);
+                    //Simply ignore, avoid spamming console
+                    //console.error(`Could not create FunctionFragment for ${e}`);
                 }
             }
         }

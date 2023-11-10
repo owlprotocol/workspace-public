@@ -11,6 +11,8 @@ export interface ERC20 extends ERC20Id {
     readonly symbol?: string;
     readonly decimals?: number;
     readonly totalSupply?: string;
+    readonly logoURI?: string;
+    readonly listedIn?: Record<string, boolean>;
 }
 
 export function getERC20Id({ networkId, address }: ERC20Id): string {
