@@ -115,6 +115,12 @@ const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
     { name: "INFURA_IPFS_PROJECT_SECRET", platform: "node", defaultValue: "8ffddfdc95f32ea7aa43ee3ba9d2d603" },
 ];
 
+const INDEXER_ENVVARS: EnvVarDef[] = [
+    { name: "INDEXER_NETWORK_ID", platform: "node", defaultValue: "1337" },
+    { name: "INDEXER_MAX_ADDRESSES", platform: "node", defaultValue: "100" },
+    { name: "INDEXER_MAX_FILTERS", platform: "node", defaultValue: "10" },
+];
+
 /** Chainlist data sufficient mostly, we just override here for localhost */
 const RPC_DEFAULTS: Record<string, string | undefined> = {
     1337: "http://127.0.0.1:8545",
@@ -218,6 +224,7 @@ export const ENVVARS: EnvVarDef[] = [
     ...SHOPIFY_ENVVARS,
     ...SCRIPT_ENVVARS,
     ...BLOCKCHAIN_ENVVARS,
+    ...INDEXER_ENVVARS,
     ...NETWORK_ENVVARS,
 ];
 

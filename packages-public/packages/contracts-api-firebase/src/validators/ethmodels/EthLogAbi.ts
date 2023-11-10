@@ -5,10 +5,10 @@ import { EthLogAbi } from "../../models/ethmodels/EthLogAbi.js";
 
 export const ethLogAbiZod = z
     .object({
-        id: z.string().describe("id"),
         eventSighash: bytes32Zod.describe("event signature"),
         eventName: z.string().describe("event name"),
         eventFormat: z.string().describe("event format"),
+        indexedFieldsCount: z.number(),
     })
     .describe("eth log abi");
 

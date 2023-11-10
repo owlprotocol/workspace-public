@@ -1,0 +1,50 @@
+import { asyncGeneratorToArray } from "@owlprotocol/utils";
+import { utils } from "ethers";
+import { opendir } from "fs/promises";
+import { readFileSync } from "fs";
+import { join } from "path";
+import { EthFunctionAbi } from "../models/ethmodels/EthFunctionAbi.js";
+import { ethFunctionAbisCRUD } from "../admin/crudWrappers.js";
+
+export const DEFAULT_4BYTES_DIR = "../../../submodules/4bytes/with_parameter_names";
+
+export function getFunctionFormatsFromFile(path: string): string[] {
+    const topicDefs = readFileSync(path, "utf-8").split(";");
+    return topicDefs;
+}
+
+export async function* getEthFunctionAbisFromDirGen(
+    topicsDir = DEFAULT_4BYTES_DIR,
+): AsyncGenerator<EthFunctionAbi, void, unknown> {
+    for await (const d of await opendir(topicsDir)) {
+        if (d.isFile()) {
+            const topicFile = join(topicsDir, d.name);
+            for (const e of getFunctionFormatsFromFile(topicFile)) {
+                try {
+                    const functionFragment = utils.FunctionFragment.from(e);
+                    const ethFunctionAbi: EthFunctionAbi = {
+                        functionFormat: e,
+                        functionName: functionFragment.name,
+                        functionSighash: d.name,
+                    };
+                    yield ethFunctionAbi;
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        }
+    }
+}
+
+export async function getEthFunctionAbisFromDir(topicsDir = DEFAULT_4BYTES_DIR): Promise<EthFunctionAbi[]> {
+    return await asyncGeneratorToArray(getEthFunctionAbisFromDirGen(topicsDir));
+}
+
+export async function uploadEthFunctionAbis(topicsDir = DEFAULT_4BYTES_DIR) {
+    const ethFunctionAbis = await getEthFunctionAbisFromDir(topicsDir);
+
+    return await Promise.all([
+        ethFunctionAbisCRUD._setBatch(ethFunctionAbis.slice(0, 10000)),
+        ethFunctionAbisCRUD._setBatch(ethFunctionAbis.slice(10000)),
+    ]);
+}

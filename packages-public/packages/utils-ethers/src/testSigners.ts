@@ -21,6 +21,12 @@ export const testNetwork = {
     config: { chainId: parseInt(testNetworkId), accounts: [testSigner._signingKey().privateKey] },
 };
 
+/**
+ * Get ganache provider as an ethers-v5 provider
+ * https://github.com/trufflesuite/ganache#as-an-ethersjs-provider
+ * @param chainId
+ * @returns
+ */
 export async function getGanacheProvider(chainId: number = testChainId) {
     const ganache = await import("ganache");
     const ganacheProvider = ganache.provider({
@@ -37,4 +43,27 @@ export async function getGanacheProvider(chainId: number = testChainId) {
     const provider = new providers.Web3Provider(ganacheProvider);
 
     return provider;
+}
+
+/**
+ * Get ganache provider as EIP1193 provider
+ * https://github.com/trufflesuite/ganache#as-an-eip-1193-provider-only
+ * @param chainId
+ * @returns
+ */
+export async function getGanacheProviderEIP1193(chainId: number = testChainId) {
+    const ganache = await import("ganache");
+    const ganacheProvider = ganache.provider({
+        logging: {
+            quiet: true,
+        },
+        chain: {
+            chainId,
+        },
+        wallet: {
+            mnemonic: "test test test test test test test test test test test junk",
+        },
+    }) as any;
+
+    return ganacheProvider;
 }

@@ -82,7 +82,7 @@
     "lint:staged": "lint-staged",
     "firebase-emulator": "firebase emulators:start --only firestore,storage,auth --project demo-owl-protocol",
     "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol",
-    "scripts:uploadNetworks": "tsx src/scripts/runUploadNetworks.ts"
+    "scripts:uploadData": "tsx src/scripts/runUploadData.ts"
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.6.2",

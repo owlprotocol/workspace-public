@@ -39,6 +39,11 @@
       "require": "./lib/cjs/ethers/factoryInterfaceClasses.js",
       "import": "./lib/esm/ethers/factoryInterfaceClasses.js"
     },
+    "./typechain/ethers/*": {
+      "types": "./lib/types/typechain/ethers/*.d.ts",
+      "require": "./lib/cjs/typechain/ethers/*.js",
+      "import": "./lib/esm/typechain/ethers/*.js"
+    },
     "./typechain/ethers": {
       "types": "./lib/types/typechain/ethers/index.d.ts",
       "require": "./lib/cjs/typechain/ethers/index.js",

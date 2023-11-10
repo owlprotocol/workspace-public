@@ -9,7 +9,6 @@ import {
     SafeWalletReadOnly,
     EmailData,
     EthLog,
-    EthLogAbiData,
     EthTransaction,
     InviteCodeReadOnlyData,
     MetadataContractData,
@@ -55,6 +54,50 @@ import {
     ProjectData,
     LazyMintData,
     LazyMintInstanceData,
+    getEthLogAbiId,
+    getEthLogAbiIdParams,
+    EthLogAbi,
+    EthLogAbiId,
+    EthFunctionAbi,
+    EthFunctionAbiId,
+    getEthFunctionAbiId,
+    getEthFunctionAbiIdParams,
+    AddressPublic,
+    getAddressPublicId,
+    getAddressPublicIdParams,
+    AddressPublicId,
+    AddressPersonal,
+    AddressPersonalId,
+    getAddressPersonalId,
+    getAddressPersonalIdParams,
+    ERC1155,
+    ERC1155Balance,
+    ERC1155BalanceId,
+    ERC1155Id,
+    ERC20,
+    ERC20Allowance,
+    ERC20AllowanceId,
+    ERC20Id,
+    ERC721,
+    ERC721Id,
+    getERC1155BalanceId,
+    getERC1155BalanceIdParams,
+    getERC1155Id,
+    getERC1155IdParams,
+    getERC20AllowanceId,
+    getERC20AllowanceIdParams,
+    getERC20Id,
+    getERC20IdParams,
+    getERC721Id,
+    getERC721IdParams,
+    Operator,
+    OperatorId,
+    getOperatorId,
+    getOperatorIdParams,
+    ERC20Balance,
+    ERC20BalanceId,
+    getERC20BalanceId,
+    getERC20BalanceIdParams,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -93,6 +136,16 @@ import {
     collectionsPath,
     lazyMintsPath,
     lazyMintInstancesPath,
+    ethFunctionAbisPath,
+    addressesPublicPath,
+    addressesPersonalPath,
+    erc1155BalancePath,
+    erc1155Path,
+    erc20AllowancePath,
+    erc20Path,
+    erc721Path,
+    operatorPath,
+    erc20BalancePath,
 } from "../crud.js";
 
 const ownerCheck = ({ owner }: { owner?: string }, userId: string) => owner === userId;
@@ -121,7 +174,99 @@ const ownerOnlyWriteChecks = {
     deleteAccessCheck: ownerCheck,
 };
 
+//contractmodels
+export const erc20CRUD = getFirebaseCRUD<ERC20, ERC20Id>(
+    firestore,
+    erc20Path,
+    {
+        getId: getERC20Id,
+        getIdParams: getERC20IdParams,
+        validateId: identity,
+    },
+    readOnlyChecks,
+);
+export const erc20BalanceCRUD = getFirebaseCRUD<ERC20Balance, ERC20BalanceId>(
+    firestore,
+    erc20BalancePath,
+    {
+        getId: getERC20BalanceId,
+        getIdParams: getERC20BalanceIdParams,
+        validateId: identity,
+    },
+    readOnlyChecks,
+);
+export const erc20AllowanceCRUD = getFirebaseCRUD<ERC20Allowance, ERC20AllowanceId>(
+    firestore,
+    erc20AllowancePath,
+    {
+        getId: getERC20AllowanceId,
+        getIdParams: getERC20AllowanceIdParams,
+        validateId: identity,
+    },
+    readOnlyChecks,
+);
+export const erc721CRUD = getFirebaseCRUD<ERC721, ERC721Id>(
+    firestore,
+    erc721Path,
+    {
+        getId: getERC721Id,
+        getIdParams: getERC721IdParams,
+        validateId: identity,
+    },
+    readOnlyChecks,
+);
+export const erc1155CRUD = getFirebaseCRUD<ERC1155, ERC1155Id>(
+    firestore,
+    erc1155Path,
+    {
+        getId: getERC1155Id,
+        getIdParams: getERC1155IdParams,
+        validateId: identity,
+    },
+    readOnlyChecks,
+);
+export const erc1155BalanceCRUD = getFirebaseCRUD<ERC1155Balance, ERC1155BalanceId>(
+    firestore,
+    erc1155BalancePath,
+    {
+        getId: getERC1155BalanceId,
+        getIdParams: getERC1155BalanceIdParams,
+        validateId: identity,
+    },
+    readOnlyChecks,
+);
+export const operatorCRUD = getFirebaseCRUD<Operator, OperatorId>(
+    firestore,
+    operatorPath,
+    {
+        getId: getOperatorId,
+        getIdParams: getOperatorIdParams,
+        validateId: identity,
+    },
+    readOnlyChecks,
+);
+
 //ethmodels
+export const addressesPublicCRUD = getFirebaseCRUD<AddressPublic, AddressPublicId, [userId: string]>(
+    firestore,
+    addressesPublicPath,
+    {
+        getId: getAddressPublicId,
+        getIdParams: getAddressPublicIdParams,
+        validateId: identity,
+    },
+    readOnlyChecks,
+);
+export const addressesPersonalCRUD = getFirebaseCRUD<AddressPersonal, AddressPersonalId, [userId: string]>(
+    firestore,
+    addressesPersonalPath,
+    {
+        getId: getAddressPersonalId,
+        getIdParams: getAddressPersonalIdParams,
+        validateId: identity,
+    },
+    ownerOnlyChecks,
+);
 export const ethLogsCRUD = getFirebaseCRUD<EthLog, EthLogId, [userId: string]>(
     firestore,
     ethLogsPath,
@@ -132,10 +277,24 @@ export const ethLogsCRUD = getFirebaseCRUD<EthLog, EthLogId, [userId: string]>(
     },
     readOnlyChecks,
 );
-export const ethLogAbisCRUD = getFirebaseCRUD<EthLogAbiData, ItemIdDefault, [userId: string]>(
+export const ethLogAbisCRUD = getFirebaseCRUD<EthLogAbi, EthLogAbiId, [userId: string]>(
     firestore,
     ethLogAbisPath,
-    undefined,
+    {
+        getId: getEthLogAbiId,
+        getIdParams: getEthLogAbiIdParams,
+        validateId: identity,
+    },
+    readOnlyChecks,
+);
+export const ethFunctionAbisCRUD = getFirebaseCRUD<EthFunctionAbi, EthFunctionAbiId, [userId: string]>(
+    firestore,
+    ethFunctionAbisPath,
+    {
+        getId: getEthFunctionAbiId,
+        getIdParams: getEthFunctionAbiIdParams,
+        validateId: identity,
+    },
     readOnlyChecks,
 );
 export const ethTransactionsCRUD = getFirebaseCRUD<EthTransaction, EthTransactionId, [userId: string]>(

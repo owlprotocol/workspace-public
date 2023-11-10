@@ -9,8 +9,9 @@ import {
     DfnsWalletReadOnlyData,
     SafeWalletReadOnly,
     EmailData,
+    ERC20,
     EthLog,
-    EthLogAbiData,
+    EthLogAbi,
     EthTransaction,
     InviteCodeReadOnlyData,
     MetadataContractData,
@@ -55,6 +56,48 @@ import {
     ProjectData,
     LazyMintData,
     LazyMintInstanceData,
+    EthLogAbiId,
+    getEthLogAbiId,
+    getEthLogAbiIdParams,
+    EthFunctionAbi,
+    EthFunctionAbiId,
+    getEthFunctionAbiId,
+    getEthFunctionAbiIdParams,
+    AddressPersonal,
+    AddressPersonalId,
+    AddressPublic,
+    AddressPublicId,
+    getAddressPersonalId,
+    getAddressPersonalIdParams,
+    getAddressPublicId,
+    getAddressPublicIdParams,
+    ERC20Id,
+    getERC20Id,
+    getERC20IdParams,
+    ERC20Allowance,
+    ERC1155,
+    ERC1155Balance,
+    ERC1155BalanceId,
+    ERC1155Id,
+    ERC20AllowanceId,
+    ERC721,
+    ERC721Id,
+    getERC1155BalanceId,
+    getERC1155BalanceIdParams,
+    getERC1155Id,
+    getERC1155IdParams,
+    getERC20AllowanceId,
+    getERC20AllowanceIdParams,
+    getERC721Id,
+    getERC721IdParams,
+    OperatorId,
+    Operator,
+    getOperatorIdParams,
+    getOperatorId,
+    ERC20Balance,
+    ERC20BalanceId,
+    getERC20BalanceId,
+    getERC20BalanceIdParams,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -93,15 +136,85 @@ import {
     collectionsPath,
     lazyMintsPath,
     lazyMintInstancesPath,
+    ethFunctionAbisPath,
+    addressesPublicPath,
+    addressesPersonalPath,
+    erc20Path,
+    erc20AllowancePath,
+    erc721Path,
+    erc1155Path,
+    erc1155BalancePath,
+    operatorPath,
+    erc20BalancePath,
 } from "../crud.js";
 
+//contractmodels
+export const erc20CRUD = getFirebaseCRUD<ERC20, ERC20Id>(firestore, erc20Path, {
+    getId: getERC20Id,
+    getIdParams: getERC20IdParams,
+    validateId: identity,
+});
+export const erc20BalanceCRUD = getFirebaseCRUD<ERC20Balance, ERC20BalanceId>(firestore, erc20BalancePath, {
+    getId: getERC20BalanceId,
+    getIdParams: getERC20BalanceIdParams,
+    validateId: identity,
+});
+export const erc20AllowanceCRUD = getFirebaseCRUD<ERC20Allowance, ERC20AllowanceId>(firestore, erc20AllowancePath, {
+    getId: getERC20AllowanceId,
+    getIdParams: getERC20AllowanceIdParams,
+    validateId: identity,
+});
+export const erc721CRUD = getFirebaseCRUD<ERC721, ERC721Id>(firestore, erc721Path, {
+    getId: getERC721Id,
+    getIdParams: getERC721IdParams,
+    validateId: identity,
+});
+export const erc1155CRUD = getFirebaseCRUD<ERC1155, ERC1155Id>(firestore, erc1155Path, {
+    getId: getERC1155Id,
+    getIdParams: getERC1155IdParams,
+    validateId: identity,
+});
+export const erc1155BalanceCRUD = getFirebaseCRUD<ERC1155Balance, ERC1155BalanceId>(firestore, erc1155BalancePath, {
+    getId: getERC1155BalanceId,
+    getIdParams: getERC1155BalanceIdParams,
+    validateId: identity,
+});
+export const operatorCRUD = getFirebaseCRUD<Operator, OperatorId>(firestore, operatorPath, {
+    getId: getOperatorId,
+    getIdParams: getOperatorIdParams,
+    validateId: identity,
+});
+
 //ethmodels
+export const addressesPublicCRUD = getFirebaseCRUD<AddressPublic, AddressPublicId>(firestore, addressesPublicPath, {
+    getId: getAddressPublicId,
+    getIdParams: getAddressPublicIdParams,
+    validateId: identity,
+});
+export const addressesPersonalCRUD = getFirebaseCRUD<AddressPersonal, AddressPersonalId>(
+    firestore,
+    addressesPersonalPath,
+    {
+        getId: getAddressPersonalId,
+        getIdParams: getAddressPersonalIdParams,
+        validateId: identity,
+    },
+);
 export const ethLogsCRUD = getFirebaseCRUD<EthLog, EthLogId>(firestore, ethLogsPath, {
     getId: getEthLogId,
     getIdParams: getEthLogIdParams,
     validateId: identity,
 });
-export const ethLogAbisCRUD = getFirebaseCRUD<EthLogAbiData>(firestore, ethLogAbisPath);
+export const ethLogAbisCRUD = getFirebaseCRUD<EthLogAbi, EthLogAbiId>(firestore, ethLogAbisPath, {
+    getId: getEthLogAbiId,
+    getIdParams: getEthLogAbiIdParams,
+    validateId: identity,
+});
+export const ethFunctionAbisCRUD = getFirebaseCRUD<EthFunctionAbi, EthFunctionAbiId>(firestore, ethFunctionAbisPath, {
+    getId: getEthFunctionAbiId,
+    getIdParams: getEthFunctionAbiIdParams,
+    validateId: identity,
+});
 export const ethTransactionsCRUD = getFirebaseCRUD<EthTransaction, EthTransactionId>(firestore, ethTransactionsPath, {
     getId: getEthTransactionId,
     getIdParams: getEthTransactionIdParams,

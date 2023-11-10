@@ -21,7 +21,12 @@ export function validateAddressPublicId({ networkId, address }: AddressPublicId)
 }
 
 export interface AddressPublic extends AddressPublicId {
+    /** TODO: ENS Name, indexed using ENS events */
     readonly ens?: string;
+    /** Is this address a contract? Used by indexer filter. */
+    readonly isContract: boolean;
+    /** Is this address being indexed. Used to lock addresses being indexed. */
+    readonly isSyncing: boolean;
 }
 
 /** Personal Address Book for keeping track of addresses such as EOAs or Contracts */

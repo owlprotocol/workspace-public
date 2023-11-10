@@ -12,7 +12,7 @@ import {
     SafeWalletReadOnly,
     EmailData,
     EthLog,
-    EthLogAbiData,
+    EthLogAbi,
     EthTransaction,
     InviteCodeReadOnlyData,
     MetadataContractData,
@@ -55,6 +55,9 @@ import {
     validateCollectionId,
     LazyMintData,
     LazyMintInstanceData,
+    getEthLogAbiId,
+    getEthLogAbiIdParams,
+    EthLogAbiId,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -99,7 +102,11 @@ export const ethLogsHooks = getFirebaseHooks<EthLog, EthLogId>(firestore, ethLog
     getIdParams: getEthLogIdParams,
     validateId: identity,
 });
-export const ethLogAbisHooks = getFirebaseHooks<EthLogAbiData>(firestore, ethLogAbisPath);
+export const ethLogAbisHooks = getFirebaseHooks<EthLogAbi, EthLogAbiId>(firestore, ethLogAbisPath, {
+    getId: getEthLogAbiId,
+    getIdParams: getEthLogAbiIdParams,
+    validateId: identity,
+});
 export const ethTransactionsHooks = getFirebaseHooks<EthTransaction, EthTransactionId>(firestore, ethTransactionsPath, {
     getId: getEthTransactionId,
     getIdParams: getEthTransactionIdParams,

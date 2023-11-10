@@ -1,6 +1,18 @@
+//contractmodels
+export const erc20Path = "erc20";
+export const erc20AllowancePath = "erc20Allowance";
+export const erc20BalancePath = "erc20";
+export const erc721Path = "erc721";
+export const erc1155Path = "erc1155";
+export const erc1155BalancePath = "erc1155Balance";
+export const operatorPath = "operator";
+
 //ethmodels
+export const addressesPublicPath = "addressesPublic";
+export const addressesPersonalPath = "addressesPersonal";
 export const ethLogsPath = "ethLogs";
 export const ethLogAbisPath = "ethLogAbis";
+export const ethFunctionAbisPath = "ethFunctionAbis";
 export const ethTransactionsPath = "ethTransactions";
 //shopify
 export const storesPath = "stores";

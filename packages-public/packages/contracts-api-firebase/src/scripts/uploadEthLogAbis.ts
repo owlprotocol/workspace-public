@@ -1,0 +1,44 @@
+import { asyncGeneratorToArray } from "@owlprotocol/utils";
+import { utils } from "ethers";
+import { opendir } from "fs/promises";
+import { readFileSync } from "fs";
+import { join } from "path";
+import { EthLogAbi } from "../models/ethmodels/EthLogAbi.js";
+import { ethLogAbisCRUD } from "../admin/crudWrappers.js";
+
+export const DEFAULT_TOPICS_DIR = "../../../submodules/topic0/with_parameter_names";
+
+export function getEventFormatsFromFile(path: string): string[] {
+    const topicDefs = readFileSync(path, "utf-8").split(";");
+    return topicDefs;
+}
+
+export async function* getEthLogAbisFromDirGen(
+    topicsDir = DEFAULT_TOPICS_DIR,
+): AsyncGenerator<EthLogAbi, void, unknown> {
+    for await (const d of await opendir(topicsDir)) {
+        if (d.isFile()) {
+            const topicFile = join(topicsDir, d.name);
+            for (const e of getEventFormatsFromFile(topicFile)) {
+                const eventFragment = utils.EventFragment.from(e);
+                const indexedFieldsCount = eventFragment.inputs.filter((input) => input.indexed).length;
+                const ethLogAbi: EthLogAbi = {
+                    eventFormat: e,
+                    eventName: eventFragment.name,
+                    eventSighash: d.name,
+                    indexedFieldsCount,
+                };
+                yield ethLogAbi;
+            }
+        }
+    }
+}
+
+export async function getEthLogAbisFromDir(topicsDir = DEFAULT_TOPICS_DIR): Promise<EthLogAbi[]> {
+    return await asyncGeneratorToArray(getEthLogAbisFromDirGen(topicsDir));
+}
+
+export async function uploadEthLogAbis(topicsDir = DEFAULT_TOPICS_DIR) {
+    const ethLogAbis = await getEthLogAbisFromDir(topicsDir);
+    return ethLogAbisCRUD._setBatch(ethLogAbis);
+}

@@ -7,6 +7,8 @@ export const addressPublicZod = z.object({
     networkId: z.string().describe("networkId"),
     address: addressZod,
     ens: z.string().describe("ens").optional(),
+    isContract: z.boolean(),
+    isSyncing: z.boolean(),
 });
 
 type AddressPublicZodInferred = Readonly<z.infer<typeof addressPublicZod>>;

@@ -13,7 +13,7 @@ export function getEthLogIdParams(id: string): EthLogId {
     return { networkId, blockNumber: parseInt(blockNumber), logIndex: parseInt(logIndex) };
 }
 
-export interface EthLog extends EthLogId {
+export interface EthLog<T = any> extends EthLogId {
     readonly blockHash: string;
     readonly transactionIndex: number;
     readonly transactionHash: string;
@@ -26,5 +26,5 @@ export interface EthLog extends EthLogId {
     readonly topic3?: string;
     readonly eventName?: string;
     readonly eventFormat?: string;
-    readonly dataDecoded?: any;
+    readonly dataDecoded?: T;
 }
