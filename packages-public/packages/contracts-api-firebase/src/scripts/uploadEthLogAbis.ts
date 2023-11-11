@@ -6,7 +6,7 @@ import { join } from "path";
 import { EthLogAbi } from "../models/ethmodels/EthLogAbi.js";
 import { ethLogAbisCRUD } from "../admin/crudWrappers.js";
 
-export const DEFAULT_TOPICS_DIR = "../../../submodules/topic0/with_parameter_names";
+export const DEFAULT_TOPICS_DIR = "../../../packages-public/packages/web3-database/build/topic0";
 
 export function getEventFormatsFromFile(path: string): string[] {
     const topicDefs = readFileSync(path, "utf-8").split(";");

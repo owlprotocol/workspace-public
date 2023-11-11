@@ -6,7 +6,7 @@ import { join } from "path";
 import { EthFunctionAbi } from "../models/ethmodels/EthFunctionAbi.js";
 import { ethFunctionAbisCRUD } from "../admin/crudWrappers.js";
 
-export const DEFAULT_4BYTES_DIR = "../../../submodules/4bytes/with_parameter_names";
+export const DEFAULT_4BYTES_DIR = "../../../packages-public/packages/web3-database/build/4bytes";
 
 export function getFunctionFormatsFromFile(path: string): string[] {
     const topicDefs = readFileSync(path, "utf-8").split(";");

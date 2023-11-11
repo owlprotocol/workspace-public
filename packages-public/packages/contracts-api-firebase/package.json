@@ -108,6 +108,7 @@
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
+    "@owlprotocol/web3-database": "workspace:*",
     "@testing-library/react-hooks": "^8.0.1",
     "@trpc/server": "10.38.4",
     "@types/dotenv": "^8.2.0",
