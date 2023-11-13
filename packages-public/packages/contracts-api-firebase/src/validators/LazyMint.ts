@@ -9,11 +9,16 @@ export const lazyMintZod = z
         address: addressZod.describe("address of the deployed collection"),
         /** User Data */
         owner: z.string().describe("owner's user id"),
+        sponsor: z.string().describe("lazy mint sponsor's user id").optional(),
 
         // collectionContractType: collectionContractTypeZod,
         tokenId: z.string().describe("the tokenId to mint").optional(),
         amount: uint256Zod.describe("amount to mint").optional(),
-        maxRedeemable: z.number().positive().describe("the maximum number of time this lazy mint can be redeemed"),
+        maxRedeemable: z
+            .number()
+            .positive()
+            .describe("the maximum number of time this lazy mint can be redeemed")
+            .optional(),
         totalRedeemed: z.number().nonnegative().describe("the number of redemptions so far").default(0),
     })
     // .passthrough()

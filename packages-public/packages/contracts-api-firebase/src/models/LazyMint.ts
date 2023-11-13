@@ -4,10 +4,11 @@ export interface LazyMintData {
     networkId: string;
     address: string;
     owner: string;
+    sponsor?: string;
     collectionContractType: CollectionContractType;
     tokenId?: string;
     amount?: string;
-    maxRedeemable: number;
+    maxRedeemable?: number;
     totalRedeemed: number;
 }
 

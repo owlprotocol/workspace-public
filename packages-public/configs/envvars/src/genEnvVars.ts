@@ -1,5 +1,6 @@
 import { ESLint } from "eslint";
 import { writeFileSync } from "fs";
+import { platform } from "process";
 
 export enum Platform {
     NODE = "NODE",
@@ -121,6 +122,11 @@ const INDEXER_ENVVARS: EnvVarDef[] = [
     { name: "INDEXER_MAX_FILTERS", platform: "node", defaultValue: "10" },
 ];
 
+const POH_ENVVARS: EnvVarDef[] = [
+    { name: "POH_NETWORK_ID", platform: "neutral" },
+    { name: "POH_ADDRESS", platform: "neutral" },
+];
+
 /** Chainlist data sufficient mostly, we just override here for localhost */
 const RPC_DEFAULTS: Record<string, string | undefined> = {
     1337: "http://127.0.0.1:8545",
@@ -225,6 +231,7 @@ export const ENVVARS: EnvVarDef[] = [
     ...SCRIPT_ENVVARS,
     ...BLOCKCHAIN_ENVVARS,
     ...INDEXER_ENVVARS,
+    ...POH_ENVVARS,
     ...NETWORK_ENVVARS,
 ];
 
