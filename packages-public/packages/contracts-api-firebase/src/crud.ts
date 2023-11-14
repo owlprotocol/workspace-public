@@ -17,6 +17,10 @@ export const ethLogsPath = "ethLogs";
 export const ethLogAbisPath = "ethLogAbis";
 export const ethFunctionAbisPath = "ethFunctionAbis";
 export const ethTransactionsPath = "ethTransactions";
+//referral
+export const referralCampaignPath = "referralCampaign";
+export const referralUserPath = "referralCampaign/{campaignId}/user";
+export const referralRedemptionPath = "referralRedemption/{campaignId}/redemption";
 //shopify
 export const storesPath = "stores";
 export const storePrivatesPath = "storePrivates";

@@ -102,6 +102,12 @@ import {
     ChatRoomId,
     ChatMessageId,
     ChatMessage,
+    ReferralCampaign,
+    ReferralCampaignId,
+    ReferralUser,
+    ReferralUserId,
+    ReferralRedemption,
+    ReferralRedemptionId,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -152,6 +158,9 @@ import {
     erc20BalancePath,
     chatRoomPath,
     chatMessagePath,
+    referralCampaignPath,
+    referralUserPath,
+    referralRedemptionPath,
 } from "../crud.js";
 
 const ownerCheck = ({ owner }: { owner?: string }, userId: string) => owner === userId;
@@ -184,6 +193,19 @@ const ownerOnlyWriteChecks = {
 export const chatRoomCRUD = getFirebaseCRUD<ChatRoom, ChatRoomId>(firestore, chatRoomPath);
 export const getChatMessageCRUD = (roomId: string) =>
     getFirebaseCRUD<ChatMessage, ChatMessageId>(firestore, chatMessagePath.replace("{roomId}", roomId));
+
+//referral
+export const referralCampaignCRUD = getFirebaseCRUD<ReferralCampaign, ReferralCampaignId>(
+    firestore,
+    referralCampaignPath,
+);
+export const getReferralUserCRUD = (campaignId: string) =>
+    getFirebaseCRUD<ReferralUser, ReferralUserId>(firestore, referralUserPath.replace("{campaignId}", campaignId));
+export const getReferralRedemptionCRUD = (campaignId: string) =>
+    getFirebaseCRUD<ReferralRedemption, ReferralRedemptionId>(
+        firestore,
+        referralRedemptionPath.replace("{campaignId}", campaignId),
+    );
 
 //contractmodels
 export const erc20CRUD = getFirebaseCRUD<ERC20, ERC20Id>(
