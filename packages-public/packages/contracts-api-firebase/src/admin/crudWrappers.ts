@@ -98,6 +98,10 @@ import {
     ERC20BalanceId,
     getERC20BalanceId,
     getERC20BalanceIdParams,
+    ChatRoom,
+    ChatRoomId,
+    ChatMessageId,
+    ChatMessage,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -146,6 +150,8 @@ import {
     erc721Path,
     operatorPath,
     erc20BalancePath,
+    chatRoomPath,
+    chatMessagePath,
 } from "../crud.js";
 
 const ownerCheck = ({ owner }: { owner?: string }, userId: string) => owner === userId;
@@ -173,6 +179,11 @@ const ownerOnlyWriteChecks = {
     updateAccessCheck: ownerCheck,
     deleteAccessCheck: ownerCheck,
 };
+
+//chat
+export const chatRoomCRUD = getFirebaseCRUD<ChatRoom, ChatRoomId>(firestore, chatRoomPath);
+export const getChatMessageCRUD = (roomId: string) =>
+    getFirebaseCRUD<ChatMessage, ChatMessageId>(firestore, chatMessagePath.replace("{roomId}", roomId));
 
 //contractmodels
 export const erc20CRUD = getFirebaseCRUD<ERC20, ERC20Id>(

@@ -1,3 +1,4 @@
+export * from "./chat/index.js";
 export * from "./contractmodels/index.js";
 export * from "./ethmodels/index.js";
 export * from "./shopify/index.js";

@@ -1,3 +1,6 @@
+//chat
+export const chatRoomPath = "chatroom";
+export const chatMessagePath = "chatroom/{roomId}/message";
 //contractmodels
 export const erc20Path = "erc20";
 export const erc20AllowancePath = "erc20Allowance";

@@ -1,6 +1,5 @@
 import { ESLint } from "eslint";
 import { writeFileSync } from "fs";
-import { platform } from "process";
 
 export enum Platform {
     NODE = "NODE",
@@ -121,10 +120,15 @@ const INDEXER_ENVVARS: EnvVarDef[] = [
     { name: "INDEXER_MAX_ADDRESSES", platform: "node", defaultValue: "100" },
     { name: "INDEXER_MAX_FILTERS", platform: "node", defaultValue: "10" },
 ];
+const TELEGRAM_BOT_ENVVARS: EnvVarDef[] = [
+    { name: "TELEGRAM_BOT_TOKEN", platform: "node" },
+    { name: "TELEGRAM_BOT_HANDLE", platform: "node", defaultValue: "@easywallet" },
+    { name: "TELEGRAM_BOT_NAME", platform: "node", defaultValue: "Easy Wallet" },
+];
 
 const POH_ENVVARS: EnvVarDef[] = [
-    { name: "POH_NETWORK_ID", platform: "neutral" },
-    { name: "POH_ADDRESS", platform: "neutral" },
+    { name: "POH_NETWORK_ID", platform: "node", defaultValue: "1337" },
+    { name: "POH_ADDRESS", platform: "node" },
 ];
 
 /** Chainlist data sufficient mostly, we just override here for localhost */
@@ -232,7 +236,9 @@ export const ENVVARS: EnvVarDef[] = [
     ...BLOCKCHAIN_ENVVARS,
     ...INDEXER_ENVVARS,
     ...POH_ENVVARS,
+    ...TELEGRAM_BOT_ENVVARS,
     ...NETWORK_ENVVARS,
+    { name: "OPENAI_SECRET_KEY", platform: "node" },
 ];
 
 const NODE_ENV_VAR = {
