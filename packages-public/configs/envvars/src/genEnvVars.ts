@@ -126,10 +126,7 @@ const TELEGRAM_BOT_ENVVARS: EnvVarDef[] = [
     { name: "TELEGRAM_BOT_NAME", platform: "node", defaultValue: "Easy Wallet" },
 ];
 
-const POH_ENVVARS: EnvVarDef[] = [
-    { name: "POH_NETWORK_ID", platform: "node", defaultValue: "1337" },
-    { name: "POH_ADDRESS", platform: "node" },
-];
+const POH_ENVVARS: EnvVarDef[] = [{ name: "POH_NETWORK_ID", platform: "node", defaultValue: "1337" }];
 
 /** Chainlist data sufficient mostly, we just override here for localhost */
 const RPC_DEFAULTS: Record<string, string | undefined> = {
