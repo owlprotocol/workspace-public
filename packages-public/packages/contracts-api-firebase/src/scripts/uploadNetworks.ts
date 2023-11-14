@@ -9,17 +9,19 @@ import {
 } from "../admin/crudWrappers.js";
 import { NetworkCreate2FactoryTransaction, NetworkPrivate, NetworkReadOnly } from "../models/index.js";
 
-export const enabledNetworksDefault = NODE_ENV === "development" ? [1337, 80001, 59140] : [80001, 59140];
+export const enabledNetworksDefault = NODE_ENV === "development" ? [1337, 137, 80001, 59140] : [137, 80001, 59140];
 export const ranksByNetworkDefault: Record<number, number> =
     NODE_ENV === "development"
         ? {
               1337: 0,
-              80001: 1,
-              59140: 2,
+              137: 1,
+              80001: 2,
+              59140: 3,
           }
         : {
-              80001: 0,
-              59140: 1,
+              137: 0,
+              80001: 1,
+              59140: 2,
           };
 
 export function uploadCreate2FactoryTransactions(chains = allChains.map((c) => c.chainId)) {
