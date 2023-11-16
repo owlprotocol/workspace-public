@@ -108,6 +108,9 @@ import {
     ReferralUserId,
     ReferralRedemption,
     ReferralRedemptionId,
+    ReferralCampaignData,
+    ReferralRedemptionData,
+    ReferralUserData,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -195,14 +198,14 @@ export const getChatMessageCRUD = (roomId: string) =>
     getFirebaseCRUD<ChatMessage, ChatMessageId>(firestore, chatMessagePath.replace("{roomId}", roomId));
 
 //referral
-export const referralCampaignCRUD = getFirebaseCRUD<ReferralCampaign, ReferralCampaignId>(
+export const referralCampaignCRUD = getFirebaseCRUD<ReferralCampaignData, ReferralCampaignId>(
     firestore,
     referralCampaignPath,
 );
 export const getReferralUserCRUD = (campaignId: string) =>
-    getFirebaseCRUD<ReferralUser, ReferralUserId>(firestore, referralUserPath.replace("{campaignId}", campaignId));
+    getFirebaseCRUD<ReferralUserData, ReferralUserId>(firestore, referralUserPath.replace("{campaignId}", campaignId));
 export const getReferralRedemptionCRUD = (campaignId: string) =>
-    getFirebaseCRUD<ReferralRedemption, ReferralRedemptionId>(
+    getFirebaseCRUD<ReferralRedemptionData, ReferralRedemptionId>(
         firestore,
         referralRedemptionPath.replace("{campaignId}", campaignId),
     );

@@ -3,21 +3,24 @@
  * These can be redeemed when user completes certain action or simply joins app
  */
 export interface ReferralRedemptionId {
-    id: string;
+    id?: string;
 }
 
 /**
  * Keep track of redemptions of referral links.
  * These can be redeemed when user completes certain action or simply joins app
  */
-export interface ReferralRedemption {
+export interface ReferralRedemptionData {
     fromReferralUserId: string;
     toReferralUserId: string;
-    //Owl Protocol Id to get user's web3 info
-    userId: string;
+    //Owl Protocol Ids
+    fromUserId: string;
+    toUserId: string;
     /* Web3 attributes */
     networkId: string;
     address: string;
     tokenId: string;
     txHash?: string;
 }
+
+export type ReferralRedemption = Required<ReferralRedemptionId> & ReferralRedemptionData;

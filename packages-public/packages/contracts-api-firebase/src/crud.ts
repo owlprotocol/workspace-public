@@ -20,7 +20,7 @@ export const ethTransactionsPath = "ethTransactions";
 //referral
 export const referralCampaignPath = "referralCampaign";
 export const referralUserPath = "referralCampaign/{campaignId}/user";
-export const referralRedemptionPath = "referralRedemption/{campaignId}/redemption";
+export const referralRedemptionPath = "referralCampaign/{campaignId}/redemption";
 //shopify
 export const storesPath = "stores";
 export const storePrivatesPath = "storePrivates";
