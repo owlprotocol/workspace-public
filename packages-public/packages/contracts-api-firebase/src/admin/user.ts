@@ -29,7 +29,7 @@ export function createUserDataWithDefaults(email: string, id?: string): User {
         },
         topupMax: {
             "80001": {
-                native: ethers.utils.parseUnits("1.0").toString(),
+                native: ethers.utils.parseUnits("100.0").toString(),
                 //TODO: Store in TS data structure (maybe something similar to @thirdweb/chains package, does this exist for tokens?)
                 //LINK
                 "0x326C977E6efc84E512bB9C30f76E30c160eD06FB": ethers.utils.parseUnits("1.0").toString(),
@@ -38,7 +38,7 @@ export function createUserDataWithDefaults(email: string, id?: string): User {
                 native: ethers.constants.MaxUint256.toString(),
             },
             "59140": {
-                native: ethers.utils.parseUnits("1.0").toString(),
+                native: ethers.utils.parseUnits("100.0").toString(),
             },
             "137": {
                 native: ethers.utils.parseUnits("5.0").toString(),
