@@ -1,3 +1,5 @@
+import { addressZod } from "@owlprotocol/zod-sol";
+
 /** ERC721 id components */
 export interface ERC721Id {
     /** Blockchain network id.
@@ -35,4 +37,8 @@ export function getERC721IdParams(id: string): ERC721Id {
         address,
         tokenId,
     };
+}
+
+export function validateERC721Id({ networkId, address, tokenId }: ERC721Id): ERC721Id {
+    return { networkId, tokenId, address: addressZod.parse(address) };
 }

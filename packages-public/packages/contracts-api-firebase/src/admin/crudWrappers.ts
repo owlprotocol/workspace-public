@@ -108,6 +108,12 @@ import {
     ReferralCampaignData,
     ReferralRedemptionData,
     ReferralUserData,
+    validateERC20Id,
+    validateERC20BalanceId,
+    validateERC20AllowanceId,
+    validateERC721Id,
+    validateERC1155Id,
+    validateERC1155BalanceId,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -214,7 +220,7 @@ export const erc20CRUD = getFirebaseCRUD<ERC20, ERC20Id>(
     {
         getId: getERC20Id,
         getIdParams: getERC20IdParams,
-        validateId: identity,
+        validateId: validateERC20Id,
     },
     readOnlyChecks,
 );
@@ -224,7 +230,7 @@ export const erc20BalanceCRUD = getFirebaseCRUD<ERC20Balance, ERC20BalanceId>(
     {
         getId: getERC20BalanceId,
         getIdParams: getERC20BalanceIdParams,
-        validateId: identity,
+        validateId: validateERC20BalanceId,
     },
     readOnlyChecks,
 );
@@ -234,7 +240,7 @@ export const erc20AllowanceCRUD = getFirebaseCRUD<ERC20Allowance, ERC20Allowance
     {
         getId: getERC20AllowanceId,
         getIdParams: getERC20AllowanceIdParams,
-        validateId: identity,
+        validateId: validateERC20AllowanceId,
     },
     readOnlyChecks,
 );
@@ -244,7 +250,7 @@ export const erc721CRUD = getFirebaseCRUD<ERC721, ERC721Id>(
     {
         getId: getERC721Id,
         getIdParams: getERC721IdParams,
-        validateId: identity,
+        validateId: validateERC721Id,
     },
     readOnlyChecks,
 );
@@ -254,7 +260,7 @@ export const erc1155CRUD = getFirebaseCRUD<ERC1155, ERC1155Id>(
     {
         getId: getERC1155Id,
         getIdParams: getERC1155IdParams,
-        validateId: identity,
+        validateId: validateERC1155Id,
     },
     readOnlyChecks,
 );
@@ -264,7 +270,7 @@ export const erc1155BalanceCRUD = getFirebaseCRUD<ERC1155Balance, ERC1155Balance
     {
         getId: getERC1155BalanceId,
         getIdParams: getERC1155BalanceIdParams,
-        validateId: identity,
+        validateId: validateERC1155BalanceId,
     },
     readOnlyChecks,
 );

@@ -1,3 +1,5 @@
+import { addressZod } from "@owlprotocol/zod-sol";
+
 /** ERC1155Balance id components */
 export interface ERC1155BalanceId {
     /** Blockchain network id.
@@ -25,4 +27,8 @@ export function getERC1155BalanceIdParams(id: string): ERC1155BalanceId {
         id: tokenId,
         account,
     };
+}
+
+export function validateERC1155BalanceId({ networkId, address, account, id }: ERC1155BalanceId): ERC1155BalanceId {
+    return { networkId, id, address: addressZod.parse(address), account: addressZod.parse(account) };
 }

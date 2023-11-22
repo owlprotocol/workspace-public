@@ -123,6 +123,12 @@ import {
     getSafeWalletIdParams,
     validateCollectionId,
     validateContractId,
+    validateERC1155BalanceId,
+    validateERC1155Id,
+    validateERC20AllowanceId,
+    validateERC20BalanceId,
+    validateERC20Id,
+    validateERC721Id,
     validateSafeWalletId,
 } from "../models/index.js";
 
@@ -146,32 +152,32 @@ export const ethTransactionsHooks = getFirebaseHooks<EthTransaction, EthTransact
 export const erc20Hooks = getFirebaseHooks<ERC20, ERC20Id>(firestore, erc20Path, {
     getId: getERC20Id,
     getIdParams: getERC20IdParams,
-    validateId: identity,
+    validateId: validateERC20Id,
 });
 export const erc20BalanceReadOnlyHooks = getFirebaseHooks<ERC20Balance, ERC20BalanceId>(firestore, erc20BalancePath, {
     getId: getERC20BalanceId,
     getIdParams: getERC20BalanceIdParams,
-    validateId: identity,
+    validateId: validateERC20BalanceId,
 });
 export const erc20AllowanceHooks = getFirebaseHooks<ERC20Allowance, ERC20AllowanceId>(firestore, erc20AllowancePath, {
     getId: getERC20AllowanceId,
     getIdParams: getERC20AllowanceIdParams,
-    validateId: identity,
+    validateId: validateERC20AllowanceId,
 });
 export const erc721Hooks = getFirebaseHooks<ERC721, ERC721Id>(firestore, erc721Path, {
     getId: getERC721Id,
     getIdParams: getERC721IdParams,
-    validateId: identity,
+    validateId: validateERC721Id,
 });
 export const erc1155Hooks = getFirebaseHooks<ERC1155, ERC1155Id>(firestore, erc1155Path, {
     getId: getERC1155Id,
     getIdParams: getERC1155IdParams,
-    validateId: identity,
+    validateId: validateERC1155Id,
 });
 export const erc1155BalanceHooks = getFirebaseHooks<ERC1155Balance, ERC1155BalanceId>(firestore, erc1155BalancePath, {
     getId: getERC1155BalanceId,
     getIdParams: getERC1155BalanceIdParams,
-    validateId: identity,
+    validateId: validateERC1155BalanceId,
 });
 //shopify
 export const storesHooks = getFirebaseHooks<StoreData>(firestore, storesPath);

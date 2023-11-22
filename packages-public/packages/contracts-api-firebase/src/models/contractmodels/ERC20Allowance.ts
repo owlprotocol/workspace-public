@@ -1,3 +1,5 @@
+import { addressZod } from "@owlprotocol/zod-sol";
+
 /** ERC20Allowance id components */
 export interface ERC20AllowanceId {
     /** Blockchain network id.
@@ -19,4 +21,13 @@ export function getERC20AllowanceId({ networkId, address, account, spender }: ER
 export function getERC20AllowanceIdParams(id: string): ERC20AllowanceId {
     const [networkId, address, account, spender] = id.split("-");
     return { networkId, address, account, spender };
+}
+
+export function validateERC20AllowanceId({ networkId, address, account, spender }: ERC20AllowanceId): ERC20AllowanceId {
+    return {
+        networkId,
+        address: addressZod.parse(address),
+        account: addressZod.parse(account),
+        spender: addressZod.parse(spender),
+    };
 }

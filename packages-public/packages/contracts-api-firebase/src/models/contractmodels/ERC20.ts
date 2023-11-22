@@ -1,3 +1,5 @@
+import { addressZod } from "@owlprotocol/zod-sol";
+
 /** ERC20 id components */
 export interface ERC20Id {
     /** Blockchain network id.
@@ -22,4 +24,8 @@ export function getERC20Id({ networkId, address }: ERC20Id): string {
 export function getERC20IdParams(id: string): ERC20Id {
     const [networkId, address] = id.split("-");
     return { networkId, address };
+}
+
+export function validateERC20Id({ networkId, address }: ERC20Id): ERC20Id {
+    return { networkId, address: addressZod.parse(address) };
 }
