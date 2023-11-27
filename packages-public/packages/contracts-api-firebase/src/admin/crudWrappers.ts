@@ -114,6 +114,8 @@ import {
     validateERC721Id,
     validateERC1155Id,
     validateERC1155BalanceId,
+    AppUser,
+    AppUserId,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -167,6 +169,7 @@ import {
     referralCampaignPath,
     referralUserPath,
     referralRedemptionPath,
+    projectAppUserPath,
 } from "../crud.js";
 
 const ownerCheck = ({ owner }: { owner?: string }, userId: string) => owner === userId;
@@ -409,6 +412,9 @@ export const organizationsReadOnlyCRUD = getFirebaseCRUD<OrganizationReadOnlyDat
     undefined,
     ownerOnlyChecks,
 );
+export const getProjectAppUsersCRUD = (projectId: string) =>
+    getFirebaseCRUD<AppUser, AppUserId>(firestore, projectAppUserPath.replace("{projectId}", projectId));
+
 //TODO: Fix access control?
 export const usersCRUD = getFirebaseCRUD<UserData, ItemIdDefault, [userId: string]>(firestore, usersPath, undefined, {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

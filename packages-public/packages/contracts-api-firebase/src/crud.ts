@@ -56,6 +56,7 @@ export const requestTemplatesPath = "requestTemplates";
 export const collectionsPath = "collections";
 export const contractsPath = "contracts";
 export const projectsPath = "projects";
+export const projectAppUserPath = "projects/{projectId}/appUsers";
 export const metadataContractsPath = "metadataContracts";
 export const emailsPath = "emails";
 export const blogsPath = "blogs";

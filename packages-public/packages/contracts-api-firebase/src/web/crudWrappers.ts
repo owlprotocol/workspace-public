@@ -104,6 +104,8 @@ import {
     validateERC20AllowanceId,
     validateERC20BalanceId,
     validateERC20Id,
+    AppUser,
+    AppUserId,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -152,6 +154,7 @@ import {
     erc1155BalancePath,
     operatorPath,
     erc20BalancePath,
+    projectAppUserPath,
 } from "../crud.js";
 
 //contractmodels
@@ -246,6 +249,8 @@ export const organizationsReadOnlyCRUD = getFirebaseCRUD<OrganizationReadOnlyDat
     organizationsReadOnlyPath,
 );
 export const usersCRUD = getFirebaseCRUD<UserData>(firestore, usersPath);
+export const getProjectAppUsersCRUD = (projectId: string) =>
+    getFirebaseCRUD<AppUser, AppUserId>(firestore, projectAppUserPath.replace("{projectId}", projectId));
 export const dfnsWalletsReadOnlyCRUD = getFirebaseCRUD<DfnsWalletReadOnlyData>(firestore, dfnsWalletsReadOnlyPath);
 export const safeWalletsReadOnlyCRUD = getFirebaseCRUD<SafeWalletReadOnly, SafeWalletId>(
     firestore,
