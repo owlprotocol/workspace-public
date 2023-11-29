@@ -38,7 +38,6 @@
   "scripts": {
     "build": "npm-run-all -p tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
-    "test": "return 0",
     "test-integration": "firebase emulators:exec --only firestore,storage --project demo-owl-protocol 'pnpm run test:ci'",
     "test-integration:watch": "vitest",
     "test-integration:ci": "vitest --run",

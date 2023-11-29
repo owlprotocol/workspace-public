@@ -2,6 +2,7 @@ export interface UserData {
     readonly email: string;
     readonly telegramId?: number;
     readonly telegramUsername?: string;
+    unverified?: boolean;
     readonly type?: "dev" | "user";
     readonly topupTotals: {
         [networkId: string]: {

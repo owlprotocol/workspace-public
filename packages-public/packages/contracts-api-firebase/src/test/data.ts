@@ -37,4 +37,5 @@ export const testProject: Project = {
     id: testProjectId,
     name: "Test Project",
     owner: testUserId,
+    totalAppUsers: 0,
 };
