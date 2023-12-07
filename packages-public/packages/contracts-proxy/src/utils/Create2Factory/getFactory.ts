@@ -190,8 +190,12 @@ export function getCreate2FactoryInitializableWrapper<InitArgs, C extends BaseCo
 
     //3. Clone
     const getCloneWithInitAddressForInterface = getCloneWithInitAddressFromInterface<InitArgs>(contractInterface);
-    function getCloneWithInitAddressForFactory(initArgs: InitArgs, implementation = defaultImplementation) {
-        return getCloneWithInitAddressForInterface(implementation, initArgs);
+    function getCloneWithInitAddressForFactory(
+        initArgs: InitArgs,
+        saltArgs?: Partial<Omit<SaltArgs, "initData">>,
+        implementation = defaultImplementation,
+    ) {
+        return getCloneWithInitAddressForInterface(implementation, initArgs, saltArgs);
     }
     const getCloneCodeDataInitDataForInterface = getCloneCodeDataInitDataFromInterface<InitArgs>(contractInterface);
     function getCloneCodeDataInitDataForFactory(initArgs: InitArgs, implementation = defaultImplementation) {

@@ -17,7 +17,7 @@ export function getCloneCodeDataInitData<InitArgs>(
     contractInterface: Interface,
     implementation: string,
     initArgs: InitArgs,
-) {
+): { initData: string; codeData: string } {
     // Get `initData`
     const initData = getInitData<InitArgs>(contractInterface, initArgs);
     const codeData = getCloneDeterministicBytecode(implementation);
