@@ -106,6 +106,11 @@ import {
     validateERC20Id,
     AppUser,
     AppUserId,
+    LoyaltyProgram,
+    LoyaltyProgramId,
+    getLoyaltyProgramId,
+    getLoyaltyProgramIdParams,
+    validateLoyaltyProgramId,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -155,6 +160,7 @@ import {
     operatorPath,
     erc20BalancePath,
     projectAppUserPath,
+    loyaltyProgramsPath,
 } from "../crud.js";
 
 //contractmodels
@@ -313,3 +319,9 @@ export const blogsCRUD = getFirebaseCRUD<BlogData>(firestore, blogsPath);
 export const invitesCRUD = getFirebaseCRUD<InvitesData>(firestore, invitesPath);
 export const lazyMintsCRUD = getFirebaseCRUD<LazyMintData>(firestore, lazyMintsPath);
 export const lazyMintInstancesCRUD = getFirebaseCRUD<LazyMintInstanceData>(firestore, lazyMintInstancesPath);
+
+export const loyaltyProgramsCRUD = getFirebaseCRUD<LoyaltyProgram, LoyaltyProgramId>(firestore, loyaltyProgramsPath, {
+    getId: getLoyaltyProgramId,
+    getIdParams: getLoyaltyProgramIdParams,
+    validateId: validateLoyaltyProgramId,
+});

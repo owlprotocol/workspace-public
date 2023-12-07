@@ -116,6 +116,11 @@ import {
     validateERC1155BalanceId,
     AppUser,
     AppUserId,
+    getLoyaltyProgramId,
+    LoyaltyProgram,
+    LoyaltyProgramId,
+    getLoyaltyProgramIdParams,
+    validateLoyaltyProgramId,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -170,6 +175,7 @@ import {
     referralUserPath,
     referralRedemptionPath,
     projectAppUserPath,
+    loyaltyProgramsPath,
 } from "../crud.js";
 
 const ownerCheck = ({ owner }: { owner?: string }, userId: string) => owner === userId;
@@ -573,4 +579,15 @@ export const lazyMintInstancesCRUD = getFirebaseCRUD<LazyMintInstanceData, ItemI
     lazyMintInstancesPath,
     undefined,
     ownerOnlyReadChecks,
+);
+
+export const loyaltyProgramsCRUD = getFirebaseCRUD<LoyaltyProgram, LoyaltyProgramId, [userId: string]>(
+    firestore,
+    loyaltyProgramsPath,
+    {
+        getId: getLoyaltyProgramId,
+        getIdParams: getLoyaltyProgramIdParams,
+        validateId: validateLoyaltyProgramId,
+    },
+    ownerOnlyChecks,
 );

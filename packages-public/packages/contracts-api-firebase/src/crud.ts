@@ -63,3 +63,4 @@ export const blogsPath = "blogs";
 export const invitesPath = "invites";
 export const lazyMintsPath = "lazyMints";
 export const lazyMintInstancesPath = "lazyMintInstances";
+export const loyaltyProgramsPath = "loyaltyPrograms";
