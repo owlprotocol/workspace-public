@@ -26,7 +26,6 @@ export function validateLoyaltyProgramId({ networkId, address }: LoyaltyProgramI
 }
 
 export interface LoyaltyTier {
-    name: string;
     metadata: TokenMetadata;
     pointsThreshold: number;
 }
@@ -46,5 +45,5 @@ export interface LoyaltyProgram extends LoyaltyProgramId {
     readonly uriAddress?: string;
     readonly royaltyAddress?: string;
     readonly dnaAddress?: string;
-    readonly tiers: LoyaltyTier[];
+    readonly tiers: Record<string, LoyaltyTier>;
 }
