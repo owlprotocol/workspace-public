@@ -8,10 +8,9 @@ import {
     collectionUriContractTypeZod,
 } from "./Collection.js";
 import { LoyaltyProgram } from "../models/LoyaltyProgram.js";
-import { tokenMetadataZod } from "./index.js";
 
 export const loyaltyTierZod = z.object({
-    metadata: tokenMetadataZod.describe("metadata of the tier"),
+    metadata: z.record(z.string(), z.any()).describe("metadata of the tier"),
     pointsThreshold: z.number().describe("points threshold to obtain tier"),
 });
 
@@ -33,7 +32,7 @@ export const loyaltyProgramZod = z
         uriAddress: addressZod.describe("URI contract address").optional(),
         royaltyAddress: addressZod.describe("royalty contract address").optional(),
         dnaAddress: addressZod.describe("DNA contract address").optional(),
-        tiers: z.record(z.string(), loyaltyTierZod).optional(),
+        tiers: z.record(z.string(), loyaltyTierZod).default({}),
     })
     .describe("loyalty program");
 
