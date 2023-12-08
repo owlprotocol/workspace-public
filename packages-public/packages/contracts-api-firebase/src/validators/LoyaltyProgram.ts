@@ -8,9 +8,10 @@ import {
     collectionUriContractTypeZod,
 } from "./Collection.js";
 import { LoyaltyProgram } from "../models/LoyaltyProgram.js";
+import { tokenMetadataZod } from "./index.js";
 
 export const loyaltyTierZod = z.object({
-    metadata: z.record(z.string(), z.any()).describe("metadata of the tier"),
+    metadata: tokenMetadataZod.describe("metadata of the tier"),
     pointsThreshold: z.number().describe("points threshold to obtain tier"),
 });
 

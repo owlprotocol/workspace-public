@@ -36,7 +36,7 @@ export interface TokenMetadata {
      * Raw SVG image data, if you want to generate images on the fly (not recommended).
      * Only use this if you're not including the image parameter.
      */
-    readonly image_data?: any[];
+    readonly image_data?: string;
     /**
      * Background color of the item on Marketplace. Must be a six-character hexadecimal without a pre-pended #.
      */
