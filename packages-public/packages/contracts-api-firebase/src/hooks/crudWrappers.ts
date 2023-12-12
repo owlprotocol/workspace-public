@@ -84,8 +84,7 @@ import {
     InviteCodeReadOnlyData,
     LazyMintData,
     LazyMintInstanceData,
-    LoyaltyProgram,
-    LoyaltyProgramId,
+    LoyaltyProgramData,
     MetadataContractData,
     MetadataTokensData,
     NetworkPrivate,
@@ -122,8 +121,6 @@ import {
     getEthLogIdParams,
     getEthTransactionId,
     getEthTransactionIdParams,
-    getLoyaltyProgramId,
-    getLoyaltyProgramIdParams,
     getSafeWalletId,
     getSafeWalletIdParams,
     validateCollectionId,
@@ -134,7 +131,6 @@ import {
     validateERC20BalanceId,
     validateERC20Id,
     validateERC721Id,
-    validateLoyaltyProgramId,
     validateSafeWalletId,
 } from "../models/index.js";
 
@@ -264,8 +260,4 @@ export const invitesHooks = getFirebaseHooks<InvitesData>(firestore, invitesPath
 export const lazyMintsHooks = getFirebaseHooks<LazyMintData>(firestore, lazyMintsPath);
 export const lazyMintInstancesHooks = getFirebaseHooks<LazyMintInstanceData>(firestore, lazyMintInstancesPath);
 
-export const loyaltyProgramsHooks = getFirebaseHooks<LoyaltyProgram, LoyaltyProgramId>(firestore, loyaltyProgramsPath, {
-    getId: getLoyaltyProgramId,
-    getIdParams: getLoyaltyProgramIdParams,
-    validateId: validateLoyaltyProgramId,
-});
+export const loyaltyProgramsHooks = getFirebaseHooks<LoyaltyProgramData>(firestore, loyaltyProgramsPath);

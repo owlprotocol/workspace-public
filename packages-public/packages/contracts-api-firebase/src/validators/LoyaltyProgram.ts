@@ -17,6 +17,7 @@ export const loyaltyTierZod = z.object({
 
 export const loyaltyProgramZod = z
     .object({
+        id: z.string().describe("id"),
         /** Blockchain Data */
         networkId: z.string().describe("id of the network that the loyalty program is deployed on"),
         address: addressZod.describe("address of the deployed loyalty program"),

@@ -106,11 +106,7 @@ import {
     validateERC20Id,
     AppUser,
     AppUserId,
-    LoyaltyProgram,
-    LoyaltyProgramId,
-    getLoyaltyProgramId,
-    getLoyaltyProgramIdParams,
-    validateLoyaltyProgramId,
+    LoyaltyProgramData,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -320,8 +316,4 @@ export const invitesCRUD = getFirebaseCRUD<InvitesData>(firestore, invitesPath);
 export const lazyMintsCRUD = getFirebaseCRUD<LazyMintData>(firestore, lazyMintsPath);
 export const lazyMintInstancesCRUD = getFirebaseCRUD<LazyMintInstanceData>(firestore, lazyMintInstancesPath);
 
-export const loyaltyProgramsCRUD = getFirebaseCRUD<LoyaltyProgram, LoyaltyProgramId>(firestore, loyaltyProgramsPath, {
-    getId: getLoyaltyProgramId,
-    getIdParams: getLoyaltyProgramIdParams,
-    validateId: validateLoyaltyProgramId,
-});
+export const loyaltyProgramsCRUD = getFirebaseCRUD<LoyaltyProgramData>(firestore, loyaltyProgramsPath);

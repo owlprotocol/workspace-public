@@ -19,3 +19,4 @@ export * from "./ProjectTemplate.js";
 export * from "./RelayMethod.js";
 export * from "./RequestTemplate.js";
 export * from "./LoyaltyProgram.js";
+export * from "./LoyaltyProgramBalance.js";

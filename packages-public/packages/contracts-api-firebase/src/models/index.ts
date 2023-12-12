@@ -26,3 +26,4 @@ export * from "./users/User.js";
 export * from "./Email.js";
 export * from "./Blog.js";
 export * from "./LoyaltyProgram.js";
+export * from "./LoyaltyProgramBalance.js";
