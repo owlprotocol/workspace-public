@@ -181,6 +181,7 @@ export const erc1155BalanceHooks = getFirebaseHooks<ERC1155Balance, ERC1155Balan
     getIdParams: getERC1155BalanceIdParams,
     validateId: validateERC1155BalanceId,
 });
+
 //shopify
 export const storesHooks = getFirebaseHooks<StoreData>(firestore, storesPath);
 export const storePrivatesHooks = getFirebaseHooks<StorePrivateData>(firestore, storePrivatesPath);
