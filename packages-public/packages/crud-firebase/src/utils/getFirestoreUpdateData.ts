@@ -19,11 +19,12 @@ import type { UpdateData, Primitive } from "firebase/firestore";
  * @param key
  * @returns
  */
-export function getFirestoreUpdateData<T extends Primitive | Record<string, any>>(item: T): UpdateData<T> {
+export function getFirestoreUpdateData<T extends Primitive | bigint | Record<string, any>>(item: T): UpdateData<T> {
     //Primitives
     if (typeof item === "string") return item as UpdateData<T>;
     else if (typeof item === "number") return item as UpdateData<T>;
     else if (typeof item === "boolean") return item as UpdateData<T>;
+    else if (typeof item === "bigint") return item.toString() as UpdateData<T>;
     else if (typeof item === "undefined") return item as UpdateData<T>;
     else if (Array.isArray(item)) return item as UpdateData<T>;
     else if (item === null) return item as UpdateData<T>;
@@ -36,6 +37,7 @@ export function getFirestoreUpdateData<T extends Primitive | Record<string, any>
         if (typeof value === "string") return [key, value];
         else if (typeof value === "number") return [key, value];
         else if (typeof value === "boolean") return [key, value];
+        else if (typeof value === "bigint") return [key, value.toString()];
         else if (typeof value === "undefined") return [key, value];
         else if (Array.isArray(value)) return [key, value];
         else if (value === null) return [key, value];
