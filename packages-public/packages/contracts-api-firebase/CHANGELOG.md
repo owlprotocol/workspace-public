@@ -1,5 +1,13 @@
 # @owlprotocol/contracts-api-firebase
 
+## 2.0.6
+
+### Patch Changes
+
+- Updated dependencies [b6a190d7]
+  - @owlprotocol/envvars@2.0.6
+  - @owlprotocol/crud-firebase@2.0.4
+
 ## 2.0.5
 
 ### Patch Changes

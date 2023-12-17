@@ -1,5 +1,24 @@
 # @owlprotocol/signer
 
+## 2.0.10
+
+### Patch Changes
+
+- Updated dependencies [e7c9127d]
+  - @owlprotocol/contracts-api-client-trpc@2.0.12
+
+## 2.0.9
+
+### Patch Changes
+
+- Updated dependencies [b6a190d7]
+  - @owlprotocol/envvars@2.0.6
+  - @owlprotocol/contracts@2.0.5
+  - @owlprotocol/contracts-api-client-trpc@2.0.11
+  - @owlprotocol/contracts-api-firebase@2.0.6
+  - @owlprotocol/contracts-proxy@2.0.6
+  - @owlprotocol/contracts-api@2.0.10
+
 ## 2.0.8
 
 ### Patch Changes

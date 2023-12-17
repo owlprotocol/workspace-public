@@ -1,5 +1,11 @@
 # @owlprotocol/contracts-api-client-trpc
 
+## 2.0.12
+
+### Patch Changes
+
+- e7c9127d: bump trpc
+
 ## 2.0.11
 
 ### Patch Changes
