@@ -1,6 +1,6 @@
 {
   "name": "@owlprotocol/contracts-api-client-trpc",
-  "version": "2.0.9",
+  "version": "2.0.11",
   "private": false,
   "repository": {
     "type": "git",

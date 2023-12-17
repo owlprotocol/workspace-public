@@ -1,5 +1,11 @@
 # @owlprotocol/contracts
 
+## 2.0.4
+
+### Patch Changes
+
+- @owlprotocol/contracts-proxy@2.0.5
+
 ## 2.0.2
 
 ### Patch Changes

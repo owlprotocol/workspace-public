@@ -1,5 +1,12 @@
 # @owlprotocol/contracts-proxy
 
+## 2.0.5
+
+### Patch Changes
+
+- Updated dependencies [d7405311]
+  - @owlprotocol/envvars@2.0.5
+
 ## 2.0.2
 
 ### Patch Changes

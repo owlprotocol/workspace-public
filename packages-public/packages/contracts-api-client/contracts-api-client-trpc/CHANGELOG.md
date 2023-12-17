@@ -1,5 +1,17 @@
 # @owlprotocol/contracts-api-client-trpc
 
+## 2.0.11
+
+### Patch Changes
+
+- e968dbe6: add changeset
+
+## 2.0.10
+
+### Patch Changes
+
+- d7405311: envvars missing patch bump
+
 ## 2.0.9
 
 ### Patch Changes
