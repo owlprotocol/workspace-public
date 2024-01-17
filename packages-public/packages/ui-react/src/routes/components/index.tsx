@@ -10,9 +10,9 @@ import {
     TabsComponent,
     TanstackTable,
     Timeline,
-    //Wallet,
+    Wallet,
+    WalletProvider,
 } from "../../components/index.js";
-// import { WalletProvider } from "../../components/wallet/walletContext.js";
 import { NetworkDropdown } from "../../index.js";
 
 const routes = [
@@ -25,7 +25,7 @@ const routes = [
     "/components/timeline",
     "/components/network-dropdown",
     "/components/address-or-transaction-link",
-    //"/components/wallet",
+    "/components/wallet",
 ] as const;
 
 export function ComponentsLinks() {
@@ -119,7 +119,6 @@ export const componentsRoutes = [
         path: "/timeline",
         component: () => <Timeline blogs={[{ title: "example.com", url: "https://example.com", timestamp: 0 }]} />,
     }),
-    /*
     new Route({
         getParentRoute: () => componentsParentRoute,
         path: "/wallet",
@@ -131,7 +130,6 @@ export const componentsRoutes = [
             </>
         ),
     }),
-     */
     new Route({
         getParentRoute: () => componentsParentRoute,
         path: "/network-dropdown",
