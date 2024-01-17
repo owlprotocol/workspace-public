@@ -5,3 +5,4 @@ export * from "./TabsComponent.js";
 export * from "./TanstackTable.js";
 export * from "./Timeline.js";
 export * from "./AddressOrTransactionLink.js";
+export * from "./wallet/index.js";
