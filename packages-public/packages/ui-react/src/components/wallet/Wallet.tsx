@@ -31,9 +31,13 @@ import {
 } from "./index.js";
 
 // TODO: Import ERC20,721 and 1155 hooks
+export interface WalletProps {
+    isStandalone?: boolean;
+    closeOnOverlayClick?: boolean;
+}
 
 //Use generic children prop to pass child components into 'WalletLayout'
-const WalletLayout = ({ children, isStandalone }: { children: ReactNode } & WalletProps) => {
+const WalletLayout = ({ children, isStandalone, closeOnOverlayClick }: { children: ReactNode } & WalletProps) => {
     const {
         isOpen: isAccountSettingsOpen,
         onOpen: onAccountSettingsOpen,
@@ -59,7 +63,7 @@ const WalletLayout = ({ children, isStandalone }: { children: ReactNode } & Wall
                 size="lg"
                 initialFocusRef={initialRef}
                 isCentered
-                closeOnOverlayClick={false}
+                closeOnOverlayClick={closeOnOverlayClick}
             >
                 <ModalOverlay bg="blackAlpha.900" />
                 <ModalContent bg="card.bg" color="baseText" minHeight="400px" p={4}>
@@ -121,11 +125,7 @@ const WalletLayout = ({ children, isStandalone }: { children: ReactNode } & Wall
     );
 };
 
-export interface WalletProps {
-    isStandalone: boolean;
-}
-
-export const Wallet = ({ isStandalone }: WalletProps) => {
+export const Wallet = ({ isStandalone = false, closeOnOverlayClick = false }: WalletProps) => {
     const [state, dispatch] = useContext(WalletContext);
     const { isSignedIn, isLoaded } = useUser();
 
@@ -144,7 +144,7 @@ export const Wallet = ({ isStandalone }: WalletProps) => {
     }
 
     return (
-        <WalletLayout isStandalone={isStandalone}>
+        <WalletLayout isStandalone={isStandalone} closeOnOverlayClick={closeOnOverlayClick}>
             {(() => {
                 switch (state.view) {
                     case "SIGN_IN":
