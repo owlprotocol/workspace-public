@@ -125,7 +125,7 @@ export const componentsRoutes = [
         component: () => (
             <>
                 <WalletProvider>
-                    <Wallet />
+                    <Wallet isStandalone={true} />
                 </WalletProvider>
             </>
         ),

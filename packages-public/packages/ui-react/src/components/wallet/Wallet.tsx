@@ -33,7 +33,7 @@ import {
 // TODO: Import ERC20,721 and 1155 hooks
 
 //Use generic children prop to pass child components into 'WalletLayout'
-const WalletLayout = ({ children }: { children: ReactNode }) => {
+const WalletLayout = ({ children, isStandalone }: { children: ReactNode } & WalletProps) => {
     const {
         isOpen: isAccountSettingsOpen,
         onOpen: onAccountSettingsOpen,
@@ -61,7 +61,7 @@ const WalletLayout = ({ children }: { children: ReactNode }) => {
                 isCentered
                 closeOnOverlayClick={false}
             >
-                <ModalOverlay bg="blackAlpha.800" />
+                <ModalOverlay bg="blackAlpha.900" />
                 <ModalContent bg="card.bg" color="baseText" minHeight="400px" p={4}>
                     <ModalBody>
                         <Flex justifyContent="space-between" alignItems="center" pb={2}>
@@ -86,15 +86,19 @@ const WalletLayout = ({ children }: { children: ReactNode }) => {
                                 </Flex>
                             </Link>
                             */}
-                            <ModalCloseButton
-                                color="baseText"
-                                border="solid 1px"
-                                borderRadius="full"
-                                top="none"
-                                position="relative"
-                                right="0"
-                                ref={initialRef}
-                            />
+                            {!isStandalone ? (
+                                <ModalCloseButton
+                                    color="baseText"
+                                    border="solid 1px"
+                                    borderRadius="full"
+                                    top="none"
+                                    position="relative"
+                                    right="0"
+                                    ref={initialRef}
+                                />
+                            ) : (
+                                <div />
+                            )}
                             <NetworkDropdown margin={0} />
                             <Avatar
                                 boxSize={8}
@@ -117,7 +121,11 @@ const WalletLayout = ({ children }: { children: ReactNode }) => {
     );
 };
 
-export const Wallet = () => {
+export interface WalletProps {
+    isStandalone: boolean;
+}
+
+export const Wallet = ({ isStandalone }: WalletProps) => {
     const [state, dispatch] = useContext(WalletContext);
     const { isSignedIn, isLoaded } = useUser();
 
@@ -135,65 +143,32 @@ export const Wallet = () => {
         );
     }
 
-    //TODO: if more views added, consider using IIFE inside the JSX to reuse `WalletLayout`
-    //https://react-cn.github.io/react/tips/if-else-in-JSX.html
-    switch (state.view) {
-        case "SIGN_IN":
-            return <WalletSignIn />;
-        case "TRANSACTION_CREATE":
-            return (
-                <WalletLayout>
-                    <WalletCreateTransactionView />
-                </WalletLayout>
-            );
-
-        case "TRANSACTION_CONFIRM":
-            return (
-                <WalletLayout>
-                    <WalletConfirmTransactionView />
-                </WalletLayout>
-            );
-        case "TRANSACTION_RESULT":
-            return (
-                <WalletLayout>
-                    <WalletTransactionResultView />
-                </WalletLayout>
-            );
-        case "RECEIVE":
-            return (
-                <WalletLayout>
-                    <WalletReceiveView />
-                </WalletLayout>
-            );
-        case "COLLECTIBLES":
-            return (
-                <WalletLayout>
-                    <WalletCollectiblesView />
-                </WalletLayout>
-            );
-        case "SEND_COLLECTIBLE":
-            return (
-                <WalletLayout>
-                    <WalletSendCollectible />
-                </WalletLayout>
-            );
-        case "CONFIRM_SEND_COLLECTIBLE":
-            return (
-                <WalletLayout>
-                    <WalletSendCollectibleConfirm />
-                </WalletLayout>
-            );
-        case "CONFIRMED":
-            return (
-                <WalletLayout>
-                    <WalletSendCollectibleConfirmed />
-                </WalletLayout>
-            );
-        default:
-            return (
-                <WalletLayout>
-                    <WalletHomeView />
-                </WalletLayout>
-            );
-    }
+    return (
+        <WalletLayout isStandalone={isStandalone}>
+            {(() => {
+                switch (state.view) {
+                    case "SIGN_IN":
+                        return <WalletSignIn />;
+                    case "TRANSACTION_CREATE":
+                        return <WalletCreateTransactionView />;
+                    case "TRANSACTION_CONFIRM":
+                        return <WalletConfirmTransactionView />;
+                    case "TRANSACTION_RESULT":
+                        return <WalletTransactionResultView />;
+                    case "RECEIVE":
+                        return <WalletReceiveView />;
+                    case "COLLECTIBLES":
+                        return <WalletCollectiblesView />;
+                    case "SEND_COLLECTIBLE":
+                        return <WalletSendCollectible />;
+                    case "CONFIRM_SEND_COLLECTIBLE":
+                        return <WalletSendCollectibleConfirm />;
+                    case "CONFIRMED":
+                        return <WalletSendCollectibleConfirmed />;
+                    default:
+                        return <WalletHomeView />;
+                }
+            })()}
+        </WalletLayout>
+    );
 };
