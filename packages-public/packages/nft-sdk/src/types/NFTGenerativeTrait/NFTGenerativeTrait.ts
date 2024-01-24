@@ -33,3 +33,8 @@ export type NFTGenerativeTraitOption<T extends NFTGenerativeTrait = NFTGenerativ
 
 export type AttributeValue = number | string;
 export type AttributeFormatted = NFTGenerativeTraitOption;
+
+export type AttributeSimple = {
+    name: string;
+    value: AttributeValue;
+};

@@ -1,10 +1,10 @@
 import { traitColormap } from './colormap.js';
-import type { NFTGenerativeTraitColor } from '../types/index.js';
+import type { NFTGenerativeTraitColor } from '../../types/index.js';
 import {
     NFTGenerativeCollectionClass,
     NFTGenerativeTraitColorClass,
     NFTGenerativeTraitColormapClass,
-} from '../classes/index.js';
+} from '../../classes/index.js';
 
 export const traitBgColor: NFTGenerativeTraitColor = {
     name: 'bgColor',

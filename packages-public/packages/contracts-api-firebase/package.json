@@ -88,6 +88,7 @@
     "@ethersproject/bignumber": "^5.6.2",
     "@owlprotocol/crud-firebase": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",
+    "@owlprotocol/nft-sdk": "workspace:*",
     "@owlprotocol/utils": "workspace:^",
     "@owlprotocol/zod-sol": "workspace:*",
     "is-ipfs": "^8.0.1",

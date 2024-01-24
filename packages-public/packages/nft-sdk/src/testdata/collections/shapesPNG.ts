@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { NFTGenerativeCollectionClass, NFTGenerativeTraitImageClass } from '../classes/index.js';
-import type { NFTGenerativeCollection, NFTGenerativeTraitImage } from '../types/index.js';
+import { NFTGenerativeCollectionClass, NFTGenerativeTraitImageClass } from '../../classes/index.js';
+import type { NFTGenerativeCollection, NFTGenerativeTraitImage } from '../../types/index.js';
 
 //Circle & square Overlay
 const path = './testdata/shapesPNG/input';

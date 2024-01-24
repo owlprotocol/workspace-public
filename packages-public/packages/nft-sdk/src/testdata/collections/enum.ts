@@ -1,5 +1,5 @@
-import type { NFTGenerativeTraitEnum } from '../types/index.js';
-import { NFTGenerativeCollectionClass, NFTGenerativeTraitEnumClass } from '../classes/index.js';
+import { NFTGenerativeTraitEnum } from '../../types/index.js';
+import { NFTGenerativeCollectionClass, NFTGenerativeTraitEnumClass } from '../../classes/index.js';
 
 export const traitEnum: NFTGenerativeTraitEnum = {
     name: 'faction',

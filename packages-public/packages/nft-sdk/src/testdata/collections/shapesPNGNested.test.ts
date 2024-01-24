@@ -6,7 +6,7 @@ import { readFileSync, writeFileSync } from 'fs';
 
 import { collectionShapesPNGNested } from './shapesPNGNested.js';
 import { bgCirclePNG, fgCirclePNG } from './shapesPNG.js';
-import { NFTGenerativeTraitImageOption } from '../../src/index.js';
+import { NFTGenerativeTraitImageOption } from '../../index.js';
 
 describe('NFTGenerativeCollectionClass', () => {
     const mergeOptions = { Canvas, Image };

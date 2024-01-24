@@ -53,22 +53,23 @@
     "prettier": "prettier --write src"
   },
   "dependencies": {
-    "@types/merge-images": "^1.2.1",
-    "@types/lodash-es": "4.17.6",
-    "@types/node": "^20.5.6",
-    "@types/colormap": "^2.3.1",
     "@types/bn.js": "^5.1.0",
+    "@types/colormap": "^2.3.1",
+    "@types/lodash-es": "4.17.6",
+    "@types/merge-images": "^1.2.1",
+    "@types/node": "^20.5.6",
+    "ajv": "^8.11.0",
     "bn.js": "^5.2.1",
+    "canvas": "^2.11.2",
+    "colormap": "^2.3.2",
     "ethers": "5.7.2",
     "http-errors": "^2.0.0",
-    "lodash-es": "^4.17.21",
     "ipfs-core": "^0.16.1",
     "ipfs-core-types": "^0.12.1",
     "ipfs-http-client": "^58.0.1",
+    "lodash-es": "^4.17.21",
     "merge-images": "^2.0.0",
-    "colormap": "^2.3.2",
-    "canvas": "^2.9.3",
-    "ajv": "^8.11.0"
+    "node-fetch": "^3.3.1"
   },
   "devDependencies": {
     "@ethersproject/bytes": "^5.7.0",

@@ -6,7 +6,7 @@ import {
     NFTGenerativeTraitEnumClass,
     NFTGenerativeCollectionInterface,
     NFTGenerativeTraitEnum,
-} from '../../src/index.js';
+} from '../../index.js';
 
 describe('NFTGenerativeCollectionClass', () => {
     describe('enum attribute', () => {

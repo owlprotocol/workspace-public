@@ -8,6 +8,9 @@ import type {
     AttributeFormatted,
     AttributeValue,
     NFTGenerativeItem,
+    NFTGenerativeCollectionArrayified,
+    NFTGenerativeTraitBase,
+    NFTCollection,
 } from '../../types/index.js';
 import type { NFTGenerativeTraitBaseInterface } from '../NFTGenerativeTrait/NFTGenerativeTraitBaseInterface.js';
 //import type { NFTGenerativeItem } from '../NFTGenerativeItem/NFTGenerativeItem.js';
@@ -25,15 +28,37 @@ export interface NFTGenerativeCollectionInterface<
     /***** Collection Info*****/
     traitKeys(): keyof Traits[];
     childrenKeys(): Children extends Record<string, NFTGenerativeCollectionInterface> ? keyof Children[] : undefined;
+
     getJsonMetadata(): {
         traits: { [K in keyof Traits]: JSONEncodable };
+        name?: string;
+        description?: string;
+        image?: string;
+        external_url?: string;
+        seller_fee_basis_points: number;
+        fee_recipient?: string;
     };
+
     getJsonMetadataWithChildren(): {
-        traits: { [K in keyof Traits]: JSONEncodable };
         children: Children extends Record<string, NFTGenerativeCollectionInterface>
             ? { [K in keyof Children]: ReturnType<Children[K]['getJsonMetadataWithChildren']> }
             : undefined;
+        traits: { [K in keyof Traits]: JSONEncodable };
+        name?: string;
+        description?: string;
+        image?: string;
+        external_url?: string;
+        seller_fee_basis_points: number;
+        fee_recipient?: string;
     };
+
+    getArrayifiedMetadata(): NFTCollection & {
+        traits: NFTGenerativeTraitBase[];
+        generatedImageType?: 'png' | 'svg';
+    };
+
+    getArrayifiedMetadataWithChildren(): NFTGenerativeCollectionArrayified;
+
     abi(): (
         | 'uint8'
         | 'uint16'

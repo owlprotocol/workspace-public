@@ -1,5 +1,5 @@
 import { Options as MergeImagesOptions } from 'merge-images';
-import type { NFTGenerativeItem } from '../../types/NFTGenerativeItem.js';
+import type { NFTGenerativeItem, NFTGenerativeItemJsonMetadata } from '../../types/NFTGenerativeItem.js';
 import type { NFTGenerativeCollectionInterface } from '../NFTGenerativeCollection/NFTGenerativeCollectionInterface.js';
 
 //@ts-expect-error
@@ -30,6 +30,12 @@ export interface NFTGenerativeItemInterface<
         width?: number,
         height?: number,
     ): Promise<string | undefined>;
+
+    getJsonMetadata(
+        mergeOptions?: MergeImagesOptions,
+        width?: number,
+        height?: number,
+    ): Promise<NFTGenerativeItemJsonMetadata>;
 
     /***** Full with Children *****/
 

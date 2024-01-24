@@ -1,5 +1,5 @@
 import { NFTGenerativeCollection } from './NFTGenerativeCollection.js';
-import { AttributeValue } from './NFTGenerativeTrait/NFTGenerativeTrait.js';
+import { AttributeSimple, AttributeValue } from './NFTGenerativeTrait/NFTGenerativeTrait.js';
 
 export interface NFTGenerativeItem<Collection extends NFTGenerativeCollection = NFTGenerativeCollection> {
     readonly collection: Collection;
@@ -8,3 +8,5 @@ export interface NFTGenerativeItem<Collection extends NFTGenerativeCollection = 
         ? { [K in keyof Collection['children']]: NFTGenerativeItem<Collection['children'][K]> }
         : undefined;
 }
+
+export type NFTGenerativeItemJsonMetadata = { name: string; traits: Array<AttributeSimple>; image?: string };

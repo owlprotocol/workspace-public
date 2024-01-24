@@ -1,10 +1,11 @@
 import { Options as MergeImagesOptions } from 'merge-images';
-import { mapValues, omit, omitBy, isObject, isUndefined } from 'lodash-es';
+import { mapValues, omit, isObject } from 'lodash-es';
 import type { NFTGenerativeItemInterface } from './NFTGenerativeItemInterface.js';
 import type {
+    AttributeSimple,
     AttributeValue,
-    JSONEncodable,
     NFTGenerativeItem,
+    NFTGenerativeItemJsonMetadata,
     NFTGenerativeTraitImageOption,
 } from '../../types/index.js';
 import type { NFTGenerativeCollectionInterface } from '../NFTGenerativeCollection/NFTGenerativeCollectionInterface.js';
@@ -144,11 +145,12 @@ export class NFTGenerativeItemClass<
         );
     }
 
+    // TODO: pull image generation out of here
     async getJsonMetadata(mergeOptions?: MergeImagesOptions, width = 800, height = 800) {
         const imageBuff = await this.getImageWithChildren(mergeOptions, width, height);
         const attributesRaw = this.attributesFormatted();
 
-        const attributes = new Array<{ name: string; value: string | number }>();
+        const attributes = new Array<AttributeSimple>();
 
         mapValues(attributesRaw, (attr, traitName: string) => {
             let attribute: any;
@@ -170,17 +172,16 @@ export class NFTGenerativeItemClass<
             attributes.push(attribute);
         });
 
-        const imageType = this.collection.generatedImageType;
+        const asJson: NFTGenerativeItemJsonMetadata = {
+            name: this.collection.name,
+            traits: attributes,
+        };
 
-        const asJson = omitBy(
-            {
-                name: this.collection.name,
-                traits: attributes,
-                // @ts-ignore
-                image: `${imageType === 'png' ? 'data:image/png;base64, ' : ''}${imageBuff.toString('base64')}`,
-            },
-            isUndefined,
-        ) as unknown as JSONEncodable;
+        if (imageBuff) {
+            const imageType = this.collection.generatedImageType;
+            // @ts-ignore imageBuff is a buffer, but passed a string
+            asJson.image = `${imageType === 'png' ? 'data:image/png;base64, ' : ''}${imageBuff.toString('base64')}`;
+        }
 
         return asJson;
     }

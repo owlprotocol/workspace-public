@@ -1,4 +1,5 @@
 import { compact, map, values } from 'lodash-es';
+import fetch from 'node-fetch';
 import { NFTGenerativeCollection, isNFTGenerativeTraitImage } from '../types/index.js';
 
 export const validateNFTGenerativeCollection = () => {

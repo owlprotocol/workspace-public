@@ -10,8 +10,8 @@ import {
     NFTGenerativeTraitEnumClass,
     NFTGenerativeTraitImageClass,
     NFTGenerativeTraitNumberClass,
-} from '../classes/index.js';
-import type { NFTGenerativeCollection } from '../types/index.js';
+} from '../../classes/index.js';
+import type { NFTGenerativeCollection } from '../../types/index.js';
 
 const collectionshapesNestedChildDef: NFTGenerativeCollection = {
     name: 'shapesNested Child',

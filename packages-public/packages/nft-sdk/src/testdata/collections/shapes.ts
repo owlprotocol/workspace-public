@@ -9,8 +9,8 @@ import {
     NFTGenerativeTraitEnumClass,
     NFTGenerativeTraitImageClass,
     NFTGenerativeTraitNumberClass,
-} from '../classes/index.js';
-import type { NFTGenerativeCollection, NFTGenerativeTraitImage } from '../types/index.js';
+} from '../../classes/index.js';
+import type { NFTGenerativeCollection, NFTGenerativeTraitImage } from '../../types/index.js';
 
 //Circle & square Overlay
 const bgCircle =

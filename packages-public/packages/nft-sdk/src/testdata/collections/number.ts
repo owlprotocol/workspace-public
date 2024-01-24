@@ -1,5 +1,5 @@
-import type { NFTGenerativeTraitNumber } from '../types/index.js';
-import { NFTGenerativeCollectionClass, NFTGenerativeTraitNumberClass } from '../classes/index.js';
+import type { NFTGenerativeTraitNumber } from '../../types/index.js';
+import { NFTGenerativeCollectionClass, NFTGenerativeTraitNumberClass } from '../../classes/index.js';
 
 export const traitStrokeWidth: NFTGenerativeTraitNumber = {
     name: 'strokeWidth',

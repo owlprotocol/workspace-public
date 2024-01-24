@@ -1,6 +1,6 @@
 import { traitImagePNGBg, traitImagePNGFg } from './shapesPNG.js';
-import { NFTGenerativeCollectionClass, NFTGenerativeTraitImageClass } from '../classes/index.js';
-import type { NFTGenerativeCollection, NFTGenerativeTraitImage } from '../types/index.js';
+import { NFTGenerativeCollectionClass, NFTGenerativeTraitImageClass } from '../../classes/index.js';
+import type { NFTGenerativeCollection, NFTGenerativeTraitImage } from '../../types/index.js';
 
 const collectionShapesPNGNestedDef: NFTGenerativeCollection<
     { imageBg: NFTGenerativeTraitImage },
