@@ -72,7 +72,9 @@ export function getFirebaseHooks<
         const ref = getDocRef(id ?? "empty");
         const result = useFirestoreDoc(ref);
         const refSnapshot = result.data;
-        const data = (refSnapshot ? { ...refSnapshot.data(), ...getIdParams(ref.id) } : undefined) as Item | undefined;
+        const data = (
+            refSnapshot && refSnapshot.exists() ? { ...refSnapshot.data(), ...getIdParams(ref.id) } : undefined
+        ) as Item | undefined;
 
         return [data, result];
     };
