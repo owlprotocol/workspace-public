@@ -23,9 +23,8 @@ export const loyaltyProgramZod = z
         address: addressZod.describe("address of the deployed loyalty program"),
         contractTx: z.string().describe("contract deploy transaction").optional(),
         /** User Data */
-        owner: z.string().describe("owner's user id"),
         name: z.string().describe("name of the loyalty program deployed"),
-        projectId: z.string().describe("projectId").optional(),
+        projectId: z.string().describe("project id"),
         createdAt: z.number().int().positive().describe("timestamp of loyalty program creation"),
         metadataType: collectionMetadataTypeZod,
         uriType: collectionUriContractTypeZod.optional(),

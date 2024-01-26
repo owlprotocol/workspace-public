@@ -11,8 +11,8 @@ describe("storage.test.ts", async () => {
     test("uploadFile", async () => {
         const file = readFileSync(testFilePath);
         const content = file.toString("base64");
-        const owner = "test-owner";
-        const { publicUrl, name } = await uploadFile(bucket, content, testFileSuffix, owner);
+        const projectId = "test-projectId";
+        const { publicUrl, name } = await uploadFile(bucket, content, testFileSuffix, projectId);
         expect(publicUrl).toBeDefined();
         expect(name).toBeDefined();
 
@@ -26,6 +26,6 @@ describe("storage.test.ts", async () => {
         expect(fileMetadata).toBeDefined();
         const { metadata } = fileMetadata as Record<string, any>;
         expect(metadata).toBeDefined();
-        expect(metadata).toEqual({ owner });
+        expect(metadata).toEqual({ projectId });
     });
 });

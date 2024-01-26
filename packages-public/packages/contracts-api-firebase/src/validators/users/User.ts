@@ -15,7 +15,7 @@ const userZodInternal = z
             z.string().describe("networkId"),
             z.record(z.string().describe("nativeOrERC20Address"), z.string().describe("value")),
         ),
-        defaultProjectId: z.string().describe("defaultProjectId"),
+        defaultProjectId: z.string().describe("defaultProjectId").optional(),
     })
     .describe("user");
 

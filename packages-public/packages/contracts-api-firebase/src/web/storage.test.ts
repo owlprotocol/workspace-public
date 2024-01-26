@@ -19,9 +19,9 @@ describe("storage.test.ts", async () => {
     // TODO: figure out how to get a test auth
     test.skip("uploadFile", async () => {
         const file = readFileSync(testFilePath);
-        const owner = "test-owner";
+        const projectId = "test-projectId";
 
-        const { publicUrl, name } = await uploadFile(storage, file, testFileSuffix, owner);
+        const { publicUrl, name } = await uploadFile(storage, file, testFileSuffix, projectId);
 
         const response = await fetch(publicUrl);
         expect(response.body).not.toBeNull();
@@ -31,6 +31,6 @@ describe("storage.test.ts", async () => {
         const metadataResponse = await getMetadata(ref(storage, name));
         const fileMetadata = metadataResponse.customMetadata;
         expect(fileMetadata).toBeDefined();
-        expect(fileMetadata).toEqual({ owner });
+        expect(fileMetadata).toEqual({ projectId });
     });
 });

@@ -20,6 +20,11 @@ service cloud.firestore {
             return debug(request.auth != null) && debug(request.auth.uid == resource.data.owner);
         }
 
+        function signedInAndBelongsToProject() {
+            // TODO: refactor once a project can have multiple owners / editors
+            return debug(request.auth != null) && debug(get(/databases/$(database)/documents/projects/$(resource.data.projectId)).data.owner == request.auth.uid)
+        }
+
         //contractmodels
         match /erc20/{id} {
             allow read: if true;
@@ -198,6 +203,11 @@ service cloud.firestore {
             // allow read: if id != "empty" &&  signedInAndIsOwner() || (request.auth != null && request.auth.uid == resource.data.receiver)
             allow read: if true;
             allow write: if id != "empty" && signedInAndIsOwner();
+        }
+
+        match /projectApiKeysPersonal/{id} {
+            allow read: if signedInAndBelongsToProject();
+            allow write: if false;
         }
     }
 }

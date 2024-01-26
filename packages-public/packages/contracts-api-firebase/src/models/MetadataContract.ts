@@ -3,8 +3,7 @@
  * `metadataJson` is a JSON object that can returned by a contract's `contractURI` method
  */
 export interface MetadataContractData {
-    // The userId of the owner
-    owner: string;
+    projectId: string;
     // A user defined identifier, not unique
     name: string;
     metadataJson: Record<string, any>;

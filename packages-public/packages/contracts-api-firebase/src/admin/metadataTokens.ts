@@ -22,12 +22,12 @@ export const getMetadataTokensIdFromBaseUri = (uri: string, baseUri?: string) =>
 
 export function createMetadataTokensData(
     name: string,
-    userId: string,
+    projectId: string,
     tokenMap: Record<string, Record<string, any>> = {},
 ): MetadataTokens {
     const metadataTokens: MetadataTokens = {
         id: crypto.randomUUID(),
-        owner: userId,
+        projectId,
         type: "firebase",
         tokenMap: tokenMap,
         name: `${name} tokens metadata`,

@@ -18,8 +18,7 @@ export interface LoyaltyProgramData {
     readonly contractTx?: string;
     /** User Data */
     readonly name: string;
-    readonly owner: string;
-    readonly projectId?: string;
+    readonly projectId: string;
     readonly createdAt: number;
     readonly metadataType: TokenMetadataType;
     readonly uriType?: TokenURIContractType;

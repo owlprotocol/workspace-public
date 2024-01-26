@@ -28,7 +28,5 @@ export const safeWalletReadOnlyZod = z
     })
     .describe("safe wallet");
 
-//TODO: Explore using https://zod.dev/?id=readonly (enforces read-only with Object.freeze)
-//Check zod validator matches interface
 type SafeWalletReadOnlyZodInferred = Readonly<z.infer<typeof safeWalletReadOnlyZod>>;
 expectType<TypeEqual<SafeWalletReadOnly, SafeWalletReadOnlyZodInferred>>(true);

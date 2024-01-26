@@ -5,7 +5,7 @@ import type { StorePrivate } from "../../models/shopify/StorePrivate.js";
 export const storePrivateZod = z
     .object({
         id: z.string().describe("id"),
-        owner: z.string().describe("owner"),
+        projectId: z.string().describe("project id"),
         shopifyTokenId: z.string().describe("shopify token id").optional(),
         shopifyToken: z.string().describe("shopify offline token").optional(),
         shopifyTokenState: z.string().describe("shopify token state").optional(),

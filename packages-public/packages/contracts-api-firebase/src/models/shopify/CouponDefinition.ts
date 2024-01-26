@@ -1,5 +1,5 @@
 export interface CouponDefinitionData {
-    readonly owner: string;
+    readonly projectId: string;
     readonly couponCampaign?: string;
     readonly shopifyPriceRuleId?: string;
     readonly shopifyDiscountCodeId?: string;

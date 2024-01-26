@@ -13,10 +13,10 @@ export function getMetadataContractURI(id: string, baseUri?: string): string {
     return `${baseUri ?? metadataContractBaseUriPrefix}/${id}`;
 }
 
-export function createMetadataContractData(name: string, userId: string, imageUrl?: string): MetadataContractData {
+export function createMetadataContractData(name: string, projectId: string, imageUrl?: string): MetadataContractData {
     const metadataJson = imageUrl ? { name, image: imageUrl } : { name };
     const metadataContract: MetadataContractData = {
-        owner: userId,
+        projectId,
         metadataJson: metadataJson,
         type: "firebase",
         name: name,

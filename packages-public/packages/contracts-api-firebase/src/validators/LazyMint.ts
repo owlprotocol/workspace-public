@@ -8,7 +8,7 @@ export const lazyMintZod = z
         networkId: z.string().describe("id of the network that the collection is deployed on"),
         address: addressZod.describe("address of the deployed collection"),
         /** User Data */
-        owner: z.string().describe("owner's user id"),
+        projectId: z.string().describe("project id"),
         sponsor: z.string().describe("lazy mint sponsor's user id").optional(),
 
         // collectionContractType: collectionContractTypeZod,

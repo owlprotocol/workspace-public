@@ -1,5 +1,5 @@
 export interface StorePrivateData {
-    readonly owner: string;
+    readonly projectId: string;
     readonly shopifyTokenId?: string;
     readonly shopifyToken?: string;
     readonly shopifyTokenState?: string;

@@ -4,7 +4,7 @@ export interface LazyMintInstanceData {
     networkId: string;
     address: string;
     lazyMintId: string;
-    owner: string;
+    projectId: string;
     receiver: string;
     receiverAddress: string;
     tokenId: string;

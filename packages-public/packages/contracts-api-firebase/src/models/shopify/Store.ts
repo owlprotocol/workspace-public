@@ -1,5 +1,5 @@
 export interface StoreData {
-    readonly owner: string;
+    readonly projectId: string;
     readonly storeName: string;
     readonly storeDomain?: string;
 }

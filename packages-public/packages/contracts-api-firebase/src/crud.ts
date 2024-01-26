@@ -50,6 +50,10 @@ export const gasExpensesMonthlyReadOnlyPath = "gasExpensesMonthlyReadOnly";
 
 export const gasBudgetRulesGlobalReadOnlyPath = "gasBudgetRulesGlobalReadOnly";
 export const gasBudgetRulesByContractReadOnlyPath = "gasBudgetRulesByContractReadOnly";
+// projects
+export const projectApiKeysPersonalPath = "projectApiKeysPersonal";
+export const projectDfnsWalletsReadOnlyPath = "projectDfnsWalletsReadOnly";
+export const projectSafeWalletsReadOnlyPath = "projectSafeWalletsReadOnly";
 //other
 export const projectTemplatesPath = "projectTemplates";
 export const requestTemplatesPath = "requestTemplates";

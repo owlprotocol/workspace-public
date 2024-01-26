@@ -4,11 +4,11 @@ import { TRPCError } from "@trpc/server";
 import crypto from "node:crypto";
 
 export interface FileMetadata {
-    owner: string;
+    projectId: string;
 }
 
 export function isFileMetadata(metadata: any): boolean {
-    return "owner" in metadata && typeof metadata.owner == "string";
+    return "projectId" in metadata && typeof metadata.projectId == "string";
 }
 
 /*
@@ -19,15 +19,15 @@ export async function uploadFile(
     bucket: Bucket,
     content: string,
     fileSuffix: string,
-    owner: string,
+    projectId: string,
 ): Promise<{ publicUrl: string; name: string }> {
     const contentBuffer = Buffer.from(content, "base64");
     const uuid = crypto.randomUUID();
-    const name = `users/${owner}/photos/${uuid}.${fileSuffix}`;
+    const name = `projects/${projectId}/photos/${uuid}.${fileSuffix}`;
     const file = bucket.file(name);
     try {
         await file.save(contentBuffer);
-        await file.setMetadata({ metadata: { owner } });
+        await file.setMetadata({ metadata: { projectId } });
         await file.makePublic();
     } catch (e) {
         console.error("Error uploading file to Firebase Storage: ", e);
@@ -55,11 +55,10 @@ export async function getFileMetadata(bucket: Bucket, fileName: string): Promise
     return metadata.metadata as FileMetadata;
 }
 
-export async function deleteFile(bucket: Bucket, fileName: string, userId: string): Promise<void> {
+export async function deleteFile(bucket: Bucket, fileName: string, projectId: string): Promise<void> {
     const fileMetadata = await getFileMetadata(bucket, fileName);
-    const { owner } = fileMetadata;
 
-    if (owner != userId) {
+    if (fileMetadata.projectId !== projectId) {
         throw new TRPCError({
             message: "Can't delete a file that you don't own",
             code: "UNAUTHORIZED",

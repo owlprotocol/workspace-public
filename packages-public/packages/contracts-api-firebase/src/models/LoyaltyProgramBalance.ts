@@ -1,5 +1,5 @@
 export interface LoyaltyProgramBalanceData {
-    owner: string;
+    projectId: string;
     points: number;
 }
 

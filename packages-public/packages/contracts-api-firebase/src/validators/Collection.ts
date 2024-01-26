@@ -23,9 +23,9 @@ export const collectionZod = z
         address: addressZod.describe("address of the deployed collection"),
         contractTx: z.string().describe("contract deploy transaction").optional(),
         /** User Data */
-        owner: z.string().describe("owner's user id"),
+        owner: z.string().describe("owner's user id").optional(),
         collectionName: z.string().describe("name of the collection deployed"),
-        projectId: z.string().describe("projectId").optional(),
+        projectId: z.string().describe("projectId"),
         createdAt: z.number().int().positive().describe("timestamp of collection creation"),
         collectionContractType: collectionContractTypeZod,
         collectionMetadataType: collectionMetadataTypeZod,

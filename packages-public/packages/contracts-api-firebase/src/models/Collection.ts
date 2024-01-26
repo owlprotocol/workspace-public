@@ -70,8 +70,8 @@ export interface Collection extends CollectionId {
     readonly contractTx?: string;
     /** User Data */
     readonly collectionName: string;
-    readonly owner: string;
-    readonly projectId?: string;
+    readonly owner?: string;
+    readonly projectId: string;
     readonly createdAt: number;
     readonly collectionContractType: CollectionContractType;
     readonly collectionMetadataType: TokenMetadataType;

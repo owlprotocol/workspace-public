@@ -118,6 +118,9 @@ import {
     AppUserId,
     LoyaltyProgramData,
     LoyaltyProgramBalanceData,
+    ProjectApiKeyPersonalData,
+    ProjectDfnsWalletReadOnlyData,
+    ProjectSafeWalletReadOnly,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -174,6 +177,9 @@ import {
     projectAppUserPath,
     loyaltyProgramsPath,
     loyaltyProgramBalancesPath,
+    projectApiKeysPersonalPath,
+    projectSafeWalletsReadOnlyPath,
+    projectDfnsWalletsReadOnlyPath,
 } from "../crud.js";
 
 const ownerCheck = ({ owner }: { owner?: string }, userId: string) => owner === userId;
@@ -189,18 +195,62 @@ const readOnlyChecks = {
     updateAccessCheck: () => false,
     deleteAccessCheck: () => false,
 };
-const ownerOnlyReadChecks = {
-    readAccessCheck: ownerCheck,
-    setAccessCheck: () => false,
-    updateAccessCheck: () => false,
-    deleteAccessCheck: () => false,
-};
+// const ownerOnlyReadChecks = {
+//     readAccessCheck: ownerCheck,
+//     setAccessCheck: () => false,
+//     updateAccessCheck: () => false,
+//     deleteAccessCheck: () => false,
+// };
 const ownerOnlyWriteChecks = {
     readAccessCheck: () => true,
     setAccessCheck: ownerCheck,
     updateAccessCheck: ownerCheck,
     deleteAccessCheck: ownerCheck,
 };
+
+const projectCheck = ({ projectId }: { projectId?: string }, currProjectId: string) => projectId === currProjectId;
+const projectOnlyChecks = {
+    readAccessCheck: projectCheck,
+    setAccessCheck: projectCheck,
+    updateAccessCheck: projectCheck,
+    deleteAccessCheck: projectCheck,
+};
+const projectOnlyReadChecks = {
+    readAccessCheck: projectCheck,
+    setAccessCheck: () => false,
+    updateAccessCheck: () => false,
+    deleteAccessCheck: () => false,
+};
+const projectOnlyWriteChecks = {
+    readAccessCheck: () => true,
+    setAccessCheck: projectCheck,
+    updateAccessCheck: projectCheck,
+    deleteAccessCheck: projectCheck,
+};
+
+const ownerOrProjectCheck = (
+    { projectId, owner }: { projectId?: string; owner?: string },
+    curr: { projectId?: string; owner?: string },
+) => projectId === curr.projectId || owner === curr.owner;
+
+const ownerOrProjectOnlyChecks = {
+    readAccessCheck: ownerOrProjectCheck,
+    setAccessCheck: ownerOrProjectCheck,
+    updateAccessCheck: ownerOrProjectCheck,
+    deleteAccessCheck: ownerOrProjectCheck,
+};
+// const ownerOrProjectOnlyReadChecks = {
+//     readAccessCheck: ownerOrProjectCheck,
+//     setAccessCheck: () => false,
+//     updateAccessCheck: () => false,
+//     deleteAccessCheck: () => false,
+// };
+// const ownerOrProjectOnlyWriteChecks = {
+//     readAccessCheck: () => true,
+//     setAccessCheck: ownerOrProjectCheck,
+//     updateAccessCheck: ownerOrProjectCheck,
+//     deleteAccessCheck: ownerOrProjectCheck,
+// };
 
 //chat
 export const chatRoomCRUD = getFirebaseCRUD<ChatRoom, ChatRoomId>(firestore, chatRoomPath);
@@ -354,29 +404,29 @@ export const ethTransactionsCRUD = getFirebaseCRUD<EthTransaction, EthTransactio
     readOnlyChecks,
 );
 //shopify
-export const storesCRUD = getFirebaseCRUD<StoreData, ItemIdDefault, [userId: string]>(
+export const storesCRUD = getFirebaseCRUD<StoreData, ItemIdDefault, [projectId: string]>(
     firestore,
     storesPath,
     undefined,
-    ownerOnlyWriteChecks,
+    projectOnlyWriteChecks,
 );
-export const storePrivatesCRUD = getFirebaseCRUD<StorePrivateData, ItemIdDefault, [userId: string]>(
+export const storePrivatesCRUD = getFirebaseCRUD<StorePrivateData, ItemIdDefault, [projectId: string]>(
     firestore,
     storePrivatesPath,
     undefined,
-    ownerOnlyChecks,
+    projectOnlyChecks,
 );
-export const couponCampaignsCRUD = getFirebaseCRUD<CouponCampaignData, ItemIdDefault, [userId: string]>(
+export const couponCampaignsCRUD = getFirebaseCRUD<CouponCampaignData, ItemIdDefault, [projectId: string]>(
     firestore,
     couponCampaignsPath,
     undefined,
-    ownerOnlyWriteChecks,
+    projectOnlyWriteChecks,
 );
-export const couponDefinitionsCRUD = getFirebaseCRUD<CouponDefinitionData, ItemIdDefault, [userId: string]>(
+export const couponDefinitionsCRUD = getFirebaseCRUD<CouponDefinitionData, ItemIdDefault, [projectId: string]>(
     firestore,
     couponDefinitionsPath,
     undefined,
-    ownerOnlyWriteChecks,
+    projectOnlyWriteChecks,
 );
 export const couponInstancesCRUD = getFirebaseCRUD<CouponInstanceData, ItemIdDefault, [userId: string]>(
     firestore,
@@ -385,11 +435,11 @@ export const couponInstancesCRUD = getFirebaseCRUD<CouponInstanceData, ItemIdDef
     ownerOnlyWriteChecks,
 );
 //tokens
-export const metadataTokensCRUD = getFirebaseCRUD<MetadataTokensData, ItemIdDefault, [userId: string]>(
+export const metadataTokensCRUD = getFirebaseCRUD<MetadataTokensData, ItemIdDefault, [projectId: string]>(
     firestore,
     metadataTokensPath,
     undefined,
-    ownerOnlyChecks,
+    projectOnlyChecks,
 );
 export const tokenLazyMintsReadOnlyCRUD = getFirebaseCRUD<TokenLazyMintReadOnlyData, ItemIdDefault, [userId: string]>(
     firestore,
@@ -510,7 +560,7 @@ export const requestTemplatesCRUD = getFirebaseCRUD<RequestTemplate, ItemIdDefau
     undefined,
     ownerOnlyChecks,
 );
-export const contractsCRUD = getFirebaseCRUD<Contract, ContractId, [userId: string]>(
+export const contractsCRUD = getFirebaseCRUD<Contract, ContractId, [curr: { projectId?: string; owner?: string }]>(
     firestore,
     contractsPath,
     {
@@ -518,9 +568,9 @@ export const contractsCRUD = getFirebaseCRUD<Contract, ContractId, [userId: stri
         getIdParams: getContractIdParams,
         validateId: validateContractId,
     },
-    ownerOnlyChecks,
+    ownerOrProjectOnlyChecks,
 );
-export const collectionsCRUD = getFirebaseCRUD<Collection, CollectionId, [userId: string]>(
+export const collectionsCRUD = getFirebaseCRUD<Collection, CollectionId, [projectId: string]>(
     firestore,
     collectionsPath,
     {
@@ -528,7 +578,7 @@ export const collectionsCRUD = getFirebaseCRUD<Collection, CollectionId, [userId
         getIdParams: getCollectionIdParams,
         validateId: validateCollectionId,
     },
-    ownerOnlyChecks,
+    projectOnlyChecks,
 );
 export const projectsCRUD = getFirebaseCRUD<ProjectData, ItemIdDefault, [userId: string]>(
     firestore,
@@ -536,11 +586,11 @@ export const projectsCRUD = getFirebaseCRUD<ProjectData, ItemIdDefault, [userId:
     undefined,
     ownerOnlyChecks,
 );
-export const metadataContractsCRUD = getFirebaseCRUD<MetadataContractData, ItemIdDefault, [userId: string]>(
+export const metadataContractsCRUD = getFirebaseCRUD<MetadataContractData, ItemIdDefault, [projectId: string]>(
     firestore,
     metadataContractsPath,
     undefined,
-    ownerOnlyChecks,
+    projectOnlyChecks,
 );
 
 export const emailsCRUD = getFirebaseCRUD<EmailData, ItemIdDefault, [userId: string]>(
@@ -566,29 +616,53 @@ export const invitesCRUD = getFirebaseCRUD<InvitesData, ItemIdDefault, [userId: 
         deleteAccessCheck: () => false,
     },
 );
-export const lazyMintsCRUD = getFirebaseCRUD<LazyMintData, ItemIdDefault, [userId: string]>(
+export const lazyMintsCRUD = getFirebaseCRUD<LazyMintData, ItemIdDefault, [projectId: string]>(
     firestore,
     lazyMintsPath,
     undefined,
-    ownerOnlyWriteChecks,
+    projectOnlyWriteChecks,
 );
-export const lazyMintInstancesCRUD = getFirebaseCRUD<LazyMintInstanceData, ItemIdDefault, [userId: string]>(
+export const lazyMintInstancesCRUD = getFirebaseCRUD<LazyMintInstanceData, ItemIdDefault, [projectId: string]>(
     firestore,
     lazyMintInstancesPath,
     undefined,
-    ownerOnlyReadChecks,
+    projectOnlyReadChecks,
 );
 
-export const loyaltyProgramsCRUD = getFirebaseCRUD<LoyaltyProgramData, ItemIdDefault, [userId: string]>(
+export const loyaltyProgramsCRUD = getFirebaseCRUD<LoyaltyProgramData, ItemIdDefault, [projectId: string]>(
     firestore,
     loyaltyProgramsPath,
     undefined,
-    ownerOnlyWriteChecks,
+    projectOnlyWriteChecks,
 );
 export const getLoyaltyProgramBalancesCRUD = (loyaltyProgramId: string) =>
-    getFirebaseCRUD<LoyaltyProgramBalanceData, ItemIdDefault, [userId: string]>(
+    getFirebaseCRUD<LoyaltyProgramBalanceData, ItemIdDefault, [projectId: string]>(
         firestore,
         loyaltyProgramBalancesPath.replace("{loyaltyProgramId}", loyaltyProgramId),
         undefined,
-        ownerOnlyWriteChecks,
+        projectOnlyWriteChecks,
     );
+export const projectApiKeysPersonalCRUD = getFirebaseCRUD<
+    ProjectApiKeyPersonalData,
+    ItemIdDefault,
+    [projectId: string]
+>(firestore, projectApiKeysPersonalPath, undefined, projectOnlyChecks);
+export const projectDfnsWalletsReadOnlyCRUD = getFirebaseCRUD<
+    ProjectDfnsWalletReadOnlyData,
+    ItemIdDefault,
+    [projectId: string]
+>(firestore, projectDfnsWalletsReadOnlyPath, undefined, projectOnlyChecks);
+export const projectSafeWalletsReadOnlyCRUD = getFirebaseCRUD<
+    ProjectSafeWalletReadOnly,
+    SafeWalletId,
+    [projectId: string]
+>(
+    firestore,
+    projectSafeWalletsReadOnlyPath,
+    {
+        getId: getSafeWalletId,
+        getIdParams: getSafeWalletIdParams,
+        validateId: validateSafeWalletId,
+    },
+    projectOnlyChecks,
+);

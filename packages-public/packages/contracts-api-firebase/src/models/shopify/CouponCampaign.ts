@@ -1,6 +1,5 @@
 export interface CouponCampaignData {
-    readonly owner: string;
-    readonly project?: string;
+    readonly projectId: string;
     readonly name?: string;
     readonly description?: string;
     readonly status: "active" | "inactive";

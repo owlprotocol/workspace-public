@@ -5,7 +5,7 @@ import type { MetadataContract } from "../models/MetadataContract.js";
 export const metadataContractZod = z
     .object({
         id: z.string().describe("id"),
-        owner: z.string().describe("owner"),
+        projectId: z.string().describe("project id"),
         name: z.string().describe("name"),
         metadataJson: z.record(z.string(), z.any()),
         ipfsHash: z.string().describe("IPFS hash").optional(),

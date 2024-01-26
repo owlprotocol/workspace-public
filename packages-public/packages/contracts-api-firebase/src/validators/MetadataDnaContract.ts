@@ -5,7 +5,7 @@ import type { MetadataDnaContract } from "../models/MetadataDnaContract.js";
 export const metadataDnaContractZod = z
     .object({
         id: z.string().describe("id"),
-        owner: z.string().describe("owner"),
+        projectId: z.string().describe("project id"),
         name: z.string().describe("name"),
         metadataJson: z
             .object({

@@ -1,9 +1,10 @@
-export interface UserData {
-    readonly email: string;
-    readonly telegramId?: number;
-    readonly telegramUsername?: string;
-    unverified?: boolean;
-    readonly type?: "dev" | "user";
+export interface ProjectData {
+    readonly owner: string;
+    readonly name: string;
+    totalAppUsers: number;
+    readonly description?: string;
+    // TODO: Move to a proper object when using shopify
+    // readonly store?: string;
     readonly topupTotals: {
         [networkId: string]: {
             [nativeOrERC20Address: string]: string;
@@ -14,9 +15,8 @@ export interface UserData {
             [nativeOrERC20Address: string]: string;
         };
     };
-    readonly defaultProjectId?: string;
 }
 
-export interface User extends UserData {
+export interface Project extends ProjectData {
     readonly id: string;
 }

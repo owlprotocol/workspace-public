@@ -3,7 +3,7 @@ import { CollectionContractType } from "./Collection.js";
 export interface LazyMintData {
     networkId: string;
     address: string;
-    owner: string;
+    projectId: string;
     sponsor?: string;
     collectionContractType: CollectionContractType;
     tokenId?: string;

@@ -5,7 +5,7 @@ import type { Store } from "../../models/shopify/Store.js";
 export const storeZod = z
     .object({
         id: z.string().describe("id"),
-        owner: z.string().describe("owner"),
+        projectId: z.string().describe("project id"),
         storeName: z.string().describe("store name"),
         storeDomain: z.string().describe("store domain").optional(),
     })

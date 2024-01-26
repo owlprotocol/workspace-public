@@ -13,7 +13,8 @@ export interface ReferralCampaignId {
 export interface ReferralCampaignData {
     //letter A-Z (exclude O, Q), 1-9 34^4 = 1185921 combinations
     campaignCode: string;
-    owner: string;
+    owner?: string;
+    projectId: string;
     name?: string;
     /* Web3 attributes */
     networkId: string;

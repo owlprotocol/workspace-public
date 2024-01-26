@@ -36,6 +36,9 @@ import {
     networksPrivatePath,
     networksReadOnlyPath,
     organizationsReadOnlyPath,
+    projectApiKeysPersonalPath,
+    projectDfnsWalletsReadOnlyPath,
+    projectSafeWalletsReadOnlyPath,
     projectTemplatesPath,
     projectsPath,
     requestTemplatesPath,
@@ -90,7 +93,10 @@ import {
     NetworkPrivate,
     NetworkReadOnly,
     OrganizationReadOnlyData,
+    ProjectApiKeyPersonalData,
     ProjectData,
+    ProjectDfnsWalletReadOnlyData,
+    ProjectSafeWalletReadOnly,
     ProjectTemplate,
     RequestTemplate,
     SafeWalletId,
@@ -262,3 +268,20 @@ export const lazyMintsHooks = getFirebaseHooks<LazyMintData>(firestore, lazyMint
 export const lazyMintInstancesHooks = getFirebaseHooks<LazyMintInstanceData>(firestore, lazyMintInstancesPath);
 
 export const loyaltyProgramsHooks = getFirebaseHooks<LoyaltyProgramData>(firestore, loyaltyProgramsPath);
+export const projectApiKeysPersonalHooks = getFirebaseHooks<ProjectApiKeyPersonalData>(
+    firestore,
+    projectApiKeysPersonalPath,
+);
+export const projectDfnsWalletsReadOnlyHooks = getFirebaseHooks<ProjectDfnsWalletReadOnlyData>(
+    firestore,
+    projectDfnsWalletsReadOnlyPath,
+);
+export const projectSafeWalletsReadOnlyHooks = getFirebaseHooks<ProjectSafeWalletReadOnly, SafeWalletId>(
+    firestore,
+    projectSafeWalletsReadOnlyPath,
+    {
+        getId: getSafeWalletId,
+        getIdParams: getSafeWalletIdParams,
+        validateId: validateSafeWalletId,
+    },
+);

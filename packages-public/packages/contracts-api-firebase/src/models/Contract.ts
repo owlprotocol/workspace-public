@@ -33,7 +33,7 @@ export interface Contract extends ContractId {
     };
     /** User Data */
     readonly contractName: string;
-    readonly owner: string;
+    readonly owner?: string;
     readonly projectId?: string;
     readonly createdAt: number;
 }

@@ -107,6 +107,9 @@ import {
     AppUser,
     AppUserId,
     LoyaltyProgramData,
+    ProjectApiKeyPersonalData,
+    ProjectDfnsWalletReadOnlyData,
+    ProjectSafeWalletReadOnly,
 } from "../models/index.js";
 import {
     apiKeysPersonalPath,
@@ -157,6 +160,9 @@ import {
     erc20BalancePath,
     projectAppUserPath,
     loyaltyProgramsPath,
+    projectApiKeysPersonalPath,
+    projectDfnsWalletsReadOnlyPath,
+    projectSafeWalletsReadOnlyPath,
 } from "../crud.js";
 
 //contractmodels
@@ -317,3 +323,20 @@ export const lazyMintsCRUD = getFirebaseCRUD<LazyMintData>(firestore, lazyMintsP
 export const lazyMintInstancesCRUD = getFirebaseCRUD<LazyMintInstanceData>(firestore, lazyMintInstancesPath);
 
 export const loyaltyProgramsCRUD = getFirebaseCRUD<LoyaltyProgramData>(firestore, loyaltyProgramsPath);
+export const projectApiKeysPersonalCRUD = getFirebaseCRUD<ProjectApiKeyPersonalData>(
+    firestore,
+    projectApiKeysPersonalPath,
+);
+export const projectDfnsWalletsReadOnlyCRUD = getFirebaseCRUD<ProjectDfnsWalletReadOnlyData>(
+    firestore,
+    projectDfnsWalletsReadOnlyPath,
+);
+export const projectSafeWalletsReadOnlyCRUD = getFirebaseCRUD<ProjectSafeWalletReadOnly, SafeWalletId>(
+    firestore,
+    projectSafeWalletsReadOnlyPath,
+    {
+        getId: getSafeWalletId,
+        getIdParams: getSafeWalletIdParams,
+        validateId: validateSafeWalletId,
+    },
+);

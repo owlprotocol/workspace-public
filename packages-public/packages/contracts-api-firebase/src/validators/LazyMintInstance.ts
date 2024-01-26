@@ -9,7 +9,7 @@ export const lazyMintInstanceZod = z
         address: addressZod.describe("address of the deployed collection"),
         /** User Data */
         lazyMintId: z.string().describe("id the of lazy mint"),
-        owner: z.string().describe("owner's user id"),
+        projectId: z.string().describe("owner's user id"),
         receiver: z.string().describe("receiver's user id"),
         receiverAddress: addressZod.describe("receiver address"),
 

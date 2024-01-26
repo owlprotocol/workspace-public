@@ -5,7 +5,7 @@ import type { CouponDefinition } from "../../models/shopify/CouponDefinition.js"
 export const couponDefinition = z
     .object({
         id: z.string().describe("id"),
-        owner: z.string().describe("owner"),
+        projectId: z.string().describe("project id"),
         couponCampaign: z.string().describe("coupon campaign").optional(),
         shopifyPriceRuleId: z.string().describe("shopify price rule id").optional(),
         shopifyDiscountCodeId: z.string().describe("shopify discount code id").optional(),

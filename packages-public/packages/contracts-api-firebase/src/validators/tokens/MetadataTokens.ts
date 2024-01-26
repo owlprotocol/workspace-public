@@ -5,7 +5,7 @@ import type { MetadataTokens } from "../../models/tokens/MetadataTokens.js";
 export const metadataTokensZod = z
     .object({
         id: z.string().describe("id"),
-        owner: z.string().describe("owner"),
+        projectId: z.string().describe("project id"),
         name: z.string().describe("name"),
         tokenMap: z.record(z.string(), z.record(z.string(), z.any())),
         ipfsHash: z.string().describe("IPFS hash").optional(),
