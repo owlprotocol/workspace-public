@@ -53,7 +53,7 @@ import {
     validateCollectionId,
     ProjectData,
     LazyMintData,
-    LazyMintInstanceData,
+    MintInstanceData,
     getEthLogAbiId,
     getEthLogAbiIdParams,
     EthLogAbi,
@@ -158,7 +158,7 @@ import {
     usersPath,
     collectionsPath,
     lazyMintsPath,
-    lazyMintInstancesPath,
+    mintInstancesPath,
     ethFunctionAbisPath,
     addressesPublicPath,
     addressesPersonalPath,
@@ -622,9 +622,9 @@ export const lazyMintsCRUD = getFirebaseCRUD<LazyMintData, ItemIdDefault, [proje
     undefined,
     projectOnlyWriteChecks,
 );
-export const lazyMintInstancesCRUD = getFirebaseCRUD<LazyMintInstanceData, ItemIdDefault, [projectId: string]>(
+export const mintInstancesCRUD = getFirebaseCRUD<MintInstanceData, ItemIdDefault, [projectId: string]>(
     firestore,
-    lazyMintInstancesPath,
+    mintInstancesPath,
     undefined,
     projectOnlyReadChecks,
 );

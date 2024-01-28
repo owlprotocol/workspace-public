@@ -55,7 +55,7 @@ import {
     validateCollectionId,
     ProjectData,
     LazyMintData,
-    LazyMintInstanceData,
+    MintInstanceData,
     EthLogAbiId,
     getEthLogAbiId,
     getEthLogAbiIdParams,
@@ -147,7 +147,7 @@ import {
     usersPath,
     collectionsPath,
     lazyMintsPath,
-    lazyMintInstancesPath,
+    mintInstancesPath,
     ethFunctionAbisPath,
     addressesPublicPath,
     addressesPersonalPath,
@@ -320,7 +320,7 @@ export const emailsCRUD = getFirebaseCRUD<EmailData>(firestore, emailsPath);
 export const blogsCRUD = getFirebaseCRUD<BlogData>(firestore, blogsPath);
 export const invitesCRUD = getFirebaseCRUD<InvitesData>(firestore, invitesPath);
 export const lazyMintsCRUD = getFirebaseCRUD<LazyMintData>(firestore, lazyMintsPath);
-export const lazyMintInstancesCRUD = getFirebaseCRUD<LazyMintInstanceData>(firestore, lazyMintInstancesPath);
+export const mintInstancesCRUD = getFirebaseCRUD<MintInstanceData>(firestore, mintInstancesPath);
 
 export const loyaltyProgramsCRUD = getFirebaseCRUD<LoyaltyProgramData>(firestore, loyaltyProgramsPath);
 export const projectApiKeysPersonalCRUD = getFirebaseCRUD<ProjectApiKeyPersonalData>(

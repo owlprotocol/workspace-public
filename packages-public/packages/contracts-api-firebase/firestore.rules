@@ -198,7 +198,7 @@ service cloud.firestore {
             allow read: if true;
             allow write: if id != "empty";
         }
-        match /lazyMintInstances/{id} {
+        match /mintInstances/{id} {
             // TODO: make this work, issue with owner attribute
             // allow read: if id != "empty" &&  signedInAndIsOwner() || (request.auth != null && request.auth.uid == resource.data.receiver)
             allow read: if true;

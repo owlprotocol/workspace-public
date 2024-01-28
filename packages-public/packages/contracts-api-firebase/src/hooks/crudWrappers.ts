@@ -28,7 +28,7 @@ import {
     gasExpensesMonthlyReadOnlyPath,
     inviteCodesReadOnlyPath,
     invitesPath,
-    lazyMintInstancesPath,
+    mintInstancesPath,
     lazyMintsPath,
     loyaltyProgramsPath,
     metadataContractsPath,
@@ -86,7 +86,7 @@ import {
     GasExpenseMonthlyReadOnlyData,
     InviteCodeReadOnlyData,
     LazyMintData,
-    LazyMintInstanceData,
+    MintInstanceData,
     LoyaltyProgramData,
     MetadataContractData,
     MetadataTokensData,
@@ -265,7 +265,7 @@ export const emailsHooks = getFirebaseHooks<EmailData>(firestore, emailsPath);
 export const blogsHooks = getFirebaseHooks<BlogData>(firestore, blogsPath);
 export const invitesHooks = getFirebaseHooks<InvitesData>(firestore, invitesPath);
 export const lazyMintsHooks = getFirebaseHooks<LazyMintData>(firestore, lazyMintsPath);
-export const lazyMintInstancesHooks = getFirebaseHooks<LazyMintInstanceData>(firestore, lazyMintInstancesPath);
+export const mintInstancesHooks = getFirebaseHooks<MintInstanceData>(firestore, mintInstancesPath);
 
 export const loyaltyProgramsHooks = getFirebaseHooks<LoyaltyProgramData>(firestore, loyaltyProgramsPath);
 export const projectApiKeysPersonalHooks = getFirebaseHooks<ProjectApiKeyPersonalData>(
