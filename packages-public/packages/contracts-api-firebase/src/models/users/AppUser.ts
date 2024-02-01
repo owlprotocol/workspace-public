@@ -5,7 +5,6 @@ export interface AppUserId {
 export interface AppUserData {
     readonly email: string;
     readonly projectId: string;
-    readonly isCreatedByProject: boolean;
     readonly createdAt: number;
     readonly safeAddress: string;
 }

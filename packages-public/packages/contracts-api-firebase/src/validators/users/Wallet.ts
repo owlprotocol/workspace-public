@@ -10,21 +10,21 @@ export const dfnsWalletReadOnlyZod = z
         status: z.nativeEnum(DfnsWalletStatus),
         address: addressZod.describe("address").optional(),
         walletId: z.string().describe("wallet id"),
-        externalId: z.string().describe("external id"),
+        isProjectWallet: z.boolean().describe("does wallet belong to a project"),
+        projectId: z.string().describe("project id, if wallet belongs to a project").optional(),
     })
     .describe("dfns wallet");
 
-//TODO: Explore using https://zod.dev/?id=readonly (enforces read-only with Object.freeze)
-//Check zod validator matches interface
 type DfnsWalletReadOnlyZodInferred = Readonly<z.infer<typeof dfnsWalletReadOnlyZod>>;
-//@ts-expect-error
-expectType<TypeEqual<DfnsWalletReadOnly, DfnsWalletReadOnlyZodInferred>>(true);
+expectType<TypeEqual<Omit<DfnsWalletReadOnly, "status">, Omit<DfnsWalletReadOnlyZodInferred, "status">>>(true);
 
 export const safeWalletReadOnlyZod = z
     .object({
         networkId: z.string().describe("networkId"),
         address: addressZod.describe("address"),
         owner: z.string().describe("owner"),
+        isProjectWallet: z.boolean().describe("does wallet belong to a project"),
+        projectId: z.string().describe("project id, if wallet belongs to a project").optional(),
     })
     .describe("safe wallet");
 

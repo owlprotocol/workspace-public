@@ -11,6 +11,8 @@ export interface DfnsWalletReadOnlyData {
     readonly status: DfnsWalletStatus;
     readonly owner: string;
     readonly walletId: string;
+    readonly projectId?: string;
+    readonly isProjectWallet: boolean;
 }
 
 export interface DfnsWalletReadOnly extends DfnsWalletReadOnlyData {
@@ -37,4 +39,6 @@ export function validateSafeWalletId({ networkId, address }: SafeWalletId): Safe
 
 export interface SafeWalletReadOnly extends SafeWalletId {
     readonly owner: string;
+    readonly projectId?: string;
+    readonly isProjectWallet: boolean;
 }
