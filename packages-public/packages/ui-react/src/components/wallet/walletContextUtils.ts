@@ -47,7 +47,7 @@ type WalletAction =
     | { type: "SET_SEND_TRANSACTION_TXHASH"; data: string }
     | { type: "SET_SEND_TRANSACTION_ERROR"; data: string }
     | { type: "SET_SELECTED_COLLECTIBLE"; data: any }
-    | { type: "SET_SELECTED_TOKEN"; data: FormattedToken }
+    | { type: "SET_SELECTED_TOKEN"; data: FormattedToken | undefined }
     | { type: "SET_FORM_VALUES"; data: WalletFormValues }
     | {
           type: "SET_TRANSFER_STATUS";

@@ -46,6 +46,16 @@ export const WalletCreateTransactionView = () => {
     const nativeTokenBalanceFormatted = utils.formatEther(nativeTokenBalance?.balance || "0").slice(0, 6);
     const currencySymbol = network?.nativeCurrency?.symbol ?? "ETH";
 
+    const handleGoHome = () => {
+        dispatch({
+            type: "SET_SELECTED_TOKEN",
+            data: undefined, // reset selected token
+        });
+        dispatch({
+            type: "SET_VIEW",
+            data: "HOME",
+        });
+    };
     const sendTransactionForm: FormApi<{ sendTo: string; sendAmount: string }> = useForm({
         defaultValues: {
             sendTo: "",
@@ -292,15 +302,20 @@ export const WalletCreateTransactionView = () => {
                         } as any;
                     }}
                     children={({ canSubmit }) => (
-                        <Button
-                            w="100%"
-                            isDisabled={!canSubmit}
-                            borderRadius="full"
-                            variant="primary"
-                            onClick={sendTransactionForm.handleSubmit}
-                        >
-                            Next
-                        </Button>
+                        <Flex width="100%" justify="space-between">
+                            <Button flex="1" variant="secondary" borderRadius="full" onClick={handleGoHome} mr={2}>
+                                Back
+                            </Button>
+                            <Button
+                                flex="1"
+                                isDisabled={!canSubmit}
+                                borderRadius="full"
+                                variant="primary"
+                                onClick={sendTransactionForm.handleSubmit}
+                            >
+                                Next
+                            </Button>
+                        </Flex>
                     )}
                 />
             </sendTransactionForm.Provider>
