@@ -3,6 +3,9 @@ import {
     Button,
     Flex,
     Heading,
+    Input,
+    InputGroup,
+    InputLeftElement,
     List,
     ListItem,
     Popover,
@@ -19,11 +22,13 @@ import { NetworkReadOnly } from "@owlprotocol/contracts-api-firebase/models";
 import { CHAIN_ID_FALLBACK } from "@owlprotocol/envvars/browser";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { find } from "lodash-es";
+import { DebouncedFunc, debounce, find } from "lodash-es";
 import { useEffect, useState } from "react";
 import { FaCircle } from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
+import { Search2Icon } from "@chakra-ui/icons";
 import { theme } from "../theme/index.js";
+import { TabsComponent } from "../index.js";
 
 type NetworkReadOnlyDeployed = NetworkReadOnly & { safeDeployed: boolean };
 
@@ -45,21 +50,27 @@ export const NetworkDropdown = ({ margin }: { margin?: number }) => {
     const [allNetworks] = networksReadOnlyHooks.useGetWhere({ enabled: true }, { orderBy: "rank", limit: 10 });
     const [curNetwork, setCurNetwork] = useState<NetworkReadOnlyDeployed>();
     const [networks, setNetworks] = useState<NetworkReadOnlyDeployed[]>([]);
-    const router = useRouter();
-    const href: string = router.state.latestLocation?.href || "";
 
-    //Compute the redirect link on the network switch
-    //TODO: Fix this, should return proper links?
-    const getRedirectLink = () => {
-        if (href.startsWith("/contracts")) {
-            return "/contracts/list" as string;
-        } else if (href.startsWith("/collection")) {
-            return `/projects/list` as string;
-        }
-        return "" as string;
+    const [searchText, setSearchText] = useState<string>("");
+
+    const handleSearchChange = debounce((event) => {
+        setSearchText(event.target.value);
+    }, 300);
+
+    const handleNetworkDropdownClose = () => {
+        setSearchText("");
+        onClose();
     };
 
-    // localStorage.chainId is changed by rootRoute.validateSearch
+    // Filter networks based on title, name or chainId
+    const filterNetworks = networks.filter(
+        (network) =>
+            (network.title || network.name || network.chainId.toString())
+                .toLowerCase()
+                .includes(searchText.toLowerCase()) ||
+            network.chainId.toString().toLowerCase().includes(searchText.toLowerCase()),
+    );
+
     useEffect(() => {
         if (!safeWallets || !allNetworks?.length) {
             return;
@@ -92,10 +103,34 @@ export const NetworkDropdown = ({ margin }: { margin?: number }) => {
         setCurNetwork(network as NetworkReadOnlyDeployed);
     }, [chainId, JSON.stringify(safeWallets), JSON.stringify(allNetworks)]);
 
-    const handleChainIdUpdate = (networkItem: NetworkReadOnly) => {
-        saveChainId(networkItem?.chainId);
-        onClose();
-    };
+    const networkTabs = [
+        {
+            label: "All",
+            component: (
+                <NetworksList networks={filterNetworks} onClose={handleNetworkDropdownClose} curNetwork={curNetwork} />
+            ),
+        },
+        {
+            label: "Mainnets",
+            component: (
+                <NetworksList
+                    networks={filterNetworks.filter((n) => !n.testnet)}
+                    onClose={handleNetworkDropdownClose}
+                    curNetwork={curNetwork}
+                />
+            ),
+        },
+        {
+            label: "Testnets",
+            component: (
+                <NetworksList
+                    networks={filterNetworks.filter((n) => n.testnet)}
+                    onClose={handleNetworkDropdownClose}
+                    curNetwork={curNetwork}
+                />
+            ),
+        },
+    ];
 
     return (
         <Flex
@@ -105,7 +140,7 @@ export const NetworkDropdown = ({ margin }: { margin?: number }) => {
             }}
             alignItems="center"
         >
-            <Popover isLazy isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+            <Popover isLazy isOpen={isOpen} onOpen={onOpen} onClose={handleNetworkDropdownClose}>
                 <PopoverTrigger>
                     <Button
                         px={4}
@@ -144,46 +179,82 @@ export const NetworkDropdown = ({ margin }: { margin?: number }) => {
                     <PopoverHeader>
                         <Heading size="ld">{networks?.length ? "Switch Network" : "No Networks"}</Heading>
                     </PopoverHeader>
-                    <PopoverBody p={0} bgColor="baseBg" borderRadius="8px">
-                        <List variant="dropdownItem">
-                            {networks?.map((networkItem, idx) => (
-                                <Link
-                                    key={idx}
-                                    to={getRedirectLink()}
-                                    search={{}}
-                                    params={{}}
-                                    onClick={() => handleChainIdUpdate(networkItem)}
-                                >
-                                    <ListItem
-                                        key={networkItem.id}
-                                        className={networkItem.id === curNetwork?.id ? "selected" : ""}
-                                    >
-                                        <Flex>
-                                            <div
-                                                style={{
-                                                    paddingTop: "4px",
-                                                }}
-                                            >
-                                                <FaCircle
-                                                    color={
-                                                        networkItem?.safeDeployed
-                                                            ? theme.colors.success["200"]
-                                                            : theme.colors.error["200"]
-                                                    }
-                                                />
-                                            </div>
-                                            <Text ml={2}>
-                                                {networkItem.title ?? networkItem.name ?? networkItem.shortName}
-                                                {networkItem.id === curNetwork?.id ? " (current)" : ""}
-                                            </Text>
-                                        </Flex>
-                                    </ListItem>
-                                </Link>
-                            ))}
-                        </List>
+                    <PopoverBody p={2} bgColor="baseBg" borderRadius="8px">
+                        <SearchBar handleSearchChange={handleSearchChange} />
+                        <TabsComponent tabs={networkTabs} />
                     </PopoverBody>
                 </PopoverContent>
             </Popover>
         </Flex>
     );
 };
+
+type NetworksListProps = {
+    networks: NetworkReadOnlyDeployed[];
+    curNetwork?: NetworkReadOnlyDeployed;
+    onClose: () => void;
+};
+
+const NetworksList = ({ networks, onClose, curNetwork }: NetworksListProps) => {
+    const [, saveChainId] = useLocalStorage("chainId");
+    const router = useRouter();
+    const href: string = router.state.latestLocation?.href || "";
+    const getRedirectLink = () => {
+        if (href.startsWith("/contracts")) {
+            return "/contracts/list" as string;
+        } else if (href.startsWith("/collection")) {
+            return `/projects/list` as string;
+        }
+        return "" as string;
+    };
+
+    const handleChainIdUpdate = (networkItem: NetworkReadOnly) => {
+        saveChainId(networkItem?.chainId);
+        onClose();
+    };
+
+    return (
+        <List variant="dropdownItem">
+            {networks?.map((networkItem, idx) => (
+                <Link
+                    key={idx}
+                    to={getRedirectLink()}
+                    search={{}}
+                    params={{}}
+                    onClick={() => handleChainIdUpdate(networkItem)}
+                >
+                    <ListItem key={networkItem.id} className={networkItem.id === curNetwork?.id ? "selected" : ""}>
+                        <Flex gap={2} alignItems="center">
+                            <FaCircle
+                                color={
+                                    networkItem?.safeDeployed ? theme.colors.success["200"] : theme.colors.error["200"]
+                                }
+                            />
+                            <Text>
+                                {networkItem.title ?? networkItem.name ?? networkItem.shortName}
+                                {networkItem.id === curNetwork?.id ? " (current)" : ""}
+                            </Text>
+                        </Flex>
+                    </ListItem>
+                </Link>
+            ))}
+        </List>
+    );
+};
+
+const SearchBar = ({ handleSearchChange }: { handleSearchChange: DebouncedFunc<(event: any) => void> }) => (
+    <>
+        <InputGroup size="sm" my={2}>
+            <InputLeftElement pointerEvents="none" children={<Search2Icon color="gray.600" />} />
+            <Input
+                borderRadius="md"
+                type="text"
+                placeholder="Search..."
+                border="1px solid"
+                borderColor="input.border"
+                _focus={{ outline: "none" }}
+                onChange={(e) => handleSearchChange(e)}
+            />
+        </InputGroup>
+    </>
+);
