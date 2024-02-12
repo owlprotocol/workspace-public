@@ -52,7 +52,7 @@
     "@owlprotocol/web3-redux": "workspace:*",
     "@tanstack/match-sorter-utils": "^8.8.4",
     "@tanstack/react-query": "^4.29.7",
-    "@tanstack/react-router": "0.0.1-beta.83",
+    "@tanstack/react-router": "^1.15.3",
     "@tanstack/react-table": "^8.7.9",
     "@tanstack/react-virtual": "3.0.0-beta.54",
     "@tanstack/table-core": "^8.9.1",
