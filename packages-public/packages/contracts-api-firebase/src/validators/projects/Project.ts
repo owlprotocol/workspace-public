@@ -19,15 +19,12 @@ export const projectZod = z
             z.string().describe("networkId"),
             z.record(z.string().describe("nativeOrERC20Address"), z.string().describe("value")),
         ),
+        authorizedDomains: z.array(z.string()).describe("authorizedDomains").default([]).optional(),
     })
     .describe("project");
 
 type ProjectZodInferred = z.infer<typeof projectZod>;
-type ReadonlyProjectZodInferred = Readonly<ProjectZodInferred>;
 
 expectType<
-    TypeEqual<
-        Omit<Project, "totalAppUsers" | "description">,
-        Omit<ReadonlyProjectZodInferred, "totalAppUsers" | "description">
-    >
+    TypeEqual<Omit<Project, "totalAppUsers" | "description">, Omit<ProjectZodInferred, "totalAppUsers" | "description">>
 >(true);

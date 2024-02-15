@@ -236,6 +236,7 @@ export const ENVVARS: EnvVarDef[] = [
     ...TELEGRAM_BOT_ENVVARS,
     ...NETWORK_ENVVARS,
     { name: "OPENAI_SECRET_KEY", platform: "node" },
+    { name: "OWL_DOMAINS", platform: "node", defaultValue: "*" },
 ];
 
 const NODE_ENV_VAR = {

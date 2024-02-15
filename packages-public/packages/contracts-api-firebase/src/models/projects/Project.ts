@@ -1,22 +1,23 @@
 export interface ProjectData {
-    readonly owner: string;
-    readonly name: string;
+    owner: string;
+    name: string;
     totalAppUsers: number;
-    readonly description?: string;
+    description?: string;
     // TODO: Move to a proper object when using shopify
-    // readonly store?: string;
-    readonly topupTotals: {
+    //  store?: string;
+    topupTotals: {
         [networkId: string]: {
             [nativeOrERC20Address: string]: string;
         };
     };
-    readonly topupMax: {
+    topupMax: {
         [networkId: string]: {
             [nativeOrERC20Address: string]: string;
         };
     };
+    authorizedDomains?: string[];
 }
 
 export interface Project extends ProjectData {
-    readonly id: string;
+    id: string;
 }
