@@ -162,6 +162,8 @@ const EXPLORER_API_DEFAULTS: Record<string, string | undefined> = {
     //"https://blockscout.moonriver.moonbeam.network/api"
     //Moonbeam
     //"https://api-moonbeam.moonscan.io"
+    //Blast
+    168587773: "https://api.routescan.io/v2/network/testnet/evm/168587773/etherscan",
 };
 
 /** API Keys are per-domain */
@@ -186,6 +188,8 @@ const EXPLORER_API_KEY_DEFAULTS: Record<string, string | undefined> = {
     //BSC
     56: "9TRND69HZABV4HU73SPTECP72S94Q8K5B7",
     97: "9TRND69HZABV4HU73SPTECP72S94Q8K5B7",
+    //Blast
+    168587773: "routescan",
 };
 
 /**
@@ -205,7 +209,7 @@ export function getEnvVarsForNetworkId(networkId: string): EnvVarDef[] {
 }
 
 //const chainIds = allChains.map((c) => c.chainId);
-const chainIds = [1, 5, 1337, 11155111, 59144, 59140, 137, 80001, 42161, 10, 43114, 56, 97];
+const chainIds = [1, 5, 1337, 11155111, 59144, 59140, 137, 80001, 42161, 10, 43114, 56, 97, 168587773];
 //TODO: For all networkIds, right now this breaks because file is too big. Is there a better way?
 const NETWORK_ENVVARS: EnvVarDef[] = [];
 chainIds.forEach((c) => NETWORK_ENVVARS.push(...getEnvVarsForNetworkId(`${c}`)));

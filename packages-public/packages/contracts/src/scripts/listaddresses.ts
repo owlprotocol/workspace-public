@@ -1,5 +1,6 @@
 import * as hre from "hardhat";
 
+//List addresses with explorer
 const CONTRACTS_VERIFY = [
     "Create2Factory",
     "ERC20Mintable",
@@ -11,6 +12,12 @@ const CONTRACTS_VERIFY = [
     "TokenDna",
     "TokenURIBaseURI",
     "TokenURIDna",
+    "SafeL2",
+    "SafeProxyFactory",
+    "SignMessageLib",
+    "CreateCall",
+    "MultiSend",
+    "MultiSendCallOnly",
 ];
 async function verify() {
     const deployments = await hre.deployments.all();
@@ -18,8 +25,6 @@ async function verify() {
         let name: string | undefined = k;
         if (k.endsWith("Implementation")) {
             name = k.replace("Implementation", "");
-        } else if (k.endsWith("Beacon")) {
-            name = "UpgradeableBeacon";
         } else {
             name = k;
         }
@@ -29,21 +34,7 @@ async function verify() {
         }
 
         if (name) {
-            const artifact = await hre.artifacts.readArtifact(name);
-            const fqn = `${artifact.sourceName}:${name}`;
-
-            console.debug(`Verifying ${name} at ${v.address}`);
-            await hre.run("verify:verify", {
-                address: v.address,
-                constructorArguments: [],
-                contract: fqn,
-                /*
-                libraries: {
-                    ERC721TopDownDnaLib: deployments["ERC721TopDownDnaLibImplementation"].address,
-                    ERC721TopDownLib: deployments["ERC721TopDownLibImplementation"].address,
-                }
-                */
-            });
+            console.debug(`${name} https://testnet.blastscan.io/address/${v.address}/contract/168587773/code`);
         }
     }
 }

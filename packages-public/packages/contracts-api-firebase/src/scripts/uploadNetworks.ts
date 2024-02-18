@@ -1,7 +1,6 @@
-import { GetChainWithDataOptions, allChains, getChainByChainId, getChainWithData } from "@owlprotocol/chains";
-import * as envvars from "@owlprotocol/envvars";
+import { allChains, getChainByChainId, getChainWithData } from "@owlprotocol/chains";
+import { getChainWithDataByChainId, isDevelopment } from "@owlprotocol/envvars";
 import { Create2FactoryTx } from "@owlprotocol/contracts-proxy";
-import { NODE_ENV } from "@owlprotocol/envvars";
 import {
     networkCreate2FactoryTransactionsCRUD,
     networksPrivateCRUD,
@@ -9,20 +8,18 @@ import {
 } from "../admin/crudWrappers.js";
 import { NetworkCreate2FactoryTransaction, NetworkPrivate, NetworkReadOnly } from "../models/index.js";
 
-export const enabledNetworksDefault = NODE_ENV === "development" ? [1337, 137, 80001, 59140] : [137, 80001, 59140];
-export const ranksByNetworkDefault: Record<number, number> =
-    NODE_ENV === "development"
-        ? {
-              1337: 0,
-              137: 1,
-              80001: 2,
-              59140: 3,
-          }
-        : {
-              137: 0,
-              80001: 1,
-              59140: 2,
-          };
+export const enabledNetworksDefault = [137, 80001, 59140, 168587773];
+export const ranksByNetworkDefault: Record<number, number> = {
+    137: 1,
+    80001: 2,
+    59140: 3,
+    168587773: 4,
+};
+
+if (isDevelopment()) {
+    enabledNetworksDefault.push(1337);
+    ranksByNetworkDefault[1337] = 0;
+}
 
 export function uploadCreate2FactoryTransactions(chains = allChains.map((c) => c.chainId)) {
     const create2FactoryTransactions: NetworkCreate2FactoryTransaction[] = chains.map((chainId) => {
@@ -67,21 +64,8 @@ export function uploadNetworks(
 
     const networksPrivate: NetworkPrivate[] = chains.map((c) => {
         const chainId = c.chainId;
-        const options: GetChainWithDataOptions = {
-            THIRDWEB_API_KEY: envvars.THIRDWEB_API_KEY,
-            INFURA_API_KEY: envvars.INFURA_API_KEY,
-            ANKR_API_KEY: envvars.ANKR_API_KEY,
-            rpc: envvars[`NETWORK_${chainId}_RPC` as keyof typeof envvars] as string | undefined,
-            ws: envvars[`NETWORK_${chainId}_WS` as keyof typeof envvars] as string | undefined,
-            explorer: envvars[`NETWORK_${chainId}_EXPLORER` as keyof typeof envvars] as string | undefined,
-            explorerApi: envvars[`NETWORK_${chainId}_EXPLORER_API` as keyof typeof envvars] as string | undefined,
-            explorerApiKey: envvars[`NETWORK_${chainId}_EXPLORER_API_KEY` as keyof typeof envvars] as
-                | string
-                | undefined,
-        };
-
         return {
-            ...getChainWithData(c, options),
+            ...getChainWithDataByChainId(chainId),
             enabled: enabledNetworks.includes(chainId),
             rank: ranksByNetwork[chainId] ?? 9999,
             id: `${chainId}`,

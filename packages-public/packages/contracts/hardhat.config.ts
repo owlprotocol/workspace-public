@@ -1,4 +1,4 @@
-import hhConfigDefault from "@owlprotocol/hardhat-config"
+import hhConfigDefault from "@owlprotocol/hardhat-config";
 
 const hhConfig = { ...hhConfigDefault };
 

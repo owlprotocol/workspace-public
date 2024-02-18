@@ -27,6 +27,9 @@ export function createProjectDataWithDefaults(owner: string, name: string, descr
             "137": {
                 native: "0",
             },
+            "168587773": {
+                native: "0",
+            },
         },
         topupMax: {
             "80001": {
@@ -43,6 +46,9 @@ export function createProjectDataWithDefaults(owner: string, name: string, descr
             },
             "137": {
                 native: ethers.utils.parseUnits("5.0").toString(),
+            },
+            "168587773": {
+                native: ethers.utils.parseUnits("100.0").toString(),
             },
         },
     };

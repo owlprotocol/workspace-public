@@ -112,11 +112,21 @@ export async function getDeployContractsTransaction(
         return getDeployAddress(codeData!, { salt, msgSender, initData }, create2FactoryAddress);
     });
 
+    //console.debug("getTransaction, provider.getCode", addressArray);
+    /*
+    //TODO: Errors when RPC req/s too low. Current fix execute sequentially.
+    //TODO: Explore fix to handle HTTP 429 / other errors while still batching if possible
     const addressExistsArray = await Promise.all(
         addressArray.map(async (address) => {
             return (await provider.getCode(address)) != "0x";
         }),
     );
+    */
+    const addressExistsArray: boolean[] = [];
+    for (const address of addressArray) {
+        addressExistsArray.push((await provider.getCode(address)) != "0x");
+    }
+    //console.debug(addressArray, addressExistsArray);
 
     const codeDataNewArray = zip(codeDataArray, addressExistsArray)
         .filter(([, exists]) => !exists)
@@ -182,6 +192,7 @@ export async function deployImplementationsAndBeacons(
         .map(([k]) => `${k.replace("__factory__create2", "")}Beacon`);
     const factoriesArray = Object.values(factories) as unknown as Create2FactoryWrapper[];
 
+    //console.debug("getDeployImplementationsAndBeaconsTransaction");
     const { addressArray, addressExistsArray, transaction } = await getDeployImplementationsAndBeaconsTransaction(
         provider,
         factoriesArray,
@@ -204,6 +215,7 @@ export async function deployImplementationsAndBeacons(
         return { contracts };
     }
 
+    console.debug("sendTransaction", transaction);
     const txResponse = await signer.sendTransaction({ ...transaction, nonce });
 
     return {

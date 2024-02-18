@@ -11,28 +11,29 @@ Comprehensive documentation [can be found here](https://owlprotocol.github.io/co
 
 See [contracts](./contracts) for more info on using the smart contracts.
 
-## Deploy it yourself
+## Deploy Contracts
+1. Make sure your RPC is on [chainlist.org/](https://chainlist.org/) and was added to `@owlprotocol/chains`
+2. Check `0x6efA2F40d59e3DA02e56Ff5a1daB6201b86f8aCF` has enough ETH on the network
+3. Check RPC connection supports high enough req/s
+3. Set `PRIVATE_KEY_CONTRACT_DEPLOYER` in `.env`
+4. Switch to cjs `npm run to:commonjs`
+5. Deploy Create2Factory    `hh deploy --tags Create2Factory --network <networkId>`
+6. Deploy Implementations   `hh deploy --tags Implementations --network <networkId>`
 
-If you want to deploy our contracts yourself, we have some scripts to make it slightly easier to manage the proxies and contracts. It also helps when deploying on many networks at once, and maintains the same deterministic address on all chains.
+## Verify Contracts
+1. Edit `CONTRACTS_VERIFY` in `src/scripts/verify.ts`
+2. Set `NETWORK_EXPLORER_API_KEY` in `.env`
+3. Update `genEnvvars` defaults, `chainIds`
+2. Run script to verify all contracts `hh run src/scripts/verify.ts --network <networkId>`
 
-In [deploy](./deploy/001_Implementation/), run `ProxyFactory.ts` script. Take the address outputted and place it in variable `ProxyFactoryAddress` in `CrafterTransfer.ts`
+## Deploy TRPC API
+1. Fund `PRIVATE_KEY_RELAYER`
+2. Update default user creation (networkId: native etc...)
 
-https://github.com/wighawag/hardhat-deploy#the-deployments-field
-
-```
-hh deploy --tags Implementations --network polygon
-hh
-```
-
-## Testing
-
-Temporarily not imported, though some tests do work directly (with some commonjs/module replacement):
-
-`TEST_FILE=lib/cjs/test/assets/ERC721/ERC721Dna-readOnChain.test.js pnpm run test-grep`
 
 ## Architecture
 
-We use a somewhat complicated system of interlaced proxies in order to optimize for low-gas deployments and easily-upgradeable contracts. This comes at the cost of a small uptick in gas used per transaction.
+We use an advanced system of proxies in order to optimize for low-gas deployments and easily-upgradeable contracts. This comes at the cost of a small uptick in gas used per transaction.
 
 See [OWLArchitecture](OWLArchitecture.svg) for more info on what's going on under the hood.
 
