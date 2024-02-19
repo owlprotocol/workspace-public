@@ -1,5 +1,12 @@
 # @owlprotocol/signer
 
+## 2.0.11
+
+### Patch Changes
+
+- Updated dependencies [3e9ad73a]
+  - @owlprotocol/contracts-api-client-trpc@2.1.0
+
 ## 2.0.10
 
 ### Patch Changes

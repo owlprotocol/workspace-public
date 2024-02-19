@@ -1,5 +1,11 @@
 # @owlprotocol/contracts-api-client-trpc
 
+## 2.1.0
+
+### Minor Changes
+
+- 3e9ad73a: Project-based refactoring
+
 ## 2.0.12
 
 ### Patch Changes
