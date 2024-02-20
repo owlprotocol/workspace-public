@@ -1,5 +1,11 @@
 # @owlprotocol/contracts-api-client-trpc
 
+## 2.1.1
+
+### Patch Changes
+
+- 04ced991: Fix to trpc client type
+
 ## 2.1.0
 
 ### Minor Changes

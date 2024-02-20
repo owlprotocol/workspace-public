@@ -1,5 +1,12 @@
 # @owlprotocol/ui-react
 
+## 2.0.11
+
+### Patch Changes
+
+- Updated dependencies [04ced991]
+  - @owlprotocol/contracts-api-client-trpc@2.1.1
+
 ## 2.0.10
 
 ### Patch Changes
