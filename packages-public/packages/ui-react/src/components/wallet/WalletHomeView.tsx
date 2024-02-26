@@ -2,6 +2,7 @@ import {
     Box,
     Button,
     Card,
+    Center,
     Flex,
     Grid,
     HStack,
@@ -365,13 +366,14 @@ export const TokensPreview = ({
         logo: network?.icon?.url,
         decimals: nativeTokenDecimals,
     };
-    const [erc20] = erc20BalanceReadOnlyHooks.useGetWhere({
+    const [erc20, erc20Options] = erc20BalanceReadOnlyHooks.useGetWhere({
         networkId: chainId.toString(),
         account: safeAddress,
     });
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (erc20) {
+        if (erc20Options.status === "success" && erc20) {
             const provider = new ethers.providers.JsonRpcProvider();
 
             fetchTokenDetails(
@@ -382,12 +384,23 @@ export const TokensPreview = ({
                     account: token.account,
                 })),
                 provider,
-            ).then((allTokens) => {
-                dispatch({
-                    type: "SET_TOKEN_DETAILS",
-                    data: [nativeToken, ...allTokens],
+            )
+                .then((allTokens) => {
+                    // Filter out tokens with a balance of 0
+                    const nonZeroBalanceTokens = allTokens.filter((token) => parseFloat(token.balance) > 0);
+
+                    dispatch({
+                        type: "SET_TOKEN_DETAILS",
+                        data: [nativeToken, ...nonZeroBalanceTokens],
+                    });
+                    setIsLoading(false);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setIsLoading(false);
                 });
-            });
+        } else {
+            setIsLoading(true);
         }
     }, [JSON.stringify(erc20), chainId]); // erc20 by itself re-renders infinitely
 
@@ -396,6 +409,14 @@ export const TokensPreview = ({
         dispatch({ type: "SET_VIEW", data: "TRANSACTION_CREATE" });
     };
     const columns = getTokenTableColumns(logo, handleRowClick);
+
+    if (isLoading) {
+        return (
+            <Center height="300px">
+                <Spinner size="xl" />
+            </Center>
+        );
+    }
     if (!allAvailableTokens || allAvailableTokens.length === 0 || !safeAddress) {
         return <NoActivity section="Tokens" />;
     }
@@ -432,6 +453,7 @@ const CollectiblesPreview = ({ safeWallet, chainId }: { safeWallet: SafeWalletRe
         networkId: chainId.toString(),
         account: safeAddress,
     });
+    const [isLoading, setIsLoading] = useState(true);
 
     const [mutationResults, setMutationResults] = useState<
         (TokenMetadata & {
@@ -445,8 +467,13 @@ const CollectiblesPreview = ({ safeWallet, chainId }: { safeWallet: SafeWalletRe
     useEffect(() => {
         if (erc721Options.status === "success" && erc721 && erc1155Options.status === "success" && erc1155) {
             fetchClickableTokens(erc721, erc1155, chainId, safeWallet, getMetadata)
-                .then(setMutationResults)
+                .then((results) => {
+                    setMutationResults(results);
+                    setIsLoading(false);
+                })
                 .catch(console.error);
+        } else {
+            setIsLoading(true);
         }
     }, [erc721Options.status, erc1155Options.status, safeAddress, chainId]);
 
@@ -454,6 +481,14 @@ const CollectiblesPreview = ({ safeWallet, chainId }: { safeWallet: SafeWalletRe
         dispatch({ type: "SET_SELECTED_COLLECTIBLE", data: token });
         dispatch({ type: "SET_VIEW", data: "COLLECTIBLES" });
     };
+
+    if (isLoading) {
+        return (
+            <Center height="400px">
+                <Spinner size="xl" />
+            </Center>
+        );
+    }
 
     if (mutationResults.length === 0) {
         return <NoActivity section="Collectibles" />;

@@ -227,7 +227,11 @@ export const WalletCreateTransactionView = () => {
                             parseFloat(amount) <= 0
                                 ? "Amount must be greater than 0"
                                 : parseFloat(amount) >
-                                  parseFloat(selectedToken ? selectedToken.balance : nativeTokenBalanceFormatted)
+                                  parseFloat(
+                                      selectedToken?.formattedBalance
+                                          ? selectedToken.formattedBalance
+                                          : nativeTokenBalanceFormatted,
+                                  )
                                 ? "Insufficient funds"
                                 : undefined
                         }
@@ -269,8 +273,8 @@ export const WalletCreateTransactionView = () => {
                                                 cursor="pointer"
                                                 onClick={() =>
                                                     field.handleChange(
-                                                        selectedToken
-                                                            ? selectedToken.balance
+                                                        selectedToken?.formattedBalance
+                                                            ? selectedToken.formattedBalance
                                                             : nativeTokenBalanceFormatted,
                                                     )
                                                 }
@@ -292,14 +296,22 @@ export const WalletCreateTransactionView = () => {
                 <Divider />
                 <sendTransactionForm.Subscribe
                     selector={(state) => {
+                        const sendAmountNumber = parseFloat(state.values.sendAmount || "0");
+                        const maxAmountNumber = parseFloat(
+                            selectedToken?.formattedBalance
+                                ? selectedToken.formattedBalance
+                                : nativeTokenBalanceFormatted,
+                        );
+
                         const isValidSendValues =
                             utils.isAddress(state.values.sendTo) &&
-                            parseFloat(state.values.sendAmount) > 0 &&
-                            parseFloat(state.values.sendAmount) <=
-                                parseFloat(selectedToken ? selectedToken.balance : nativeTokenBalanceFormatted);
+                            sendAmountNumber > 0 &&
+                            sendAmountNumber <= maxAmountNumber;
+
                         return {
+                            ...state,
                             canSubmit: isValidSendValues,
-                        } as any;
+                        };
                     }}
                     children={({ canSubmit }) => (
                         <Flex width="100%" justify="space-between">
