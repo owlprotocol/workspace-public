@@ -150,7 +150,7 @@ export class NFTGenerativeItemClass<
         const imageBuff = await this.getImageWithChildren(mergeOptions, width, height);
         const attributesRaw = this.attributesFormatted();
 
-        const attributes = new Array<AttributeSimple>();
+        const attributes = [] as AttributeSimple[];
 
         mapValues(attributesRaw, (attr, traitName: string) => {
             let attribute: any;

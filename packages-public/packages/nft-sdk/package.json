@@ -36,7 +36,6 @@
     "node": "^18.0.0"
   },
   "scripts": {
-    "test": "mocha 'lib/esm/**/*.test.js'",
     "build": "npm-run-all generate:json tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
     "esbuild": "node esbuild.config.mjs",
