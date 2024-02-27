@@ -1,7 +1,8 @@
 import { PRIVATE_KEY_CREATE2FACTORY_DEPLOYER } from "@owlprotocol/envvars";
 import { Signer, Wallet, utils } from "ethers";
 import { allChains } from "@owlprotocol/chains";
-import { writeFileSync } from "fs";
+import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { join } from "path";
 import { Create2Factory__factory } from "../typechain/ethers/index.js";
 
 export const ETH_TX_BASE_GAS = 21000;
@@ -21,15 +22,59 @@ export const CREATE2_FACTORY_ETH_COST = CREATE2_FACTORY_DEPLOY_GAS_PRICE.mul(
  * @param chainId
  * @returns
  */
-export async function getCreate2FactoryDeployTransaction(signer: Signer, chainId: number) {
+export async function getCreate2FactoryDeployTransaction(
+    signer: Signer,
+    chainId: number,
+    gasPrice = CREATE2_FACTORY_DEPLOY_GAS_PRICE,
+) {
     return signer.signTransaction({
         data: Create2Factory__factory.bytecode,
         chainId,
         nonce: 0,
-        gasPrice: CREATE2_FACTORY_DEPLOY_GAS_PRICE,
+        gasPrice,
         gasLimit: CREATE2_FACTORY_DEPLOY_GAS_LIMIT,
         type: 0,
     });
+}
+
+/**
+ * Generate files with signed transactions
+ * @param path
+ * @param fromNetworkId
+ * @param toNetworkId
+ */
+export async function genCreate2FactoryTransactionFiles(
+    path: string,
+    fromNetworkId: number,
+    toNetworkId: number,
+    gasPrice = CREATE2_FACTORY_DEPLOY_GAS_PRICE,
+) {
+    const signer = new Wallet(PRIVATE_KEY_CREATE2FACTORY_DEPLOYER!);
+    console.debug(process.env.UV_THREADPOOL_SIZE);
+
+    if (!existsSync(path)) {
+        mkdirSync(path);
+    }
+
+    const batchSize = 1000;
+    for (let i = fromNetworkId; i < toNetworkId + 1; i++) {
+        if (i % batchSize == 1) {
+            //check if batch written to
+            if (existsSync(join(path, `${i}.txt`))) {
+                console.debug(`${i}/${toNetworkId} exists => ${i + batchSize}/${toNetworkId}`);
+                i += batchSize - 1;
+                continue;
+            }
+        }
+
+        const tx = await getCreate2FactoryDeployTransaction(signer, i, gasPrice);
+        writeFileSync(join(path, `${i}.txt`), tx);
+
+        if (i % batchSize == 0) {
+            //batch finised, log
+            console.debug(`${i}/${toNetworkId}`);
+        }
+    }
 }
 
 export async function getCreate2FactoryTransactions() {
