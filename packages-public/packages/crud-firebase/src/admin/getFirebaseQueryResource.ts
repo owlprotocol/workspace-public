@@ -91,9 +91,13 @@ export function getFirebaseQueryResource<
     ): Promise<Resource | undefined> => {
         const snapshot = await colQuerySnapshot.getWhereSnapshot(filter, options);
         const dataRef = snapshot.docs[0];
+
+        // early return undefined if no result
+        if (!dataRef) return undefined;
+
         const data = dataRef.data();
 
-        //check read access
+        // check read access
         if (data && accessParams && readAccessCheck && !readAccessCheck(data, accessParams)) {
             throw new Error(`${dataRef.ref.path} permission-denied`);
         }
