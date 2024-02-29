@@ -70,7 +70,7 @@ export function getFirebaseResource<
         const refSnapshot = await getDoc(ref);
 
         if (!refSnapshot.exists()) {
-            throw new Error(`${col.path}/${id} not found`);
+            throw new Error(`${ref.path} not found`);
         }
 
         return { ...refSnapshot.data(), ...decodeId(ref.id) };
@@ -267,7 +267,7 @@ export function getFirebaseResource<
             const ref = getDocRef(id);
             const refSnapshot = await transaction.get(ref);
             if (!refSnapshot.exists()) {
-                throw new Error(`${col.path}/${id} not found`);
+                throw new Error(`${ref.path} not found`);
             }
             const incrValue = BigNumber.from(value);
             const currValueStr: BigNumberish = getFirestorePathValue(refSnapshot.data(), path) ?? "0";
@@ -299,7 +299,7 @@ export function getFirebaseResource<
             const ref = getDocRef(id);
             const refSnapshot = await transaction.get(ref);
             if (!refSnapshot.exists()) {
-                throw new Error(`${col.path}/${id} not found`);
+                throw new Error(`${ref.path} not found`);
             }
             const currValue: number = getFirestorePathValue(refSnapshot.data(), path) ?? 0;
             const newValue = currValue + value;

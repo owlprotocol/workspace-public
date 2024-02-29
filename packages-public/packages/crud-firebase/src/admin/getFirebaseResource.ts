@@ -62,7 +62,7 @@ export function getFirebaseResource<
         const refSnapshot = await ref.get();
 
         if (!refSnapshot.exists) {
-            throw new Error(`${col.path}/${id} not found`);
+            throw new Error(`${ref.path} not found`);
         }
 
         return { ...refSnapshot.data(), ...decodeId(ref.id) } as Resource;
@@ -78,7 +78,8 @@ export function getFirebaseResource<
         const data = await _get(id);
         //check read access
         if (accessParams && readAccessCheck && !readAccessCheck(data, accessParams)) {
-            throw new Error(`${col.path}/${id} permission-denied`);
+            const idStr = encodeId(id);
+            throw new Error(`${col.path}/${idStr} permission-denied`);
         }
 
         return data;
@@ -113,7 +114,8 @@ export function getFirebaseResource<
         const data = await _getOrUndefined(id);
         //check read access
         if (data && accessParams && readAccessCheck && !readAccessCheck(data, accessParams)) {
-            throw new Error(`${col.path}/${id} permission-denied`);
+            const idStr = encodeId(id);
+            throw new Error(`${col.path}/${idStr} permission-denied`);
         }
 
         return data;
@@ -189,12 +191,12 @@ export function getFirebaseResource<
                 if (refSnapshot.exists) {
                     //check write access on existing data
                     if (!setAccessCheck(refSnapshot.data()!, accessParams)) {
-                        throw new Error(`${col.path}/${ref.id} permission-denied`);
+                        throw new Error(`${ref.path} permission-denied`);
                     }
                 } else {
                     //check write access on new data
                     if (!setAccessCheck(item, accessParams)) {
-                        throw new Error(`${col.path}/${`${JSON.stringify(item)}`} permission-denied`);
+                        throw new Error(`${ref.path} permission-denied (${JSON.stringify(item)})`);
                     }
                 }
 
@@ -257,7 +259,7 @@ export function getFirebaseResource<
                     } else {
                         //check write access on new data
                         if (!setAccessCheck(item!, accessParams)) {
-                            throw new Error(`${col.path}/${`${JSON.stringify(item)}`} permission-denied`);
+                            throw new Error(`${col.path}/${ref!.id} permission-denied (${JSON.stringify(item)})`);
                         }
                     }
                 });
@@ -323,7 +325,7 @@ export function getFirebaseResource<
                     if (setAccessCheck) {
                         //check write access on new data
                         if (!setAccessCheck(initialValueValidated, accessParams)) {
-                            throw new Error(`${col.path}/${id} permission-denied`);
+                            throw new Error(`${ref.path} permission-denied`);
                         }
                     }
                     transaction.set(ref, initialValueValidated);
@@ -333,7 +335,7 @@ export function getFirebaseResource<
                     if (readAccessCheck) {
                         //check write access on new data
                         if (!readAccessCheck(initialValueValidated, accessParams)) {
-                            throw new Error(`${col.path}/${id} permission-denied`);
+                            throw new Error(`${ref.path} permission-denied`);
                         }
                     }
 
@@ -398,12 +400,12 @@ export function getFirebaseResource<
                 const ref = getDocRef(item);
                 const refSnapshot = await transaction.get(ref);
                 if (!refSnapshot.exists) {
-                    throw new Error(`${col.path}/${ref.id} not found`);
+                    throw new Error(`${ref.path} not found`);
                 }
 
                 //check write access on existing data
                 if (!updateAccessCheck(refSnapshot.data()!, accessParams)) {
-                    throw new Error(`${col.path}/${ref.id} permission-denied`);
+                    throw new Error(`${ref.path} permission-denied`);
                 }
 
                 transaction.update(ref, getFirestoreUpdateData(validateDataPartial(item)) as UpdateData<ResourceData>);
@@ -497,12 +499,12 @@ export function getFirebaseResource<
                 const ref = getDocRef(id);
                 const refSnapshot = await transaction.get(ref);
                 if (!refSnapshot.exists) {
-                    throw new Error(`${col.path}/${ref.id} not found`);
+                    throw new Error(`${ref.path} not found`);
                 }
 
                 //check write access on existing data
                 if (!deleteAccessCheck(refSnapshot.data()!, accessParams)) {
-                    throw new Error(`${col.path}/${ref.id} permission-denied`);
+                    throw new Error(`${ref.path} permission-denied`);
                 }
 
                 transaction.delete(ref);
@@ -617,7 +619,7 @@ export function getFirebaseResource<
             const ref = getDocRef(id);
             const refSnapshot = await transaction.get(ref);
             if (!refSnapshot.exists) {
-                throw new Error(`${col.path}/${id} not found`);
+                throw new Error(`${ref.path} not found`);
             }
 
             const incrValue = BigNumber.from(value);
@@ -649,11 +651,11 @@ export function getFirebaseResource<
                 const ref = getDocRef(id);
                 const refSnapshot = await transaction.get(ref);
                 if (!refSnapshot.exists) {
-                    throw new Error(`${col.path}/${id} not found`);
+                    throw new Error(`${ref.path} not found`);
                 }
                 //check write access on existing data
                 if (updateAccessCheck && !updateAccessCheck(refSnapshot.data()!, accessParams)) {
-                    throw new Error(`${col.path}/${ref.id} permission-denied`);
+                    throw new Error(`${ref.path} permission-denied`);
                 }
 
                 const incrValue = BigNumber.from(value);
@@ -692,7 +694,7 @@ export function getFirebaseResource<
             const ref = getDocRef(id);
             const refSnapshot = await transaction.get(ref);
             if (!refSnapshot.exists) {
-                throw new Error(`${col.path}/${id} not found`);
+                throw new Error(`${ref.path} not found`);
             }
 
             const currValue: number = getFirestorePathValue(refSnapshot.data(), path) ?? 0;
@@ -722,12 +724,12 @@ export function getFirebaseResource<
                 const ref = getDocRef(id);
                 const refSnapshot = await transaction.get(ref);
                 if (!refSnapshot.exists) {
-                    throw new Error(`${col.path}/${id} not found`);
+                    throw new Error(`${ref.path} not found`);
                 }
 
                 // Check write access on existing data
                 if (updateAccessCheck && !updateAccessCheck(refSnapshot.data()!, accessParams)) {
-                    throw new Error(`${col.path}/${ref.id} permission-denied`);
+                    throw new Error(`${ref.path} permission-denied`);
                 }
 
                 const currValue: number = getFirestorePathValue(refSnapshot.data(), path) ?? 0;
