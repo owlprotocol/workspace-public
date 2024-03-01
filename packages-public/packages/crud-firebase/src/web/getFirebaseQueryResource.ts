@@ -36,7 +36,7 @@ export function getFirebaseQueryResource<
         getWhere,
         getWhereCount,
         getWhereFirst,
-    } satisfies FirebaseQueryResource<ResourceData, ResourceId>;
+    } satisfies FirebaseQueryResource<CollectionId & ResourceData, ResourceId>;
 
     return {
         getAllSnapshot,

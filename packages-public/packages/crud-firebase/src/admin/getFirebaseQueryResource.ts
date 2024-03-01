@@ -110,7 +110,7 @@ export function getFirebaseQueryResource<
         getWhere,
         getWhereCount: colQuerySnapshot.getWhereCount,
         getWhereFirst,
-    } satisfies FirebaseQueryResource<ResourceData, ResourceId>;
+    } satisfies FirebaseQueryResource<CollectionId & ResourceData, ResourceId>;
 
     return {
         _getWhereQuery: colQuerySnapshot._getWhereQuery,

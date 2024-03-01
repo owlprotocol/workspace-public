@@ -1,7 +1,7 @@
 import { omit } from "lodash-es";
+import { ItemData, ItemCompositeId, ItemId } from "./models/Item.js";
 import { firestore } from "../admin/config.js";
 import { getFirebaseCRUD } from "../admin/crud.js";
-import { ItemData, ItemCompositeId, ItemId } from "../models/Item.js";
 
 export const itemsCRUD = getFirebaseCRUD<ItemData, ItemId, [owner: string]>(firestore, "items", undefined, {
     readAccessCheck: (item, itemId) => item.owner === itemId,

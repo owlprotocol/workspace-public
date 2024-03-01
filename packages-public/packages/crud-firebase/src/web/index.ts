@@ -5,3 +5,4 @@ export * from "./getDecodeRefSnapshot.js";
 export * from "./getFirebaseQueryResource.js";
 export * from "./getFirebaseQuerySnapshot.js";
 export * from "./getWhereQuery.js";
+export * from "../cache.js";

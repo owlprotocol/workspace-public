@@ -1,5 +1,5 @@
 import { omit } from "lodash-es";
-import { ItemData, ItemCompositeId, ItemId } from "../models/Item.js";
+import { ItemData, ItemCompositeId, ItemId } from "./models/Item.js";
 import { firestore } from "../web/config.js";
 import { getFirebaseCRUD } from "../web/crud.js";
 

@@ -1,5 +1,5 @@
+import { ItemCompositeId, ItemData } from "./models/Item.js";
 import { getFirebaseHooks } from "../hooks/crud.js";
-import { ItemCompositeId, ItemData } from "../models/Item.js";
 import { firestore } from "../web/config.js";
 
 export const itemsHooks = getFirebaseHooks<ItemData>(firestore, "items");
