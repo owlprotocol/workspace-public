@@ -19,7 +19,7 @@ describe("web/resource.test.ts", async () => {
             testItem = getTestItem(id);
         });
 
-        test.only("set/get - cache hit", async () => {
+        test("set/get - cache hit", async () => {
             await itemResourceCached().set(testItem);
             //Get Item - populate cache
             const itemGet1 = await itemResourceCached().get(testItem.id);
@@ -28,7 +28,7 @@ describe("web/resource.test.ts", async () => {
             expect(itemResourceCached().cache!.has(testItem.id)).toBe(true);
         });
 
-        test.only("set/get - cache purged", async () => {
+        test("set/get - cache purged", async () => {
             await itemResourceCached().set(testItem);
 
             //Get Item - populate cache
@@ -48,7 +48,7 @@ describe("web/resource.test.ts", async () => {
             expect(itemGet2).toStrictEqual(testItem2);
         });
 
-        test.only("set/get - cache stale", async () => {
+        test("set/get - cache stale", async () => {
             await itemResourceCached().set(testItem);
 
             //Get Item - populate cache
@@ -68,7 +68,7 @@ describe("web/resource.test.ts", async () => {
             expect(itemGet2).toStrictEqual(testItem);
         });
 
-        test.only("set/get - cache busted", async () => {
+        test("set/get - cache busted", async () => {
             for (let i = 0; i < 11; i++) {
                 const item = getTestItem(1000 + i);
                 await itemResourceCached().set(item);
