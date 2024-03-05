@@ -49,6 +49,12 @@ export function uuidDecodeId(id: string) {
     return { id };
 }
 
+export type FirebaseQueryOp = "getAll" | "getWhere" | "getWhereCount" | "getWhereFirst";
+export type FirebaseGetOp = "get" | "getOrUndefined" | "getBatch";
+export type FirebaseWriteOp = "set" | "setBatch" | "update" | "updateBatch" | "delete" | "deleteBatch" | "deleteAll";
+export type FirebaseUpsertOp = "getOrCreate" | "getWhereFirstOrCreate";
+export type FirebaseIncrOp = "incrementStr" | "decrementStr" | "incrementNumber" | "decrementNumber";
+
 /**
  * Common Query operations for a resource defined on a collection (eg. /users) or group collection (eg. /xxx/users).
  * Note: id-based access is NOT possible with collection groups. See `FirebaseResource` for more complete interface
@@ -61,6 +67,9 @@ export interface FirebaseQueryResource<
     ResourceIdPartial extends Record<string, any>,
     Resource extends Required<ResourceIdPartial> & ResourceData = Required<ResourceIdPartial> & ResourceData,
 > {
+    //validators
+    validateDataPartial: (data: Partial<ResourceData>) => Partial<ResourceData>;
+    //queries
     getAll: (options?: ResourceQueryOptions) => Promise<Resource[]>;
     getWhere: (filter: Partial<ResourceData>, options?: ResourceQueryOptions) => Promise<Resource[]>;
     getWhereCount: (filter: Partial<ResourceData>, options?: ResourceQueryOptions) => Promise<number>;
@@ -81,6 +90,11 @@ export interface FirebaseResource<
     ResourceIdPartial extends Record<string, any> = ResourceIdDefault,
     Resource extends Required<ResourceIdPartial> & ResourceData = Required<ResourceIdPartial> & ResourceData,
 > extends FirebaseQueryResource<ResourceData, ResourceIdPartial, Resource> {
+    //validators
+    validateData: (data: ResourceData) => ResourceData;
+    encodeId: (idParams: string | ResourceIdPartial) => string;
+    decodeId: (id: string) => Required<ResourceIdPartial>;
+    //queries
     get: (id: string | Required<ResourceIdPartial>) => Promise<Resource>;
     getOrUndefined: (id: string | Required<ResourceIdPartial>) => Promise<Resource | undefined>;
     getBatch: (ids: string[] | Required<ResourceIdPartial>[]) => Promise<(Resource | undefined)[]>;

@@ -393,6 +393,12 @@ export function getFirebaseResource<
     };
 
     const resource = {
+        //validators
+        encodeId,
+        decodeId,
+        validateDataPartial,
+        validateData,
+        //queries
         get,
         getOrUndefined,
         getBatch,

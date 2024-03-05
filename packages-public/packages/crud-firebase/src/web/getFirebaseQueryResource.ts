@@ -32,11 +32,12 @@ export function getFirebaseQueryResource<
         getFirebaseQuerySnapshot<ResourceData, Resource>(col, validateDataPartial, decodeRefSnapshot);
 
     const resource = {
+        validateDataPartial,
         getAll,
         getWhere,
         getWhereCount,
         getWhereFirst,
-    } satisfies FirebaseQueryResource<CollectionId & ResourceData, ResourceId>;
+    } satisfies FirebaseQueryResource<ResourceData, ResourceId, Resource>;
 
     return {
         getAllSnapshot,

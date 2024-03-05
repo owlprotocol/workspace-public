@@ -39,6 +39,13 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
     { name: "FIREBASE_PRIVATE_KEY", platform: "node" },
     { name: "FIREBASE_DATABASE_URL", platform: "neutral" },
     { name: "FIREBASE_STORAGE_BUCKET", platform: "neutral", defaultValue: "owl-protocol" },
+    { name: "FIREBASE_LOCAL_CACHE_SIZE", platform: "neutral", defaultValue: "-1" },
+    {
+        name: "FIREBASE_LOCAL_CACHE_MANAGER",
+        platform: "neutral",
+        defaultValue: "MEMORY",
+        enumValues: ["MEMORY", "SINGLE_TAB", "MULTIPLE_TAB"],
+    },
 ];
 
 //Clerk config

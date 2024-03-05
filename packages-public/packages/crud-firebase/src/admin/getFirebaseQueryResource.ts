@@ -106,11 +106,12 @@ export function getFirebaseQueryResource<
     };
 
     const resource = {
+        validateDataPartial,
         getAll,
         getWhere,
         getWhereCount: colQuerySnapshot.getWhereCount,
         getWhereFirst,
-    } satisfies FirebaseQueryResource<CollectionId & ResourceData, ResourceId>;
+    } satisfies FirebaseQueryResource<ResourceData, ResourceId, Resource>;
 
     return {
         _getWhereQuery: colQuerySnapshot._getWhereQuery,

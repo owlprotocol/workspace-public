@@ -1,5 +1,6 @@
 export * from "./config.js";
 export * from "./crud.js";
+export * from "./getConfig.js";
 export * from "./getFirebaseResource.js";
 export * from "./getDecodeRefSnapshot.js";
 export * from "./getFirebaseQueryResource.js";
