@@ -49,6 +49,20 @@ export function uuidDecodeId(id: string) {
     return { id };
 }
 
+/**
+ * Uniquely identifies a query collection.
+ * Inspired to replicate the Firebase IndexedDB local cache structure.
+ * - prefixPath: Prefix to reach subcollecion. For top-level collections, empty array.
+ * - collectionGroup: Final collection group.
+ *
+ * In this way we can indentify collections, subcollections, and collection group queries.
+ * - collection: { prefixPath: [], collectionGroup: "myCollection" }
+ * - subcollection: { prefixPath: ["myCollection", "collection-1"], collectionGroup: "mySubcollection" }
+ * - group query: { prefixPath: [], collectionGroup: "mySubcollection" }
+ *
+ */
+export type FirebaseCollectionKey = { collectionGroup: string; prefixPath: string[] };
+
 export type FirebaseQueryOp = "getAll" | "getWhere" | "getWhereCount" | "getWhereFirst";
 export type FirebaseGetOp = "get" | "getOrUndefined" | "getBatch";
 export type FirebaseWriteOp = "set" | "setBatch" | "update" | "updateBatch" | "delete" | "deleteBatch" | "deleteAll";
@@ -90,6 +104,7 @@ export interface FirebaseResource<
     ResourceIdPartial extends Record<string, any> = ResourceIdDefault,
     Resource extends Required<ResourceIdPartial> & ResourceData = Required<ResourceIdPartial> & ResourceData,
 > extends FirebaseQueryResource<ResourceData, ResourceIdPartial, Resource> {
+    collectionPath: string;
     //validators
     validateData: (data: ResourceData) => ResourceData;
     encodeId: (idParams: string | ResourceIdPartial) => string;

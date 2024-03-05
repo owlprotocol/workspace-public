@@ -393,6 +393,7 @@ export function getFirebaseResource<
     };
 
     const resource = {
+        collectionPath,
         //validators
         encodeId,
         decodeId,
@@ -449,6 +450,7 @@ export function getFirebaseResourceFactory<
         ResourceDataValidators<ResourceData> &
         ResourceIdValidators<ResourceIdPartial>,
 ): FirebaseResourceFactory<CollectionId, ResourceData, ResourceIdPartial> {
+    //TODO: Validate collectionId params
     return function getFirebaseResource2(params: CollectionId) {
         const collectionPath = Object.entries(params).reduce(
             (acc, [key, val]) => acc.replace(`{${key}}`, val),

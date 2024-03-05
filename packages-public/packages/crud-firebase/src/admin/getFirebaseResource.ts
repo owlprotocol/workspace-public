@@ -875,6 +875,7 @@ export function getFirebaseResource<
     };
 
     const resource = {
+        collectionPath,
         //validators
         encodeId,
         decodeId,
