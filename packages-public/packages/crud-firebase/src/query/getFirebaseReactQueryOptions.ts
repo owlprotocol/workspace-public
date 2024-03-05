@@ -174,7 +174,7 @@ export function getFirebaseResourceReactQueryOptionsFactory<
         );
         //prefixPath MUST be of even length
         invariant(
-            collectionPathComponents.length % 2 != 0,
+            collectionPathComponents.length % 2 === 0,
             `Invalid collectionPath ${resource.collectionPath}, prefixPath length MUST be even ${JSON.stringify(
                 collectionPathComponents,
             )}`,
