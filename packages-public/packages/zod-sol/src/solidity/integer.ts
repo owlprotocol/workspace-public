@@ -1,5 +1,12 @@
-import { z } from "zod";
+import { ZodIssueCode, ZodTooBigIssue, ZodTooSmallIssue, z } from "zod";
+import { bigIntLikeToBigIntZod } from "../eth/math.js";
 
+/**
+ * Create zod validator with string coerce to parse uintX
+ * @deprecated
+ * @param name
+ * @returns
+ */
 export function integerZod(name: string) {
     const signed = name.startsWith("int");
     const bitLenStr = signed ? name.replace("int", "") : name.replace("uint", "");
@@ -49,3 +56,38 @@ export const int64Zod = integerZod("int64");
 export const int32Zod = integerZod("int32");
 export const int16Zod = integerZod("int16");
 export const int8Zod = integerZod("int8");
+
+type IntSign = "uint" | "int";
+type IntSize = 8 | 16 | 32 | 64 | 96 | 128 | 256;
+type IntType = `${IntSign}${IntSize}`;
+
+export function bigIntLikeSolidityIntegerZod(name: IntType) {
+    const signed = name.startsWith("int");
+    const bitLenStr = signed ? name.replace("int", "") : name.replace("uint", "");
+    const bitLen = BigInt(bitLenStr);
+
+    const max = signed ? 2n ** (bitLen - 1n) : 2n ** bitLen - 1n;
+    const min = signed ? 0n - 2n ** (bitLen - 1n) : 0n;
+
+    return bigIntLikeToBigIntZod
+        .refine((n) => BigInt(n) <= max, {
+            code: ZodIssueCode.too_big,
+            maximum: max,
+            inclusive: true,
+            exact: true,
+            type: "bigint",
+        } as ZodTooBigIssue)
+        .refine((n) => BigInt(n) >= min, {
+            code: ZodIssueCode.too_small,
+            minimum: min,
+            inclusive: true,
+            exact: true,
+            type: "bigint",
+        } as ZodTooSmallIssue)
+        .describe(`A solidity ${name}`);
+}
+
+export const uint256BigIntZod = bigIntLikeSolidityIntegerZod("uint256");
+export const uint128BigIntZod = bigIntLikeSolidityIntegerZod("uint128");
+export const uint96BigIntZod = bigIntLikeSolidityIntegerZod("uint96");
+export const uint64BigIntZod = bigIntLikeSolidityIntegerZod("uint64");
