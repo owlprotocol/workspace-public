@@ -78,7 +78,7 @@ export function getFirestoreInitialized(app: App, settings: FirestoreSettings = 
     try {
         const firestore = initializeFirestore(app, settings);
         firestore.settings({ ignoreUndefinedProperties: true });
-        console.debug("Initialized Firebase Firestore", settings);
+        console.debug("Initialized Firebase Firestore", { settings });
         return firestore;
     } catch (error) {
         return getFirestore(app);
