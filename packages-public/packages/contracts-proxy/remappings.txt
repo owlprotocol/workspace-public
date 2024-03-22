@@ -1,4 +1,0 @@
-@chainlink/=./node_modules/@chainlink/
-@opengsn/=./node_modules/@opengsn/
-@openzeppelin/=./node_modules/@openzeppelin/
-@owlprotocol/=./node_modules/@owlprotocol/

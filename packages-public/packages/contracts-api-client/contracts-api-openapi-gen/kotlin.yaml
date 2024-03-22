@@ -1,7 +1,0 @@
-'!include': 'shared/common.yaml'
-outputDir: contracts-api-client-kotlin
-generatorName: kotlin
-artifactId: kotlin-contracts-string
-additionalProperties:
-  dateLibrary: string
-  serializableModel: "true"

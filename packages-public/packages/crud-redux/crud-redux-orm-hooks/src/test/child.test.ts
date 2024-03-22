@@ -1,7 +1,0 @@
-describe('tests', () => {
-    it("", () => {
-
-    })
-})
-
-export { }

@@ -1,1 +1,0 @@
-{"name":"IChainlinkAnyApiConsumer","interfaceId":"0xfe33bdcc","abi":[{"type":"function","name":"fulfill","constant":false,"payable":false,"inputs":[{"type":"bytes","name":"fulfillPrefixData"},{"type":"bytes","name":"fulfillResponseData"}],"outputs":[]}]}

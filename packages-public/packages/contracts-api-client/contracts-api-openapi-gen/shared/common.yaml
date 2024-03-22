@@ -1,3 +1,0 @@
-inputSpec: ../../../packages/contracts-api/readme/v0.0/openapi.json
-additionalProperties:
-    x-ext-name: "Leo Vigna"
