@@ -62,7 +62,7 @@ function filterOutErroringValues(values, valueChecker) {
     });
 }
 
-const chainsDir = "./chains";
+const chainsDir = "./src/chains";
 
 const chainsJsonUrl = "https://chainid.network/chains.json";
 const iconRoute =
@@ -309,7 +309,7 @@ for (const chain of chains) {
 
     fs.writeFileSync(
         `${chainDir}/${chain.chainId}.ts`,
-        `import type { Chain } from "../src/types.js";
+        `import type { Chain } from "../types.js";
 export default ${JSON.stringify(chain, null, 2)} as const satisfies Chain;`,
     );
 
@@ -323,10 +323,10 @@ export default ${JSON.stringify(chain, null, 2)} as const satisfies Chain;`,
         exportName = `_${exportName}`;
     }
 
-    imports.push(`import c${chain.chainId} from "../chains/${chain.chainId}.js";`);
+    imports.push(`import c${chain.chainId} from "./chains/${chain.chainId}.js";`);
 
     exports.push(
-        `export { default as ${exportName} } from "../chains/${chain.chainId}.js"`,
+        `export { default as ${exportName} } from "./chains/${chain.chainId}.js"`,
     );
 
     const key = `c${chain.chainId}`;
@@ -343,7 +343,7 @@ ${exports.join("\n")}
 export * from "./types.js";
 export * from "./utils.js";
 export const defaultChains = [c1, c5, c8453, c84531, c137, c80001, c42161, c421613, c10, c420, c56, c97, c250, c4002, c43114, c43113, c1337];
-export const allChains: Chain[] = [${exportNames.join(", ")}];
+export const allChains: Chain[] = defaultChains;
 export * from "./chainWithData.js";
 
 type ChainsById = {

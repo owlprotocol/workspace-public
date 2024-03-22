@@ -61,6 +61,36 @@ type IntSign = "uint" | "int";
 type IntSize = 8 | 16 | 32 | 64 | 96 | 128 | 256;
 type IntType = `${IntSign}${IntSize}`;
 
+/**
+ * Create zod validator that takes `bigint` input,
+ * and returns bigint in given integer range.
+ * Throws proper `ZodIssueCode.too_big` and `ZodIssueCode.too_small` errors.
+ * @param name
+ * @returns
+ */
+export function bigIntSolidityIntegerZod(name: IntType) {
+    const signed = name.startsWith("int");
+    const bitLenStr = signed ? name.replace("int", "") : name.replace("uint", "");
+    const bitLen = BigInt(bitLenStr);
+
+    const max = signed ? 2n ** (bitLen - 1n) : 2n ** bitLen - 1n;
+    const min = signed ? 0n - 2n ** (bitLen - 1n) : 0n;
+
+    return z.bigint().lte(max).gte(min).describe(`A solidity ${name}`);
+}
+
+export const uint256BigIntZod = bigIntSolidityIntegerZod("uint256");
+export const uint128BigIntZod = bigIntSolidityIntegerZod("uint128");
+export const uint96BigIntZod = bigIntSolidityIntegerZod("uint96");
+export const uint64BigIntZod = bigIntSolidityIntegerZod("uint64");
+
+/**
+ * Create zod validator that takes `bigint`-like input (bigint, number, hex string, decimal string),
+ * and returns bigint in given integer range.
+ * Throws proper `ZodIssueCode.too_big` and `ZodIssueCode.too_small` errors.
+ * @param name
+ * @returns
+ */
 export function bigIntLikeSolidityIntegerZod(name: IntType) {
     const signed = name.startsWith("int");
     const bitLenStr = signed ? name.replace("int", "") : name.replace("uint", "");
@@ -70,14 +100,14 @@ export function bigIntLikeSolidityIntegerZod(name: IntType) {
     const min = signed ? 0n - 2n ** (bitLen - 1n) : 0n;
 
     return bigIntLikeToBigIntZod
-        .refine((n) => BigInt(n) <= max, {
+        .refine((n) => n <= max, {
             code: ZodIssueCode.too_big,
             maximum: max,
             inclusive: true,
             exact: true,
             type: "bigint",
         } as ZodTooBigIssue)
-        .refine((n) => BigInt(n) >= min, {
+        .refine((n) => n >= min, {
             code: ZodIssueCode.too_small,
             minimum: min,
             inclusive: true,
@@ -87,7 +117,7 @@ export function bigIntLikeSolidityIntegerZod(name: IntType) {
         .describe(`A solidity ${name}`);
 }
 
-export const uint256BigIntZod = bigIntLikeSolidityIntegerZod("uint256");
-export const uint128BigIntZod = bigIntLikeSolidityIntegerZod("uint128");
-export const uint96BigIntZod = bigIntLikeSolidityIntegerZod("uint96");
-export const uint64BigIntZod = bigIntLikeSolidityIntegerZod("uint64");
+export const uint256BigIntLikeZod = bigIntLikeSolidityIntegerZod("uint256");
+export const uint128BigIntLikeZod = bigIntLikeSolidityIntegerZod("uint128");
+export const uint96BigIntLikeZod = bigIntLikeSolidityIntegerZod("uint96");
+export const uint64BigIntLikeZod = bigIntLikeSolidityIntegerZod("uint64");

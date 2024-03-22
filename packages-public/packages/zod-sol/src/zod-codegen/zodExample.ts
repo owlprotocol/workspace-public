@@ -68,7 +68,7 @@ export function zodExampleForAbiParamNonTuple(t: NonTupleType): boolean | string
  * @returns
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function zodExampleForAbiParamArray<T extends ArrayType>(t: T): string {
+export function zodExampleForAbiParamArray<T extends ArrayType>(_: T): string {
     //TODO: Add more explanatory example
     return "[]";
 }
@@ -103,7 +103,7 @@ export function zodExampleForAbiParamTuple<T extends AbiParamTuple>(t: T): Recor
  * @returns
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function zodExampleForAbiParamTupleArray<T extends AbiParamTupleArray>(t: T): string {
+export function zodExampleForAbiParamTupleArray<T extends AbiParamTupleArray>(_: T): string {
     //TODO: Add more explanatory example
     return "[]";
 }

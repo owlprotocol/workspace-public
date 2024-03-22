@@ -93,9 +93,9 @@ describe("genZodValidatorTest", function () {
 
         test("fnAbis.empty", () => {
             const expected = `{ inputs: z.object({  }).optional(),
-    inputsArrayify: z.object({  }).transform((val) => [] as const).optional(),
+    inputsArrayify: z.object({  }).transform((_) => [] as const).optional(),
     inputsDefined: z.object({  }).optional(),
-    inputsDefinedArrayify: z.object({  }).transform((val) => [] as const).optional(),
+    inputsDefinedArrayify: z.object({  }).transform((_) => [] as const).optional(),
     inputsExample: {},
     outputs: z.object({  }),
     outputsExample: {}

@@ -14,7 +14,7 @@ import {
 import { NumberBigintAsString } from "../utils/NumberBigintAsString.js";
 import { bytes32Zod, bytesZod } from "../solidity/bytes.js";
 import { addressZod } from "../solidity/address.js";
-import { uint256BigIntZod } from "../solidity/integer.js";
+import { uint256BigIntLikeZod } from "../solidity/integer.js";
 
 export const transactionResponseZod = z
     .object({
@@ -55,7 +55,7 @@ export const transactionResponseZod = z
                 "For https://eips.ethereum.org/EIPS/eip-4844 transactions, this is the maximum fee that will be paid per BLOb.",
             ),
         data: bytesZod.describe("The transaction data."),
-        value: uint256BigIntZod.describe("The transaction value (in wei)."),
+        value: uint256BigIntLikeZod.describe("The transaction value (in wei)."),
         chainId: bigIntLikeToBigIntZod.optional().describe("The chain ID this transaction is valid on."),
         signature: signatureZod.describe("The signature of the transaction."),
         accessList: acessListZod.optional().nullable().describe("The transaction access list."),
@@ -96,7 +96,7 @@ export const transactionResponseFromRpcZod = transactionResponseZod.omit({ signa
         .describe(
             "For https://eips.ethereum.org/EIPS/eip-4844 transactions, this is the maximum fee that will be paid per BLOb.",
         ),
-    value: uint256BigIntZod.transform((n) => "0x" + n.toString(16)).describe("The transaction value (in wei)."),
+    value: uint256BigIntLikeZod.transform((n) => "0x" + n.toString(16)).describe("The transaction value (in wei)."),
     chainId: bigIntLikeToHexStringZod.optional().describe("The chain ID this transaction is valid on."),
     r: bytesZod.describe("signature r"),
     s: bytesZod.describe("signature s"),

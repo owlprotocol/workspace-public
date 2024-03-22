@@ -54,21 +54,22 @@
     "ethers": "5.7.2"
   },
   "devDependencies": {
-    "@dfns/lib-ethersjs5": "0.1.0-beta.1",
-    "@dfns/sdk": "0.1.0-beta.1",
-    "@dfns/sdk-keysigner": "0.1.0-beta.1",
+    "@dfns/lib-ethersjs5": "0.3.3",
+    "@dfns/lib-viem": "0.3.3",
+    "@dfns/sdk": "0.3.3",
+    "@dfns/sdk-keysigner": "0.3.3",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
     "@types/node": "^16.11.26",
     "@types/dotenv": "^8.2.0",
-    "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
     "madge": "^5.0.2",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
-    "typescript": "4.9.5",
+    "typescript": "5.4.2",
+    "viem": "2.8.6",
     "vite": "^4.4.9",
     "vitest": "^0.34.2"
   }

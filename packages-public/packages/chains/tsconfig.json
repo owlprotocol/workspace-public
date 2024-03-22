@@ -1,5 +1,9 @@
 {
-  "extends": "@thirdweb-dev/tsconfig/sdk.json",
-  "include": ["src"],
-  "exclude": ["dist", "build", "node_modules", "chain-data"]
+  "compilerOptions": {
+    "outDir": "lib/types",
+  },
+  "include": [
+    "src"
+  ],
+  "extends": "@owlprotocol/tsconfig"
 }

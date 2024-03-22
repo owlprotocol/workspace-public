@@ -1,4 +1,4 @@
-import { Chain, MinimalChain } from "./types";
+import { Chain, MinimalChain } from "./types.js";
 
 export type ChainRPCOptions = {
   thirdwebApiKey?: string;

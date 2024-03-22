@@ -1,0 +1,4 @@
+import { Hex } from "viem";
+
+export const ENTRYPOINT_ADDRESS_V07 = "0x0000000071727De22E5E9d8BAf0edAc6f37da032";
+export const ENTRYPOINT_SALT_V07: Hex = "0x90d8084deab30c2a37c45e8d47f49f2f7965183cb6990a98943ef94940681de3";
