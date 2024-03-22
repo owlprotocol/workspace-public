@@ -1,37 +1,58 @@
 {
-    "name": "@owlprotocol/esbuild-config",
-    "version": "2.0.2",
-    "private": false,
-    "license": "MIT",
-    "exports": {
-        ".": {
-            "require": "./index.mjs",
-            "import": "./index.mjs"
-        }
-    },
-    "files": [
-        "index.mjs",
-        "LICENSE",
-        "README.md"
-    ],
-    "engines": {
-        "node": "^18.0.0"
-    },
-    "scripts": {
-        "lint": "eslint index.mjs",
-        "lint:fix": "eslint index.mjs --fix"
-    },
-    "dependencies": {
-        "@esbuild-plugins/node-resolve": "^0.1.4",
-        "esbuild": "^0.19.2",
-        "esbuild-copy-static-files": "^0.1.0",
-        "esbuild-plugin-alias": "^0.2.1",
-        "esbuild-plugin-babel": "^0.2.3",
-        "esbuild-plugin-copy": "^1.1.0",
-        "glob": "^7.2.0"
-    },
-    "devDependencies": {
-        "@owlprotocol/eslint-config": "workspace:*",
-        "@owlprotocol/prettier-config": "workspace:*"
+  "name": "@owlprotocol/esbuild-config",
+  "version": "2.0.2",
+  "keywords": [
+    "web3",
+    "solidity",
+    "trpc",
+    "react-query"
+  ],
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/owlprotocol/owlprotocol.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Leo Vigna",
+    "email": "leo@owlprotocol.xyz",
+    "url": "https://github.com/leovigna"
+  },
+  "files": [
+    "index.mjs",
+    "LICENSE",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "require": "./index.mjs",
+      "import": "./index.mjs"
     }
+  },
+  "scripts": {
+    "lint": "eslint index.mjs",
+    "lint:fix": "eslint index.mjs --fix"
+  },
+  "dependencies": {
+    "@esbuild-plugins/node-resolve": "^0.1.4",
+    "esbuild": "^0.19.2",
+    "esbuild-copy-static-files": "^0.1.0",
+    "esbuild-plugin-alias": "^0.2.1",
+    "esbuild-plugin-babel": "^0.2.3",
+    "esbuild-plugin-copy": "^1.1.0",
+    "glob": "^7.2.0"
+  },
+  "devDependencies": {
+    "@owlprotocol/eslint-config": "workspace:*",
+    "@owlprotocol/prettier-config": "workspace:*"
+  },
+  "bugs": {
+    "url": "https://github.com/owlprotocol/owlprotocol/issues",
+    "email": "leo@owlprotocol.xyz"
+  },
+  "funding": "https://owlprotocol.xyz",
+  "engines": {
+    "node": "^18.0.0"
+  },
+  "packageManager": "^pnpm@8.15.4"
 }

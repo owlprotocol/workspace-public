@@ -1,20 +1,33 @@
 {
   "name": "@owlprotocol/envvars",
   "version": "2.0.6",
+  "keywords": [
+    "web3",
+    "solidity",
+    "trpc",
+    "react-query"
+  ],
   "private": false,
+  "type": "module",
+  "homepage": "https://github.com/owlprotocol/owlprotocol/tree/main/configs/envvars",
   "repository": {
     "type": "git",
     "url": "https://github.com/owlprotocol/owlprotocol.git"
   },
-  "homepage": "https://github.com/owlprotocol/owlprotocol/tree/main/configs/envvars",
   "copyright": "Copyright 2022 Owl Protocol",
+  "license": "MIT",
   "author": {
     "name": "Leo Vigna",
-    "email": "leo.vigna@gmail.com",
+    "email": "leo@owlprotocol.xyz",
     "url": "https://github.com/leovigna"
   },
-  "license": "MIT",
-  "type": "module",
+  "files": [
+    "dist/*",
+    "lib/*",
+    "src/*",
+    "LICENSE",
+    "README.md"
+  ],
   "main": "./lib/cjs/index.cjs",
   "module": "./lib/esm/index.mjs",
   "types": "./lib/types/index.d.mts",
@@ -30,27 +43,17 @@
       "browser": "./lib/esm/index.browser.js"
     }
   },
-  "files": [
-    "dist/*",
-    "lib/*",
-    "src/*",
-    "LICENSE",
-    "README.md"
-  ],
-  "engines": {
-    "node": "^18.0.0"
-  },
   "scripts": {
     "build": "pnpm run codegen && npm-run-all -p tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
+    "clean": "rimraf lib dist",
+    "codegen": "tsx src/genEnvVars.ts",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
-    "tsc": "tsc",
-    "tsc:watch": "tsc -w",
-    "clean": "rimraf lib dist",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "codegen": "tsx src/genEnvVars.ts"
+    "tsc": "tsc",
+    "tsc:watch": "tsc -w"
   },
   "dependencies": {
     "dotenv": "^16.3.1",
@@ -69,5 +72,14 @@
     "tsx": "^3.12.7",
     "typescript": "5.4.2",
     "vite": "3.0.2"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/owlprotocol/owlprotocol/issues",
+    "email": "leo@owlprotocol.xyz"
+  },
+  "funding": "https://owlprotocol.xyz",
+  "engines": {
+    "node": "^18.0.0"
+  },
+  "packageManager": "^pnpm@8.15.4"
 }
