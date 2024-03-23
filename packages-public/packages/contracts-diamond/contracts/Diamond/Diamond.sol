@@ -37,14 +37,7 @@ contract Diamond is IDiamond {
     // Find facet for function that is called and execute the
     // function if a facet is found and return any value.
     fallback(bytes calldata) external payable returns (bytes memory) {
-        DiamondLib.DiamondStorage storage ds = DiamondLib.diamondStorage();
-        // get facet from function selector
-        address facet = ds.selectors[msg.sig];
-        if (facet == address(0)) {
-            revert FunctionNotFound(msg.sig);
-        }
-
-        return Address.functionDelegateCall(facet, msg.data);
+        return DiamondLib._fallback(msg.data);
 
         // Execute external function from facet using delegatecall and return any value.
         /*
