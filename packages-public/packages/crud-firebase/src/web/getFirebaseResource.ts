@@ -1,5 +1,4 @@
 /***** Generics for Firebase Web CRUD *****/
-import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import {
     CollectionReference,
     DocumentData,
@@ -31,6 +30,7 @@ import {
     FirebaseResourceOptions,
 } from "../resource.js";
 import { CacheWithDelete } from "../cache.js";
+import { BigNumberish } from "../common.js";
 
 /**
  * Firebase Resource. create, get, getAll, update, delete, deleteAll and more
@@ -338,10 +338,10 @@ export function getFirebaseResource<
             if (!refSnapshot.exists()) {
                 throw new Error(`${ref.path} not found`);
             }
-            const incrValue = BigNumber.from(value);
+            const incrValue = BigInt(value);
             const currValueStr: BigNumberish = getFirestorePathValue(refSnapshot.data(), path) ?? "0";
-            const currValue = BigNumber.from(currValueStr);
-            const newValue = currValue.add(incrValue);
+            const currValue = BigInt(currValueStr);
+            const newValue = currValue + incrValue;
 
             return transaction.update(ref, { [path]: newValue.toString() });
         }) as any;
@@ -354,7 +354,7 @@ export function getFirebaseResource<
      * @param value
      */
     const decrementStr = async (id: ResourceId | string, path: string, value: BigNumberish): Promise<void> => {
-        return incrementStr(id, path, BigNumber.from("0").sub(BigNumber.from(value)));
+        return incrementStr(id, path, -BigInt(value));
     };
 
     /**

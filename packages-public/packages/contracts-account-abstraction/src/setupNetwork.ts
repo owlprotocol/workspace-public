@@ -53,6 +53,9 @@ export async function setupNetwork(clients: SetupNetworkClients) {
             }),
         },
     );
+    if (simpleAccountFactory.hash) {
+        await publicClient.waitForTransactionReceipt({ hash: simpleAccountFactory.hash });
+    }
 
     //If no EntryPoint v0.7, wait for deploy (mostly used for local testing)
     const entrypoint = await getOrDeployDeterministicContract(
@@ -69,6 +72,15 @@ export async function setupNetwork(clients: SetupNetworkClients) {
             `Entrypoint v0.7 deployed address ${ENTRYPOINT_ADDRESS_V07} (expected) != ${entrypoint.address} (actual)`,
         );
     }
+    if (entrypoint.hash) {
+        await publicClient.waitForTransactionReceipt({ hash: entrypoint.hash });
+    }
+    // console.debug({
+    // deterministicDeployer,
+    // create2Factory,
+    // simpleAccountFactory,
+    // entrypoint,
+    // });
 
     return { deterministicDeployer, create2Factory, simpleAccountFactory, entrypoint };
 }

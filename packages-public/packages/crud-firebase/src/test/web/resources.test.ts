@@ -2,12 +2,13 @@ import { describe, test, expect, beforeEach } from "vitest";
 import { itemResource, itemCompositeResource, itemSubcollectionResource, itemResourceCached } from "./resources.js";
 import { getTestItem, getTestItemComposite } from "../data.js";
 import { Item, ItemComposite } from "../models/index.js";
+import { deleteEmulatorData } from "../../web/config.js";
 
 describe("web/resource.test.ts", async () => {
-    let id = 0;
+    const id = 1;
 
-    beforeEach(() => {
-        id += 1;
+    beforeEach(async () => {
+        await deleteEmulatorData();
     });
 
     describe("item LRU Cache", () => {

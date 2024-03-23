@@ -83,7 +83,6 @@
     "tsc:watch": "tsc -w"
   },
   "dependencies": {
-    "@ethersproject/bignumber": "^5.6.2",
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/utils": "workspace:*",
     "jsonpath": "^1.1.1",

@@ -12,6 +12,7 @@ import { Auth, getAuth } from "firebase-admin/auth";
 import { Storage, getStorage } from "firebase-admin/storage";
 import type { AppOptions } from "firebase-admin";
 import { cert } from "firebase-admin/app";
+import { FIRESTORE_EMULATOR_HOST, FIREBASE_STORAGE_EMULATOR_HOST, FIREBASE_AUTH_EMULATOR_HOST } from "../common.js";
 
 export function getFirebaseConfig() {
     let firebaseConfig: AppOptions = {};
@@ -50,9 +51,9 @@ export function getFirebaseConfig() {
             storageBucket: FIREBASE_STORAGE_BUCKET,
         };
         // Connect to emulator (if test). Do NOT use localhost as breaks in CI
-        process.env["FIRESTORE_EMULATOR_HOST"] = "127.0.0.1:8080";
-        process.env["FIREBASE_STORAGE_EMULATOR_HOST"] = "127.0.0.1:9199";
-        process.env["FIREBASE_AUTH_EMULATOR_HOST"] = "127.0.0.1:9099";
+        process.env["FIRESTORE_EMULATOR_HOST"] = FIRESTORE_EMULATOR_HOST;
+        process.env["FIREBASE_STORAGE_EMULATOR_HOST"] = FIREBASE_STORAGE_EMULATOR_HOST;
+        process.env["FIREBASE_AUTH_EMULATOR_HOST"] = FIREBASE_AUTH_EMULATOR_HOST;
     }
 
     return firebaseConfig;
@@ -97,6 +98,7 @@ export function getFirebaseApp(): {
     firestore: Firestore;
     auth: Auth;
     storage: Storage;
+    config: AppOptions;
 } {
     // Init the firebase app if not in test environment
     const config = getFirebaseConfig();
@@ -109,5 +111,5 @@ export function getFirebaseApp(): {
     // NOTE: storage.apiEndponit stores the prefix of each file's publicUrl
     const storage = getStorage(firebaseApp);
 
-    return { firebaseApp, firestore, auth, storage };
+    return { firebaseApp, firestore, auth, storage, config };
 }

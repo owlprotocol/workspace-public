@@ -2,18 +2,18 @@ import { describe, test, expect, beforeEach } from "vitest";
 import { itemSubcollectionResource } from "./resources.js";
 import { childrenGroupQuery } from "./groupQueries.js";
 import { getTestItemComposite } from "../data.js";
+import { deleteEmulatorData } from "../../web/config.js";
 
 describe("admin/groupQueries.test.ts", async () => {
-    let id = 0;
+    let id = 1;
+
+    beforeEach(async () => {
+        await deleteEmulatorData();
+    });
 
     describe("itemSubcollection", () => {
         const testSubCollection1 = itemSubcollectionResource({ id: "100000" });
         const testSubCollection2 = itemSubcollectionResource({ id: "200000" });
-
-        beforeEach(async () => {
-            await testSubCollection1.deleteAll();
-            await testSubCollection2.deleteAll();
-        });
 
         test("getAll", async () => {
             const testItemComposite1 = getTestItemComposite(id++);

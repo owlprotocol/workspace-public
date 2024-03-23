@@ -122,6 +122,7 @@ export function getFirebaseApp(): {
     firestore: Firestore;
     auth: Auth;
     storage: FirebaseStorage;
+    config: FirebaseOptions;
 } {
     // Init the firebase app if not in test environment
     const config = getFirebaseConfig();
@@ -142,5 +143,5 @@ export function getFirebaseApp(): {
         }
     }
 
-    return { firebaseApp, firestore, auth, storage };
+    return { firebaseApp, firestore, auth, storage, config };
 }

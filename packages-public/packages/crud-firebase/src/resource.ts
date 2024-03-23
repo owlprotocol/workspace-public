@@ -1,5 +1,5 @@
-import { BigNumberish } from "@ethersproject/bignumber";
 import { v4 as uuidv4 } from "uuid";
+import { BigNumberish } from "./common.js";
 
 /**
  * @interface ResourceQueryOptions to sort/order firebase query

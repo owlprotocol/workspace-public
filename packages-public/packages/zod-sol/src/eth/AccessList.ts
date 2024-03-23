@@ -6,13 +6,14 @@
 
 import { z } from "zod";
 import { TypeEqual, expectType } from "ts-expect";
+import { Address } from "abitype";
 import { addressZod } from "../solidity/address.js";
 import { bytes32Zod } from "../solidity/bytes.js";
 
 /**
  *  A single [[AccessList]] entry of storage keys (slots) for an address.
  */
-export type AccessListEntry = { address: string; storageKeys: Array<string> };
+export type AccessListEntry = { address: Address; storageKeys: Array<string> };
 export const accessListEntryZod = z
     .object({
         address: addressZod,

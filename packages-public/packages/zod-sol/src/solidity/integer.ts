@@ -1,4 +1,5 @@
 import { ZodIssueCode, ZodTooBigIssue, ZodTooSmallIssue, z } from "zod";
+import { SolidityInt } from "abitype";
 import { bigIntLikeToBigIntZod } from "../eth/math.js";
 
 /**
@@ -57,10 +58,6 @@ export const int32Zod = integerZod("int32");
 export const int16Zod = integerZod("int16");
 export const int8Zod = integerZod("int8");
 
-type IntSign = "uint" | "int";
-type IntSize = 8 | 16 | 32 | 64 | 96 | 128 | 256;
-type IntType = `${IntSign}${IntSize}`;
-
 /**
  * Create zod validator that takes `bigint` input,
  * and returns bigint in given integer range.
@@ -68,21 +65,22 @@ type IntType = `${IntSign}${IntSize}`;
  * @param name
  * @returns
  */
-export function bigIntSolidityIntegerZod(name: IntType) {
-    const signed = name.startsWith("int");
-    const bitLenStr = signed ? name.replace("int", "") : name.replace("uint", "");
+export function getSolidityIntZod(name: SolidityInt) {
+    const nameSanitized = name === "uint" ? "uint256" : name === "int" ? "int256" : name;
+    const signed = nameSanitized.startsWith("int");
+    const bitLenStr = signed ? nameSanitized.replace("int", "") : nameSanitized.replace("uint", "");
     const bitLen = BigInt(bitLenStr);
 
     const max = signed ? 2n ** (bitLen - 1n) : 2n ** bitLen - 1n;
     const min = signed ? 0n - 2n ** (bitLen - 1n) : 0n;
 
-    return z.bigint().lte(max).gte(min).describe(`A solidity ${name}`);
+    return z.bigint().lte(max).gte(min).describe(`A solidity ${nameSanitized}`);
 }
 
-export const uint256BigIntZod = bigIntSolidityIntegerZod("uint256");
-export const uint128BigIntZod = bigIntSolidityIntegerZod("uint128");
-export const uint96BigIntZod = bigIntSolidityIntegerZod("uint96");
-export const uint64BigIntZod = bigIntSolidityIntegerZod("uint64");
+export const uint256BigIntZod = getSolidityIntZod("uint256");
+export const uint128BigIntZod = getSolidityIntZod("uint128");
+export const uint96BigIntZod = getSolidityIntZod("uint96");
+export const uint64BigIntZod = getSolidityIntZod("uint64");
 
 /**
  * Create zod validator that takes `bigint`-like input (bigint, number, hex string, decimal string),
@@ -91,9 +89,10 @@ export const uint64BigIntZod = bigIntSolidityIntegerZod("uint64");
  * @param name
  * @returns
  */
-export function bigIntLikeSolidityIntegerZod(name: IntType) {
-    const signed = name.startsWith("int");
-    const bitLenStr = signed ? name.replace("int", "") : name.replace("uint", "");
+export function getSolidityIntLikeZod(name: SolidityInt) {
+    const nameSanitized = name === "uint" ? "uint256" : name === "int" ? "int256" : name;
+    const signed = nameSanitized.startsWith("int");
+    const bitLenStr = signed ? nameSanitized.replace("int", "") : nameSanitized.replace("uint", "");
     const bitLen = BigInt(bitLenStr);
 
     const max = signed ? 2n ** (bitLen - 1n) : 2n ** bitLen - 1n;
@@ -114,10 +113,10 @@ export function bigIntLikeSolidityIntegerZod(name: IntType) {
             exact: true,
             type: "bigint",
         } as ZodTooSmallIssue)
-        .describe(`A solidity ${name}`);
+        .describe(`A solidity ${nameSanitized}`);
 }
 
-export const uint256BigIntLikeZod = bigIntLikeSolidityIntegerZod("uint256");
-export const uint128BigIntLikeZod = bigIntLikeSolidityIntegerZod("uint128");
-export const uint96BigIntLikeZod = bigIntLikeSolidityIntegerZod("uint96");
-export const uint64BigIntLikeZod = bigIntLikeSolidityIntegerZod("uint64");
+export const uint256BigIntLikeZod = getSolidityIntLikeZod("uint256");
+export const uint128BigIntLikeZod = getSolidityIntLikeZod("uint128");
+export const uint96BigIntLikeZod = getSolidityIntLikeZod("uint96");
+export const uint64BigIntLikeZod = getSolidityIntLikeZod("uint64");

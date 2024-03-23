@@ -1,7 +1,6 @@
 /***** Generics for Firebase Admin CRUD *****/
 import { CollectionReference, DocumentReference, UpdateData, Firestore } from "firebase-admin/firestore";
 import { zip } from "lodash-es";
-import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 
 import { ResourceAccessControl, getFirebaseQueryResource } from "./getFirebaseQueryResource.js";
 import { DecodeRef } from "./getDecodeRefSnapshot.js";
@@ -18,6 +17,7 @@ import {
     FirebaseResourceOptions,
 } from "../resource.js";
 import { CacheWithDelete } from "../cache.js";
+import { BigNumberish } from "../common.js";
 
 /**
  * Firebase Resource. create, get, getAll, update, delete, deleteAll and more
@@ -727,10 +727,10 @@ export function getFirebaseResource<
                 throw new Error(`${ref.path} not found`);
             }
 
-            const incrValue = BigNumber.from(value);
+            const incrValue = BigInt(value);
             const currValueStr: BigNumberish = getFirestorePathValue(refSnapshot.data(), path) ?? "0";
-            const currValue = BigNumber.from(currValueStr);
-            const newValue = currValue.add(incrValue);
+            const currValue = BigInt(currValueStr);
+            const newValue = currValue + incrValue;
 
             return transaction.update(ref, { [path]: newValue.toString() } as UpdateData<ResourceData>);
         }) as any;
@@ -768,10 +768,10 @@ export function getFirebaseResource<
                     throw new Error(`${ref.path} permission-denied`);
                 }
 
-                const incrValue = BigNumber.from(value);
+                const incrValue = BigInt(value);
                 const currValueStr: BigNumberish = getFirestorePathValue(refSnapshot.data(), path) ?? "0";
-                const currValue = BigNumber.from(currValueStr);
-                const newValue = currValue.add(incrValue);
+                const currValue = BigInt(currValueStr);
+                const newValue = currValue + incrValue;
 
                 return transaction.update(ref, { [path]: newValue.toString() } as UpdateData<ResourceData>);
             }) as any;
@@ -790,7 +790,7 @@ export function getFirebaseResource<
         value: BigNumberish,
         accessParams?: AccessControlParams,
     ): Promise<void> => {
-        return incrementStr(id, path, BigNumber.from("0").sub(BigNumber.from(value)), accessParams);
+        return incrementStr(id, path, -BigInt(value), accessParams);
     };
 
     /**

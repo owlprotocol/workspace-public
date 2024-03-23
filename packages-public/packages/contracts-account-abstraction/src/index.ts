@@ -1,4 +1,3 @@
-export * as Artifacts from "./artifacts/index.js";
 //Disable for now (fix zsol)
 //export * as ZodValidators from "./zsol/index.js";
 export * from "./EntryPoint.js";

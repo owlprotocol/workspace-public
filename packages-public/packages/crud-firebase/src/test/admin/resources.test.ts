@@ -2,19 +2,19 @@ import { describe, test, expect, beforeEach } from "vitest";
 import { itemResource, itemCompositeResource, itemSubcollectionResource, itemResourceCached } from "./resources.js";
 import { getTestItem, getTestItemComposite } from "../data.js";
 import { Item, ItemComposite } from "../models/index.js";
+import { deleteEmulatorData } from "../../admin/config.js";
 
 describe("admin/resource.test.ts", async () => {
-    let id = 0;
+    const id = 1;
 
-    beforeEach(() => {
-        id += 1;
+    beforeEach(async () => {
+        await deleteEmulatorData();
     });
 
     describe("item LRU Cache", () => {
         let testItem: Item;
 
         beforeEach(async () => {
-            await itemResourceCached().deleteAll();
             itemResourceCached().cache?.clear();
             testItem = getTestItem(id);
         });
@@ -95,7 +95,6 @@ describe("admin/resource.test.ts", async () => {
         let testItemComposite: ItemComposite;
 
         beforeEach(async () => {
-            await testSubCollection.deleteAll();
             testItemComposite = getTestItemComposite(id);
         });
 
@@ -119,7 +118,6 @@ describe("admin/resource.test.ts", async () => {
         let testItemComposite: ItemComposite;
 
         beforeEach(async () => {
-            await itemCompositeResource().deleteAll();
             testItemComposite = getTestItemComposite(id);
         });
 
@@ -143,7 +141,6 @@ describe("admin/resource.test.ts", async () => {
         let testItem: Item;
 
         beforeEach(async () => {
-            await itemResource().deleteAll();
             testItem = getTestItem(id);
         });
 
@@ -152,6 +149,17 @@ describe("admin/resource.test.ts", async () => {
                 await itemResource().set(testItem);
                 const item = await itemResource().get(testItem.id);
                 expect(item).toStrictEqual(testItem);
+            });
+
+            test("deleteEmulatorData", async () => {
+                await itemResource().set(testItem);
+                const item0 = await itemResource().get(testItem.id);
+                expect(item0).toStrictEqual(testItem);
+
+                await deleteEmulatorData();
+
+                const item1 = await itemResource().getOrUndefined(testItem.id);
+                expect(item1).toBeUndefined();
             });
 
             test("set, nested key", async () => {
