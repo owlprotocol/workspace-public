@@ -6,6 +6,7 @@
 pragma solidity ^0.8.20;
 
 import {AccessControlRecursiveLib} from "../access/AccessControlRecursiveLib.sol";
+import {IERC2981Facet} from "./IERC2981Facet.sol";
 
 /**
  * @dev Implementation of the NFT Royalty Standard, a standardized way to retrieve royalty payment information.
@@ -41,7 +42,7 @@ library ERC2981Lib {
      */
     error ERC2981InvalidTokenRoyaltyReceiver(uint256 tokenId, address receiver);
 
-    bytes32 internal constant ERC2981_ROLE = keccak256("erc2981.roles.setRoyalty");
+    bytes32 internal constant ERC2981_ROLE = bytes32(IERC2981Facet.setTokenRoyalty.selector);
 
     bytes32 constant ERC2981_STORAGE =
         keccak256(abi.encode(uint256(keccak256("erc2981.storage")) - 1)) & ~bytes32(uint256(0xff));

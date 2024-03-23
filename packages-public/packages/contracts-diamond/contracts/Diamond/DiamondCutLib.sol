@@ -64,7 +64,7 @@ library DiamondCutLib {
     event DiamondCut(IDiamondCut.FacetCut[] diamondCut, address initAddress, bytes initData);
 
     //General diamond cut admin
-    bytes32 constant DIAMOND_CUT_ROLE = keccak256("DiamondCutLib.roles.diamondCut");
+    bytes32 constant DIAMOND_CUT_ROLE = bytes32(IDiamondCut.diamondCut.selector);
 
     // Internal function version of diamondCut
     function _diamondCut(

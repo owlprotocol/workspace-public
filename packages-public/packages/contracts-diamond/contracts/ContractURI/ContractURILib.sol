@@ -1,13 +1,14 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import {IContractURI} from "./IContractURI.sol";
 import {AccessControlRecursiveLib} from "../access/AccessControlRecursiveLib.sol";
 
 /**
  * @dev Implements contract uri getter/setter
  */
 library ContractURILib {
-    bytes32 internal constant CONTRACT_URI_ROLE = keccak256("owlprotocol.roles.ContractURI.setContractURI");
+    bytes32 internal constant CONTRACT_URI_ROLE = bytes32(IContractURI.setContractURI.selector);
 
     bytes32 constant CONTRACT_URI_STORAGE =
         keccak256(abi.encode(uint256(keccak256("owlprotocol.storage.ContractURI")) - 1)) & ~bytes32(uint256(0xff));

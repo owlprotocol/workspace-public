@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import {IERC721BaseURI} from "./IERC721BaseURI.sol";
 import {ERC721Lib} from "./ERC721Lib.sol";
 import {AccessControlRecursiveLib} from "../../access/AccessControlRecursiveLib.sol";
 
 library ERC721BaseURILib {
-    bytes32 internal constant ERC721_BASE_URI_ROLE = keccak256("erc721.roles.baseURI");
+    bytes32 internal constant ERC721_BASE_URI_ROLE = bytes32(IERC721BaseURI.setBaseURI.selector);
 
     bytes32 constant ERC721_BASE_URI_STORAGE =
         keccak256(abi.encode(uint256(keccak256("erc721.baseURI.storage")) - 1)) & ~bytes32(uint256(0xff));

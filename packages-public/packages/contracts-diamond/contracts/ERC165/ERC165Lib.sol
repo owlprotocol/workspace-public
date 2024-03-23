@@ -3,9 +3,10 @@ pragma solidity ^0.8.20;
 
 import {AccessControlRecursiveLib} from "../access/AccessControlRecursiveLib.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {IERC165Register} from "./IERC165Register.sol";
 
 library ERC165Lib {
-    bytes32 internal constant ERC165_ROLE = keccak256("erc165.roles.registerInterface");
+    bytes32 internal constant ERC165_ROLE = bytes32(IERC165Register.registerInterface.selector);
 
     bytes32 constant ERC165_STORAGE =
         keccak256(abi.encode(uint256(keccak256("erc165.storage")) - 1)) & ~bytes32(uint256(0xff));

@@ -1,14 +1,15 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {IERC2981} from "./IERC2981.sol";
-import {ERC2981Lib} from "./ERC2981Lib.sol";
 import {AccessControlRecursiveLib} from "../access/AccessControlRecursiveLib.sol";
 
-contract ERC2981Facet is IERC2981 {
+import {IERC2981} from "./IERC2981.sol";
+import {IERC2981Facet} from "./IERC2981Facet.sol";
+import {ERC2981Lib} from "./ERC2981Lib.sol";
+
+contract ERC2981Facet is IERC2981Facet {
     /**
-     * @dev Returns how much royalty is owed and to whom, based on a sale price that may be denominated in any unit of
-     * exchange. The royalty amount is denominated and should be paid in that same unit of exchange.
+     * @inheritdoc IERC2981
      */
     function royaltyInfo(
         uint256 tokenId,
@@ -18,38 +19,28 @@ contract ERC2981Facet is IERC2981 {
     }
 
     /**
-     * @dev Sets the royalty information that all ids in this contract will default to.
-     *
-     * Requirements:
-     *
-     * - `receiver` cannot be the zero address.
-     * - `feeNumerator` cannot be greater than the fee denominator.
+     * @inheritdoc IERC2981Facet
      */
     function setDefaultRoyalty(address receiver, uint96 feeNumerator) external {
         return ERC2981Lib._setDefaultRoyalty(receiver, feeNumerator);
     }
 
     /**
-     * @dev Removes default royalty information.
+     * @inheritdoc IERC2981Facet
      */
     function deleteDefaultRoyalty() external {
         return ERC2981Lib._deleteDefaultRoyalty();
     }
 
     /**
-     * @dev Sets the royalty information for a specific token id, overriding the global default.
-     *
-     * Requirements:
-     *
-     * - `receiver` cannot be the zero address.
-     * - `feeNumerator` cannot be greater than the fee denominator.
+     * @inheritdoc IERC2981Facet
      */
     function setTokenRoyalty(uint256 tokenId, address receiver, uint96 feeNumerator) external {
         return ERC2981Lib._setTokenRoyalty(tokenId, receiver, feeNumerator);
     }
 
     /**
-     * @dev Resets royalty information for the token id back to the global default.
+     * @inheritdoc IERC2981Facet
      */
     function resetTokenRoyalty(uint256 tokenId) external {
         return ERC2981Lib._resetTokenRoyalty(tokenId);

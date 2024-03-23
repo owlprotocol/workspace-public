@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import {IERC721MintableAutoId} from "./IERC721MintableAutoId.sol";
 import {ERC721Lib} from "./ERC721Lib.sol";
 import {AccessControlRecursiveLib} from "../../access/AccessControlRecursiveLib.sol";
 
 library ERC721MintableAutoIdLib {
-    bytes32 internal constant ERC721_MINTER_ROLE = keccak256("erc721.roles.mint");
+    bytes32 internal constant ERC721_MINTER_ROLE = bytes32(IERC721MintableAutoId.mint.selector);
 
     bytes32 constant ERC721_MINTABLE_AUTOID_STORAGE =
         keccak256(abi.encode(uint256(keccak256("erc721.mintableAutoId.storage")) - 1)) & ~bytes32(uint256(0xff));
