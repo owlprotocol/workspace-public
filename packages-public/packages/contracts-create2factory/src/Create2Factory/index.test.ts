@@ -10,6 +10,7 @@ import {
     createPublicClient,
     createWalletClient,
     custom,
+    getCreate2Address,
     zeroAddress,
     zeroHash,
 } from "viem";
@@ -19,8 +20,9 @@ import { CREATE2_FACTORY_ADDRESS } from "./constants.js";
 import { getOrDeployContracts } from "./getTransaction.js";
 import { getDeployAddress } from "./getAddress.js";
 import { ANVIL_MNEMONIC, getUtilityAccount } from "../utils/getUtilityWallet.js";
-import { getOrDeployDeterministicDeployer } from "../DeterministicDeployer/index.js";
+import { DETERMINISTIC_DEPLOYER_ADDRESS, getOrDeployDeterministicDeployer } from "../DeterministicDeployer/index.js";
 import { MyContract } from "../artifacts/MyContract.js";
+import { Create2Factory } from "../artifacts/Create2Factory.js";
 
 describe("deployCreate2Factory.test.ts", function () {
     let publicClient: PublicClient<CustomTransport, Chain>;
@@ -41,6 +43,15 @@ describe("deployCreate2Factory.test.ts", function () {
         //Deploy Deterministic Deployer first
         const { hash } = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
         await publicClient.waitForTransactionReceipt({ hash: hash! });
+    });
+
+    test("CREATE2_FACTORY_ADDRESS", () => {
+        const address = getCreate2Address({
+            from: DETERMINISTIC_DEPLOYER_ADDRESS,
+            salt: zeroHash,
+            bytecode: Create2Factory.bytecode,
+        });
+        expect(CREATE2_FACTORY_ADDRESS).toBe(address);
     });
 
     test("getOrDeployCreate2Factory", async () => {

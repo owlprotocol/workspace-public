@@ -1,12 +1,13 @@
 import { globSync } from "glob";
 import { generateBarrelFileForDir } from "@owlprotocol/utils";
 import { ESLint } from "eslint";
-import { Hex, Abi, zeroAddress, zeroHash } from "viem";
+import { Hex, Abi, zeroAddress, zeroHash, Address } from "viem";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { createHash } from "node:crypto";
 import { join } from "path";
 import { getDeployAddress } from "../Create2Factory/getAddress.js";
 import { CREATE2_FACTORY_ADDRESS } from "../Create2Factory/constants.js";
+import { getDeployDeterministicAddress } from "../DeterministicDeployer/getAddress.js";
 
 interface Artifact {
     _format: string;
@@ -19,22 +20,41 @@ interface Artifact {
     deployedLinkReferences: Record<string, any>;
 }
 
+type Deployer = "Create2Factory" | "DeterministicDeployer";
+
 /**
  * Takes an artifact and generates proper export file content.
  *   - Inidvidual keys are exported for better tree-shaking
- * @param artifact
+ * @param artifact contains abi, bytecode, deployedBytecode
+ * @param deployer what type of deployer is used for implementation.
+ * @param implementations hard-coded implementations
  */
-export function getArtifactExportFileContent(artifact: Artifact): string {
+export function getArtifactExportFileContent(
+    artifact: Artifact,
+    deployer: Deployer = "Create2Factory",
+    implementations: Record<string, Address> = {},
+): string {
     if (artifact.bytecode != "0x") {
-        //Implementation address deployed using Create2Factory
-        const implementation =
-            artifact.contractName != "Create2Factory"
-                ? getDeployAddress(zeroAddress, {
-                      salt: zeroHash,
-                      bytecode: artifact.bytecode,
-                      initData: "0x",
-                  })
-                : CREATE2_FACTORY_ADDRESS;
+        let implementation: Address;
+        if (implementations[artifact.contractName]) {
+            implementation = implementations[artifact.contractName];
+        } else if (artifact.contractName === "Create2Factory") {
+            implementation = CREATE2_FACTORY_ADDRESS;
+        } else if (deployer === "DeterministicDeployer") {
+            implementation = getDeployDeterministicAddress({
+                salt: zeroHash,
+                bytecode: artifact.bytecode,
+            });
+        } else if (deployer === "Create2Factory") {
+            //Implementation address deployed using Create2Factory
+            implementation = getDeployAddress(zeroAddress, {
+                salt: zeroHash,
+                bytecode: artifact.bytecode,
+                initData: "0x",
+            });
+        } else {
+            throw new Error(`getArtifactExportFileContent invalid deployer ${deployer}`);
+        }
         return `import { Hex, Address } from "viem";
 
 export const abi = ${JSON.stringify(artifact.abi)} as const;
@@ -61,7 +81,9 @@ export const ${artifact.contractName} = {
 export async function hardhatArtifactsExport(
     artifactDir = "./src/artifacts",
     cacheDir = "./cache",
-    hardhatArtifactsGlob = "artifacts/contracts/**/*.json",
+    hardhatArtifactsGlob: string | string[] = "artifacts/contracts/**/*.json",
+    deployer: Deployer = "Create2Factory",
+    implementations: Record<string, Address> = {},
 ) {
     if (!existsSync(artifactDir)) {
         mkdirSync(artifactDir);
@@ -73,6 +95,7 @@ export async function hardhatArtifactsExport(
 
     //Get files paths for artifacts, this includes libraries
     const artifactPaths = globSync(hardhatArtifactsGlob).filter((f) => !f.endsWith(".dbg.json"));
+    //console.debug(artifactPaths);
 
     // Filter contract/interface artifacts.
     // To do so we load the abi, and check if any `type: function | fallback`
@@ -107,7 +130,7 @@ export async function hardhatArtifactsExport(
         artifactExportsCache[contractName] = createHash("md5").update(JSON.stringify(artifact)).digest("hex");
 
         //write to `src/artifacts/{artifact.contractName}.ts`
-        const artifactData = getArtifactExportFileContent(artifact);
+        const artifactData = getArtifactExportFileContent(artifact, deployer, implementations);
         writeFileSync(join(artifactDir, `${contractName}.ts`), artifactData);
     });
 

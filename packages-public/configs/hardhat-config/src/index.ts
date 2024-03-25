@@ -64,12 +64,13 @@ export function getHardhatConfig(
             scripts: "./lib/cjs/scripts",
         },
         solidity: {
-            version: "0.8.20",
+            version: "0.8.23",
             settings: {
+                evmVersion: "paris",
                 viaIR: true,
                 optimizer: {
                     enabled: true,
-                    runs: 100,
+                    runs: 1000000,
                     details: { yul: true },
                 },
             },

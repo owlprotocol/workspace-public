@@ -4,9 +4,10 @@ import {
     getOrDeployDeterministicContract,
 } from "@owlprotocol/contracts-create2factory";
 import { Account, Chain, PublicClient, Transport, WalletClient, encodeDeployData, zeroHash } from "viem";
-import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./EntryPoint.js";
+import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./constants.js";
 import { EntryPoint } from "./artifacts/EntryPoint.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
+import { VerifyingPaymaster } from "./artifacts/VerifyingPaymaster.js";
 
 export interface SetupNetworkClients {
     publicClient: PublicClient<Transport, Chain>;
@@ -41,22 +42,6 @@ export async function setupNetwork(clients: SetupNetworkClients) {
         await publicClient.waitForTransactionReceipt({ hash: create2Factory.hash });
     }
 
-    //If no SimpleAccountFactory, wait for deploy (mostly used for local testing)
-    const simpleAccountFactory = await getOrDeployDeterministicContract(
-        { publicClient, walletClient },
-        {
-            salt: zeroHash,
-            bytecode: encodeDeployData({
-                abi: SimpleAccountFactory.abi,
-                bytecode: SimpleAccountFactory.bytecode,
-                args: [ENTRYPOINT_ADDRESS_V07],
-            }),
-        },
-    );
-    if (simpleAccountFactory.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: simpleAccountFactory.hash });
-    }
-
     //If no EntryPoint v0.7, wait for deploy (mostly used for local testing)
     const entrypoint = await getOrDeployDeterministicContract(
         { publicClient, walletClient },
@@ -75,6 +60,38 @@ export async function setupNetwork(clients: SetupNetworkClients) {
     if (entrypoint.hash) {
         await publicClient.waitForTransactionReceipt({ hash: entrypoint.hash });
     }
+
+    //If no SimpleAccountFactory, wait for deploy (mostly used for local testing)
+    const simpleAccountFactory = await getOrDeployDeterministicContract(
+        { publicClient, walletClient },
+        {
+            salt: zeroHash,
+            bytecode: encodeDeployData({
+                abi: SimpleAccountFactory.abi,
+                bytecode: SimpleAccountFactory.bytecode,
+                args: [entrypoint.address],
+            }),
+        },
+    );
+    if (simpleAccountFactory.hash) {
+        await publicClient.waitForTransactionReceipt({ hash: simpleAccountFactory.hash });
+    }
+
+    //If no VerifyingPaymaster, wait for deploy (mostly used for local testing)
+    const verifyingPaymaster = await getOrDeployDeterministicContract(
+        { publicClient, walletClient },
+        {
+            salt: zeroHash,
+            bytecode: encodeDeployData({
+                abi: VerifyingPaymaster.abi,
+                bytecode: VerifyingPaymaster.bytecode,
+                args: [entrypoint.address, walletClient.account.address],
+            }),
+        },
+    );
+    if (verifyingPaymaster.hash) {
+        await publicClient.waitForTransactionReceipt({ hash: verifyingPaymaster.hash });
+    }
     // console.debug({
     // deterministicDeployer,
     // create2Factory,
@@ -82,5 +99,5 @@ export async function setupNetwork(clients: SetupNetworkClients) {
     // entrypoint,
     // });
 
-    return { deterministicDeployer, create2Factory, simpleAccountFactory, entrypoint };
+    return { deterministicDeployer, create2Factory, entrypoint, simpleAccountFactory, verifyingPaymaster };
 }

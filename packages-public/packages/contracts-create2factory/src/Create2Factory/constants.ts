@@ -1,15 +1,11 @@
 import { parseGwei, getCreateAddress, Address } from "viem";
 import { PUBLIC_ADDRESS_CREATE2FACTORY_DEPLOYER } from "@owlprotocol/envvars";
 
-//WARNING Change if bytecode every changes
-/** Create2Factory address when deployed using DeterministicDeployer */
-export const CREATE2_FACTORY_ADDRESS: Address = "0x1E76c4Efca7b55fA44838E1Cf54507B999c7AF11";
-
-//getCreate2Address({
-//    from: DETERMINISTIC_DEPLOYER_ADDRESS,
-//    salt: zeroHash,
-//    bytecode: Create2Factory.bytecode,
-//});
+/**
+ * Create2Factory address when deployed using DeterministicDeployer
+ * 0x62366409c9E4D9c7b255d6A8990320A6e4c29B17
+ **/
+export const CREATE2_FACTORY_ADDRESS: Address = "0x62366409c9E4D9c7b255d6A8990320A6e4c29B17";
 
 /** ETH transaction base gas cost */
 export const ETH_TX_BASE_GAS = 21000n;

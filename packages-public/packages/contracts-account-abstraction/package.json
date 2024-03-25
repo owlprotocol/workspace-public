@@ -61,12 +61,12 @@
     }
   },
   "scripts": {
-    "build": "npm-run-all build:artifacts build:esm",
+    "build": "npm-run-all build:hardhat build:artifacts build:esm",
     "build:artifacts": "tsx src/codegen/runHardhatArtifactsExport.ts",
     "build:esbuild": "node esbuild.config.mjs",
     "build:esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "build:esm": "npm-run-all -p build:esbuild build:tsc ",
-    "build:hardhat": "npm run to:commonjs && hardhat compile && hardhat docgen && npm run to:module",
+    "build:hardhat": "npm run to:commonjs && cp tsconfig.hardhat.json tsconfig.json && hardhat compile && hardhat docgen && npm run to:module && cp tsconfig.build.json tsconfig.json",
     "build:tsc": "tsc",
     "build:tsc:watch": "tsc -w",
     "build:watch": "npm-run-all -p build:tsc:watch build:esbuild:watch",
@@ -94,6 +94,7 @@
     "@openzeppelin/contracts": "5.0.2",
     "@account-abstraction/contracts": "0.7.0",
     "abitype": "1.0.0",
+    "permissionless": "^0.1.10",
     "viem": "2.8.6",
     "zod": "3.21.4"
   },

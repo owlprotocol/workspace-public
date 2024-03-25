@@ -70,8 +70,13 @@ export function zodExampleForAbiParamTuple<T extends AbiParamTuple>(t: T): Recor
         t.components.map((p, idx) => {
             const key = p.name && p.name.length > 0 ? p.name : idx;
             let val: string | boolean;
-            if (p.type.endsWith("[]")) val = zodExampleForAbiParamArray(p.type as ArrayType);
-            else {
+            if (p.type.endsWith("[]")) {
+                val = zodExampleForAbiParamArray(p.type as ArrayType);
+                //TODO: Nested tuple types not handled properly
+                //@ts-expect-error
+            } else if (p.type === "tuple") {
+                val = "<any>";
+            } else {
                 val = zodExampleForAbiParamNonTuple(p.type as NonTupleType);
                 if (val === "" && typeof key != "number") val = `<${key}>`;
             }

@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach } from "vitest";
+import { describe, test, beforeEach, expect } from "vitest";
 import ganache from "ganache";
 import {
     Account,
@@ -14,17 +14,16 @@ import {
 } from "viem";
 import { localhost } from "viem/chains";
 import {
-    getOrDeployDeterministicDeployer,
-    getOrDeployDeterministicContract,
-    getDeployDeterministicAddress,
     ANVIL_MNEMONIC,
+    getDeployDeterministicAddress,
+    getOrDeployDeterministicContract,
+    getOrDeployDeterministicDeployer,
     getUtilityAccount,
 } from "@owlprotocol/contracts-create2factory";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
-import { EntryPoint } from "./artifacts/EntryPoint.js";
-import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./EntryPoint.js";
+import { ENTRYPOINT_ADDRESS_V07, SIMPLE_ACCOUNT_FACTORY_ADDRESS } from "./constants.js";
 
-describe("index.test.ts", function () {
+describe("SimpleAccountFactory.test.ts", function () {
     let publicClient: PublicClient<CustomTransport, Chain>;
     let walletClient: WalletClient<CustomTransport, Chain, Account>;
 
@@ -41,13 +40,12 @@ describe("index.test.ts", function () {
             chain: localhost,
             transport,
         });
-
         //Deploy Deterministic Deployer first
         const { hash } = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
         await publicClient.waitForTransactionReceipt({ hash: hash! });
     });
 
-    test("SimpleAccountFactory", async () => {
+    test("deploy", async () => {
         const deployParams = {
             salt: zeroHash,
             bytecode: encodeDeployData({
@@ -56,33 +54,9 @@ describe("index.test.ts", function () {
                 args: [ENTRYPOINT_ADDRESS_V07],
             }),
         };
+        //Check SimpleAccountFactory address matches expected
         const address = getDeployDeterministicAddress(deployParams);
-
-        //Deploy new
-        const resultDeploy = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
-        expect(resultDeploy.existed).toBe(false);
-        expect(resultDeploy.hash).toBeDefined();
-        expect(resultDeploy.address).toBe(address);
-
-        //Wait for receipt
-        const receipt = await publicClient.waitForTransactionReceipt({ hash: resultDeploy.hash! });
-        //receipt.contractAddress null since using factory
-        expect(receipt.contractAddress).toBe(null);
-
-        //Get existing
-        const resultGet = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
-        expect(resultGet.existed).toBe(true);
-        expect(resultGet.hash).toBeUndefined();
-        expect(resultGet.address).toBe(address);
-    });
-
-    test("EntryPoint", async () => {
-        const deployParams = {
-            salt: ENTRYPOINT_SALT_V07,
-            bytecode: EntryPoint.bytecode,
-        };
-        const address = getDeployDeterministicAddress(deployParams);
-        expect(address).toBe(ENTRYPOINT_ADDRESS_V07);
+        expect(address).toBe(SIMPLE_ACCOUNT_FACTORY_ADDRESS);
 
         //Deploy new
         const resultDeploy = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
