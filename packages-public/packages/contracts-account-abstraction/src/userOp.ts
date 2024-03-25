@@ -19,9 +19,49 @@ import { GetUserOperationReceiptReturnType, UserOperation, getAccountNonce } fro
 import { getUserOperationHash, signUserOperationHashWithECDSA } from "permissionless/utils";
 import { PimlicoBundlerClient, PimlicoPaymasterClient } from "permissionless/clients/pimlico";
 import { SponsorUserOperationReturnType } from "permissionless/actions/pimlico";
-import { UserOperationWithBigIntAsHex } from "permissionless/types/userOperation";
+import { EntryPointVersion } from "permissionless/types";
 import { abi as SimpleAccountAbi } from "./artifacts/SimpleAccount.js";
 import { ENTRYPOINT_ADDRESS_V07 } from "./constants.js";
+
+export type UserOperationWithBigIntAsHex<entryPointVersion extends EntryPointVersion> = entryPointVersion extends "v0.6"
+    ? {
+          sender: Address;
+          nonce: Hex;
+          initCode: Hex;
+          callData: Hex;
+          callGasLimit: Hex;
+          verificationGasLimit: Hex;
+          preVerificationGas: Hex;
+          maxFeePerGas: Hex;
+          maxPriorityFeePerGas: Hex;
+          paymasterAndData: Hex;
+          signature: Hex;
+          factory?: never;
+          factoryData?: never;
+          paymaster?: never;
+          paymasterVerificationGasLimit?: never;
+          paymasterPostOpGasLimit?: never;
+          paymasterData?: never;
+      }
+    : {
+          sender: Address;
+          nonce: Hex;
+          factory: Address;
+          factoryData: Hex;
+          callData: Hex;
+          callGasLimit: Hex;
+          verificationGasLimit: Hex;
+          preVerificationGas: Hex;
+          maxFeePerGas: Hex;
+          maxPriorityFeePerGas: Hex;
+          paymaster: Address;
+          paymasterVerificationGasLimit: Hex;
+          paymasterPostOpGasLimit: Hex;
+          paymasterData: Hex;
+          signature: Hex;
+          initCode?: never;
+          paymasterAndData?: never;
+      };
 
 /**
  * PackedUserOp suitable for call to EntryPoint contract
