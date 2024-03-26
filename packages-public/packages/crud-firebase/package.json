@@ -124,7 +124,7 @@
     "rimraf": "^3.0.2",
     "tsx": "^3.12.7",
     "typescript": "5.4.2",
-    "vite": "^4.4.9",
+    "vite": "^5.1.6",
     "vitest": "^0.34.2",
     "@typescript/analyze-trace": "^0.10.1"
   },
