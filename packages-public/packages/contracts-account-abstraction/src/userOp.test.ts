@@ -236,7 +236,7 @@ describe("userOp.test.ts", function () {
         expect(balance).toBe(value);
     });
 
-    //TODO: Fix this test
+    //TODO: Fix this test. Fails because getSenderAddress in permissionnless does not handle ganache error properly
     test.skip("local bundler/paymaster - smart account client", async () => {
         const smartAccountSigner = walletClientToSmartAccountSigner(accountClient);
         const smartAccount = await signerToSimpleSmartAccount(publicClient, {

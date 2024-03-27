@@ -65,6 +65,7 @@
     "@dfns/sdk-keysigner": "0.3.3",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
+    "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
     "@types/node": "^20.5.6",

@@ -31,10 +31,11 @@ export async function getOrDeployDeterministicDeployer(clients: Clients): Promis
             `DeterministicDeployer signer (${deploySignerAddress}) has deficit of ${formatEther(deficit)} ETH`,
         );
         console.debug(`Funding deployer ${deploySignerAddress}...`);
-        await walletClient.sendTransaction({
+        const hash = await walletClient.sendTransaction({
             to: deploySignerAddress,
             value: deficit,
         });
+        await publicClient.waitForTransactionReceipt({ hash });
     }
 
     //Send raw pre-signed transaction
