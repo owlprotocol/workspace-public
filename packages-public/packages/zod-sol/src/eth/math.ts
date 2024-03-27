@@ -1,4 +1,19 @@
-import { ZodIssueCode, ZodTooBigIssue, z } from "zod";
+import { Hex } from "viem";
+import { ZodIssueCode, ZodTooBigIssue, ZodTooSmallIssue, z } from "zod";
+
+/**
+ * Math zod
+ *
+ * Strict zod validators for convert between various numerical representations
+ *  - hex (hexadecimal string, starts with "0x")
+ *  - decimal (decimal string)
+ *  - number (JS number,  Number.MIN_SAFE_INTEGER <= n <= Number.MAX_SAFE_INTEGER)
+ *  - bigint (JS bigint, no min or max)
+ *
+ * This is preferable to zod.coerce which can have unpredictable behaviour due to
+ * using JS coercion. We also simplify the zod validator types using type
+ * narrowing (eg. `as unknown as z.ZodEffects<...>`)
+ */
 
 /**
  *  Any type that can be used where a numeric value is needed.
@@ -10,21 +25,22 @@ export type Numeric = number | bigint;
  */
 export type BigNumberish = string | Numeric;
 
-export const hexStringZod = z
+/**
+ * Hex or decimal string (no zod union for openapi support)
+ */
+export const hexOrDecimalStringZod = z
     .string()
-    .regex(/^0x[a-fA-F0-9]+$/)
-    .describe("A hex string");
-export const decimalStringZod = z
-    .string()
-    .regex(/^[0-9]+$/)
-    .describe("A decimal string");
+    .regex(/^[0-9]+$|^0x[a-fA-F0-9]+$/)
+    .describe("A hex or decimal string");
 
 /***** Number *****/
 /**
- * Match hex string that ould convert to JS number.
- * MUST be less than or equal to Number.MAX_SAFE_INTEGER (1fffffffffffff)
+ * Match hex/decimal
+ * Transform to number
+ * @throws `ZodIssueCode.too_big` if `n > Number.MAX_SAFE_INTEGER`
+ * @throws `ZodIssueCode.too_small` if `n < Number.MIN_SAFE_INTEGER`
  */
-export const numberHexStringZod = hexStringZod
+export const numberStringZod = hexOrDecimalStringZod
     .refine((n) => BigInt(n) <= BigInt(Number.MAX_SAFE_INTEGER), {
         code: ZodIssueCode.too_big,
         maximum: Number.MAX_SAFE_INTEGER,
@@ -32,78 +48,89 @@ export const numberHexStringZod = hexStringZod
         exact: true,
         type: "number",
     } as ZodTooBigIssue)
-    .describe("A number hex string");
+    .refine((n) => BigInt(n) >= BigInt(Number.MIN_SAFE_INTEGER), {
+        code: ZodIssueCode.too_small,
+        minimum: Number.MIN_SAFE_INTEGER,
+        inclusive: true,
+        exact: true,
+        type: "number",
+    } as ZodTooSmallIssue)
+    .transform((n) => Number(n))
+    .describe("A number hex or decimal string") as unknown as z.ZodEffects<z.ZodString, number, string>;
 
 /**
- * Match decimal string that could convert to JS number.
- * MUST be less than or equal to Number.MAX_SAFE_INTEGER (9007199254740991)
+ * Match number/hex/decimal
+ * Transform to number
+ * @warning Do **not** use with trpc-openapi plugin (does not support union types)
+ * @throws `ZodIssueCode.too_big` if `n > Number.MAX_SAFE_INTEGER`
+ * @throws `ZodIssueCode.too_small` if `n < Number.MIN_SAFE_INTEGER`
  */
-export const numberDecStringZod = decimalStringZod.refine((n) => BigInt(n) <= BigInt(Number.MAX_SAFE_INTEGER), {
-    code: ZodIssueCode.too_big,
-    maximum: Number.MAX_SAFE_INTEGER,
-    inclusive: true,
-    exact: true,
-    type: "number",
-} as ZodTooBigIssue);
+export const numberLikeZod = z.union([z.number(), numberStringZod]) as unknown as z.ZodEffects<
+    z.ZodUnion<[z.ZodNumber, z.ZodString]>,
+    number,
+    number | string
+>;
 
 /**
- * Match number, hex string, or decimal string that could convert to JS number.
- * MUST be less than or equal to Number.MAX_SAFE_INTEGER (9007199254740991)
+ * Match number/hex/decimal
+ * Transform to hex
+ * @warning Do **not** use with trpc-openapi plugin (does not support union types)
+ * @throws `ZodIssueCode.too_big` if `n > Number.MAX_SAFE_INTEGER`
+ * @throws `ZodIssueCode.too_small` if `n < Number.MIN_SAFE_INTEGER`
  */
-export const numberLikeZod = z.union([z.number(), numberHexStringZod, numberDecStringZod]);
+export const numberLikeToHexZod = numberLikeZod.transform(
+    (n) => ("0x" + n.toString(16)) as Hex,
+) as unknown as z.ZodEffects<z.ZodUnion<[z.ZodNumber, z.ZodString]>, Hex, number | string>;
 
 /**
- * Match number, hex string, or decimal string and convert to JS number.
- * MUST be less than or equal to Number.MAX_SAFE_INTEGER (9007199254740991)
+ * Match number/hex/decimal
+ * Transform to decimal
+ * @warning Do **not** use with trpc-openapi plugin (does not support union types)
+ * @throws `ZodIssueCode.too_big` if `n > Number.MAX_SAFE_INTEGER`
+ * @throws `ZodIssueCode.too_small` if `n < Number.MIN_SAFE_INTEGER`
  */
-export const numberLikeToNumberZod = z.union([
-    z.number(),
-    numberHexStringZod.transform((n) => parseInt(n, 16)),
-    numberDecStringZod.transform((n) => parseInt(n, 10)),
-]);
-
-/**
- * Match number, hex string, or decimal string and convert to hex string.
- * MUST be less than or equal to Number.MAX_SAFE_INTEGER (9007199254740991)
- */
-export const numberLikeToHexStringZod = z.union([
-    z.number().transform((n) => "0x" + n.toString(16)),
-    numberHexStringZod,
-    numberDecStringZod.transform((n) => "0x" + parseInt(n).toString(16)),
-]);
+export const numberLikeToDecimalZod = numberLikeZod.transform((n) => n.toString(10)) as unknown as z.ZodEffects<
+    z.ZodUnion<[z.ZodNumber, z.ZodString]>,
+    string,
+    number | string
+>;
 
 /***** BigInt *****/
 /**
- * Match hex string that converts to JS bigint.
+ * Match hex/decimal
+ * Transform to bigint
  */
-export const bigIntHexStringZod = hexStringZod.describe("A bigint hex string");
+export const bigIntStringZod = hexOrDecimalStringZod
+    .describe("A bigint hex or decimal string")
+    .transform((n) => BigInt(n));
 
 /**
- * Match decimal string that converts to JS bigint.
+ * Match bigint/number/hex/decimal
+ * Transform to bigint
+ * @warning Do **not** use with trpc-openapi plugin (does not support union types)
  */
-export const bigIntDecStringZod = decimalStringZod.describe("A bigint hex string");
-
-/**
- * Match bigint, hex string, or decimal string that could convert to JS bigint.
- */
-export const bigIntLikeZod = z.union([z.bigint(), bigIntHexStringZod, bigIntDecStringZod]);
-
-/**
- * Match bigint, number, hex string, or decimal string and convert to JS bigint.
- */
-export const bigIntLikeToBigIntZod = z.union([
-    z.number().transform((n) => BigInt(n)),
+export const bigIntLikeZod = z.union([
     z.bigint(),
-    bigIntHexStringZod.transform((n) => BigInt(n)),
-    bigIntDecStringZod.transform((n) => BigInt(n)),
-]);
+    z.number().transform((n) => BigInt(n)),
+    bigIntStringZod,
+]) as unknown as z.ZodEffects<z.ZodUnion<[z.ZodBigInt, z.ZodNumber, z.ZodString]>, bigint, bigint | number | string>;
 
 /**
- * Match bigint, hex string, or decimal string and convert to hex string.
+ * Match bigint/number/hex/decimal
+ * Transform to hex
+ * @warning Do **not** use with trpc-openapi plugin (does not support union types)
  */
-export const bigIntLikeToHexStringZod = z.union([
-    z.number().transform((n) => "0x" + n.toString(16)),
-    z.bigint().transform((n) => "0x" + n.toString(16)),
-    bigIntHexStringZod,
-    bigIntDecStringZod.transform((n) => "0x" + BigInt(n).toString(16)),
-]);
+export const bigIntLikeToHexZod = bigIntLikeZod.transform(
+    (n) => ("0x" + n.toString(16)) as Hex,
+) as unknown as z.ZodEffects<z.ZodUnion<[z.ZodBigInt, z.ZodNumber, z.ZodString]>, Hex, bigint | number | string>;
+
+/**
+ * Match bigint/number/hex/decimal
+ * Transform to decimal
+ * @warning Do **not** use with trpc-openapi plugin (does not support union types)
+ */
+export const bigIntLikeToDecimalZod = bigIntLikeZod.transform((n) => n.toString(10)) as unknown as z.ZodEffects<
+    z.ZodUnion<[z.ZodBigInt, z.ZodNumber, z.ZodString]>,
+    string,
+    bigint | number | string
+>;

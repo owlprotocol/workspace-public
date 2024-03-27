@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { TypeOf, expectType } from "ts-expect";
-import { numberLikeToHexStringZod, numberLikeToNumberZod } from "./math.js";
-import { NumberBigintAsString } from "../utils/NumberBigintAsString.js";
+import { numberLikeToHexZod, numberLikeZod } from "./math.js";
+import { NumberBigintAsHex } from "../utils/NumberBigintAsString.js";
 
 export type SyncingStatus =
     | {
@@ -13,26 +13,26 @@ export type SyncingStatus =
 export const syncingStatusZod = z
     .union([
         z.object({
-            startingBlock: numberLikeToNumberZod
+            startingBlock: numberLikeZod
                 .optional()
                 .describe("Block at which the import started (will only be reset, after the sync reached his head)"),
-            currentBlock: numberLikeToNumberZod.optional().describe("The current block, same as eth_blockNumber"),
-            highestBlock: numberLikeToNumberZod.optional().describe("The estimated highest block"),
+            currentBlock: numberLikeZod.optional().describe("The current block, same as eth_blockNumber"),
+            highestBlock: numberLikeZod.optional().describe("The estimated highest block"),
         }),
         z.boolean(),
     ])
     .describe("An object with sync status data");
 expectType<TypeOf<SyncingStatus, z.output<typeof syncingStatusZod>>>(true);
 
-export type SyncingStatusFromRpc = NumberBigintAsString<SyncingStatus>;
+export type SyncingStatusFromRpc = NumberBigintAsHex<SyncingStatus>;
 export const syncingStatusFromRpcZod = z
     .union([
         z.object({
-            startingBlock: numberLikeToHexStringZod
+            startingBlock: numberLikeToHexZod
                 .optional()
                 .describe("Block at which the import started (will only be reset, after the sync reached his head)"),
-            currentBlock: numberLikeToHexStringZod.optional().describe("The current block, same as eth_blockNumber"),
-            highestBlock: numberLikeToHexStringZod.optional().describe("The estimated highest block"),
+            currentBlock: numberLikeToHexZod.optional().describe("The current block, same as eth_blockNumber"),
+            highestBlock: numberLikeToHexZod.optional().describe("The estimated highest block"),
         }),
         z.boolean(),
     ])

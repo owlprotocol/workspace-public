@@ -1,7 +1,7 @@
 import { firestore, getFirebaseResource, getFirebaseResourceFactory } from "../../web/index.js";
 import { uuidDecodeId, uuidEncodeId } from "../../resource.js";
 import { itemCompositePath, itemPath, itemSubcollection } from "../collections.js";
-import { ItemCompositeId, ItemData, ItemId } from "../models/index.js";
+import { ItemCompositeId, ItemData, ItemId, validateItemData, validateItemDataPartial } from "../models/index.js";
 
 /**
  * To keep patterns consistent, top-level collections are still functions
@@ -10,7 +10,8 @@ import { ItemCompositeId, ItemData, ItemId } from "../models/index.js";
 const itemResourceInternal = getFirebaseResource<ItemData, ItemId>(firestore, itemPath, {
     encodeId: uuidEncodeId,
     decodeId: uuidDecodeId,
-    validateDataPartial: (item) => item,
+    validateDataPartial: validateItemDataPartial,
+    validateData: validateItemData,
 });
 export const itemResource = () => itemResourceInternal;
 
@@ -24,7 +25,8 @@ const itemCompositeResourceInternal = getFirebaseResource<ItemData, ItemComposit
         const [idPrefix, idSuffix] = id.split("-");
         return { idPrefix, idSuffix };
     },
-    validateDataPartial: (itemComposite) => itemComposite,
+    validateDataPartial: validateItemDataPartial,
+    validateData: validateItemData,
 });
 export const itemCompositeResource = () => itemCompositeResourceInternal;
 
@@ -43,7 +45,8 @@ export const itemSubcollectionResource = getFirebaseResourceFactory<Required<Ite
             const [idPrefix, idSuffix] = id.split("-");
             return { idPrefix, idSuffix };
         },
-        validateDataPartial: (itemComposite) => itemComposite,
+        validateDataPartial: validateItemDataPartial,
+        validateData: validateItemData,
     },
 );
 
@@ -56,7 +59,8 @@ const itemResourceCachedInternal = getFirebaseResource<ItemData, ItemId>(
     {
         encodeId: uuidEncodeId,
         decodeId: uuidDecodeId,
-        validateDataPartial: (item) => item,
+        validateDataPartial: validateItemDataPartial,
+        validateData: validateItemData,
     },
     { lruCacheSize: 10 },
 );

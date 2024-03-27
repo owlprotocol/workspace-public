@@ -126,7 +126,8 @@
     "typescript": "5.4.2",
     "vite": "^5.1.6",
     "vitest": "^0.34.2",
-    "@typescript/analyze-trace": "^0.10.1"
+    "@typescript/analyze-trace": "^0.10.1",
+    "zod": "3.21.4"
   },
   "bugs": {
     "url": "https://github.com/owlprotocol/owlprotocol/issues",

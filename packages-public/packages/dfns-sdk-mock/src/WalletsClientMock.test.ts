@@ -1,6 +1,7 @@
 import { beforeAll, beforeEach, describe, expect, test } from "vitest";
 import { ethers } from "ethers";
 import { CreateWalletResponse } from "@dfns/sdk/generated/wallets/types.js";
+import { Hex } from "viem";
 import { WalletsClientMock } from "./WalletsClientMock.js";
 
 describe("WalletClient.test.ts", () => {
@@ -51,7 +52,7 @@ describe("WalletClient.test.ts", () => {
                 tags: [],
                 dateCreated: "1970-01-01T00:00:00Z",
             } as const;
-            wallet = await client.addWallet(walletData, pkey);
+            wallet = await client.addWallet(walletData, pkey as Hex);
 
             //KeyECDSA does not generate address
             expect(wallet.address).toBeUndefined();

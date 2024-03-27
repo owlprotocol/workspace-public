@@ -1,4 +1,4 @@
-import { describe, test, beforeEach } from "vitest";
+import { expect, describe, test, beforeEach } from "vitest";
 import ganache from "ganache";
 import {
     Account,
@@ -35,6 +35,11 @@ describe("setupNetwork.test.ts", function () {
 
     test("setupNetwork", async () => {
         const result = await setupNetwork({ publicClient, walletClient });
-        console.debug(result);
+
+        expect(await publicClient.getBytecode({ address: result.deterministicDeployer.address })).toBeDefined();
+        expect(await publicClient.getBytecode({ address: result.create2Factory.address })).toBeDefined();
+        expect(await publicClient.getBytecode({ address: result.entrypoint.address })).toBeDefined();
+        expect(await publicClient.getBytecode({ address: result.simpleAccountFactory.address })).toBeDefined();
+        expect(await publicClient.getBytecode({ address: result.verifyingPaymaster.address })).toBeDefined();
     });
 });

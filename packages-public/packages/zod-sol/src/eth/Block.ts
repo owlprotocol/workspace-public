@@ -9,13 +9,8 @@ import {
     transactionResponseFromRpcZod,
     transactionResponseZod,
 } from "./TransactionResponse.js";
-import {
-    bigIntLikeToBigIntZod,
-    bigIntLikeToHexStringZod,
-    numberLikeToHexStringZod,
-    numberLikeToNumberZod,
-} from "./math.js";
-import { NumberBigintAsString } from "../utils/NumberBigintAsString.js";
+import { bigIntLikeZod, bigIntLikeToHexZod, numberLikeToHexZod, numberLikeZod } from "./math.js";
+import { NumberBigintAsHex } from "../utils/NumberBigintAsString.js";
 
 import { bytes32Zod, bytesZod } from "../solidity/bytes.js";
 import { addressZod } from "../solidity/address.js";
@@ -23,8 +18,8 @@ import { addressZod } from "../solidity/address.js";
 export const blockZod = z
     .object({
         hash: bytes32Zod.describe("The block hash."),
-        number: numberLikeToNumberZod.describe("The block number."),
-        timestamp: numberLikeToNumberZod.describe(
+        number: numberLikeZod.describe("The block number."),
+        timestamp: numberLikeZod.describe(
             "The timestamp for this block, which is the number of seconds since epoch that this block was included.",
         ),
         parentHash: bytes32Zod.describe(
@@ -37,18 +32,18 @@ export const blockZod = z
                 "The hash tree root of the parent beacon block for the given execution block. See https://eips.ethereum.org/EIPS/eip-4788",
             ),
         nonce: bytesZod.describe("A random sequence provided during the mining process for proof-of-work networks."),
-        difficulty: bigIntLikeToBigIntZod.describe(
+        difficulty: bigIntLikeZod.describe(
             "For proof-of-work networks, the difficulty target is used to adjust the difficulty in mining to ensure a expected block rate.",
         ),
-        gasLimit: bigIntLikeToBigIntZod.describe("The maximum amount of gas a block can consume."),
-        gasUsed: bigIntLikeToBigIntZod.describe("The amount of gas a block consumed."),
-        blobGasUsed: bigIntLikeToBigIntZod
+        gasLimit: bigIntLikeZod.describe("The maximum amount of gas a block can consume."),
+        gasUsed: bigIntLikeZod.describe("The amount of gas a block consumed."),
+        blobGasUsed: bigIntLikeZod
             .optional()
             .nullable()
             .describe(
                 "The total amount of BLOb gas consumed by transactions within the block. See https://eips.ethereum.org/EIPS/eip-4844.",
             ),
-        excessBlobGas: bigIntLikeToBigIntZod
+        excessBlobGas: bigIntLikeZod
             .optional()
             .nullable()
             .describe(
@@ -56,7 +51,7 @@ export const blockZod = z
             ),
         miner: addressZod.describe("The miner (or author) of a block."),
         extraData: bytesZod.describe("Additional data the miner choose to include."),
-        baseFeePerGas: bigIntLikeToBigIntZod
+        baseFeePerGas: bigIntLikeZod
             .nullable()
             .default(null)
             .describe("The protocol-defined base fee per gas in an https://eips.ethereum.org/EIPS/eip-1559 block."),
@@ -74,28 +69,28 @@ export const blockZod = z
 expectType<TypeOf<Block, z.output<typeof blockZod>>>(true);
 
 export const blockFromRpcZod = blockZod.extend({
-    number: numberLikeToHexStringZod.describe("The block number."),
-    timestamp: numberLikeToHexStringZod.describe(
+    number: numberLikeToHexZod.describe("The block number."),
+    timestamp: numberLikeToHexZod.describe(
         "The timestamp for this block, which is the number of seconds since epoch that this block was included.",
     ),
-    difficulty: bigIntLikeToHexStringZod.describe(
+    difficulty: bigIntLikeToHexZod.describe(
         "For proof-of-work networks, the difficulty target is used to adjust the difficulty in mining to ensure a expected block rate.",
     ),
-    gasLimit: bigIntLikeToHexStringZod.describe("The maximum amount of gas a block can consume."),
-    gasUsed: bigIntLikeToHexStringZod.describe("The amount of gas a block consumed."),
-    blobGasUsed: bigIntLikeToHexStringZod
+    gasLimit: bigIntLikeToHexZod.describe("The maximum amount of gas a block can consume."),
+    gasUsed: bigIntLikeToHexZod.describe("The amount of gas a block consumed."),
+    blobGasUsed: bigIntLikeToHexZod
         .optional()
         .nullable()
         .describe(
             "The total amount of BLOb gas consumed by transactions within the block. See https://eips.ethereum.org/EIPS/eip-4844.",
         ),
-    excessBlobGas: bigIntLikeToHexStringZod
+    excessBlobGas: bigIntLikeToHexZod
         .optional()
         .nullable()
         .describe(
             " The running total of BLOb gas consumed in excess of the target prior to the block. See https://eips.ethereum.org/EIPS/eip-4844.",
         ),
-    baseFeePerGas: bigIntLikeToHexStringZod
+    baseFeePerGas: bigIntLikeToHexZod
         .nullable()
         .default(null)
         .describe("The protocol-defined base fee per gas in an https://eips.ethereum.org/EIPS/eip-1559 block."),
@@ -206,6 +201,6 @@ export interface Block {
 }
 
 /** JSON-RPC encoded response */
-export type BlockFromRpc = Omit<NumberBigintAsString<Block>, "transactions"> & {
+export type BlockFromRpc = Omit<NumberBigintAsHex<Block>, "transactions"> & {
     transactions: string[] | TransactionResponseFromRpc[];
 };

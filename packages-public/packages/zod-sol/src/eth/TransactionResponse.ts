@@ -5,50 +5,41 @@ import { z } from "zod";
 import { TypeOf, expectType } from "ts-expect";
 import { AccessList, acessListZod } from "./AccessList.js";
 import { Signature, signatureZod } from "./Signature.js";
-import {
-    bigIntLikeToBigIntZod,
-    bigIntLikeToHexStringZod,
-    numberLikeToHexStringZod,
-    numberLikeToNumberZod,
-} from "./math.js";
-import { NumberBigintAsString } from "../utils/NumberBigintAsString.js";
+import { bigIntLikeZod, bigIntLikeToHexZod, numberLikeToHexZod, numberLikeZod } from "./math.js";
+import { NumberBigintAsHex } from "../utils/NumberBigintAsString.js";
 import { bytes32Zod, bytesZod } from "../solidity/bytes.js";
 import { addressZod } from "../solidity/address.js";
-import { uint256BigIntLikeZod } from "../solidity/integer.js";
+import { uint256BigIntLikeToHexZod, uint256BigIntLikeZod } from "../solidity/integer.js";
 
 export const transactionResponseZod = z
     .object({
-        blockNumber: numberLikeToNumberZod
-            .nullable()
-            .describe("The block number of the block that included this transaction."),
+        blockNumber: numberLikeZod.nullable().describe("The block number of the block that included this transaction."),
         blockHash: bytes32Zod.nullable().describe("The block hash of the block that included this transaction."),
         hash: bytes32Zod.describe("The transaction hash."),
-        index: numberLikeToNumberZod.describe("The transaction index."),
-        type: numberLikeToNumberZod.describe("The https://eips.ethereum.org/EIPS/eip-2718 transaction type."),
+        index: numberLikeZod.describe("The transaction index."),
+        type: numberLikeZod.describe("The https://eips.ethereum.org/EIPS/eip-2718 transaction type."),
         to: addressZod
             .nullable()
             .describe(
                 "The target of the transaction. If ``null``, the ``data`` is initcode and this transaction is a deployment transaction.",
             ),
         from: addressZod.describe("The sender of the transaction."),
-        nonce: numberLikeToNumberZod.describe("The nonce of the transaction, used for replay protection."),
-        gasLimit: bigIntLikeToBigIntZod.describe(
-            "The maximum amount of gas this transaction is authorized to consume.",
-        ),
-        gasPrice: bigIntLikeToBigIntZod.describe("For legacy transactions, this is the gas price per gas to pay."),
-        maxPriorityFeePerGas: bigIntLikeToBigIntZod
+        nonce: numberLikeZod.describe("The nonce of the transaction, used for replay protection."),
+        gasLimit: bigIntLikeZod.describe("The maximum amount of gas this transaction is authorized to consume."),
+        gasPrice: bigIntLikeZod.describe("For legacy transactions, this is the gas price per gas to pay."),
+        maxPriorityFeePerGas: bigIntLikeZod
             .nullable()
             .default(null)
             .describe(
                 "For https://eips.ethereum.org/EIPS/eip-1559 transactions, this is the maximum priority fee to allow a producer to claim.",
             ),
-        maxFeePerGas: bigIntLikeToBigIntZod
+        maxFeePerGas: bigIntLikeZod
             .nullable()
             .default(null)
             .describe(
                 "For https://eips.ethereum.org/EIPS/eip-1559 transactions, this is the maximum fee that will be paid.",
             ),
-        maxFeePerBlobGas: bigIntLikeToBigIntZod
+        maxFeePerBlobGas: bigIntLikeZod
             .optional()
             .nullable()
             .describe(
@@ -56,7 +47,7 @@ export const transactionResponseZod = z
             ),
         data: bytesZod.describe("The transaction data."),
         value: uint256BigIntLikeZod.describe("The transaction value (in wei)."),
-        chainId: bigIntLikeToBigIntZod.optional().describe("The chain ID this transaction is valid on."),
+        chainId: bigIntLikeZod.optional().describe("The chain ID this transaction is valid on."),
         signature: signatureZod.describe("The signature of the transaction."),
         accessList: acessListZod.optional().nullable().describe("The transaction access list."),
         blobVersionedHashes: z
@@ -72,35 +63,35 @@ export const transactionResponseZod = z
 expectType<TypeOf<TransactionResponse, z.output<typeof transactionResponseZod>>>(true);
 
 export const transactionResponseFromRpcZod = transactionResponseZod.omit({ signature: true }).extend({
-    blockNumber: numberLikeToHexStringZod.describe("The block number of the block that included this transaction."),
-    index: numberLikeToHexStringZod.describe("The transaction index."),
-    type: numberLikeToHexStringZod.describe("The https://eips.ethereum.org/EIPS/eip-2718 transaction type."),
-    nonce: numberLikeToHexStringZod.describe("The nonce of the transaction, used for replay protection."),
-    gasLimit: bigIntLikeToHexStringZod.describe("The maximum amount of gas this transaction is authorized to consume."),
-    gasPrice: bigIntLikeToHexStringZod.describe("For legacy transactions, this is the gas price per gas to pay."),
-    maxPriorityFeePerGas: bigIntLikeToHexStringZod
+    blockNumber: numberLikeToHexZod.describe("The block number of the block that included this transaction."),
+    index: numberLikeToHexZod.describe("The transaction index."),
+    type: numberLikeToHexZod.describe("The https://eips.ethereum.org/EIPS/eip-2718 transaction type."),
+    nonce: numberLikeToHexZod.describe("The nonce of the transaction, used for replay protection."),
+    gasLimit: bigIntLikeToHexZod.describe("The maximum amount of gas this transaction is authorized to consume."),
+    gasPrice: bigIntLikeToHexZod.describe("For legacy transactions, this is the gas price per gas to pay."),
+    maxPriorityFeePerGas: bigIntLikeToHexZod
         .optional()
         .nullable()
         .describe(
             "For https://eips.ethereum.org/EIPS/eip-1559 transactions, this is the maximum priority fee to allow a producer to claim.",
         ),
-    maxFeePerGas: bigIntLikeToHexStringZod
+    maxFeePerGas: bigIntLikeToHexZod
         .optional()
         .nullable()
         .describe(
             "For https://eips.ethereum.org/EIPS/eip-1559 transactions, this is the maximum fee that will be paid.",
         ),
-    maxFeePerBlobGas: bigIntLikeToHexStringZod
+    maxFeePerBlobGas: bigIntLikeToHexZod
         .optional()
         .nullable()
         .describe(
             "For https://eips.ethereum.org/EIPS/eip-4844 transactions, this is the maximum fee that will be paid per BLOb.",
         ),
-    value: uint256BigIntLikeZod.transform((n) => "0x" + n.toString(16)).describe("The transaction value (in wei)."),
-    chainId: bigIntLikeToHexStringZod.optional().describe("The chain ID this transaction is valid on."),
+    value: uint256BigIntLikeToHexZod.describe("The transaction value (in wei)."),
+    chainId: bigIntLikeToHexZod.optional().describe("The chain ID this transaction is valid on."),
     r: bytesZod.describe("signature r"),
     s: bytesZod.describe("signature s"),
-    v: numberLikeToHexStringZod.describe("signature r, recovery identifier"),
+    v: numberLikeToHexZod.describe("signature r, recovery identifier"),
 });
 expectType<TypeOf<TransactionResponseFromRpc, z.output<typeof transactionResponseFromRpcZod>>>(true);
 
@@ -210,7 +201,7 @@ export interface TransactionResponse {
 }
 
 /** JSON-RPC encoded response */
-export type TransactionResponseFromRpc = Omit<NumberBigintAsString<TransactionResponse>, "signature"> & {
+export type TransactionResponseFromRpc = Omit<NumberBigintAsHex<TransactionResponse>, "signature"> & {
     r: string;
     s: string;
     v: string;

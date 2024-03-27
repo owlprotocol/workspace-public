@@ -151,6 +151,13 @@ describe("admin/resource.test.ts", async () => {
                 expect(item).toStrictEqual(testItem);
             });
 
+            // test.skip("set/get - bigint", async () => {
+            // await itemResource().set({ ...testItem, valueBig: 9007199254740991000000n });
+            // const item = await itemResource().get(testItem.id);
+            // expect(item).toStrictEqual({ ...testItem, valueBig: 90071992547409910000000n });
+            // console.debug(item);
+            // });
+
             test("deleteEmulatorData", async () => {
                 await itemResource().set(testItem);
                 const item0 = await itemResource().get(testItem.id);

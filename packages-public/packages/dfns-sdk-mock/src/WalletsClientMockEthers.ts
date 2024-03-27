@@ -4,7 +4,6 @@ import {
     BroadcastTransactionResponse,
     CreateWalletRequest,
     CreateWalletResponse,
-    GenerateSignatureBody,
     GenerateSignatureRequest,
     GenerateSignatureResponse,
     GetSignatureRequest,
@@ -32,49 +31,20 @@ import {
     TransferAssetRequest,
     TransferAssetResponse,
 } from "@dfns/sdk/generated/wallets/types.js";
-import { Hex, isHex, keccak256, hexToSignature, toHex, Signature } from "viem";
-import { english, generateMnemonic, mnemonicToAccount, privateKeyToAccount, sign } from "viem/accounts";
-
-export function isSign<T extends GenerateSignatureBody["kind"]>(
-    kind: T,
-    body: GenerateSignatureBody,
-): body is GenerateSignatureBody & { kind: T } {
-    return body.kind === kind;
-}
+import { Signature, ethers, utils } from "ethers";
+import { WalletsClientInterface, isSign } from "./WalletsClientMock.js";
 
 /**
- * Dfns wallet client interface
+ * Mock dfns wallet client implementation using ethers
+ * @warning Sign Message does not work properly, prefer using viem implementation
  */
-export interface WalletsClientInterface {
-    createWallet(request: CreateWalletRequest): Promise<CreateWalletResponse>;
-    getWallet(request: GetWalletRequest): Promise<GetWalletResponse>;
-    getWalletAssets(request: GetWalletAssetsRequest): Promise<GetWalletAssetsResponse>;
-    getWalletNfts(request: GetWalletNftsRequest): Promise<GetWalletNftsResponse>;
-    listWallets(request: ListWalletsRequest): Promise<ListWalletsResponse>;
-    getWalletHistory(request: GetWalletHistoryRequest): Promise<GetWalletHistoryResponse>;
-    transferAsset(request: TransferAssetRequest): Promise<TransferAssetResponse>;
-    getTransfer(request: GetTransferRequest): Promise<GetTransferResponse>;
-    listTransfers(request: ListTransfersRequest): Promise<ListTransfersResponse>;
-    broadcastTransaction(request: BroadcastTransactionRequest): Promise<BroadcastTransactionResponse>;
-    getTransaction(request: GetTransactionRequest): Promise<GetTransactionResponse>;
-    listTransactions(request: ListTransactionsRequest): Promise<ListTransactionsResponse>;
-    generateSignature(request: GenerateSignatureRequest): Promise<GenerateSignatureResponse>;
-    getSignature(request: GetSignatureRequest): Promise<GetSignatureResponse>;
-    listSignatures(request: ListSignaturesRequest): Promise<ListSignaturesResponse>;
-}
-
-/**
- * Mock dfns wallet client implementation using viem
- */
-export class WalletsClientMock implements WalletsClientInterface {
-    private mnemonic: string;
+export class WalletsClientMockEthers implements WalletsClientInterface {
+    private hdNode: utils.HDNode;
     private signaturesCount = 0;
     private walletsCount = 0;
-
     private wallets: Record<string, CreateWalletResponse | undefined> = {};
+    private privateKeys: Record<string, string | undefined> = {};
     private signatures: Record<string, GenerateSignatureResponse | undefined> = {};
-
-    private privateKeys: Record<string, Hex | undefined> = {};
 
     /**
      * Create mock wallet client
@@ -82,7 +52,7 @@ export class WalletsClientMock implements WalletsClientInterface {
      * @param createTimeout wallet creation timeout in ms
      */
     constructor(mnemonic?: string) {
-        this.mnemonic = mnemonic ?? generateMnemonic(english);
+        this.hdNode = mnemonic ? utils.HDNode.fromMnemonic(mnemonic) : utils.HDNode.fromSeed(utils.randomBytes(32));
     }
 
     /**
@@ -91,30 +61,29 @@ export class WalletsClientMock implements WalletsClientInterface {
      * @param privateKey
      */
     addWallet(
-        wallet: Omit<CreateWalletResponse, "signingKey" | "tags" | "custodial" | "status" | "dateCreated"> & {
+        wallet: Omit<CreateWalletResponse, "signingKey" | "tags" | "custodial"> & {
             signingKey?: CreateWalletResponse["signingKey"];
         },
-        privateKey: Hex,
+        privateKey: string,
     ): CreateWalletResponse {
         if (this.wallets[wallet.id]) {
             throw new Error(`Wallet ${wallet.id} exists! Use different id or get wallet with getWallet()`);
         }
-        const signer = privateKeyToAccount(privateKey);
-        const dateCreated = new Date().toISOString();
-        const status = "Active" as const;
-
-        const signingKey = {
-            //TODO: Support EdDSA
-            scheme: "ECDSA" as const,
-            curve: "secp256k1" as const,
-            //TODO: Is this the same as compressedPublicKey? (used in ethers)
-            publicKey: signer.publicKey.substring(2), //strip 0x prefix to align with DFNS
-        };
-        const walletResponse = { ...wallet, dateCreated, status, signingKey, custodial: true };
+        const signer = new ethers.Wallet(privateKey);
+        let signingKey = wallet.signingKey;
+        if (!signingKey) {
+            const { curve, compressedPublicKey } = signer._signingKey();
+            signingKey = {
+                //TODO: Support EdDSA
+                scheme: "ECDSA",
+                curve: curve as "secp256k1",
+                publicKey: compressedPublicKey.substring(2), //strip 0x prefix
+            };
+        }
+        const walletResponse = { ...wallet, signingKey, custodial: true };
         this.wallets[wallet.id] = walletResponse;
+        this.privateKeys[wallet.id] = privateKey.replace("0x", "");
         this.walletsCount++;
-
-        this.privateKeys[wallet.id] = privateKey;
 
         return walletResponse;
     }
@@ -136,31 +105,28 @@ export class WalletsClientMock implements WalletsClientInterface {
         const dateCreated = new Date().toISOString();
 
         //Private Key
-
-        let keyDerivation: number;
-        if (externalId) {
-            const utf8Encode = new TextEncoder();
-            //External id given, generate deteministic pseudo-random key derivation index
-            //mod to max (1000000000n) key derivation index to avoid breaking
-            keyDerivation = Number(BigInt(keccak256(utf8Encode.encode(externalId))) % 1000000000n);
-        } else {
-            //No external id, use wallets count as key derivation index
-            keyDerivation = walletsCount;
-        }
+        //mod to max key derivation index
+        const keyDerivation = externalId
+            ? ethers.BigNumber.from(utils.keccak256(utils.toUtf8Bytes(externalId)))
+                  .mod(1000000000)
+                  .toString()
+            : `${walletsCount}`;
         //Signing Key
-        const signer = mnemonicToAccount(this.mnemonic, { accountIndex: keyDerivation });
-        const privateKey = toHex(signer.getHdKey().privateKey!);
+        const pkey = this.hdNode.derivePath(`m/44'/60'/0'/0/${keyDerivation}`).privateKey;
+        const signer = new ethers.Wallet(pkey);
+        //curve hard coded as secp256k1 on ethers
+        //privateKey only returned in mock (not required once signing mock SDK is implemented)
+        const { curve, compressedPublicKey } = signer._signingKey();
         const signingKey = {
             //TODO: Support EdDSA
-            scheme: "ECDSA" as const,
-            curve: "secp256k1" as const,
-            //TODO: Is this the same as compressedPublicKey? (used in ethers)
-            publicKey: signer.publicKey.substring(2), //strip 0x prefix to align with DFNS
-        };
+            scheme: "ECDSA",
+            curve: curve as "secp256k1",
+            publicKey: compressedPublicKey.substring(2), //strip 0x prefix
+        } as const;
         //Similar to API behaviour, address undefined for non-blockchain network
         //TODO: Removed so can work with Viem properly
         //const address = network === "KeyECDSA" || network === "KeyEdDSA" ? undefined : await signer.getAddress();
-        const address = await signer.address;
+        const address = await signer.getAddress();
 
         //No timeout
         const status = "Active";
@@ -179,7 +145,7 @@ export class WalletsClientMock implements WalletsClientInterface {
         } as const;
 
         this.wallets[id] = wallet;
-        this.privateKeys[id] = privateKey;
+        this.privateKeys[id] = pkey;
         return wallet;
     }
 
@@ -230,31 +196,26 @@ export class WalletsClientMock implements WalletsClientInterface {
 
         const privateKey = this.privateKeys[walletId];
         if (!privateKey) throw new Error(`Private key for wallet ${walletId} not found!`);
-        const signer = privateKeyToAccount(privateKey);
+        const signer = new ethers.Wallet(privateKey);
+        const signingKey = signer._signingKey();
 
-        let signature: Signature;
+        let ethersSignature: Signature;
         if (isSign("Hash", body)) {
             const { hash } = body;
-            //TODO: Is this 0x prefixed?
-            signature = await sign({ privateKey, hash: hash as Hex });
+            //See Note on signing hashes https://docs.ethers.org/v5/api/signer/#Signer--signing-methods
+            const hashBytes = utils.arrayify(hash);
+            ethersSignature = signingKey.signDigest(hashBytes);
         } else if (isSign("Transaction", body)) {
-            signature = await sign({
-                hash: keccak256(body.transaction as Hex),
-                privateKey,
-            });
+            const { transaction } = body;
+            const hash = utils.keccak256(transaction);
+            const hashBytes = utils.arrayify(hash);
+            ethersSignature = signingKey.signDigest(hashBytes);
         } else if (isSign("Message", body)) {
-            const { message } = body;
-            if (isHex(message)) {
-                //Sign byte representation
-                const signatureHex = await signer.signMessage({ message: { raw: message } });
-                signature = hexToSignature(signatureHex);
-            } else {
-                //Sign utf-8 representation
-                const signatureHex = await signer.signMessage({ message });
-                signature = hexToSignature(signatureHex);
-            }
+            //TODO: Is this correct? Not a big deal rn as not actually used to submit tx. Just for dummy UserOp
+            const hash = utils.keccak256(body.message);
+            const hashBytes = utils.arrayify(hash);
+            ethersSignature = signingKey.signDigest(hashBytes);
         } else if (isSign("Eip712", body)) {
-            // const signature = await signer.signTypedData()
             throw new Error("WalletsClientMockl.generateSignature Eip721 Unimplemented");
         } else {
             throw new Error(`Invalid signature kind ${(body as any).kind}`);
@@ -262,12 +223,12 @@ export class WalletsClientMock implements WalletsClientInterface {
 
         const dateSigned = new Date().toISOString();
         const status = "Signed";
-        const { r, s, yParity } = signature;
+        const { r, s, recoveryParam /*, compact*/ } = ethersSignature;
 
-        const signatureResponse: GenerateSignatureResponse["signature"] = {
+        const signature: GenerateSignatureResponse["signature"] = {
             r,
             s,
-            recid: yParity!,
+            recid: recoveryParam,
             //TODO: What is this for?
             //encoded: compact,
         };
@@ -278,7 +239,7 @@ export class WalletsClientMock implements WalletsClientInterface {
             walletId: walletId,
             requester: { userId: "mock" },
             requestBody: body,
-            signature: signatureResponse,
+            signature,
             status,
             dateRequested,
             dateSigned,

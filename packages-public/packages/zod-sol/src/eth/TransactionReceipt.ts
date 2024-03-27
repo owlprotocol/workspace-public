@@ -4,13 +4,8 @@
 import { z } from "zod";
 import { TypeOf, expectType } from "ts-expect";
 import { Log, logZod, logFromRpcZod, LogFromRpc } from "./Log.js";
-import {
-    numberLikeToNumberZod,
-    bigIntLikeToBigIntZod,
-    bigIntLikeToHexStringZod,
-    numberLikeToHexStringZod,
-} from "./math.js";
-import { NumberBigintAsString } from "../utils/NumberBigintAsString.js";
+import { numberLikeZod, bigIntLikeZod, bigIntLikeToHexZod, numberLikeToHexZod } from "./math.js";
+import { NumberBigintAsHex } from "../utils/NumberBigintAsString.js";
 import { addressZod } from "../solidity/address.js";
 import { bytes32Zod, bytesZod } from "../solidity/bytes.js";
 
@@ -29,33 +24,33 @@ export const transactionReceiptZod = z
                 "If the transaction was directly deploying a contract, the [[to]] will be null, the ``data`` will be initcode and if successful, this will be the address of the contract deployed.",
             ),
         hash: bytes32Zod.describe("The transaction hash."),
-        index: numberLikeToNumberZod.describe("The transaction index."),
+        index: numberLikeZod.describe("The transaction index."),
         blockHash: bytes32Zod.describe("The block hash of the block that included this transaction."),
-        blockNumber: numberLikeToNumberZod.describe("The block number of the block that included this transaction."),
+        blockNumber: numberLikeZod.describe("The block number of the block that included this transaction."),
         logsBloom: bytesZod.describe("The bloom filter for the logs emitted during execution of this transaction."),
         logs: z.array(logZod).describe("The logs emitted during the execution of this transaction."),
-        gasUsed: bigIntLikeToBigIntZod.describe("The amount of gas consumed executing this transaction."),
-        blobGasUsed: bigIntLikeToBigIntZod
+        gasUsed: bigIntLikeZod.describe("The amount of gas consumed executing this transaction."),
+        blobGasUsed: bigIntLikeZod
             .optional()
             .nullable()
             .describe("The amount of BLOb gas used. See https://eips.ethereum.org/EIPS/eip-4844."),
-        cumulativeGasUsed: bigIntLikeToBigIntZod.describe(
+        cumulativeGasUsed: bigIntLikeZod.describe(
             "The total amount of gas consumed during the entire block up to and including this transaction.",
         ),
-        gasPrice: bigIntLikeToBigIntZod
+        gasPrice: bigIntLikeZod
             .optional()
             .nullable()
             .describe("The actual gas price per gas charged for this transaction."),
-        blobGasPrice: bigIntLikeToBigIntZod
+        blobGasPrice: bigIntLikeZod
             .optional()
             .nullable()
             .describe("The actual BLOb gas price that was charged. See https://eips.ethereum.org/EIPS/eip-4844."),
-        effectiveGasPrice: bigIntLikeToBigIntZod
+        effectiveGasPrice: bigIntLikeZod
             .optional()
             .nullable()
             .describe("The actual gas price per gas charged for this transaction."),
-        type: numberLikeToNumberZod.describe("The https://eips.ethereum.org/EIPS/eip-2718 transaction type."),
-        status: numberLikeToNumberZod
+        type: numberLikeZod.describe("The https://eips.ethereum.org/EIPS/eip-2718 transaction type."),
+        status: numberLikeZod
             .nullable()
             .default(null)
             .describe(
@@ -71,31 +66,31 @@ export const transactionReceiptZod = z
 expectType<TypeOf<TransactionReceipt, z.output<typeof transactionReceiptZod>>>(true);
 
 export const transactionReceiptFromRpcZod = transactionReceiptZod.extend({
-    index: numberLikeToHexStringZod.describe("The transaction index."),
-    blockNumber: numberLikeToHexStringZod.describe("The block number of the block that included this transaction."),
+    index: numberLikeToHexZod.describe("The transaction index."),
+    blockNumber: numberLikeToHexZod.describe("The block number of the block that included this transaction."),
     logs: z.array(logFromRpcZod).describe("The logs emitted during the execution of this transaction."),
-    gasUsed: bigIntLikeToHexStringZod.describe("The amount of gas consumed executing this transaction."),
-    blobGasUsed: bigIntLikeToHexStringZod
+    gasUsed: bigIntLikeToHexZod.describe("The amount of gas consumed executing this transaction."),
+    blobGasUsed: bigIntLikeToHexZod
         .optional()
         .nullable()
         .describe("The amount of BLOb gas used. See https://eips.ethereum.org/EIPS/eip-4844."),
-    cumulativeGasUsed: bigIntLikeToHexStringZod.describe(
+    cumulativeGasUsed: bigIntLikeToHexZod.describe(
         "The total amount of gas consumed during the entire block up to and including this transaction.",
     ),
-    gasPrice: bigIntLikeToHexStringZod
+    gasPrice: bigIntLikeToHexZod
         .optional()
         .nullable()
         .describe("The actual gas price per gas charged for this transaction."),
-    blobGasPrice: bigIntLikeToHexStringZod
+    blobGasPrice: bigIntLikeToHexZod
         .optional()
         .nullable()
         .describe("The actual BLOb gas price that was charged. See https://eips.ethereum.org/EIPS/eip-4844."),
-    effectiveGasPrice: bigIntLikeToHexStringZod
+    effectiveGasPrice: bigIntLikeToHexZod
         .optional()
         .nullable()
         .describe("The actual gas price per gas charged for this transaction."),
-    type: numberLikeToHexStringZod.describe("The https://eips.ethereum.org/EIPS/eip-2718 transaction type."),
-    status: numberLikeToHexStringZod
+    type: numberLikeToHexZod.describe("The https://eips.ethereum.org/EIPS/eip-2718 transaction type."),
+    status: numberLikeToHexZod
         .nullable()
         .default(null)
         .describe(
@@ -211,4 +206,4 @@ export interface TransactionReceipt {
 }
 
 /** JSON-RPC encoded response */
-export type TransactionReceiptFromRpc = Omit<NumberBigintAsString<TransactionReceipt>, "logs"> & { logs: LogFromRpc[] };
+export type TransactionReceiptFromRpc = Omit<NumberBigintAsHex<TransactionReceipt>, "logs"> & { logs: LogFromRpc[] };

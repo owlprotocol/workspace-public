@@ -11,39 +11,31 @@ import {
     createPublicClient,
     createWalletClient,
     custom,
-    encodeDeployData,
     encodeFunctionData,
     parseEther,
-    zeroHash,
 } from "viem";
 import { localhost } from "viem/chains";
-import {
-    ANVIL_MNEMONIC,
-    getOrDeployDeterministicContract,
-    getOrDeployDeterministicDeployer,
-    getUtilityAccount,
-} from "@owlprotocol/contracts-create2factory";
+import { ANVIL_MNEMONIC, getUtilityAccount } from "@owlprotocol/contracts-create2factory";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { UserOperation } from "permissionless/types";
+import { ENTRYPOINT_ADDRESS_V07_TYPE, UserOperation } from "permissionless/types";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
-// import { createSmartAccountClient } from "permissionless";
-// import { signerToSimpleSmartAccount } from "permissionless/accounts";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { getSimpleAccountAddress } from "./SimpleAccount.js";
-import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07, SIMPLE_ACCOUNT_IMPLEMENTATION_ADDRESS } from "./constants.js";
+import { SIMPLE_ACCOUNT_IMPLEMENTATION_ADDRESS } from "./constants.js";
 import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";
 import { SimpleAccount } from "./artifacts/SimpleAccount.js";
-import { EntryPoint } from "./artifacts/EntryPoint.js";
 import { packUserOp, encodeUserOp } from "./userOp.js";
 import { IEntryPoint } from "./artifacts/IEntryPoint.js";
-//import { createLocalBundlerClient } from "./createLocalBundler.js";
-// import { handleViemError } from "./isViemError.js";
+import { setupNetwork } from "./setupNetwork.js";
 
 describe("SimpleAccount.test.ts", function () {
     let transport: CustomTransport;
     let publicClient: PublicClient<CustomTransport, Chain>;
     let walletClient: WalletClient<CustomTransport, Chain, Account>;
+
+    let entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
     let simpleAccountFactory: Address;
+    // let verifyingPaymaster: Address;
 
     beforeEach(async () => {
         const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC } });
@@ -58,40 +50,17 @@ describe("SimpleAccount.test.ts", function () {
             chain: localhost,
             transport,
         });
-        //Deploy Deterministic Deployer first
-        const { hash: hash0 } = await getOrDeployDeterministicDeployer({
-            publicClient,
-            walletClient,
-        });
-        await publicClient.waitForTransactionReceipt({ hash: hash0! });
-
-        //Deploy EntryPoint
-        const deployParams = {
-            salt: ENTRYPOINT_SALT_V07,
-            bytecode: EntryPoint.bytecode,
-        };
-        const entryPointResult = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
-        await publicClient.waitForTransactionReceipt({ hash: entryPointResult.hash! });
-
-        //Deploy SimpleAccountFactory
-        const simpleAccountFactoryDeployParams = {
-            salt: zeroHash,
-            bytecode: encodeDeployData({
-                abi: SimpleAccountFactory.abi,
-                bytecode: SimpleAccountFactory.bytecode,
-                args: [ENTRYPOINT_ADDRESS_V07],
-            }),
-        };
-        const simpleAccountFactoryResult = await getOrDeployDeterministicContract(
-            { publicClient, walletClient },
-            simpleAccountFactoryDeployParams,
-        );
-        await publicClient.waitForTransactionReceipt({ hash: simpleAccountFactoryResult.hash! });
-        simpleAccountFactory = simpleAccountFactoryResult.address;
+        const contracts = await setupNetwork({ publicClient, walletClient });
+        entryPoint = contracts.entrypoint.address;
+        simpleAccountFactory = contracts.simpleAccountFactory.address;
+        // verifyingPaymaster = contracts.verifyingPaymaster.address;
     });
 
     /** Tests involving deploying an account */
     describe("Deploy Simple Account", () => {
+        /**
+         * Get simple account address using different methods
+         */
         test("getSimpleAccountAddress", async () => {
             //Check SimpleAccount implementation address matches expected
             const simpleAccountImplementation = await publicClient.readContract({
@@ -104,14 +73,54 @@ describe("SimpleAccount.test.ts", function () {
             //Get SimpleAccount address
             const privateKey = generatePrivateKey();
             const account = privateKeyToAccount(privateKey);
-            const simpleAccountAddressExpected = await publicClient.readContract({
+
+            //1. Call SimpleAccountFActory directly
+            const simpleAccountAddressFromFactory = await publicClient.readContract({
                 address: simpleAccountFactory,
                 abi: SimpleAccountFactory.abi,
                 functionName: "getAddress",
                 args: [account.address, 0n],
             });
+            //2. Call Entrypoint directly
+            //TODO: Entrypoint getSender address is a write function that throws an error with result
+            //See permissionless.js getSender address for more info.
+            //Prefer using our solution for getting address
+            /*
+            const factoryData = encodeFunctionData({
+                abi: [
+                    {
+                        inputs: [
+                            { name: "owner", type: "address" },
+                            { name: "salt", type: "uint256" },
+                        ],
+                        name: "createAccount",
+                        outputs: [{ name: "ret", type: "address" }],
+                        stateMutability: "nonpayable",
+                        type: "function",
+                    },
+                ],
+                args: [account.address, 0n],
+            });
+            const simpleAccountAddressFromEntrypoint = await publicClient.simulateContract({
+                address: entryPoint,
+                abi: EntryPoint.abi,
+                functionName: "getSenderAddress",
+                args: [concatHex([simpleAccountFactory, factoryData])],
+            });
+            // expect(simpleAccountAddressFromEntrypoint).toBe(simpleAccountAddressFromFactory);
+            */
 
-            const simpleAccountAddress = getSimpleAccountAddress(
+            //3. Use permissionless to call Entrypoint (similar to 2)
+            /*
+            const simpleAccountAddressFromGetSender = await getSenderAddress(publicClient, {
+                factory: simpleAccountFactory,
+                factoryData,
+                entryPoint,
+            });
+            */
+
+            //4. Compute off-chain with no calls
+            const simpleAccountAddressOffchain = getSimpleAccountAddress(
                 {
                     owner: account.address,
                     salt: 0n,
@@ -121,7 +130,7 @@ describe("SimpleAccount.test.ts", function () {
                     proxyBytecode: ERC1967Proxy.bytecode,
                 },
             );
-            expect(simpleAccountAddress).toBe(simpleAccountAddressExpected);
+            expect(simpleAccountAddressOffchain).toBe(simpleAccountAddressFromFactory);
 
             //Deploy SimpleAccount
             const { request: createAccountRequest } = await publicClient.simulateContract({
@@ -134,10 +143,10 @@ describe("SimpleAccount.test.ts", function () {
             const createAccountHash = await walletClient.writeContract(createAccountRequest);
             await publicClient.waitForTransactionReceipt({ hash: createAccountHash });
 
-            const accountBytecode = await publicClient.getBytecode({ address: simpleAccountAddress });
+            const accountBytecode = await publicClient.getBytecode({ address: simpleAccountAddressOffchain });
             expect(accountBytecode).toBeDefined();
             const accountOwner = await publicClient.readContract({
-                address: simpleAccountAddress,
+                address: simpleAccountAddressOffchain,
                 abi: SimpleAccount.abi,
                 functionName: "owner",
             });
@@ -240,7 +249,7 @@ describe("SimpleAccount.test.ts", function () {
                 account,
                 userOperation: userOp,
                 chainId: localhost.id,
-                entryPoint: ENTRYPOINT_ADDRESS_V07,
+                entryPoint,
             });
             userOp.signature = signature;
 
@@ -258,7 +267,7 @@ describe("SimpleAccount.test.ts", function () {
             //Simulate handleOps
             const { request } = await publicClient.simulateContract({
                 account: walletClient.account,
-                address: ENTRYPOINT_ADDRESS_V07,
+                address: entryPoint,
                 abi: IEntryPoint.abi,
                 functionName: "handleOps",
                 args: handleOpsArgs,
@@ -271,69 +280,6 @@ describe("SimpleAccount.test.ts", function () {
             //Get balanceOf vitalik
             const balance = await publicClient.getBalance({ address: to });
             expect(balance).toBe(value);
-        });
-
-        /**
-         * Create a UserOp from start to end
-         *   - Encode callData
-         *   - Sign UserOp with account owner
-         *   - Prefund smart account
-         *   - Submit to EntryPoint
-         **/
-        test.skip("submitUserOp - local bundler", async () => {
-            /*
-            const bundlerClient = createLocalBundlerClient({
-                chain: localhost,
-                transport,
-                account: walletClient.account,
-                entryPoint: ENTRYPOINT_ADDRESS_V07,
-            });
-
-            const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
-            const smartAccount = await signerToSimpleSmartAccount(publicClient, {
-                signer: smartAccountSigner,
-                factoryAddress: simpleAccountFactory,
-                entryPoint: ENTRYPOINT_ADDRESS_V07,
-                address: simpleAccount.address,
-            });
-
-            const smartAccountClient = createSmartAccountClient({
-                account: smartAccount,
-                entryPoint: ENTRYPOINT_ADDRESS_V07,
-                chain: localhost,
-                bundlerTransport: custom(bundlerClient),
-                middleware: {
-                    gasPrice: async () => {
-                        return (await bundlerClient.getUserOperationGasPrice()).fast;
-                    },
-                },
-            });
-
-            //Pre-fund smart account
-            try {
-                const fundSimpleAccountHash = await walletClient.sendTransaction({
-                    to: simpleAccount.address,
-                    value: parseEther("1"),
-                });
-                await publicClient.waitForTransactionReceipt({ hash: fundSimpleAccountHash });
-
-                const to = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"; // vitalik
-                const value = 1n;
-                const data = "0x";
-                const userOpTxHash = await smartAccountClient.sendTransaction({
-                    to,
-                    value,
-                    data,
-                });
-                await publicClient.waitForTransactionReceipt({ hash: userOpTxHash });
-
-                //Get balanceOf vitalik
-                const balance = await publicClient.getBalance({ address: to });
-                expect(balance).toBe(value);
-            } catch (error: any) {
-                handleViemError(error);
-            }
-            */
         });
     });
 });

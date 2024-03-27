@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { TypeOf, expectType } from "ts-expect";
-import { numberLikeToHexStringZod, numberLikeToNumberZod } from "./math.js";
-import { NumberBigintAsString } from "../utils/NumberBigintAsString.js";
+import { numberLikeToHexZod, numberLikeZod } from "./math.js";
+import { NumberBigintAsHex } from "../utils/NumberBigintAsString.js";
 import { addressZod } from "../solidity/address.js";
 import { bytes32Zod } from "../solidity/bytes.js";
 
@@ -13,8 +13,8 @@ export interface LogFilter {
 }
 export const logFilterZod = z
     .object({
-        fromBlock: numberLikeToNumberZod.optional().describe("The block number to start filtering from"),
-        toBlock: numberLikeToNumberZod.optional().describe("The block number to end filtering at"),
+        fromBlock: numberLikeZod.optional().describe("The block number to start filtering from"),
+        toBlock: numberLikeZod.optional().describe("The block number to end filtering at"),
         address: z
             .union([addressZod, z.array(addressZod)])
             .optional()
@@ -29,9 +29,9 @@ export const logFilterZod = z
     .describe("An object with log filter data");
 expectType<TypeOf<LogFilter, z.output<typeof logFilterZod>>>(true);
 
-export type LogFilterFromRpc = NumberBigintAsString<LogFilter>;
+export type LogFilterFromRpc = NumberBigintAsHex<LogFilter>;
 export const logFilterFromRpcZod = logFilterZod.extend({
-    fromBlock: numberLikeToHexStringZod.optional().describe("The block number to start filtering from"),
-    toBlock: numberLikeToHexStringZod.optional().describe("The block number to end filtering at"),
+    fromBlock: numberLikeToHexZod.optional().describe("The block number to start filtering from"),
+    toBlock: numberLikeToHexZod.optional().describe("The block number to end filtering at"),
 });
 expectType<TypeOf<LogFilterFromRpc, z.output<typeof logFilterFromRpcZod>>>(true);

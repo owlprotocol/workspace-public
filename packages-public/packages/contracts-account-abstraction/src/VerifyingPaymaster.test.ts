@@ -6,153 +6,72 @@ import {
     Chain,
     CustomTransport,
     Hex,
-    LocalAccount,
     PublicClient,
     WalletClient,
     createPublicClient,
     createWalletClient,
     custom,
     encodeAbiParameters,
-    encodeDeployData,
     encodeFunctionData,
     parseEther,
-    zeroHash,
     hexToBytes,
     concatHex,
+    PrivateKeyAccount,
+    decodeErrorResult,
 } from "viem";
 import { localhost } from "viem/chains";
-import {
-    ANVIL_MNEMONIC,
-    getDeployDeterministicAddress,
-    getOrDeployDeterministicContract,
-    getOrDeployDeterministicDeployer,
-    getUtilityAccount,
-} from "@owlprotocol/contracts-create2factory";
+import { ANVIL_MNEMONIC, getUtilityAccount } from "@owlprotocol/contracts-create2factory";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
 import { UserOperation } from "permissionless/types";
 import { VerifyingPaymaster } from "./artifacts/VerifyingPaymaster.js";
-import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./constants.js";
-import { EntryPoint } from "./artifacts/EntryPoint.js";
+import { ENTRYPOINT_ADDRESS_V07 } from "./constants.js";
 import { IEntryPoint } from "./artifacts/IEntryPoint.js";
+import { abi as EntryPointAbi } from "./artifacts/EntryPoint.js";
 import { getSimpleAccountAddress } from "./SimpleAccount.js";
 import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { encodeUserOp, packUserOp } from "./userOp.js";
-import { handleViemError } from "./isViemError.js";
+import { decodeViemError } from "./isViemError.js";
+import { setupNetwork } from "./setupNetwork.js";
 
 describe("VerifyingPaymaster.test.ts", function () {
-    let publicClient: PublicClient<CustomTransport, Chain>;
-    let walletClient: WalletClient<CustomTransport, Chain, LocalAccount>;
     let transport: CustomTransport;
+    let publicClient: PublicClient<CustomTransport, Chain>;
+    let walletClient: WalletClient<CustomTransport, Chain, PrivateKeyAccount>;
+
+    // let entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
+    let simpleAccountFactory: Address;
+    let verifyingPaymaster: Address;
 
     beforeEach(async () => {
-        const provider = ganache.provider({
-            chain: { vmErrorsOnRPCResponse: true },
-            wallet: { mnemonic: ANVIL_MNEMONIC },
-        });
+        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC } });
         transport = custom(provider);
-        //const transport = http(localhost.rpcUrls.default.http[0]);
         publicClient = createPublicClient({
             chain: localhost,
             transport,
         });
-        //@ts-expect-error
         walletClient = createWalletClient({
             account: getUtilityAccount(),
             chain: localhost,
             transport,
         });
-        //Deploy Deterministic Deployer first
-        const { hash } = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
-        await publicClient.waitForTransactionReceipt({ hash: hash! });
-
-        //Deploy EntryPoint
-        const deployParams = {
-            salt: ENTRYPOINT_SALT_V07,
-            bytecode: EntryPoint.bytecode,
-        };
-        const entryPointResult = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
-        await publicClient.waitForTransactionReceipt({ hash: entryPointResult.hash! });
-    });
-
-    /** Tests involving deploying a paymaster */
-    describe("Deploy Verifying Paymater", () => {
-        test.skip("deploy", async () => {
-            const deployParams = {
-                salt: zeroHash,
-                bytecode: encodeDeployData({
-                    abi: VerifyingPaymaster.abi,
-                    bytecode: VerifyingPaymaster.bytecode,
-                    args: [ENTRYPOINT_ADDRESS_V07, walletClient.account.address],
-                }),
-            };
-            //Check address defined
-            const address = getDeployDeterministicAddress(deployParams);
-            expect(address).toBeDefined();
-
-            //Deploy new
-            const resultDeploy = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
-            expect(resultDeploy.existed).toBe(false);
-            expect(resultDeploy.hash).toBeDefined();
-            expect(resultDeploy.address).toBe(address);
-
-            //Wait for receipt
-            const receipt = await publicClient.waitForTransactionReceipt({ hash: resultDeploy.hash! });
-            //receipt.contractAddress null since using factory
-            expect(receipt.contractAddress).toBe(null);
-
-            //Get existing
-            const resultGet = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
-            expect(resultGet.existed).toBe(true);
-            expect(resultGet.hash).toBeUndefined();
-            expect(resultGet.address).toBe(address);
-        });
+        const contracts = await setupNetwork({ publicClient, walletClient });
+        // entryPoint = contracts.entrypoint.address;
+        simpleAccountFactory = contracts.simpleAccountFactory.address;
+        verifyingPaymaster = contracts.verifyingPaymaster.address;
     });
 
     /** Tests involving interacting with an existing paymaster */
     describe("Exec existing Simple Account", () => {
         let account: Account;
-        let simpleAccountFactory: Address;
         let simpleAccount: {
             address: Address;
             factoryData: Hex;
             factoryAddress: Address;
         };
-        let paymaster: Address;
 
         beforeEach(async () => {
-            //Deploy VerifyingPaymaster
-            const paymasterDeployParams = {
-                salt: zeroHash,
-                bytecode: encodeDeployData({
-                    abi: VerifyingPaymaster.abi,
-                    bytecode: VerifyingPaymaster.bytecode,
-                    args: [ENTRYPOINT_ADDRESS_V07, walletClient.account.address],
-                }),
-            };
-            const paymasterResult = await getOrDeployDeterministicContract(
-                { publicClient, walletClient },
-                paymasterDeployParams,
-            );
-            await publicClient.waitForTransactionReceipt({ hash: paymasterResult.hash! });
-            paymaster = paymasterResult.address;
-            //Deploy SimpleAccountFactory
-            const simpleAccountFactoryDeployParams = {
-                salt: zeroHash,
-                bytecode: encodeDeployData({
-                    abi: SimpleAccountFactory.abi,
-                    bytecode: SimpleAccountFactory.bytecode,
-                    args: [ENTRYPOINT_ADDRESS_V07],
-                }),
-            };
-            const simpleAccountFactoryResult = await getOrDeployDeterministicContract(
-                { publicClient, walletClient },
-                simpleAccountFactoryDeployParams,
-            );
-            await publicClient.waitForTransactionReceipt({ hash: simpleAccountFactoryResult.hash! });
-            simpleAccountFactory = simpleAccountFactoryResult.address;
-
             //Get SimpleAccount address
             const privateKey = generatePrivateKey();
             account = privateKeyToAccount(privateKey);
@@ -244,7 +163,7 @@ describe("VerifyingPaymaster.test.ts", function () {
                 preVerificationGas: 1_000_000n,
                 maxFeePerGas: gasPrice.maxFeePerGas!,
                 maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
-                paymaster,
+                paymaster: verifyingPaymaster,
                 //Empty, will be replaced with signature
                 paymasterData: paymasterDataUnsigned,
                 paymasterVerificationGasLimit: 10_000_000n,
@@ -253,7 +172,7 @@ describe("VerifyingPaymaster.test.ts", function () {
             const userOpPaymasterPacked = packUserOp(encodeUserOp(userOp));
 
             const userOpPaymasterHash = await publicClient.readContract({
-                address: paymaster,
+                address: verifyingPaymaster,
                 abi: VerifyingPaymaster.abi,
                 functionName: "getHash",
                 args: [userOpPaymasterPacked as any, validUntil, validAfter],
@@ -294,14 +213,14 @@ describe("VerifyingPaymaster.test.ts", function () {
             //Pre-fund paymaster
             const paymasterDeposit = await publicClient.simulateContract({
                 account: walletClient.account,
-                address: paymaster,
+                address: verifyingPaymaster,
                 abi: VerifyingPaymaster.abi,
                 functionName: "deposit",
                 value: parseEther("10"),
                 args: [],
             });
-            const depositHash = await walletClient.writeContract(paymasterDeposit.request);
-            await publicClient.waitForTransactionReceipt({ hash: depositHash });
+            const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);
+            await publicClient.waitForTransactionReceipt({ hash: paymasterDepositHash });
 
             //Simulate handleOps
             try {
@@ -320,8 +239,19 @@ describe("VerifyingPaymaster.test.ts", function () {
                 //Get balanceOf vitalik
                 const balance = await publicClient.getBalance({ address: to });
                 expect(balance).toBe(value);
-            } catch (error: any) {
-                handleViemError(error);
+            } catch (err: any) {
+                const errorEntryPoint = decodeViemError(err, EntryPointAbi);
+                if (errorEntryPoint) {
+                    console.error(errorEntryPoint);
+                    if (errorEntryPoint.errorName === "FailedOpWithRevert") {
+                        const errorPaymaster = decodeErrorResult({
+                            abi: VerifyingPaymaster.abi,
+                            data: errorEntryPoint.args[2],
+                        });
+                        console.error(errorPaymaster);
+                    }
+                }
+                throw err;
             }
         });
     });

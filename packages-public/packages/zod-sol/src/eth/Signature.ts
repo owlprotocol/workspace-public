@@ -1,31 +1,32 @@
 import { z } from "zod";
 import { expectType, TypeEqual } from "ts-expect";
-import { numberLikeToHexStringZod, numberLikeToNumberZod } from "./math.js";
+import { Hex } from "viem";
+import { numberLikeToHexZod, numberLikeZod } from "./math.js";
 import { bytesZod } from "../solidity/bytes.js";
-import { NumberBigintAsString } from "../utils/NumberBigintAsString.js";
+import { NumberBigintAsHex } from "../utils/NumberBigintAsString.js";
 
 export const signatureComponentsZod = z.object({
     r: bytesZod.describe("signature r"),
     s: bytesZod.describe("signature s"),
-    v: numberLikeToNumberZod.describe("signature r, recovery identifier"),
+    v: numberLikeZod.describe("signature r, recovery identifier"),
 });
 export const signatureZod = z.union([signatureComponentsZod, bytesZod]);
 expectType<TypeEqual<SignatureComponents, z.output<typeof signatureComponentsZod>>>(true);
 expectType<TypeEqual<Signature, z.output<typeof signatureZod>>>(true);
 
 export const signatureComponentsFromRpcZod = signatureComponentsZod.extend({
-    v: numberLikeToHexStringZod.describe("signature r, recovery identifier"),
+    v: numberLikeToHexZod.describe("signature r, recovery identifier"),
 });
 expectType<TypeEqual<SignatureFromRpc, z.output<typeof signatureComponentsFromRpcZod>>>(true);
 
 export type SignatureComponents = {
-    r: string;
-    s: string;
+    r: Hex;
+    s: Hex;
     v: number;
 };
-export type Signature = SignatureComponents | string;
+export type Signature = SignatureComponents | Hex;
 
-export type SignatureFromRpc = NumberBigintAsString<SignatureComponents>;
+export type SignatureFromRpc = NumberBigintAsHex<SignatureComponents>;
 
 /**
  *  A SignatureLike

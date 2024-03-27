@@ -54,8 +54,9 @@
     "tsc:trace": "tsc --generateTrace lib/trace && analyze-trace lib/trace",
     "tsc:watch": "tsc -w"
   },
-  "dependencies": {
-    "ethers": "5.7.2"
+  "peerDependencies": {
+    "ethers": "5.7.2",
+    "viem": "2.8.6"
   },
   "devDependencies": {
     "@dfns/lib-ethersjs5": "0.3.3",

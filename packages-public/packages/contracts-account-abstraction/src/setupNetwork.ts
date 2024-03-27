@@ -3,7 +3,8 @@ import {
     getOrDeployCreate2Factory,
     getOrDeployDeterministicContract,
 } from "@owlprotocol/contracts-create2factory";
-import { Account, Chain, PublicClient, Transport, WalletClient, encodeDeployData, zeroHash } from "viem";
+import { Account, Chain, Hash, PublicClient, Transport, WalletClient, encodeDeployData, zeroHash } from "viem";
+import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./constants.js";
 import { EntryPoint } from "./artifacts/EntryPoint.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
@@ -43,7 +44,7 @@ export async function setupNetwork(clients: SetupNetworkClients) {
     }
 
     //If no EntryPoint v0.7, wait for deploy (mostly used for local testing)
-    const entrypoint = await getOrDeployDeterministicContract(
+    const entrypoint = (await getOrDeployDeterministicContract(
         { publicClient, walletClient },
         //Extracted salt (first 32 bytes) from original tx
         //https://etherscan.io/tx/0x5c81ea86f6c54481d3e21c78675b4f1d985c1fa62b678dcdfdf7934ddd6e127e
@@ -51,7 +52,7 @@ export async function setupNetwork(clients: SetupNetworkClients) {
             salt: ENTRYPOINT_SALT_V07,
             bytecode: EntryPoint.bytecode,
         },
-    );
+    )) as { address: ENTRYPOINT_ADDRESS_V07_TYPE; hash: Hash | undefined; existed: boolean };
     if (entrypoint.address != ENTRYPOINT_ADDRESS_V07) {
         throw new Error(
             `Entrypoint v0.7 deployed address ${ENTRYPOINT_ADDRESS_V07} (expected) != ${entrypoint.address} (actual)`,
@@ -92,12 +93,6 @@ export async function setupNetwork(clients: SetupNetworkClients) {
     if (verifyingPaymaster.hash) {
         await publicClient.waitForTransactionReceipt({ hash: verifyingPaymaster.hash });
     }
-    // console.debug({
-    // deterministicDeployer,
-    // create2Factory,
-    // simpleAccountFactory,
-    // entrypoint,
-    // });
 
     return { deterministicDeployer, create2Factory, entrypoint, simpleAccountFactory, verifyingPaymaster };
 }

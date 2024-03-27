@@ -2,81 +2,25 @@
 import {
     Address,
     Hex,
-    Hash,
     PublicClient,
-    WalletClient,
     Transport,
     Chain,
-    Account,
     zeroAddress,
     encodeFunctionData,
-    formatEther,
     pad,
     concatHex,
+    Hash,
+    Account,
 } from "viem";
 //permissionles
 import { GetUserOperationReceiptReturnType, UserOperation, getAccountNonce } from "permissionless";
-import { getUserOperationHash, signUserOperationHashWithECDSA } from "permissionless/utils";
+import { signUserOperationHashWithECDSA } from "permissionless/utils";
 import { PimlicoBundlerClient, PimlicoPaymasterClient } from "permissionless/clients/pimlico";
 import { SponsorUserOperationReturnType } from "permissionless/actions/pimlico";
-import { EntryPointVersion } from "permissionless/types";
+import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { abi as SimpleAccountAbi } from "./artifacts/SimpleAccount.js";
 import { ENTRYPOINT_ADDRESS_V07 } from "./constants.js";
-
-export type UserOperationWithBigIntAsHex<entryPointVersion extends EntryPointVersion> = entryPointVersion extends "v0.6"
-    ? {
-          sender: Address;
-          nonce: Hex;
-          initCode: Hex;
-          callData: Hex;
-          callGasLimit: Hex;
-          verificationGasLimit: Hex;
-          preVerificationGas: Hex;
-          maxFeePerGas: Hex;
-          maxPriorityFeePerGas: Hex;
-          paymasterAndData: Hex;
-          signature: Hex;
-          factory?: never;
-          factoryData?: never;
-          paymaster?: never;
-          paymasterVerificationGasLimit?: never;
-          paymasterPostOpGasLimit?: never;
-          paymasterData?: never;
-      }
-    : {
-          sender: Address;
-          nonce: Hex;
-          factory: Address;
-          factoryData: Hex;
-          callData: Hex;
-          callGasLimit: Hex;
-          verificationGasLimit: Hex;
-          preVerificationGas: Hex;
-          maxFeePerGas: Hex;
-          maxPriorityFeePerGas: Hex;
-          paymaster: Address;
-          paymasterVerificationGasLimit: Hex;
-          paymasterPostOpGasLimit: Hex;
-          paymasterData: Hex;
-          signature: Hex;
-          initCode?: never;
-          paymasterAndData?: never;
-      };
-
-/**
- * PackedUserOp suitable for call to EntryPoint contract
- */
-export interface PackedUserOperation {
-    sender: Address;
-    nonce: bigint;
-    initCode: Hex;
-    callData: Hex;
-    accountGasLimits: Hash;
-    preVerificationGas: bigint;
-    gasFees: Hash;
-    paymasterAndData: Hex;
-    signature: Hex;
-}
+import { UserOperationWithBigIntAsHex, PackedUserOperation } from "./types/permissionless.js";
 
 /**
  * Encode UserOp for RPC (BigInt as hex)
@@ -133,7 +77,6 @@ export function decodeUserOp(userOp: UserOperationWithBigIntAsHex<"v0.7">): User
 }
 
 export function packUserOp(userOp: UserOperationWithBigIntAsHex<"v0.7">): PackedUserOperation {
-    console.debug(userOp);
     const accountGasLimits = packAccountGasLimits(userOp.verificationGasLimit, userOp.callGasLimit);
     const gasFees = packAccountGasLimits(userOp.maxPriorityFeePerGas, userOp.maxFeePerGas);
     let paymasterAndData: Hex = "0x";
@@ -217,10 +160,10 @@ export interface SmartAccount {
 /**
  * Clients to get a UserOp
  */
-export interface GetUserOpClients {
+export interface UserOpClients {
     publicClient: PublicClient<Transport, Chain>;
-    bundlerClient: PimlicoBundlerClient<typeof ENTRYPOINT_ADDRESS_V07>;
-    paymasterClient: PimlicoPaymasterClient<typeof ENTRYPOINT_ADDRESS_V07>;
+    bundlerClient: PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE>;
+    paymasterClient: PimlicoPaymasterClient<ENTRYPOINT_ADDRESS_V07_TYPE>;
 }
 
 /**
@@ -231,7 +174,7 @@ export interface GetUserOpClients {
  * @param args
  */
 export async function createUserOp(
-    clients: GetUserOpClients,
+    clients: UserOpClients,
     smartAccount: SmartAccount,
     callData: Hex,
 ): Promise<UserOperation<"v0.7">> {
@@ -285,156 +228,13 @@ export async function createUserOp(
         factoryData?: Hex;
     };
 
-    //If running on localhost (1337), we mock certain bundler operations
-    const isERC4337 = publicClient.chain.id != 1337;
-    // If ERC4337 with Pimlico, compute sponsored userOp
-    // Else execute call directly, return defaults (so we can still mock same return data)
-    const userOpSponsorResult: SponsorUserOperationReturnType<typeof ENTRYPOINT_ADDRESS_V07> = isERC4337
-        ? await paymasterClient.sponsorUserOperation({
-              userOperation: userOpData,
-          })
-        : {
-              callGasLimit: 0n,
-              verificationGasLimit: 0n,
-              preVerificationGas: 0n,
-              paymaster: zeroAddress,
-              paymasterVerificationGasLimit: 0n,
-              paymasterPostOpGasLimit: 0n,
-              paymasterData: "0x",
-          };
+    const userOpSponsorResult: SponsorUserOperationReturnType<typeof ENTRYPOINT_ADDRESS_V07> =
+        await paymasterClient.sponsorUserOperation({
+            userOperation: userOpData,
+        });
+
     const userOp: UserOperation<"v0.7"> = { ...userOpData, ...userOpSponsorResult };
     return userOp;
-}
-
-export interface SubmitUserOpClients {
-    bundlerClient: PimlicoBundlerClient<typeof ENTRYPOINT_ADDRESS_V07>;
-}
-/**
- * Submit UserOp to bundler
- * @param clients
- * @param userOp
- * @param account
- */
-export async function submitUserOp(
-    clients: SubmitUserOpClients,
-    userOp: UserOperation<"v0.7">,
-): Promise<GetUserOperationReceiptReturnType> {
-    const { bundlerClient } = clients;
-    // If ERC4337 with Pimlico, compute sponsored userOp
-    const userOpHash = await bundlerClient.sendUserOperation({
-        userOperation: userOp,
-    });
-    return bundlerClient.waitForUserOperationReceipt({
-        hash: userOpHash,
-    });
-}
-
-export interface SubmitUserOpMockClients {
-    publicClient: PublicClient<Transport, Chain>;
-    walletClient: WalletClient<Transport, Chain, Account>;
-    utilityWalletClient: WalletClient<Transport, Chain, Account>;
-}
-/**
- * Submit UserOp as regular transaction. Useful for testing and local development
- * @param clients walletClient (owner of smart account), utilityClient (fund walletClient if necessary)
- * @param userOp
- * @param account
- */
-export async function submitUserOpMock(
-    clients: SubmitUserOpMockClients,
-    userOp: UserOperation<"v0.7">,
-): Promise<GetUserOperationReceiptReturnType> {
-    const { publicClient, walletClient, utilityWalletClient: utilityClient } = clients;
-    //Check if smart account needs deployment (since not using ERC4337 where this can be done atomically)
-    if (userOp.factoryData) {
-        //Utility wallet can send this immediately since anyone can deploy smart wallet
-        const hash = await utilityClient.sendTransaction({
-            to: userOp.factory,
-            data: userOp.factoryData,
-        });
-        await publicClient.waitForTransactionReceipt({ hash });
-    }
-    //TODO: Right now need to prefund before gas estimate, replace this with state overrides
-    // This is an active issue on viem, consider using raw RPC call
-    // https://github.com/wevm/viem/discussions/1418
-    // https://geth.ethereum.org/docs/interacting-with-geth/rpc/ns-eth#eth-call
-    //Check gas, MUST have funded address BEFORE calling prepareTransactionRequest
-
-    // const gas = await publicClient.estimateGas({
-    //     account: walletClient.account,
-    //     to: userOp.sender,
-    //     data: userOp.callData,
-    // });
-    // WARNING: Hack, see above
-    // Override to block gas limit (for now)
-    const gas = 30_000_000n;
-    const gasPrice = await publicClient.getGasPrice();
-    const ethCost = gas * gasPrice;
-    const walletBalance = await publicClient.getBalance({ address: walletClient.account.address });
-    if (ethCost > walletBalance) {
-        console.debug(`Funding ${walletClient.account.address} to fund ${formatEther(ethCost)} ETH deficit`);
-        //Fund wallet if needed
-        const ethDeficit = ethCost - walletBalance;
-        const hash = await utilityClient.sendTransaction({
-            to: walletClient.account.address,
-            value: ethDeficit,
-        });
-        await publicClient.waitForTransactionReceipt({ hash });
-    }
-
-    const userOpTransactionRequest = await walletClient.prepareTransactionRequest({
-        to: userOp.sender,
-        data: userOp.callData,
-    });
-    //Execute main transaction
-    const userOpTransactionHash = await walletClient.sendTransaction(userOpTransactionRequest);
-    const userOpTransactionReceipt = await publicClient.waitForTransactionReceipt({
-        hash: userOpTransactionHash,
-    });
-    const userOpHash = getUserOperationHash({
-        userOperation: userOp,
-        entryPoint: ENTRYPOINT_ADDRESS_V07,
-        chainId: publicClient.chain.id,
-    });
-    const receipt: GetUserOperationReceiptReturnType = {
-        userOpHash,
-        sender: userOp.sender,
-        nonce: userOp.nonce,
-        actualGasUsed: userOpTransactionReceipt.gasUsed,
-        actualGasCost: userOpTransactionReceipt.effectiveGasPrice,
-        success: true,
-        receipt: { ...userOpTransactionReceipt, transactionIndex: BigInt(userOpTransactionReceipt.transactionIndex) },
-        logs: userOpTransactionReceipt.logs.map((l) => {
-            return {
-                ...l,
-                transactionIndex: BigInt(l.transactionIndex),
-                logIndex: BigInt(l.logIndex),
-            };
-        }),
-    };
-
-    return receipt;
-}
-
-/**
- * Combines logic from `submitUserOp` and `submitUserOpMock` to submit
- * a UserOp to a bundler or execute directly using the account owner
- * and the utilityWallet with `PRIVATE_KEY_RELAYER`
- */
-export function submitUserOpOrMock(
-    clients: SubmitUserOpClients & SubmitUserOpMockClients,
-    userOp: UserOperation<"v0.7">,
-): Promise<GetUserOperationReceiptReturnType> {
-    const { publicClient, walletClient, utilityWalletClient, bundlerClient } = clients;
-    const isERC4337 = publicClient.chain.id != 1337;
-
-    let receiptPromise: Promise<GetUserOperationReceiptReturnType>;
-    if (isERC4337) {
-        receiptPromise = submitUserOp({ bundlerClient }, userOp);
-    } else {
-        receiptPromise = submitUserOpMock({ publicClient, walletClient, utilityWalletClient }, userOp);
-    }
-    return receiptPromise;
 }
 
 /**
@@ -442,17 +242,22 @@ export function submitUserOpOrMock(
  *   -
  */
 export async function executeBatchUserOp(
-    clients: GetUserOpClients & SubmitUserOpClients & SubmitUserOpMockClients,
+    clients: UserOpClients & { account: Account },
     smartAccount: {
         address: Address;
         factoryAddress: Address;
         factoryData: Hex;
     },
     calls: { address: Address; value: bigint; bytes: Hex }[],
-) {
+): Promise<{
+    userOp: UserOperation<"v0.7">;
+    userOpHash: Hash;
+    userOpReceiptPromise: Promise<GetUserOperationReceiptReturnType>;
+}> {
     if (calls.length == 0) throw new Error("calls.length == 0! No data for UserOp");
 
-    const { publicClient, walletClient, utilityWalletClient, bundlerClient, paymasterClient } = clients;
+    const { publicClient, bundlerClient, paymasterClient, account } = clients;
+    //Encode call data
     const callData =
         calls.length > 1
             ? encodeFunctionData({
@@ -465,31 +270,27 @@ export async function executeBatchUserOp(
                   functionName: "execute",
                   args: [calls[0].address, calls[0].value, calls[0].bytes],
               });
-    console.debug({
-        sender: smartAccount.address,
-        callData: callData.length,
-    });
 
+    //Create userOp
     const userOp = await createUserOp({ publicClient, bundlerClient, paymasterClient }, smartAccount, callData);
-    console.debug({ ...userOp, callData: userOp.callData.length, factoryData: userOp.factoryData?.length });
-
+    //Sign userOp
     const userOpSignature: Hex = await signUserOperationHashWithECDSA({
-        account: walletClient.account,
+        account,
         userOperation: userOp,
         chainId: publicClient.chain.id,
         entryPoint: ENTRYPOINT_ADDRESS_V07,
     });
     userOp.signature = userOpSignature;
-    const userOpHash = getUserOperationHash({
+
+    //Submit userOp
+    const userOpHash = await bundlerClient.sendUserOperation({
         userOperation: userOp,
-        entryPoint: ENTRYPOINT_ADDRESS_V07,
-        chainId: publicClient.chain.id,
     });
 
-    const receiptPromise = submitUserOpOrMock(
-        { publicClient, walletClient, utilityWalletClient, bundlerClient },
-        userOp,
-    );
+    //Receipt promise
+    const userOpReceiptPromise = bundlerClient.waitForUserOperationReceipt({
+        hash: userOpHash,
+    });
 
-    return { userOp, userOpHash, receiptPromise };
+    return { userOp, userOpHash, userOpReceiptPromise };
 }
