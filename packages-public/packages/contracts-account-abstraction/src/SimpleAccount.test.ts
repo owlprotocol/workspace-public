@@ -27,6 +27,7 @@ import { SimpleAccount } from "./artifacts/SimpleAccount.js";
 import { packUserOp, encodeUserOp } from "./userOp.js";
 import { IEntryPoint } from "./artifacts/IEntryPoint.js";
 import { setupNetwork } from "./setupNetwork.js";
+import { getSenderAddress } from "./getSenderAddress.js";
 
 describe("SimpleAccount.test.ts", function () {
     let transport: CustomTransport;
@@ -61,7 +62,7 @@ describe("SimpleAccount.test.ts", function () {
         /**
          * Get simple account address using different methods
          */
-        test("getSimpleAccountAddress", async () => {
+        test.only("getSimpleAccountAddress", async () => {
             //Check SimpleAccount implementation address matches expected
             const simpleAccountImplementation = await publicClient.readContract({
                 address: simpleAccountFactory,
@@ -81,11 +82,7 @@ describe("SimpleAccount.test.ts", function () {
                 functionName: "getAddress",
                 args: [account.address, 0n],
             });
-            //2. Call Entrypoint directly
-            //TODO: Entrypoint getSender address is a write function that throws an error with result
-            //See permissionless.js getSender address for more info.
-            //Prefer using our solution for getting address
-            /*
+            //2. Use permissionless getSenderAddress (patched) to call Entrypoint (throw error & catch)
             const factoryData = encodeFunctionData({
                 abi: [
                     {
@@ -101,25 +98,14 @@ describe("SimpleAccount.test.ts", function () {
                 ],
                 args: [account.address, 0n],
             });
-            const simpleAccountAddressFromEntrypoint = await publicClient.simulateContract({
-                address: entryPoint,
-                abi: EntryPoint.abi,
-                functionName: "getSenderAddress",
-                args: [concatHex([simpleAccountFactory, factoryData])],
-            });
-            // expect(simpleAccountAddressFromEntrypoint).toBe(simpleAccountAddressFromFactory);
-            */
-
-            //3. Use permissionless to call Entrypoint (similar to 2)
-            /*
             const simpleAccountAddressFromGetSender = await getSenderAddress(publicClient, {
                 factory: simpleAccountFactory,
                 factoryData,
                 entryPoint,
             });
-            */
+            expect(simpleAccountAddressFromGetSender).toBe(simpleAccountAddressFromFactory);
 
-            //4. Compute off-chain with no calls
+            //3. Compute off-chain with no calls
             const simpleAccountAddressOffchain = getSimpleAccountAddress(
                 {
                     owner: account.address,

@@ -291,6 +291,7 @@ describe("userOp.test.ts", function () {
                             data: errorEntryPoint.args[2],
                         });
                         console.error(errorPaymasterOrAccount);
+                        // eslint-disable-next-line no-empty
                     } catch {}
                 }
             }
