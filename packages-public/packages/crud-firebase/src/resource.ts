@@ -64,7 +64,7 @@ export function uuidDecodeId(id: string) {
 export type FirebaseCollectionKey = { collectionGroup: string; prefixPath: string[] };
 
 export type FirebaseQueryOp = "getAll" | "getWhere" | "getWhereCount" | "getWhereFirst";
-export type FirebaseGetOp = "get" | "getOrUndefined" | "getBatch";
+export type FirebaseGetOp = "get" | "getOrNull" | "getOrUndefined" | "getBatch";
 export type FirebaseWriteOp = "set" | "setBatch" | "update" | "updateBatch" | "delete" | "deleteBatch" | "deleteAll";
 export type FirebaseUpsertOp = "getOrCreate" | "getWhereFirstOrCreate";
 export type FirebaseIncrOp = "incrementStr" | "decrementStr" | "incrementNumber" | "decrementNumber";
@@ -90,7 +90,7 @@ export interface FirebaseQueryResource<
     getWhereFirst: (
         filter: Partial<ResourceData>,
         options?: Omit<ResourceQueryOptions, "limit">,
-    ) => Promise<Resource | undefined>;
+    ) => Promise<Resource | null>;
 }
 
 /**
@@ -111,8 +111,10 @@ export interface FirebaseResource<
     decodeId: (id: string) => Required<ResourceIdPartial>;
     //queries
     get: (id: string | Required<ResourceIdPartial>) => Promise<Resource>;
-    getOrUndefined: (id: string | Required<ResourceIdPartial>) => Promise<Resource | undefined>;
-    getBatch: (ids: string[] | Required<ResourceIdPartial>[]) => Promise<(Resource | undefined)[]>;
+    getOrNull: (id: string | Required<ResourceIdPartial>) => Promise<Resource | null>;
+    /** @deprecated renamed to getOrNull */
+    getOrUndefined: (id: string | Required<ResourceIdPartial>) => Promise<Resource | null>;
+    getBatch: (ids: string[] | Required<ResourceIdPartial>[]) => Promise<(Resource | null)[]>;
     set: (item: ResourceIdPartial & ResourceData) => Promise<string>;
     setBatch: (items: (ResourceIdPartial & ResourceData)[]) => Promise<string[]>;
     getOrCreate: (id: string | Required<ResourceIdPartial>, initialValue: ResourceData) => Promise<Resource>;

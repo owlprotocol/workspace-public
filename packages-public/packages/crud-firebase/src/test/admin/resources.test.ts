@@ -165,8 +165,8 @@ describe("admin/resource.test.ts", async () => {
 
                 await deleteEmulatorData();
 
-                const item1 = await itemResource().getOrUndefined(testItem.id);
-                expect(item1).toBeUndefined();
+                const item1 = await itemResource().getOrNull(testItem.id);
+                expect(item1).toBeNull();
             });
 
             test("set, nested key", async () => {

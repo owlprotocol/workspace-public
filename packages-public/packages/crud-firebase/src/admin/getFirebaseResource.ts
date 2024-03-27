@@ -106,7 +106,7 @@ export function getFirebaseResource<
      * @param id
      * @returns doc by id
      */
-    const _getOrUndefined = async (id: ResourceId | string): Promise<Resource | undefined> => {
+    const _getOrNull = async (id: ResourceId | string): Promise<Resource | null> => {
         const ref = getDocRef(id);
         if (cache) {
             //Check LRU cache
@@ -117,7 +117,7 @@ export function getFirebaseResource<
         const refSnapshot = await ref.get();
 
         if (!refSnapshot.exists) {
-            return undefined;
+            return null;
         }
 
         const result = { ...refSnapshot.data(), ...decodeId(ref.id) } as Resource;
@@ -131,11 +131,8 @@ export function getFirebaseResource<
      * @params security checks
      * @returns doc by id
      */
-    const getOrUndefined = async (
-        id: ResourceId | string,
-        accessParams?: AccessControlParams,
-    ): Promise<Resource | undefined> => {
-        const data = await _getOrUndefined(id);
+    const getOrNull = async (id: ResourceId | string, accessParams?: AccessControlParams): Promise<Resource | null> => {
+        const data = await _getOrNull(id);
         //check read access
         if (data && accessParams && readAccessCheck && !readAccessCheck(data, accessParams)) {
             const idStr = encodeId(id);
@@ -144,6 +141,8 @@ export function getFirebaseResource<
 
         return data;
     };
+    /** @deprecated renamed to getOrNull */
+    const getOrUndefined = getOrNull;
 
     /**
      * Get docs by id, no security checks
@@ -151,7 +150,7 @@ export function getFirebaseResource<
      * @returns docs by id
      * //TODO: Is this the fastest way? https://stackoverflow.com/questions/59572943/is-there-a-way-to-batch-read-firebase-documents
      */
-    const _getBatch = async (ids: ResourceId[] | string[]): Promise<(Resource | undefined)[]> => {
+    const _getBatch = async (ids: ResourceId[] | string[]): Promise<(Resource | null)[]> => {
         const refSnapshots = await firestore.runTransaction(async (transaction) => {
             const operations = ids.map((id) => {
                 const ref = getDocRef(id);
@@ -162,7 +161,7 @@ export function getFirebaseResource<
         });
 
         return refSnapshots.map((refSnapshot) => {
-            return { ...refSnapshot.data(), ...decodeId(refSnapshot.id) } as Resource;
+            return refSnapshot.exists ? ({ ...refSnapshot.data(), ...decodeId(refSnapshot.id) } as Resource) : null;
         });
     };
 
@@ -175,7 +174,7 @@ export function getFirebaseResource<
     const getBatch = async (
         ids: ResourceId[] | string[],
         accessParams?: AccessControlParams,
-    ): Promise<(Resource | undefined)[]> => {
+    ): Promise<(Resource | null)[]> => {
         let data = await _getBatch(ids);
         //Filter un-authorized results
         if (accessParams && readAccessCheck) {
@@ -883,6 +882,7 @@ export function getFirebaseResource<
         validateData,
         //queries
         get,
+        getOrNull,
         getOrUndefined,
         getBatch,
         getAll,

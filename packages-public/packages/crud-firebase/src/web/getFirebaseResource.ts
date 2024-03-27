@@ -98,7 +98,7 @@ export function getFirebaseResource<
      * @param id
      * @returns doc by id
      */
-    const getOrUndefined = async (id: ResourceId | string): Promise<Resource | undefined> => {
+    const getOrNull = async (id: ResourceId | string): Promise<Resource | null> => {
         const ref = getDocRef(id);
         if (cache) {
             //Check LRU cache
@@ -109,7 +109,7 @@ export function getFirebaseResource<
         const refSnapshot = await getDoc(ref);
 
         if (!refSnapshot.exists()) {
-            return undefined;
+            return null;
         }
 
         const result = { ...refSnapshot.data(), ...decodeId(ref.id) };
@@ -117,13 +117,16 @@ export function getFirebaseResource<
         return result;
     };
 
+    /** @deprecated renamed to getOrNull */
+    const getOrUndefined = getOrNull;
+
     /**
      * Get docs by id
      * @param ids
      * @returns docs by id
      * //TODO: Is this the fastest way? https://stackoverflow.com/questions/59572943/is-there-a-way-to-batch-read-firebase-documents
      */
-    const getBatch = async (ids: ResourceId[] | string[]): Promise<(Resource | undefined)[]> => {
+    const getBatch = async (ids: ResourceId[] | string[]): Promise<(Resource | null)[]> => {
         const refSnapshots = await runTransaction(firestore, async (transaction) => {
             const operations = ids.map((id) => {
                 const ref = getDocRef(id);
@@ -134,7 +137,7 @@ export function getFirebaseResource<
         });
 
         return refSnapshots.map((refSnapshot) => {
-            return { ...refSnapshot.data(), ...decodeId(refSnapshot.id) } as Resource;
+            return refSnapshot.exists() ? ({ ...refSnapshot.data(), ...decodeId(refSnapshot.id) } as Resource) : null;
         });
     };
 
@@ -401,6 +404,7 @@ export function getFirebaseResource<
         validateData,
         //queries
         get,
+        getOrNull,
         getOrUndefined,
         getBatch,
         getAll,

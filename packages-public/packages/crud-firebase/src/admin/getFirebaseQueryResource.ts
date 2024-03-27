@@ -88,12 +88,12 @@ export function getFirebaseQueryResource<
         filter: Partial<ResourceData>,
         options?: Omit<ResourceQueryOptions, "limit">,
         accessParams?: AccessControlParams,
-    ): Promise<Resource | undefined> => {
+    ): Promise<Resource | null> => {
         const snapshot = await colQuerySnapshot.getWhereSnapshot(filter, options);
         const dataRef = snapshot.docs[0];
 
         // early return undefined if no result
-        if (!dataRef) return undefined;
+        if (!dataRef) return null;
 
         const data = dataRef.data();
 

@@ -116,13 +116,15 @@ export function getFirebaseResourceReactQueryOptions<
         });
     };
 
-    const getOrUndefinedOptions = (idParams: string | Required<ResourceIdPartial>) => {
+    const getOrNullOptions = (idParams: string | Required<ResourceIdPartial>) => {
         const id = encodeId(idParams);
         return queryOptions({
-            queryKey: [ROOT_KEY, rootQueryKey, "getOrUndefined", id] as const,
-            queryFn: () => resource.getOrUndefined(id),
+            queryKey: [ROOT_KEY, rootQueryKey, "getOrNull", id] as const,
+            queryFn: () => resource.getOrNull(id),
         });
     };
+
+    const getOrUndefinedOptions = getOrNullOptions;
 
     const getBatchOptions = (idParamsList: string[] | Required<ResourceIdPartial>[]) => {
         const ids = idParamsList.map(encodeId);
@@ -138,6 +140,8 @@ export function getFirebaseResourceReactQueryOptions<
         getWhereCountOptions,
         getWhereFirstOptions,
         getOptions,
+        getOrNullOptions,
+        /** @deprecated renamed to getOrNullOptions */
         getOrUndefinedOptions,
         getBatchOptions,
     } satisfies FirebaseResourceReactQueryOptions<ResourceData, ResourceIdPartial, Resource>;

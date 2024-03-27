@@ -67,9 +67,9 @@ export function getFirebaseQuerySnapshot<
     const getWhereFirst = async (
         filter: Partial<ResourceData>,
         options?: Omit<ResourceQueryOptions, "limit">,
-    ): Promise<Resource | undefined> => {
+    ): Promise<Resource | null> => {
         const results = await getWhere(filter, { ...options, limit: 1 });
-        return results[0];
+        return results[0] ?? null;
     };
 
     /**

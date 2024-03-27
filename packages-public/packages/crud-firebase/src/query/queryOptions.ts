@@ -56,9 +56,9 @@ export interface FirebaseQueryReactQueryOptions<
         filter: Partial<ResourceData>,
         options?: Omit<ResourceQueryOptions, "limit">,
     ) => UseQueryOptions<
-        Resource | undefined,
+        Resource | null,
         Error,
-        Resource | undefined,
+        Resource | null,
         readonly [
             RootKey,
             FirebaseCollectionKey,
@@ -88,21 +88,30 @@ export interface FirebaseResourceReactQueryOptions<
         id: string | Required<ResourceIdPartial>,
     ) => UseQueryOptions<Resource, Error, Resource, readonly [RootKey, FirebaseCollectionKey, "get", string]>;
     //TODO: Seems like opportuniy for sharing keys here. For now isolate for safety.
+    getOrNullOptions: (
+        id: string | Required<ResourceIdPartial>,
+    ) => UseQueryOptions<
+        Resource | null,
+        Error,
+        Resource | null,
+        readonly [RootKey, FirebaseCollectionKey, "getOrNull", string]
+    >;
+    /** @deprecated renamed to getOrNull */
     getOrUndefinedOptions: (
         id: string | Required<ResourceIdPartial>,
     ) => UseQueryOptions<
-        Resource | undefined,
+        Resource | null,
         Error,
-        Resource | undefined,
-        readonly [RootKey, FirebaseCollectionKey, "getOrUndefined", string]
+        Resource | null,
+        readonly [RootKey, FirebaseCollectionKey, "getOrNull", string]
     >;
     //TODO: Can we do structural sharing? Batch is more efficient on network, but cache keys won't match here
     getBatchOptions: (
         ids: string[] | Required<ResourceIdPartial>[],
     ) => UseQueryOptions<
-        (Resource | undefined)[],
+        (Resource | null)[],
         Error,
-        (Resource | undefined)[],
+        (Resource | null)[],
         readonly [RootKey, FirebaseCollectionKey, "getBatch", string[]]
     >;
 }
