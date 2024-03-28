@@ -120,6 +120,7 @@ const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
     },
     { name: "INFURA_IPFS_PROJECT_ID", platform: "node", defaultValue: "2OAhenU1T1fxTGyQMTTFDwdyW5p" },
     { name: "INFURA_IPFS_PROJECT_SECRET", platform: "node", defaultValue: "8ffddfdc95f32ea7aa43ee3ba9d2d603" },
+    { name: "PUBLIC_ADDRESS_RELAYER", platform: "neutral", defaultValue: "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720" },
 ];
 
 const INDEXER_ENVVARS: EnvVarDef[] = [
