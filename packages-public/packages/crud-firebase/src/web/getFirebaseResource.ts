@@ -1,36 +1,28 @@
-/***** Generics for Firebase Web CRUD *****/
+/***** Generics for Firebase web CRUD *****/
+import { getFirebaseQueryResource } from "./getFirebaseQueryResource.js";
 import {
-    CollectionReference,
-    DocumentData,
-    DocumentReference,
-    Firestore,
-    collection,
     deleteDoc,
-    doc,
+    deleteDocTransaction,
+    exists,
+    getColRef,
     getDoc,
-    getDocs,
+    getDocRef,
+    getDocTransaction,
     runTransaction,
     setDoc,
+    setDocTransaction,
     updateDoc,
-} from "firebase/firestore";
-import { zip } from "lodash-es";
-
-import { getFirebaseQueryResource } from "./getFirebaseQueryResource.js";
-import { DecodeRef } from "./getDecodeRefSnapshot.js";
-import { LRUMapWithDelete } from "../vendor/mnemonist.js";
-import { getFirestorePathValue } from "../utils/getFirestorePathValue.js";
-import { getFirestoreUpdateData } from "../utils/getFirestoreUpdateData.js";
+    updateDocTransaction,
+} from "./document.js";
+import { DecodeRef } from "../getDecodeRefSnapshot.js";
 import {
     FirebaseResourceFactory,
     ResourceIdDefault,
-    ResourceQueryOptions,
-    FirebaseResource,
     ResourceDataValidators,
     ResourceIdValidators,
-    FirebaseResourceOptions,
 } from "../resource.js";
-import { CacheWithDelete } from "../cache.js";
-import { BigNumberish } from "../common.js";
+import type { Firestore } from "../document.js";
+import { getFirebaseResourceForSdk } from "../getFirebaseResource.js";
 
 /**
  * Firebase Resource. create, get, getAll, update, delete, deleteAll and more
@@ -39,400 +31,24 @@ import { BigNumberish } from "../common.js";
  * @param firestore Firestore instance
  * @param collectionPath Collection path (eg. `/users`)
  * @param validators Validators for id and data.
+ * @param options Cache options
  * @returns wrapper functions for access Firebase
  */
-export function getFirebaseResource<
-    ResourceData extends Record<string, any>,
-    ResourceIdPartial extends Record<string, any> = ResourceIdDefault,
->(
-    firestore: Firestore,
-    collectionPath: string,
-    validators: DecodeRef<Required<ResourceIdPartial>> &
-        ResourceDataValidators<ResourceData> &
-        ResourceIdValidators<ResourceIdPartial>,
-    options?: FirebaseResourceOptions,
-) {
-    type ResourceId = Required<ResourceIdPartial>;
-    type Resource = ResourceId & ResourceData;
-    const cache: CacheWithDelete<string, Resource> | undefined = options?.lruCacheSize
-        ? //@ts-expect-error
-          new LRUMapWithDelete(options.lruCacheSize)
-        : undefined;
-
-    const { encodeId, decodeId, validateDataPartial } = validators;
-    const validateData = (validators.validateData ?? validateDataPartial) as (item: ResourceData) => ResourceData;
-
-    const col = collection(firestore, collectionPath) as CollectionReference<ResourceData>;
-    const { getAll, getWhere, getWhereCount, getWhereFirst } = getFirebaseQueryResource(col, validators);
-
-    const getDocRef = (id: ResourceId | string): DocumentReference<ResourceData, DocumentData> => {
-        return doc(col, encodeId(id));
-    };
-
-    /**
-     * Get doc by id
-     * @param id
-     * @returns doc by id
-     */
-    const get = async (id: ResourceId | string): Promise<Resource> => {
-        const ref = getDocRef(id);
-        if (cache) {
-            //Check LRU cache
-            const cacheResult = cache.get(ref.id);
-            if (cacheResult) return cacheResult;
-        }
-
-        const refSnapshot = await getDoc(ref);
-
-        if (!refSnapshot.exists()) {
-            throw new Error(`${ref.path} not found`);
-        }
-
-        const result = { ...refSnapshot.data(), ...decodeId(ref.id) };
-        cache?.set(ref.id, result);
-        return result;
-    };
-
-    /**
-     * Get doc by id or undefined
-     * @param id
-     * @returns doc by id
-     */
-    const getOrNull = async (id: ResourceId | string): Promise<Resource | null> => {
-        const ref = getDocRef(id);
-        if (cache) {
-            //Check LRU cache
-            const cacheResult = cache.get(ref.id);
-            if (cacheResult) return cacheResult;
-        }
-
-        const refSnapshot = await getDoc(ref);
-
-        if (!refSnapshot.exists()) {
-            return null;
-        }
-
-        const result = { ...refSnapshot.data(), ...decodeId(ref.id) };
-        cache?.set(ref.id, result);
-        return result;
-    };
-
-    /** @deprecated renamed to getOrNull */
-    const getOrUndefined = getOrNull;
-
-    /**
-     * Get docs by id
-     * @param ids
-     * @returns docs by id
-     * //TODO: Is this the fastest way? https://stackoverflow.com/questions/59572943/is-there-a-way-to-batch-read-firebase-documents
-     */
-    const getBatch = async (ids: ResourceId[] | string[]): Promise<(Resource | null)[]> => {
-        const refSnapshots = await runTransaction(firestore, async (transaction) => {
-            const operations = ids.map((id) => {
-                const ref = getDocRef(id);
-                return transaction.get(ref);
-            });
-
-            return await Promise.all(operations);
-        });
-
-        return refSnapshots.map((refSnapshot) => {
-            return refSnapshot.exists() ? ({ ...refSnapshot.data(), ...decodeId(refSnapshot.id) } as Resource) : null;
-        });
-    };
-
-    /**
-     * Set doc
-     * @param item (id optional)
-     * @returns id (parameter or default autogenerated with uuidv4())
-     */
-    const set = async (item: ResourceIdPartial & ResourceData): Promise<string> => {
-        const ref = getDocRef(encodeId(item));
-        if (cache) {
-            //Purge LRU cache
-            cache.delete(ref.id);
-        }
-
-        await setDoc(ref, validateData(item));
-        return ref.id;
-    };
-
-    /**
-     * Set docs as a transaction (max 500 writes)
-     * @param items (all with ids or none with ids)
-     */
-    const setBatch = async (items: (ResourceIdPartial & ResourceData)[]): Promise<string[]> => {
-        const refs = items.map((item) => getDocRef(encodeId(item)));
-
-        if (cache) {
-            //Purge LRU cache
-            refs.map((ref) => cache.delete(ref.id));
-        }
-
-        await runTransaction(firestore, async (transaction) => {
-            const operations = zip(refs, items).map(([ref, item]) => {
-                return transaction.set(ref!, validateData(item!));
-            });
-
-            return operations;
-        });
-
-        return refs.map((r) => r.id);
-    };
-
-    /**
-     * Get doc or create new one
-     * @param id
-     * @param initialValue
-     * @returns doc or initialValue
-     */
-    const getOrCreate = async (id: ResourceId | string, initialValue: ResourceData): Promise<Resource> => {
-        const ref = getDocRef(id);
-        if (cache) {
-            //Check LRU cache
-            const cacheResult = cache.get(ref.id);
-            if (cacheResult) return cacheResult;
-        }
-
-        const initialValueValidated = validateData(initialValue);
-
-        const dataExisting = await runTransaction(firestore, async (transaction) => {
-            const refSnapshot = await transaction.get(ref);
-            if (!refSnapshot.exists()) {
-                transaction.set(ref, initialValueValidated);
-                return undefined;
-            } else {
-                return refSnapshot.data();
-            }
-        });
-
-        const data = dataExisting
-            ? { ...dataExisting, ...decodeId(ref.id) }
-            : { ...initialValueValidated, ...decodeId(ref.id) };
-        return data as Resource;
-    };
-
-    /**
-     * Get first doc that matches filter or create new one
-     * WARNING: NOT executed as transaction (only get supported in transaction)
-     * @param filter
-     * @param initialValue
-     * @param options orderBy, order
-     * @returns doc or initialValue
-     */
-    const getWhereFirstOrCreate = async (
-        filter: Partial<ResourceData>,
-        initialValue: ResourceIdPartial & ResourceData,
-        options?: Omit<ResourceQueryOptions, "limit">,
-    ): Promise<Resource> => {
-        const existing = await getWhereFirst(filter, options);
-        if (!existing) {
-            const id = await set(initialValue);
-            return { ...validateData(initialValue), ...decodeId(id) };
-        }
-        return existing;
-    };
-
-    /**
-     * Update existing doc
-     * @param item
-     * @returns
-     */
-    const update = async (item: ResourceId & Partial<ResourceData>): Promise<void> => {
-        const ref = getDocRef(item);
-        if (cache) {
-            //Purge LRU cache
-            cache.delete(ref.id);
-        }
-
-        return updateDoc(ref, getFirestoreUpdateData(validateDataPartial(item)));
-    };
-
-    /**
-     * Update existing docs as a transaction (max 500 writes)
-     * @param items
-     * @returns
-     */
-    const updateBatch = async (items: (ResourceId & Partial<ResourceData>)[]): Promise<void> => {
-        const refs = items.map(getDocRef);
-        if (cache) {
-            //Purge LRU cache
-            refs.map((ref) => cache.delete(ref.id));
-        }
-
-        return runTransaction(firestore, async (transaction) => {
-            const operations = zip(refs, items).map(([ref, item]) => {
-                return transaction.update(ref!, getFirestoreUpdateData(validateDataPartial(item!)));
-            });
-
-            return operations;
-        }) as any;
-    };
-
-    /**
-     * Delete doc
-     * @param id
-     * @returns
-     */
-    const deleteById = async (id: ResourceId | string): Promise<void> => {
-        const ref = getDocRef(id);
-        if (cache) {
-            //Purge LRU cache
-            cache.delete(ref.id);
-        }
-
-        return deleteDoc(ref);
-    };
-
-    /**
-     * Delete docs as transaction (max 500 writes)
-     */
-    const deleteBatch = async (ids: ResourceId[] | string[]): Promise<void> => {
-        const refs = ids.map(getDocRef);
-        if (cache) {
-            //Purge LRU cache
-            refs.map((ref) => cache.delete(ref.id));
-        }
-
-        return runTransaction(firestore, async (transaction) => {
-            const operations = refs.map((ref) => {
-                return transaction.delete(ref);
-            });
-
-            return operations;
-        }) as any;
-    };
-
-    /**
-     * Delete all docs
-     */
-    const deleteAll = async (): Promise<void> => {
-        return runTransaction(firestore, async (transaction) => {
-            const snapshot = await getDocs(col);
-            if (cache) {
-                //Purge LRU cache
-                snapshot.docs.map((d) => cache.delete(d.id));
-            }
-
-            const operations = snapshot.docs.map((d) => {
-                const ref = doc(col, d.id);
-                return transaction.delete(ref);
-            });
-
-            return operations;
-        }) as any;
-    };
-
-    /**
-     * Increment string value
-     * @param id
-     * @param path key or nested key
-     * @param value
-     */
-    const incrementStr = async (id: ResourceId | string, path: string, value: BigNumberish): Promise<void> => {
-        const ref = getDocRef(id);
-        if (cache) {
-            //Purge LRU cache
-            cache.delete(ref.id);
-        }
-
-        return runTransaction(firestore, async (transaction) => {
-            const refSnapshot = await transaction.get(ref);
-            if (!refSnapshot.exists()) {
-                throw new Error(`${ref.path} not found`);
-            }
-            const incrValue = BigInt(value);
-            const currValueStr: BigNumberish = getFirestorePathValue(refSnapshot.data(), path) ?? "0";
-            const currValue = BigInt(currValueStr);
-            const newValue = currValue + incrValue;
-
-            return transaction.update(ref, { [path]: newValue.toString() });
-        }) as any;
-    };
-
-    /**
-     * Decrement str value
-     * @param id
-     * @param path key or nested key
-     * @param value
-     */
-    const decrementStr = async (id: ResourceId | string, path: string, value: BigNumberish): Promise<void> => {
-        return incrementStr(id, path, -BigInt(value));
-    };
-
-    /**
-     * Increment number value
-     * @param id
-     * @param path key or nested key
-     * @param value
-     */
-    const incrementNumber = async (id: ResourceId | string, path: string, value: number): Promise<void> => {
-        const ref = getDocRef(id);
-        if (cache) {
-            //Purge LRU cache
-            cache.delete(ref.id);
-        }
-
-        return runTransaction(firestore, async (transaction) => {
-            const refSnapshot = await transaction.get(ref);
-            if (!refSnapshot.exists()) {
-                throw new Error(`${ref.path} not found`);
-            }
-            const currValue: number = getFirestorePathValue(refSnapshot.data(), path) ?? 0;
-            const newValue = currValue + value;
-
-            return transaction.update(ref, { [path]: newValue });
-        }) as any;
-    };
-
-    /**
-     * Decrement number value
-     * @param id
-     * @param path key or nested key
-     * @param value
-     */
-    const decrementNumber = async (id: ResourceId | string, path: string, value: number): Promise<void> => {
-        return incrementNumber(id, path, value * -1);
-    };
-
-    const resource = {
-        collectionPath,
-        //validators
-        encodeId,
-        decodeId,
-        validateDataPartial,
-        validateData,
-        //queries
-        get,
-        getOrNull,
-        getOrUndefined,
-        getBatch,
-        getAll,
-        getWhere,
-        getWhereCount,
-        getWhereFirst,
-        set,
-        setBatch,
-        getOrCreate,
-        getWhereFirstOrCreate,
-        update,
-        updateBatch,
-        delete: deleteById,
-        deleteBatch,
-        deleteAll,
-        incrementStr,
-        decrementStr,
-        incrementNumber,
-        decrementNumber,
-    } satisfies FirebaseResource<ResourceData, ResourceIdPartial>;
-
-    return {
-        collection: col,
-        doc: getDocRef,
-        cache,
-        ...resource,
-    };
-}
+export const getFirebaseResource = getFirebaseResourceForSdk<"web">({
+    getColRef,
+    getDocRef,
+    getDoc,
+    setDoc,
+    updateDoc,
+    deleteDoc,
+    exists,
+    runTransaction,
+    getDocTransaction,
+    setDocTransaction,
+    updateDocTransaction,
+    deleteDocTransaction,
+    getFirebaseQueryResource,
+});
 
 /**
  * Return factory function for generating Firebase resource when dealing with subcollections.
@@ -448,13 +64,12 @@ export function getFirebaseResourceFactory<
     ResourceData extends Record<string, any>,
     ResourceIdPartial extends Record<string, any> = ResourceIdDefault,
 >(
-    firestore: Firestore,
+    firestore: Firestore<"web">,
     collectionPathTemplate: string,
     validators: DecodeRef<Required<ResourceIdPartial>> &
         ResourceDataValidators<ResourceData> &
         ResourceIdValidators<ResourceIdPartial>,
-): FirebaseResourceFactory<CollectionId, ResourceData, ResourceIdPartial> {
-    //TODO: Validate collectionId params
+): FirebaseResourceFactory<"web", CollectionId, ResourceData, ResourceIdPartial> {
     return function getFirebaseResource2(params: CollectionId) {
         const collectionPath = Object.entries(params).reduce(
             (acc, [key, val]) => acc.replace(`{${key}}`, val),

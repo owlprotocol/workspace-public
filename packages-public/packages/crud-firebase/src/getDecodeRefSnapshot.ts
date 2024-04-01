@@ -1,4 +1,4 @@
-import { DocumentReference, QueryDocumentSnapshot } from "firebase/firestore";
+import type { DocumentReference, FirestoreSDK, QueryDocumentSnapshot } from "./document.js";
 
 export interface DecodeRef<
     ResourceId extends Record<string, any>,
@@ -21,7 +21,7 @@ export function getDecodeRefSnapshot<
 
     const { decodeRef, decodeId, decodeParentDocRef, decodeParentDocId } = validators ?? {};
 
-    return function decodeRefSnapshot(refSnapshot: QueryDocumentSnapshot<ResourceData>): Resource {
+    return function decodeRefSnapshot(refSnapshot: QueryDocumentSnapshot<FirestoreSDK, ResourceData>): Resource {
         const parentDoc = refSnapshot.ref.parent.parent;
         if (!parentDoc) {
             if (decodeParentDocRef) {

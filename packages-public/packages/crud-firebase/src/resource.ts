@@ -1,5 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 import { BigNumberish } from "./common.js";
+import type { CollectionReference, DocumentData, DocumentReference, FirestoreSDK } from "./document.js";
+import { QuerySnapshot } from "./query.js";
+import { CacheWithDelete } from "./cache.js";
 
 /**
  * @interface ResourceQueryOptions to sort/order firebase query
@@ -77,7 +80,8 @@ export type FirebaseIncrOp = "incrementStr" | "decrementStr" | "incrementNumber"
  * @template Resource Full resource, join collection, data, & id
  */
 export interface FirebaseQueryResource<
-    ResourceData extends Record<string, any>,
+    SDK extends FirestoreSDK,
+    ResourceData extends DocumentData,
     ResourceIdPartial extends Record<string, any>,
     Resource extends Required<ResourceIdPartial> & ResourceData = Required<ResourceIdPartial> & ResourceData,
 > {
@@ -85,7 +89,12 @@ export interface FirebaseQueryResource<
     validateDataPartial: (data: Partial<ResourceData>) => Partial<ResourceData>;
     //queries
     getAll: (options?: ResourceQueryOptions) => Promise<Resource[]>;
+    getAllSnapshot: (options?: ResourceQueryOptions) => Promise<QuerySnapshot<SDK, ResourceData>>;
     getWhere: (filter: Partial<ResourceData>, options?: ResourceQueryOptions) => Promise<Resource[]>;
+    getWhereSnapshot: (
+        filter: Partial<ResourceData>,
+        options?: ResourceQueryOptions,
+    ) => Promise<QuerySnapshot<SDK, ResourceData>>;
     getWhereCount: (filter: Partial<ResourceData>, options?: ResourceQueryOptions) => Promise<number>;
     getWhereFirst: (
         filter: Partial<ResourceData>,
@@ -100,11 +109,15 @@ export interface FirebaseQueryResource<
  * @template Resource Full resource, join collection, data, & id
  */
 export interface FirebaseResource<
-    ResourceData extends Record<string, any>,
+    SDK extends FirestoreSDK,
+    ResourceData extends DocumentData,
     ResourceIdPartial extends Record<string, any> = ResourceIdDefault,
     Resource extends Required<ResourceIdPartial> & ResourceData = Required<ResourceIdPartial> & ResourceData,
-> extends FirebaseQueryResource<ResourceData, ResourceIdPartial, Resource> {
+> extends FirebaseQueryResource<SDK, ResourceData, ResourceIdPartial, Resource> {
     collectionPath: string;
+    collection: CollectionReference<SDK, ResourceData>;
+    doc: (id: string | Required<ResourceIdPartial>) => DocumentReference<SDK, ResourceData>;
+    cache: CacheWithDelete<string, Resource> | undefined;
     //validators
     validateData: (data: ResourceData) => ResourceData;
     encodeId: (idParams: string | ResourceIdPartial) => string;
@@ -163,8 +176,9 @@ export type FirebaseResourceOptions = {
  * @template Resource Full resource, join collection, data, & id
  */
 export type FirebaseResourceFactory<
+    SDK extends FirestoreSDK,
     CollectionId extends Record<string, any>,
-    ResourceData extends Record<string, any>,
+    ResourceData extends DocumentData,
     ResourceIdPartial extends Record<string, any> = ResourceIdDefault,
     Resource extends Required<ResourceIdPartial> & ResourceData = Required<ResourceIdPartial> & ResourceData,
-> = (params: CollectionId) => FirebaseResource<ResourceData, ResourceIdPartial, Resource>;
+> = (params: CollectionId) => FirebaseResource<SDK, ResourceData, ResourceIdPartial, Resource>;

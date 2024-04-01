@@ -1,8 +1,6 @@
-/***** Generics for Firebase Web CRUD *****/
-import { Query } from "firebase/firestore";
-import { getFirebaseQuerySnapshot } from "./getFirebaseQuerySnapshot.js";
-import { DecodeRef, getDecodeRefSnapshot } from "./getDecodeRefSnapshot.js";
-import { FirebaseQueryResource, ResourceDataValidators } from "../resource.js";
+import { count, getDocs } from "./query.js";
+import { getWhereQuery } from "./getWhereQuery.js";
+import { getFirebaseQueryResourceForSdk } from "../getFirebaseQueryResource.js";
 
 /**
  * Firebase Query Resource. To be used with Collection or CollectionGroup.
@@ -10,39 +8,14 @@ import { FirebaseQueryResource, ResourceDataValidators } from "../resource.js";
  * - getAll, getWhere, getWhereCount, getWhereFirst
  * @template ResourceData Resource data
  * @template ResourceId Resource id params
- * @param col Firestore Collection Reference or CollectionGroup (technically any query will do)
+ * @template CollectionId Resource parent collection id
+ * @param col Firestore Collection Reference or CollectionGroup
  * @param validators Validators for decoding id and validating query data.
  * @returns wrapper functions for access Firebase
  */
-export function getFirebaseQueryResource<
-    ResourceData extends Record<string, any>,
-    ResourceId extends Record<string, any>,
-    CollectionId extends Record<string, any> = Record<string, never>,
->(
-    col: Query<ResourceData>,
-    validators: DecodeRef<Required<ResourceId>, CollectionId> &
-        Pick<ResourceDataValidators<ResourceData>, "validateDataPartial">,
-) {
-    type Resource = CollectionId & Required<ResourceId> & ResourceData;
-
-    const validateDataPartial = validators.validateDataPartial;
-    const decodeRefSnapshot = getDecodeRefSnapshot<ResourceData, Required<ResourceId>, CollectionId>(validators);
-
-    const { getAllSnapshot, getAll, _getWhereQuery, getWhereSnapshot, getWhere, getWhereFirst, getWhereCount } =
-        getFirebaseQuerySnapshot<ResourceData, Resource>(col, validateDataPartial, decodeRefSnapshot);
-
-    const resource = {
-        validateDataPartial,
-        getAll,
-        getWhere,
-        getWhereCount,
-        getWhereFirst,
-    } satisfies FirebaseQueryResource<ResourceData, ResourceId, Resource>;
-
-    return {
-        getAllSnapshot,
-        _getWhereQuery,
-        getWhereSnapshot,
-        ...resource,
-    };
-}
+export const getFirebaseQueryResource = getFirebaseQueryResourceForSdk<"web">({
+    getWhereQuery,
+    getDocs,
+    //@ts-expect-error
+    count,
+});

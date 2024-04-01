@@ -33,12 +33,16 @@ export function getFirebaseQueryReactQueryOptions<
     ResourceData extends Record<string, any>,
     ResourceId extends Record<string, any>,
     CollectionId extends Record<string, any> = Record<string, never>,
+    Resource extends CollectionId & Required<ResourceId> & ResourceData = CollectionId &
+        Required<ResourceId> &
+        ResourceData,
 >(
-    resource: FirebaseQueryResource<ResourceData, ResourceId, CollectionId & Required<ResourceId> & ResourceData>,
+    resource: Pick<
+        FirebaseQueryResource<"web", ResourceData, ResourceId, CollectionId & Required<ResourceId> & ResourceData>,
+        FirebaseQueryOp
+    >,
     rootQueryKey: FirebaseCollectionKey,
-) {
-    type Resource = CollectionId & Required<ResourceId> & ResourceData;
-
+): FirebaseQueryReactQueryOptions<ResourceData, ResourceId, Resource> {
     const getAllOptions = (options?: ResourceQueryOptions) => {
         return queryOptions({
             queryKey: [ROOT_KEY, rootQueryKey, "getAll", options] as const,
@@ -67,14 +71,12 @@ export function getFirebaseQueryReactQueryOptions<
         });
     };
 
-    const helpers = {
+    return {
         getAllOptions,
         getWhereOptions,
         getWhereCountOptions,
         getWhereFirstOptions,
-    } satisfies FirebaseQueryReactQueryOptions<ResourceData, ResourceId, Resource>;
-
-    return helpers as FirebaseQueryReactQueryOptions<ResourceData, ResourceId, Resource>;
+    } as FirebaseQueryReactQueryOptions<ResourceData, ResourceId, Resource>;
 }
 
 /**
@@ -96,7 +98,7 @@ export function getFirebaseResourceReactQueryOptions<
     ResourceIdPartial extends Record<string, any>,
 >(
     resource: Pick<
-        FirebaseResource<ResourceData, ResourceIdPartial>,
+        FirebaseResource<"web", ResourceData, ResourceIdPartial>,
         FirebaseGetOp | "encodeId" | FirebaseQueryOp | "validateDataPartial"
     >,
     rootQueryKey: FirebaseCollectionKey,
@@ -163,7 +165,7 @@ export function getFirebaseResourceReactQueryOptionsFactory<
     ResourceData extends Record<string, any>,
     ResourceIdPartial extends Record<string, any> = ResourceIdDefault,
 >(
-    factory: FirebaseResourceFactory<CollectionId, ResourceData, ResourceIdPartial>,
+    factory: FirebaseResourceFactory<"web", CollectionId, ResourceData, ResourceIdPartial>,
 ): FirebaseResourceReactQueryOptionsFactory<CollectionId, ResourceData, ResourceIdPartial> {
     //TODO: Validate collectionId params
     return function getFirebaseResourceReactQueryOptions2(params: CollectionId) {
