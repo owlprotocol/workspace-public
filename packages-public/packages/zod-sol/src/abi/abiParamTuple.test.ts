@@ -1,8 +1,8 @@
 import { describe, test } from "vitest";
 import { expectType } from "ts-expect";
 import { z } from "zod";
+import { Address } from "abitype";
 import { zodForAbiParamTuple } from "./abiParamTuple.js";
-import { integerZod } from "../solidity/integer.js";
 
 describe("abiParamArrayTest", function () {
     const tuple = {
@@ -25,8 +25,8 @@ describe("abiParamArrayTest", function () {
         const zodTuple = zodForAbiParamTuple(tuple);
         expectType<
             z.ZodObject<{
-                to: z.ZodString;
-                amount: ReturnType<typeof integerZod>;
+                to: z.ZodEffects<z.ZodString, Address, Address>;
+                amount: z.ZodBigInt;
             }>
         >(zodTuple);
     });

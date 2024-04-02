@@ -1,65 +1,51 @@
-import { ethers } from "ethers";
-import { NonTupleType } from "../abi/abiParamNonTuple.js";
+import { Address, Hex, padHex, zeroAddress } from "viem";
+import { SolidityAddress, SolidityBool, SolidityBytes, SolidityInt, SolidityString } from "abitype";
+import { NonTupleType, isSolidityBytes, isSolidityInt } from "../abi/abiParamNonTuple.js";
 import { ArrayType } from "../abi/abiParamArray.js";
 import { AbiParamTuple, isAbiParamTuple } from "../abi/abiParamTuple.js";
 import { AbiParamTupleArray, isAbiParamTupleArray } from "../abi/abiParamTupleArray.js";
 import { AbiParam } from "../abi/abiParam.js";
 import { AbiFunction } from "../abi/abiFunction.js";
 
-export type ZodExample = string | boolean | Record<string, string | boolean>;
+export type ZodExampleNonTuple = boolean | string | bigint | Hex | Address;
+export type ZodExample = ZodExampleNonTuple | Record<string, ZodExampleNonTuple>;
 
+export type ZodExampleForNonTupleType<T extends NonTupleType> = T extends SolidityBool
+    ? true
+    : T extends SolidityAddress
+    ? typeof zeroAddress
+    : T extends SolidityString
+    ? ""
+    : T extends SolidityInt
+    ? "0"
+    : T extends SolidityBytes
+    ? Hex
+    : never;
 /**
  * Example non-array type
  * @param t
  * @returns
  */
-export function zodExampleForAbiParamNonTuple(t: NonTupleType): boolean | string {
+export function zodExampleForAbiParamNonTuple<T extends NonTupleType>(t: T): ZodExampleForNonTupleType<T> {
+    if (isSolidityInt(t)) {
+        return "0" as ZodExampleForNonTupleType<T>;
+    } else if (isSolidityBytes(t)) {
+        if (t === "bytes") return "0x" as ZodExampleForNonTupleType<T>;
+
+        const size = parseInt(t.replace("bytes", ""));
+        return padHex("0x", { size }) as ZodExampleForNonTupleType<T>;
+    }
+
     switch (t) {
         case "bool":
-            return true;
+            return true as ZodExampleForNonTupleType<T>;
         case "address":
-            return ethers.constants.AddressZero;
+            return zeroAddress as ZodExampleForNonTupleType<T>;
         case "string":
-            return "";
-        case "bytes":
-            return "0x";
-        case "uint256":
-            return "0";
-        case "uint128":
-            return "0";
-        case "uint96":
-            return "0";
-        case "uint64":
-            return "0";
-        case "uint32":
-            return "0";
-        case "uint16":
-            return "0";
-        case "uint8":
-            return "0";
-        case "int256":
-            return "0";
-        case "int128":
-            return "0";
-        case "int96":
-            return "0";
-        case "int64":
-            return "0";
-        case "int32":
-            return "0";
-        case "int16":
-            return "0";
-        case "int8":
-            return "0";
-        case "bytes32":
-            return "0x0000000000000000000000000000000000000000000000000000000000000000";
-        case "bytes16":
-            return "0x00000000000000000000000000000000";
-        case "bytes8":
-            return "0x0000000000000000";
-        case "bytes4":
-            return "0x00000000";
+            return "" as ZodExampleForNonTupleType<T>;
     }
+
+    throw new Error(`zodExampleForAbiParamNonTuple(${t}) invalid type`);
 }
 
 /**
@@ -68,7 +54,7 @@ export function zodExampleForAbiParamNonTuple(t: NonTupleType): boolean | string
  * @returns
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function zodExampleForAbiParamArray<T extends ArrayType>(t: T): string {
+export function zodExampleForAbiParamArray<T extends ArrayType>(_: T): string {
     //TODO: Add more explanatory example
     return "[]";
 }
@@ -84,8 +70,13 @@ export function zodExampleForAbiParamTuple<T extends AbiParamTuple>(t: T): Recor
         t.components.map((p, idx) => {
             const key = p.name && p.name.length > 0 ? p.name : idx;
             let val: string | boolean;
-            if (p.type.endsWith("[]")) val = zodExampleForAbiParamArray(p.type as ArrayType);
-            else {
+            if (p.type.endsWith("[]")) {
+                val = zodExampleForAbiParamArray(p.type as ArrayType);
+                //TODO: Nested tuple types not handled properly
+                //@ts-expect-error
+            } else if (p.type === "tuple") {
+                val = "<any>";
+            } else {
                 val = zodExampleForAbiParamNonTuple(p.type as NonTupleType);
                 if (val === "" && typeof key != "number") val = `<${key}>`;
             }
@@ -103,7 +94,7 @@ export function zodExampleForAbiParamTuple<T extends AbiParamTuple>(t: T): Recor
  * @returns
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function zodExampleForAbiParamTupleArray<T extends AbiParamTupleArray>(t: T): string {
+export function zodExampleForAbiParamTupleArray<T extends AbiParamTupleArray>(_: T): string {
     //TODO: Add more explanatory example
     return "[]";
 }

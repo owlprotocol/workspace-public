@@ -1,6 +1,0 @@
-'!include': 'shared/common.yaml'
-outputDir: contracts-api-client-csharp-netcore
-generatorName: csharp-netcore
-additionalProperties:
-  packageGuid: "{9350f424-0868-4a50-a245-add7f68c0d7d}"
-  '!include': 'shared/nested.yaml'

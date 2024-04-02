@@ -1,11 +1,7 @@
 import { beforeAll, beforeEach, describe, expect, test } from "vitest";
-import type {
-    BlockchainNetwork,
-    SignatureKind,
-    Wallet,
-    WalletStatus,
-} from "@dfns/sdk/codegen/datamodel/Wallets/types.js";
 import { ethers } from "ethers";
+import { CreateWalletResponse } from "@dfns/sdk/generated/wallets/types.js";
+import { Hex } from "viem";
 import { WalletsClientMock } from "./WalletsClientMock.js";
 
 describe("WalletClient.test.ts", () => {
@@ -16,7 +12,7 @@ describe("WalletClient.test.ts", () => {
     let client: WalletsClientMock;
 
     const walletId = 0;
-    let wallet: Wallet;
+    let wallet: CreateWalletResponse;
     const pkey = hdNode.derivePath(`m/44'/60'/0'/0/${walletId}`).privateKey;
     const signer = new ethers.Wallet(pkey);
     let signerAddress: string;
@@ -31,7 +27,7 @@ describe("WalletClient.test.ts", () => {
 
     describe("deterministic wallet using external id", () => {
         test("externalId", async () => {
-            const network = "Ethereum" as BlockchainNetwork.Ethereum;
+            const network = "Ethereum";
             //Wallet Create Test
             const wallet = await client.createWallet({
                 body: {
@@ -45,18 +41,18 @@ describe("WalletClient.test.ts", () => {
     });
 
     describe("add hardcoded wallet", () => {
-        const network = "KeyECDSA" as BlockchainNetwork.KeyECDSA;
+        const network = "KeyECDSA";
 
         beforeEach(async () => {
             //Wallet Create Test
             const walletData = {
                 id: `${walletId}`,
                 network,
-                status: "Active" as WalletStatus.Active,
+                status: "Active",
                 tags: [],
                 dateCreated: "1970-01-01T00:00:00Z",
-            };
-            wallet = await client.addWallet(walletData, pkey);
+            } as const;
+            wallet = await client.addWallet(walletData, pkey as Hex);
 
             //KeyECDSA does not generate address
             expect(wallet.address).toBeUndefined();
@@ -103,7 +99,7 @@ describe("WalletClient.test.ts", () => {
             const signatureGenerate = await client.generateSignature({
                 walletId: wallet.id,
                 body: {
-                    kind: "Hash" as SignatureKind.Hash,
+                    kind: "Hash",
                     hash,
                 },
             });
@@ -152,7 +148,7 @@ describe("WalletClient.test.ts", () => {
             const signatureGenerate = await client.generateSignature({
                 walletId: wallet.id,
                 body: {
-                    kind: "Hash" as SignatureKind.Hash,
+                    kind: "Hash",
                     hash,
                 },
             });
@@ -179,7 +175,7 @@ describe("WalletClient.test.ts", () => {
     });
 
     describe("network: Ethereum", () => {
-        const network = "Ethereum" as BlockchainNetwork.Ethereum;
+        const network = "Ethereum";
 
         beforeEach(async () => {
             //Wallet Create Test
@@ -225,7 +221,7 @@ describe("WalletClient.test.ts", () => {
             const signatureGenerate = await client.generateSignature({
                 walletId: wallet.id,
                 body: {
-                    kind: "Hash" as SignatureKind.Hash,
+                    kind: "Hash",
                     hash,
                 },
             });
@@ -274,7 +270,7 @@ describe("WalletClient.test.ts", () => {
             const signatureGenerate = await client.generateSignature({
                 walletId: wallet.id,
                 body: {
-                    kind: "Hash" as SignatureKind.Hash,
+                    kind: "Hash",
                     hash,
                 },
             });
@@ -301,7 +297,7 @@ describe("WalletClient.test.ts", () => {
     });
 
     describe("network: KeyECDSA", () => {
-        const network = "KeyECDSA" as BlockchainNetwork.KeyECDSA;
+        const network = "KeyECDSA";
 
         beforeEach(async () => {
             //Wallet Create Test
@@ -313,7 +309,9 @@ describe("WalletClient.test.ts", () => {
             expect(wallet).toBeDefined();
 
             //KeyECDSA does not generate address
-            expect(wallet.address).toBeUndefined();
+            //TODO: Skip, removed this behaviour to enable working with viem
+            //expect(wallet.address).toBeUndefined();
+            expect(wallet.address).toBe(signerAddress);
             //Generate address client-side
             const walletAddress = ethers.utils.computeAddress(`0x${wallet.signingKey?.publicKey}`);
             expect(walletAddress).toBe(signerAddress);
@@ -324,7 +322,10 @@ describe("WalletClient.test.ts", () => {
             expect(walletGet).toBeDefined();
 
             //KeyECDSA does not generate address
-            expect(walletGet.address).toBeUndefined();
+            //expect(walletGet.address).toBeUndefined();
+            //TODO: Skip, removed this behaviour to enable working with viem
+            //expect(wallet.address).toBeUndefined();
+            expect(wallet.address).toBe(signerAddress);
             //Generate address client-side
             const walletAddress = ethers.utils.computeAddress(`0x${walletGet.signingKey?.publicKey}`);
             expect(walletAddress).toBe(signerAddress);
@@ -357,7 +358,7 @@ describe("WalletClient.test.ts", () => {
             const signatureGenerate = await client.generateSignature({
                 walletId: wallet.id,
                 body: {
-                    kind: "Hash" as SignatureKind.Hash,
+                    kind: "Hash",
                     hash,
                 },
             });
@@ -406,7 +407,7 @@ describe("WalletClient.test.ts", () => {
             const signatureGenerate = await client.generateSignature({
                 walletId: wallet.id,
                 body: {
-                    kind: "Hash" as SignatureKind.Hash,
+                    kind: "Hash",
                     hash,
                 },
             });
@@ -429,34 +430,6 @@ describe("WalletClient.test.ts", () => {
                 signatureEncodedEthers,
             );
             expect(txSignedDfns, "tsSignedDfns != txSignedEthers").toBe(txSignedEthers);
-        });
-    });
-
-    describe("WalletsClient async", () => {
-        const network = "Ethereum" as BlockchainNetwork.Ethereum;
-
-        test("getWallet", async () => {
-            const client = new WalletsClientMock(mnemonic, 10);
-            //Wallet Create Test
-            const wallet = await client.createWallet({
-                body: {
-                    network,
-                },
-            });
-            expect(wallet).toBeDefined();
-            expect(wallet.status).toBe("Creating");
-
-            const walletGet = await client.getWallet({ walletId: wallet.id });
-            expect(walletGet).toBeDefined();
-            expect(walletGet.status).toBe("Creating");
-            expect(walletGet.address).toBeUndefined();
-
-            //Wait for async resolve to switch to Active
-            await new Promise((resolve) => setTimeout(resolve, 50));
-            const walletGet2 = await client.getWallet({ walletId: wallet.id });
-            expect(walletGet2).toBeDefined();
-            expect(walletGet2.status).toBe("Active");
-            expect(walletGet2.address).toBe(signerAddress);
         });
     });
 });

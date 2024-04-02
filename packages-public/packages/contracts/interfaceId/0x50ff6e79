@@ -1,1 +1,0 @@
-{"name":"IBeaconProxy","interfaceId":"0x50ff6e79","abi":[{"type":"function","name":"beacon","constant":true,"stateMutability":"view","payable":false,"inputs":[],"outputs":[{"type":"address"}]},{"type":"function","name":"setBeacon","constant":false,"payable":false,"inputs":[{"type":"address","name":"beaconAddress"},{"type":"bytes","name":"data"}],"outputs":[]}]}

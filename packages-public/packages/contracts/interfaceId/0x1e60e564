@@ -1,1 +1,0 @@
-{"name":"ITokenURIConsumer","interfaceId":"0x1e60e564","abi":[{"type":"function","name":"setUriProvider","constant":false,"payable":false,"inputs":[{"type":"address","name":"uriProvider"}],"outputs":[]},{"type":"function","name":"uriProvider","constant":true,"stateMutability":"view","payable":false,"inputs":[],"outputs":[{"type":"address"}]}]}

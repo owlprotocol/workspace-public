@@ -1,50 +1,17 @@
-import "@nomiclabs/hardhat-web3";
-import "@nomiclabs/hardhat-ethers";
-import "@nomicfoundation/hardhat-verify";
-
-import "hardhat-deploy";
-import "hardhat-deploy-ethers";
-
-import "solidity-docgen";
-import "solidity-coverage";
-
 //@ts-expect-error
-import { PRIVATE_KEY_CONTRACT_DEPLOYER, getChainWithDataByChainId } from "@owlprotocol/envvars";
-import { allChains } from "@owlprotocol/chains";
+import { PRIVATE_KEY_CONTRACT_DEPLOYER } from "@owlprotocol/envvars";
+import { localhost } from "viem/chains";
 
-/** Default config */
-/*
-const defaultNetworkIds = [
-    //Ethereum
-    1,
-    5, //goerli
-    11155111, //sepolia
-    1337, //localhost
-    //Linea
-    59144,
-    59140,
-    //Polygon
-    137,
-    80001,
-    //BNB
-    56,
-    //Arbitrum
-    42161,
-    //Optimism
-    10,
-];
-*/
-
-const defaultNetworkIds = allChains.map((c) => c.chainId);
-
+//TODO: Add more networks (removed since was causing issues with Typescript)
+//TODO: Return type or as const
 export function getHardhatConfig(
-    networkIds: number[] = defaultNetworkIds,
     accountsProduction: string[] = PRIVATE_KEY_CONTRACT_DEPLOYER ? [PRIVATE_KEY_CONTRACT_DEPLOYER] : [],
 ) {
-    const chains = networkIds.map((id) => getChainWithDataByChainId(id)).filter((c) => c.rpcDefault != undefined);
+    //const chains = networkIds.map((id) => getChainWithDataByChainId(id)).filter((c) => c.rpcDefault != undefined);
+    const chains = [localhost];
     const networkEntries = chains.map((c) => {
         const accounts =
-            c.slug === "localhost"
+            c.name.toLowerCase() === "localhost"
                 ? {
                       mnemonic: "test test test test test test test test test test test junk",
                       path: "m/44'/60'/0'/0",
@@ -53,11 +20,12 @@ export function getHardhatConfig(
                       passphrase: "",
                   }
                 : accountsProduction;
-        const eip1559 = !!c.features?.find((f: any) => f.name === "EIP1559");
-        const slug = c.slug;
+        //TODO: Using localhost viem
+        const eip1559 = true; //!!c.features?.find((f: any) => f.name === "EIP1559");
+        const slug = c.name.toLowerCase();
         const network = {
-            chainId: c.chainId,
-            url: c.rpcDefault,
+            chainId: c.id,
+            url: c.rpcUrls.default.http[0],
             testnet: c.testnet,
             eip1559,
             accounts,
@@ -68,18 +36,18 @@ export function getHardhatConfig(
 
     const etherscanApiKey = Object.fromEntries(
         chains.map((c) => {
-            const slug = c.slug;
-            return [slug, c.explorerApiKey] as const;
+            const slug = c.name.toLowerCase();
+            return [slug, undefined] as const;
         }),
     );
 
     const etherscanCustomChains = chains.map((c) => {
         const network = {
-            network: c.slug,
-            chainId: c.chainId,
+            network: c.name.toLowerCase(),
+            chainId: c.id,
             urls: {
-                apiURL: c.explorerApi,
-                browserURL: c.explorer,
+                apiURL: undefined, //c.explorerApi,
+                browserURL: undefined, //c.explorer,
             },
         };
         return network;
@@ -90,18 +58,19 @@ export function getHardhatConfig(
         paths: {
             sources: "./contracts",
             tests: "test/hardhat",
-            artifacts: "./src/artifacts",
+            artifacts: "./artifacts",
             deploy: "./lib/cjs/deploy-hre",
             deployments: "./src/deployments",
             scripts: "./lib/cjs/scripts",
         },
         solidity: {
-            version: "0.8.14",
+            version: "0.8.23",
             settings: {
+                evmVersion: "paris",
                 viaIR: true,
                 optimizer: {
                     enabled: true,
-                    runs: 100,
+                    runs: 1000000,
                     details: { yul: true },
                 },
             },

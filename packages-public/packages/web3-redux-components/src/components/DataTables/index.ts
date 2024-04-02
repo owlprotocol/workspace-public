@@ -1,6 +1,0 @@
-export { TransactionTable } from './Transaction'
-export { ContractsManagerTable } from './Contract'
-export { NFTCollectionTable } from './NFTCollection/Table'
-export { NFTCollectionGrid } from './NFTCollection/Grid'
-export { NFTCollectionInfiniteGrid } from './NFTCollection/InfiniteGrid'
-export { NFTCollectionInfiniteTable } from './NFTCollection/InfiniteTable'
