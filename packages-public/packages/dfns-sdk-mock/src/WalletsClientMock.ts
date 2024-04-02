@@ -1,88 +1,69 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import type * as T from "@dfns/sdk/codegen/Wallets/types.js";
 import {
-    BroadcastTransactionRequest,
-    BroadcastTransactionResponse,
-    CreateWalletRequest,
-    CreateWalletResponse,
     GenerateSignatureBody,
-    GenerateSignatureRequest,
-    GenerateSignatureResponse,
-    GetSignatureRequest,
-    GetSignatureResponse,
-    GetTransactionRequest,
-    GetTransactionResponse,
-    GetTransferRequest,
-    GetTransferResponse,
-    GetWalletAssetsRequest,
-    GetWalletAssetsResponse,
-    GetWalletHistoryRequest,
-    GetWalletHistoryResponse,
-    GetWalletNftsRequest,
-    GetWalletNftsResponse,
-    GetWalletRequest,
-    GetWalletResponse,
-    ListSignaturesRequest,
-    ListSignaturesResponse,
-    ListTransactionsRequest,
-    ListTransactionsResponse,
-    ListTransfersRequest,
-    ListTransfersResponse,
-    ListWalletsRequest,
-    ListWalletsResponse,
-    TransferAssetRequest,
-    TransferAssetResponse,
-} from "@dfns/sdk/generated/wallets/types.js";
-import { Hex, isHex, keccak256, hexToSignature, toHex, Signature } from "viem";
-import { english, generateMnemonic, mnemonicToAccount, privateKeyToAccount, sign } from "viem/accounts";
+    KeyCurve,
+    KeyScheme,
+    SignEip712TypedData,
+    SignHash,
+    SignMessage,
+    SignatureKind,
+    Signature,
+    Wallet,
+    WalletStatus,
+    SignatureRequest,
+    SignatureStatus,
+} from "@dfns/sdk/codegen/datamodel/Wallets/types.js";
+import { Signature as EthersSignature, ethers } from "ethers";
+import { utils } from "ethers";
 
-export function isSign<T extends GenerateSignatureBody["kind"]>(
-    kind: T,
-    body: GenerateSignatureBody,
-): body is GenerateSignatureBody & { kind: T } {
-    return body.kind === kind;
+//Type Guards
+export function isSignHash(body: GenerateSignatureBody): body is SignHash {
+    return body.kind === ("Hash" as SignatureKind.Hash);
+}
+export function isSignMessage(body: GenerateSignatureBody): body is SignMessage {
+    return body.kind === ("Message" as SignatureKind.Message);
+}
+export function isSignEip721TypedData(body: GenerateSignatureBody): body is SignEip712TypedData {
+    return body.kind === ("Eip721" as SignatureKind.Eip712);
 }
 
-/**
- * Dfns wallet client interface
- */
+//Wallet
 export interface WalletsClientInterface {
-    createWallet(request: CreateWalletRequest): Promise<CreateWalletResponse>;
-    getWallet(request: GetWalletRequest): Promise<GetWalletResponse>;
-    getWalletAssets(request: GetWalletAssetsRequest): Promise<GetWalletAssetsResponse>;
-    getWalletNfts(request: GetWalletNftsRequest): Promise<GetWalletNftsResponse>;
-    listWallets(request: ListWalletsRequest): Promise<ListWalletsResponse>;
-    getWalletHistory(request: GetWalletHistoryRequest): Promise<GetWalletHistoryResponse>;
-    transferAsset(request: TransferAssetRequest): Promise<TransferAssetResponse>;
-    getTransfer(request: GetTransferRequest): Promise<GetTransferResponse>;
-    listTransfers(request: ListTransfersRequest): Promise<ListTransfersResponse>;
-    broadcastTransaction(request: BroadcastTransactionRequest): Promise<BroadcastTransactionResponse>;
-    getTransaction(request: GetTransactionRequest): Promise<GetTransactionResponse>;
-    listTransactions(request: ListTransactionsRequest): Promise<ListTransactionsResponse>;
-    generateSignature(request: GenerateSignatureRequest): Promise<GenerateSignatureResponse>;
-    getSignature(request: GetSignatureRequest): Promise<GetSignatureResponse>;
-    listSignatures(request: ListSignaturesRequest): Promise<ListSignaturesResponse>;
+    createWallet(request: T.CreateWalletRequest): Promise<T.CreateWalletResponse>;
+    getWallet(request: T.GetWalletRequest): Promise<T.GetWalletResponse>;
+    getWalletAssets(request: T.GetWalletAssetsRequest): Promise<T.GetWalletAssetsResponse>;
+    getWalletNfts(request: T.GetWalletNftsRequest): Promise<T.GetWalletNftsResponse>;
+    listWallets(request: T.ListWalletsRequest): Promise<T.ListWalletsResponse>;
+    getWalletHistory(request: T.GetWalletHistoryRequest): Promise<T.GetWalletHistoryResponse>;
+    transferAsset(request: T.TransferAssetRequest): Promise<T.TransferAssetResponse>;
+    getTransfer(request: T.GetTransferRequest): Promise<T.GetTransferResponse>;
+    listTransfers(request: T.ListTransfersRequest): Promise<T.ListTransfersResponse>;
+    broadcastTransaction(request: T.BroadcastTransactionRequest): Promise<T.BroadcastTransactionResponse>;
+    getTransaction(request: T.GetTransactionRequest): Promise<T.GetTransactionResponse>;
+    listTransactions(request: T.ListTransactionsRequest): Promise<T.ListTransactionsResponse>;
+    generateSignature(request: T.GenerateSignatureRequest): Promise<T.GenerateSignatureResponse>;
+    getSignature(request: T.GetSignatureRequest): Promise<T.GetSignatureResponse>;
+    listSignatures(request: T.ListSignaturesRequest): Promise<T.ListSignaturesResponse>;
 }
 
-/**
- * Mock dfns wallet client implementation using viem
- */
 export class WalletsClientMock implements WalletsClientInterface {
-    private mnemonic: string;
+    private hdNode: utils.HDNode;
     private signaturesCount = 0;
     private walletsCount = 0;
-
-    private wallets: Record<string, CreateWalletResponse | undefined> = {};
-    private signatures: Record<string, GenerateSignatureResponse | undefined> = {};
-
-    private privateKeys: Record<string, Hex | undefined> = {};
+    private wallets: Record<string, Wallet | undefined> = {};
+    private privateKeys: Record<string, string | undefined> = {};
+    private signatures: Record<string, SignatureRequest | undefined> = {};
+    private createTimeout: number;
 
     /**
      * Create mock wallet client
      * @param mnemonic key generation mnemonic
      * @param createTimeout wallet creation timeout in ms
      */
-    constructor(mnemonic?: string) {
-        this.mnemonic = mnemonic ?? generateMnemonic(english);
+    constructor(mnemonic?: string, createTimeout = 0) {
+        this.hdNode = mnemonic ? utils.HDNode.fromMnemonic(mnemonic) : utils.HDNode.fromSeed(utils.randomBytes(32));
+        this.createTimeout = createTimeout;
     }
 
     /**
@@ -90,31 +71,25 @@ export class WalletsClientMock implements WalletsClientInterface {
      * @param wallet
      * @param privateKey
      */
-    addWallet(
-        wallet: Omit<CreateWalletResponse, "signingKey" | "tags" | "custodial" | "status" | "dateCreated"> & {
-            signingKey?: CreateWalletResponse["signingKey"];
-        },
-        privateKey: Hex,
-    ): CreateWalletResponse {
+    addWallet(wallet: Wallet, privateKey: string): T.CreateWalletResponse {
         if (this.wallets[wallet.id]) {
             throw new Error(`Wallet ${wallet.id} exists! Use different id or get wallet with getWallet()`);
         }
-        const signer = privateKeyToAccount(privateKey);
-        const dateCreated = new Date().toISOString();
-        const status = "Active" as const;
-
-        const signingKey = {
-            //TODO: Support EdDSA
-            scheme: "ECDSA" as const,
-            curve: "secp256k1" as const,
-            //TODO: Is this the same as compressedPublicKey? (used in ethers)
-            publicKey: signer.publicKey.substring(2), //strip 0x prefix to align with DFNS
-        };
-        const walletResponse = { ...wallet, dateCreated, status, signingKey, custodial: true };
+        const signer = new ethers.Wallet(privateKey);
+        let signingKey = wallet.signingKey;
+        if (wallet.status === "Active" && !signingKey) {
+            const { curve, compressedPublicKey } = signer._signingKey();
+            signingKey = {
+                //TODO: Support EdDSA
+                scheme: "ECDSA" as KeyScheme,
+                curve: curve as KeyCurve,
+                publicKey: compressedPublicKey.substring(2), //strip 0x prefix
+            };
+        }
+        const walletResponse = { ...wallet, signingKey };
         this.wallets[wallet.id] = walletResponse;
+        this.privateKeys[wallet.id] = privateKey.replace("0x", "");
         this.walletsCount++;
-
-        this.privateKeys[wallet.id] = privateKey;
 
         return walletResponse;
     }
@@ -124,7 +99,7 @@ export class WalletsClientMock implements WalletsClientInterface {
      * @param request (if externalId passed, pkey is deterministic)
      * @returns
      */
-    async createWallet(request: CreateWalletRequest): Promise<CreateWalletResponse> {
+    async createWallet(request: T.CreateWalletRequest): Promise<T.CreateWalletResponse> {
         //Request Body
         const { network, externalId, tags, name } = request.body;
         //Id: if external id, derive address deterministically, else bump wallets count
@@ -136,170 +111,174 @@ export class WalletsClientMock implements WalletsClientInterface {
         const dateCreated = new Date().toISOString();
 
         //Private Key
-
-        let keyDerivation: number;
-        if (externalId) {
-            const utf8Encode = new TextEncoder();
-            //External id given, generate deteministic pseudo-random key derivation index
-            //mod to max (1000000000n) key derivation index to avoid breaking
-            keyDerivation = Number(BigInt(keccak256(utf8Encode.encode(externalId))) % 1000000000n);
-        } else {
-            //No external id, use wallets count as key derivation index
-            keyDerivation = walletsCount;
-        }
+        //mod to max key derivation index
+        const keyDerivation = externalId
+            ? ethers.BigNumber.from(utils.keccak256(utils.toUtf8Bytes(externalId)))
+                  .mod(1000000000)
+                  .toString()
+            : `${walletsCount}`;
         //Signing Key
-        const signer = mnemonicToAccount(this.mnemonic, { accountIndex: keyDerivation });
-        const privateKey = toHex(signer.getHdKey().privateKey!);
+        const pkey = this.hdNode.derivePath(`m/44'/60'/0'/0/${keyDerivation}`).privateKey;
+        const signer = new ethers.Wallet(pkey);
+        //curve hard coded as secp256k1 on ethers
+        //privateKey only returned in mock (not required once signing mock SDK is implemented)
+        const { curve, compressedPublicKey } = signer._signingKey();
         const signingKey = {
             //TODO: Support EdDSA
-            scheme: "ECDSA" as const,
-            curve: "secp256k1" as const,
-            //TODO: Is this the same as compressedPublicKey? (used in ethers)
-            publicKey: signer.publicKey.substring(2), //strip 0x prefix to align with DFNS
+            scheme: "ECDSA" as KeyScheme,
+            curve: curve as KeyCurve,
+            publicKey: compressedPublicKey.substring(2), //strip 0x prefix
         };
         //Similar to API behaviour, address undefined for non-blockchain network
-        //TODO: Removed so can work with Viem properly
-        //const address = network === "KeyECDSA" || network === "KeyEdDSA" ? undefined : await signer.getAddress();
-        const address = await signer.address;
+        const address = network === "KeyECDSA" || network === "KeyEdDSA" ? undefined : await signer.getAddress();
 
-        //No timeout
-        const status = "Active";
+        if (this.createTimeout === 0) {
+            //No timeout
+            const status = "Active" as WalletStatus.Active;
 
-        const wallet = {
-            id,
-            network,
-            status,
-            signingKey,
-            address,
-            name,
-            externalId,
-            tags: tags ?? [],
-            dateCreated,
-            custodial: true,
-        } as const;
+            const wallet = {
+                id,
+                network,
+                status,
+                signingKey,
+                address,
+                name,
+                externalId,
+                tags: tags ?? [],
+                dateCreated,
+            };
 
-        this.wallets[id] = wallet;
-        this.privateKeys[id] = privateKey;
-        return wallet;
+            this.wallets[id] = wallet;
+            this.privateKeys[id] = pkey;
+            return wallet;
+        } else {
+            //Timeout, set wallet as creating
+            const status = "Creating" as WalletStatus.Creating;
+            console.debug(`Wallet ${id} status Creating`);
+
+            const wallet = {
+                id,
+                network,
+                status,
+                name,
+                externalId,
+                tags: tags ?? [],
+                dateCreated,
+            };
+            this.wallets[id] = wallet;
+
+            setTimeout(() => {
+                console.debug(`Wallet ${id} status Active`);
+                const walletNew = { ...wallet, signingKey, address, status: "Active" as WalletStatus.Active };
+                this.wallets[id] = walletNew;
+                this.privateKeys[id] = pkey;
+            }, this.createTimeout);
+
+            return wallet;
+        }
     }
-
     //TODO: implement this
-    async getWallet(request: GetWalletRequest): Promise<GetWalletResponse> {
+    async getWallet(request: T.GetWalletRequest): Promise<T.GetWalletResponse> {
         const { walletId } = request;
         const wallet = this.wallets[walletId];
         if (!wallet) throw new Error(`Wallet ${walletId} not found!`);
 
         return wallet;
     }
-    async getWalletAssets(_: GetWalletAssetsRequest): Promise<GetWalletAssetsResponse> {
+    async getWalletAssets(request: T.GetWalletAssetsRequest): Promise<T.GetWalletAssetsResponse> {
         throw new Error("Unimplemented");
     }
-    async getWalletNfts(_: GetWalletNftsRequest): Promise<GetWalletNftsResponse> {
+    async getWalletNfts(request: T.GetWalletNftsRequest): Promise<T.GetWalletNftsResponse> {
         throw new Error("Unimplemented");
     }
-    async listWallets(_: ListWalletsRequest): Promise<ListWalletsResponse> {
+    async listWallets(request: T.ListWalletsRequest): Promise<T.ListWalletsResponse> {
         throw new Error("Unimplemented");
     }
-    async getWalletHistory(_: GetWalletHistoryRequest): Promise<GetWalletHistoryResponse> {
+    async getWalletHistory(request: T.GetWalletHistoryRequest): Promise<T.GetWalletHistoryResponse> {
         throw new Error("Unimplemented");
     }
-    async transferAsset(_: TransferAssetRequest): Promise<TransferAssetResponse> {
+    async transferAsset(request: T.TransferAssetRequest): Promise<T.TransferAssetResponse> {
         throw new Error("Unimplemented");
     }
-    async getTransfer(_: GetTransferRequest): Promise<GetTransferResponse> {
+    async getTransfer(request: T.GetTransferRequest): Promise<T.GetTransferResponse> {
         throw new Error("Unimplemented");
     }
-    async listTransfers(_: ListTransfersRequest): Promise<ListTransfersResponse> {
+    async listTransfers(request: T.ListTransfersRequest): Promise<T.ListTransfersResponse> {
         throw new Error("Unimplemented");
     }
-    async broadcastTransaction(_: BroadcastTransactionRequest): Promise<BroadcastTransactionResponse> {
+    async broadcastTransaction(request: T.BroadcastTransactionRequest): Promise<T.BroadcastTransactionResponse> {
         throw new Error("Unimplemented");
     }
-    async getTransaction(_: GetTransactionRequest): Promise<GetTransactionResponse> {
+    async getTransaction(request: T.GetTransactionRequest): Promise<T.GetTransactionResponse> {
         throw new Error("Unimplemented");
     }
-    async listTransactions(_: ListTransactionsRequest): Promise<ListTransactionsResponse> {
+    async listTransactions(request: T.ListTransactionsRequest): Promise<T.ListTransactionsResponse> {
         throw new Error("Unimplemented");
     }
-    async generateSignature(request: GenerateSignatureRequest): Promise<GenerateSignatureResponse> {
+    async generateSignature(request: T.GenerateSignatureRequest): Promise<T.GenerateSignatureResponse> {
         const dateRequested = new Date().toISOString();
 
         const { walletId, body } = request;
         const wallet = this.wallets[walletId];
         if (!wallet) throw new Error(`Wallet ${walletId} not found!`);
+        if (wallet.status != ("Active" as WalletStatus.Active)) throw new Error(`Wallet ${walletId} not Active!`);
 
         const privateKey = this.privateKeys[walletId];
         if (!privateKey) throw new Error(`Private key for wallet ${walletId} not found!`);
-        const signer = privateKeyToAccount(privateKey);
+        const signer = new ethers.Wallet(privateKey);
+        const signingKey = signer._signingKey();
 
-        let signature: Signature;
-        if (isSign("Hash", body)) {
+        let ethersSignature: EthersSignature;
+        if (isSignHash(body)) {
             const { hash } = body;
-            //TODO: Is this 0x prefixed?
-            signature = await sign({ privateKey, hash: hash as Hex });
-        } else if (isSign("Transaction", body)) {
-            signature = await sign({
-                hash: keccak256(body.transaction as Hex),
-                privateKey,
-            });
-        } else if (isSign("Message", body)) {
-            const { message } = body;
-            if (isHex(message)) {
-                //Sign byte representation
-                const signatureHex = await signer.signMessage({ message: { raw: message } });
-                signature = hexToSignature(signatureHex);
-            } else {
-                //Sign utf-8 representation
-                const signatureHex = await signer.signMessage({ message });
-                signature = hexToSignature(signatureHex);
-            }
-        } else if (isSign("Eip712", body)) {
-            // const signature = await signer.signTypedData()
-            throw new Error("WalletsClientMockl.generateSignature Eip721 Unimplemented");
+            //See Note on signing hashes https://docs.ethers.org/v5/api/signer/#Signer--signing-methods
+            const hashBytes = utils.arrayify(hash);
+            ethersSignature = signingKey.signDigest(hashBytes);
+        } else if (isSignMessage(body)) {
+            throw new Error("Unimplemented");
+        } else if (isSignEip721TypedData(body)) {
+            throw new Error("Unimplemented");
         } else {
             throw new Error(`Invalid signature kind ${(body as any).kind}`);
         }
 
         const dateSigned = new Date().toISOString();
-        const status = "Signed";
-        const { r, s, yParity } = signature;
+        const status = "Signed" as SignatureStatus;
+        const { r, s, recoveryParam /*, compact*/ } = ethersSignature;
 
-        const signatureResponse: GenerateSignatureResponse["signature"] = {
+        const signature: Signature = {
             r,
             s,
-            recid: yParity!,
+            recid: recoveryParam,
             //TODO: What is this for?
             //encoded: compact,
         };
         const signatureId = `${this.signaturesCount++}`;
-        const response: GenerateSignatureResponse = {
+        const response: SignatureRequest = {
             id: signatureId,
-            network: "KeyECDSA",
             walletId: walletId,
             requester: { userId: "mock" },
             requestBody: body,
-            signature: signatureResponse,
+            signature,
             status,
             dateRequested,
             dateSigned,
         };
 
-        //TODO: We just return empty, unclear what this is and if it breaks anything
-        if (isSign("Transaction", body)) response.signedData = "0x0";
-
         this.signatures[signatureId] = response;
         return response;
     }
-    async getSignature(request: GetSignatureRequest): Promise<GetSignatureResponse> {
+    async getSignature(request: T.GetSignatureRequest): Promise<T.GetSignatureResponse> {
         const { walletId, signatureId } = request;
         const wallet = this.wallets[walletId];
         if (!wallet) throw new Error(`Wallet ${walletId} not found!`);
+        if (wallet.status != ("Active" as WalletStatus.Active)) throw new Error(`Wallet ${walletId} not Active!`);
         const response = this.signatures[signatureId];
         if (!response) throw new Error(`Signature ${signatureId} not found!`);
 
         return response;
     }
-    async listSignatures(_: ListSignaturesRequest): Promise<ListSignaturesResponse> {
+    async listSignatures(request: T.ListSignaturesRequest): Promise<T.ListSignaturesResponse> {
         throw new Error("Unimplemented");
     }
 }

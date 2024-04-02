@@ -1,5 +1,5 @@
 import { describe, test, assert } from "vitest";
-import { zeroAddress } from "viem";
+import { constants } from "ethers";
 import {
     genZodForAbiParamArray,
     genZodForAbiParamNonTuple,
@@ -93,9 +93,9 @@ describe("genZodValidatorTest", function () {
 
         test("fnAbis.empty", () => {
             const expected = `{ inputs: z.object({  }).optional(),
-    inputsArrayify: z.object({  }).transform((_) => [] as const).optional(),
+    inputsArrayify: z.object({  }).transform((val) => [] as const).optional(),
     inputsDefined: z.object({  }).optional(),
-    inputsDefinedArrayify: z.object({  }).transform((_) => [] as const).optional(),
+    inputsDefinedArrayify: z.object({  }).transform((val) => [] as const).optional(),
     inputsExample: {},
     outputs: z.object({  }),
     outputsExample: {}
@@ -105,12 +105,12 @@ describe("genZodValidatorTest", function () {
 
         //TODO: Re-enable after fixing since refactor
         test.skip("fnAbis.address", () => {
-            const expected = `{ inputs: z.object({ to: zSol.addressZod }), inputsExample: {"to":"${zeroAddress}"}, outputs: z.object({  }), outputsExample: {} }`;
+            const expected = `{ inputs: z.object({ to: zSol.addressZod }), inputsExample: {"to":"${constants.AddressZero}"}, outputs: z.object({  }), outputsExample: {} }`;
             assert.equal(genZodValidatorForFunction(fnAbis.address.inputs, fnAbis.address.outputs), expected);
         });
 
         test.skip("fnAbis.addressUnnamed", () => {
-            const expected = `{ inputs: z.object({ "0": zSol.addressZod }), inputsExample: {"0":"${zeroAddress}"}, outputs: z.object({  }), outputsExample: {} }`;
+            const expected = `{ inputs: z.object({ "0": zSol.addressZod }), inputsExample: {"0":"${constants.AddressZero}"}, outputs: z.object({  }), outputsExample: {} }`;
             assert.equal(
                 genZodValidatorForFunction(fnAbis.addressUnnamed.inputs, fnAbis.addressUnnamed.outputs),
                 expected,
@@ -136,7 +136,7 @@ describe("genZodValidatorTest", function () {
     describe("genZodValidatorForAbi", () => {
         test.skip("[fnAbis.uint256, fnAbis.address]", () => {
             const expectedUInt256 = `{ inputs: z.object({ amount: zSol.uint256Zod }), inputsExample: {"amount":"0"}, outputs: z.object({  }), outputsExample: {} }`;
-            const expectedAddress = `{ inputs: z.object({ to: zSol.addressZod }), inputsExample: {"to":"${zeroAddress}"}, outputs: z.object({  }), outputsExample: {} }`;
+            const expectedAddress = `{ inputs: z.object({ to: zSol.addressZod }), inputsExample: {"to":"${constants.AddressZero}"}, outputs: z.object({  }), outputsExample: {} }`;
             const expected = `{ fnUInt256: ${expectedUInt256},\nfnAddress: ${expectedAddress} }`;
             assert.equal(genZodValidatorForAbi([fnAbis.uint256, fnAbis.address]), expected);
         });
@@ -147,7 +147,7 @@ describe("genZodValidatorTest", function () {
             const name = "MyContract";
             const zSolPackage = "../solidity/index.js";
             const expectedUInt256 = `{ inputs: z.object({ amount: zSol.uint256Zod }), inputsExample: {"amount":"0"}, outputs: z.object({  }), outputsExample: {} }`;
-            const expectedAddress = `{ inputs: z.object({ to: zSol.addressZod }), inputsExample: {"to":"${zeroAddress}"}, outputs: z.object({  }), outputsExample: {} }`;
+            const expectedAddress = `{ inputs: z.object({ to: zSol.addressZod }), inputsExample: {"to":"${constants.AddressZero}"}, outputs: z.object({  }), outputsExample: {} }`;
             const expected = `import { z } from "zod";\n\
 import * as zSol from "${zSolPackage}";\n\
 \n\

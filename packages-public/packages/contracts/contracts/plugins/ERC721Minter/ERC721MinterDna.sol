@@ -1,0 +1,81 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.9;
+
+import {ContextUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import {TokenConsumerAbstract} from "../TokenConsumer/TokenConsumerAbstract.sol";
+import {TokenDnaConsumerAbstract} from "../TokenDna/TokenDnaConsumerAbstract.sol";
+
+import {OwlBase} from "../../common/OwlBase.sol";
+import {IERC721Mintable} from "../../assets/ERC721/IERC721Mintable.sol";
+
+import {IERC721MinterDna} from "./IERC721MinterDna.sol";
+import {ERC721MinterAbstract} from "./ERC721MinterAbstract.sol";
+
+/**
+ * @dev ERC721 minter module for DNA
+ */
+contract ERC721MinterDna is ERC721MinterAbstract, TokenDnaConsumerAbstract, OwlBase, IERC721MinterDna {
+    function initialize(
+        address admin,
+        string memory contractUri,
+        address token,
+        address dnaProvider
+    ) external initializer {
+        __ERC721MinterDna_init(admin, contractUri, token, dnaProvider);
+    }
+
+    function __ERC721MinterDna_init(
+        address admin,
+        string memory contractUri,
+        address token,
+        address dnaProvider
+    ) internal {
+        __ContractURI_init_unchained(contractUri);
+        __OwlBase_init_unchained(admin);
+
+        __TokenConsumerAbstract_init_unchained(token);
+        __ERC721MinterAbstract_init_unchained();
+        __TokenDnaConsumerAbstract_init_unchained(dnaProvider);
+        __ERC721MinterDna_init_unchained();
+    }
+
+    function __ERC721MinterDna_init_unchained() internal {
+        if (_registryExists()) {
+            _registerInterface(type(IERC721MinterDna).interfaceId);
+        }
+    }
+
+    function mint(address to, uint256 tokenId, bytes memory dna) external virtual onlyRoleRecursive(MINTER_ROLE) {
+        _mint(to, tokenId);
+        _setDna(tokenId, dna);
+    }
+
+    function mintBatch(
+        address[] memory to,
+        uint256[] memory tokenId,
+        bytes[] memory dna
+    ) external virtual onlyRoleRecursive(MINTER_ROLE) {
+        _mintBatch(to, tokenId);
+        _setDnaBatch(tokenId, dna);
+    }
+
+    function safeMint(address to, uint256 tokenId, bytes memory dna) external virtual onlyRoleRecursive(MINTER_ROLE) {
+        _safeMint(to, tokenId);
+        _setDna(tokenId, dna);
+    }
+
+    function safeMintBatch(
+        address[] memory to,
+        uint256[] memory tokenId,
+        bytes[] memory dna
+    ) external virtual onlyRoleRecursive(MINTER_ROLE) {
+        _safeMintBatch(to, tokenId);
+        _setDnaBatch(tokenId, dna);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(TokenConsumerAbstract, TokenDnaConsumerAbstract, OwlBase) returns (bool) {
+        return OwlBase.supportsInterface(interfaceId);
+    }
+}

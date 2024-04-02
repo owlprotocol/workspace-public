@@ -1,0 +1,115 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "BlockNumber",
+  "sourceName": "contracts/utils/BlockNumber.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "NewValue",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "blockNumber",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "x",
+          "type": "uint256"
+        }
+      ],
+      "name": "getNumber",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "msgSender",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "msgValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "revertTx",
+      "outputs": [],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "v",
+          "type": "uint256"
+        }
+      ],
+      "name": "setValue",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x60808060405234610016576101ad908161001b8239f35b5f80fdfe608060408181526004361015610013575f80fd5b5f91823560e01c908163209652551461015d575080635349010c1461011257806355241077146100d057806357e871e7146100b6578063d737d0c7146100a1578063ddf363d71461008c5763fc5636581461006c575f80fd5b3461008857602036600319011261008857602090516004358152f35b5080fd5b50816003193601126100885760209051348152f35b50816003193601126100885760209051338152f35b503461008857816003193601126100885760209051438152f35b823461010f57602036600319011261010f576004358082557fac3e966f295f2d5312f973dc6d42f30a6dc1c1f76ab8ee91cc8ca5dad1fa60fd8280a280f35b80fd5b50346100885781600319360112610088575162461bcd60e51b8152602060048201526014602482015273151c985b9cd858dd1a5bdb881c995d995c9d195960621b6044820152606490fd5b839034610088578160031936011261008857602091548152f3fea2646970667358221220a076c00f41315094f651a93cd9cbd190cb2da6acd60aba6ceb6764c4a23f9c0c64736f6c63430008140033",
+  "deployedBytecode": "0x608060408181526004361015610013575f80fd5b5f91823560e01c908163209652551461015d575080635349010c1461011257806355241077146100d057806357e871e7146100b6578063d737d0c7146100a1578063ddf363d71461008c5763fc5636581461006c575f80fd5b3461008857602036600319011261008857602090516004358152f35b5080fd5b50816003193601126100885760209051348152f35b50816003193601126100885760209051338152f35b503461008857816003193601126100885760209051438152f35b823461010f57602036600319011261010f576004358082557fac3e966f295f2d5312f973dc6d42f30a6dc1c1f76ab8ee91cc8ca5dad1fa60fd8280a280f35b80fd5b50346100885781600319360112610088575162461bcd60e51b8152602060048201526014602482015273151c985b9cd858dd1a5bdb881c995d995c9d195960621b6044820152606490fd5b839034610088578160031936011261008857602091548152f3fea2646970667358221220a076c00f41315094f651a93cd9cbd190cb2da6acd60aba6ceb6764c4a23f9c0c64736f6c63430008140033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

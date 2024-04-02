@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, test } from "vitest";
+import type { BlockchainNetwork } from "@dfns/sdk/codegen/datamodel/Wallets/types.js";
 import { Signer, ethers } from "ethers";
 import { DfnsWallet } from "@dfns/lib-ethersjs5";
 import type { DfnsApiClient } from "@dfns/sdk";
@@ -14,7 +15,7 @@ describe("DfnsApiClientMock.test.ts", () => {
     let signerDfns: Signer;
 
     describe("network: Ethereum", () => {
-        const network = "Ethereum";
+        const network = "Ethereum" as BlockchainNetwork.Ethereum;
 
         beforeEach(async () => {
             const pkey = hdNode.derivePath(`m/44'/60'/0'/0/${walletId++}`).privateKey;
@@ -25,7 +26,7 @@ describe("DfnsApiClientMock.test.ts", () => {
                     network,
                 },
             });
-            signerDfns = await DfnsWallet.init({
+            signerDfns = new DfnsWallet({
                 walletId: walletCreate.id,
                 dfnsClient: client as DfnsApiClient,
                 maxRetries: 10,
@@ -38,8 +39,7 @@ describe("DfnsApiClientMock.test.ts", () => {
             );
         });
 
-        //TODO: Broken for some reason. Maybe due to EIP151? Not a big deal. Stick to KeyECDSA
-        test.skip("signTransaction", async () => {
+        test("signTransaction", async () => {
             const txUnsigned = {
                 to: ethers.constants.AddressZero,
                 data: "0x",
@@ -52,7 +52,7 @@ describe("DfnsApiClientMock.test.ts", () => {
     });
 
     describe("network: KeyECDSA", () => {
-        const network = "KeyECDSA";
+        const network = "KeyECDSA" as BlockchainNetwork.KeyECDSA;
 
         beforeEach(async () => {
             const pkey = hdNode.derivePath(`m/44'/60'/0'/0/${walletId++}`).privateKey;
@@ -63,22 +63,20 @@ describe("DfnsApiClientMock.test.ts", () => {
                     network,
                 },
             });
-            signerDfns = await DfnsWallet.init({
+            signerDfns = new DfnsWallet({
                 walletId: walletCreate.id,
                 dfnsClient: client as DfnsApiClient,
                 maxRetries: 10,
             });
         });
 
-        //TODO: Broken when we started returning address for viem compat
-        test.skip("getAddress", async () => {
+        test("getAddress", async () => {
             expect(await signerDfns.getAddress(), "signerDfns.address != signerEthers.address").toBe(
                 await signerEthers.getAddress(),
             );
         });
 
-        //TODO: Broken when we started returning address for viem compat
-        test.skip("signTransaction", async () => {
+        test("signTransaction", async () => {
             const txUnsigned = {
                 to: ethers.constants.AddressZero,
                 data: "0x",

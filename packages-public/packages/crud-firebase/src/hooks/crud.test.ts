@@ -1,14 +1,10 @@
-import { describe, test, expect } from "vitest";
-// import { renderHook } from "@testing-library/react-hooks/native";
-// import { testItem, testItemComposite, testItemId } from "../test/data.js";
-// import { itemsCRUD, itemsCompositeCRUD } from "../test/crudWebWrappers.js";
-// import { itemsCompositeHooks, itemsHooks } from "../test/crudHooksWrappers.js";
+import { describe, test, expect, beforeEach } from "vitest";
+import { renderHook } from "@testing-library/react-hooks/native";
+import { testItem, testItemComposite, testItemId } from "../test/data.js";
+import { itemsCRUD, itemsCompositeCRUD } from "../test/crudWebWrappers.js";
+import { itemsCompositeHooks, itemsHooks } from "../test/crudHooksWrappers.js";
 
 describe("hooks/crud.test.ts", () => {
-    test("dummy", () => {
-        expect(true).toBe(true);
-    });
-    /*
     describe("itemComposite", () => {
         beforeEach(async () => {
             await itemsCompositeCRUD.deleteAll();
@@ -127,5 +123,4 @@ describe("hooks/crud.test.ts", () => {
             expect(options1.status).toBe("success");
         });
     });
-    */
 });

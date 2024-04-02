@@ -28,7 +28,6 @@ export interface AbiFunction {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, prettier/prettier
 export type AbiParamsNamedToZod<T extends readonly AbiParam[]> = ReturnType<typeof z.object<{
-        //@ts-expect-error
         [Idx in T[number] as Idx["name"]]: ZodForAbiParam<Idx>;
     }>
 >;

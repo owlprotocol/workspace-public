@@ -30,7 +30,6 @@ export function isAbiParamTuple(t: { type: string }): t is AbiParamTuple {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, prettier/prettier
 export type ZodForAbiParamTuple<T extends AbiParamTuple> = ReturnType<
     typeof z.object<{
-        //@ts-expect-error
         [Idx in T["components"][number] as Idx["name"]]: Idx extends AbiParamNonTuple
             ? ZodForNonTupleType<Idx["type"]>
             : Idx extends AbiParamArray

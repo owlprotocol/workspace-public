@@ -1,0 +1,1 @@
+{"name":"ITokenURIBaseURI","interfaceId":"0xe4279439","abi":[{"type":"function","name":"baseURI","constant":true,"stateMutability":"view","payable":false,"inputs":[],"outputs":[{"type":"string"}]},{"type":"function","name":"setTokenURIBaseURI","constant":false,"payable":false,"inputs":[{"type":"string","name":"uri"}],"outputs":[]}]}

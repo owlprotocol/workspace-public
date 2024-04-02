@@ -1,0 +1,5 @@
+'!include': 'shared/common.yaml'
+outputDir: contracts-api-client-swift5
+generatorName: swift5
+additionalProperties:
+  '!include': 'shared/nested.yaml'

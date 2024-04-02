@@ -2,7 +2,6 @@ import { describe, test } from "vitest";
 /* eslint-disable @typescript-eslint/ban-types */
 import { expectType } from "ts-expect";
 import { ZodTypeAny, z } from "zod";
-import { Address } from "abitype";
 import { AbiFunction, zodForAbiFunction } from "./abiFunction.js";
 
 describe("abiParamArrayTest", function () {
@@ -139,13 +138,7 @@ describe("abiParamArrayTest", function () {
         const fnZod = zodForAbiFunction(fnAbis.nonTuple);
         type NameType = z.ZodLiteral<"myFunction">;
         type MutabilityType = z.ZodLiteral<"view">;
-        type InputType = z.ZodObject<
-            { from: z.ZodEffects<z.ZodString, Address, Address> },
-            "strip",
-            ZodTypeAny,
-            { from: string },
-            { from: string }
-        >;
+        type InputType = z.ZodObject<{ from: z.ZodString }, "strip", ZodTypeAny, { from: string }, { from: string }>;
         type OutputType = z.ZodObject<{}, "strip", ZodTypeAny, {}, {}>;
         expectType<NameType>(fnZod.nameZod);
         expectType<MutabilityType>(fnZod.stateMutabilityZod);
@@ -163,13 +156,7 @@ describe("abiParamArrayTest", function () {
         const fnZod = zodForAbiFunction(fnAbis.nonTupleUnnamed);
         type NameType = z.ZodLiteral<"myFunction">;
         type MutabilityType = z.ZodLiteral<"view">;
-        type InputType = z.ZodObject<
-            { "": z.ZodEffects<z.ZodString, Address, Address> },
-            "strip",
-            ZodTypeAny,
-            { "": string },
-            { "": string }
-        >;
+        type InputType = z.ZodObject<{ "": z.ZodString }, "strip", ZodTypeAny, { "": string }, { "": string }>;
         type OutputType = z.ZodObject<{}, "strip", ZodTypeAny, {}, {}>;
         expectType<NameType>(fnZod.nameZod);
         expectType<MutabilityType>(fnZod.stateMutabilityZod);
@@ -188,7 +175,7 @@ describe("abiParamArrayTest", function () {
         type NameType = z.ZodLiteral<"myFunction">;
         type MutabilityType = z.ZodLiteral<"view">;
         type InputType = z.ZodObject<
-            { from: z.ZodArray<z.ZodEffects<z.ZodString, Address, Address>> },
+            { from: z.ZodArray<z.ZodString> },
             "strip",
             ZodTypeAny,
             { from: string[] },

@@ -1,0 +1,28 @@
+import { z } from "zod";
+import { TypeEqual, expectType } from "ts-expect";
+import type { CouponDefinition } from "../../models/shopify/CouponDefinition.js";
+
+export const couponDefinition = z
+    .object({
+        id: z.string().describe("id"),
+        projectId: z.string().describe("project id"),
+        couponCampaign: z.string().describe("coupon campaign").optional(),
+        shopifyPriceRuleId: z.string().describe("shopify price rule id").optional(),
+        shopifyDiscountCodeId: z.string().describe("shopify discount code id").optional(),
+        oncePerCustomer: z.boolean().describe("once per customer").optional(),
+        tokenAddress: z.string().describe("token address").optional(),
+        tokenId: z.string().describe("token id").optional(),
+        networkId: z.string().describe("network id").optional(),
+        name: z.string().describe("name"),
+        description: z.string().describe("description").optional(),
+        discountType: z.enum(["fixed_amount", "percentage"]).describe("discount type").optional(),
+        discountValue: z.number().describe("discount value").optional(),
+        status: z.enum(["active", "inactive"]).describe("status"),
+        store: z.string().describe("description").optional(),
+    })
+    .describe("coupon definition");
+
+//TODO: Explore using https://zod.dev/?id=readonly (enforces read-only with Object.freeze)
+//Check zod validator matches interface
+type CouponDefinitionZodInferred = Readonly<z.infer<typeof couponDefinition>>;
+expectType<TypeEqual<CouponDefinition, CouponDefinitionZodInferred>>(true);

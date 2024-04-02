@@ -1,0 +1,71 @@
+{
+  "name": "@owlprotocol/utils-ethers",
+  "version": "2.0.2",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/owlprotocol/utils-ethers.git"
+  },
+  "homepage": "https://owlprotocol.github.io/utils-ethers",
+  "copyright": "Copyright 2023 Owl Protocol",
+  "author": {
+    "name": "Leo Vigna",
+    "email": "leo.vigna@gmail.com",
+    "url": "https://github.com/owlprotocol"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "./lib/cjs/index.cjs",
+  "module": "./lib/esm/index.mjs",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "require": "./lib/cjs/index.js",
+      "import": "./lib/esm/index.js"
+    }
+  },
+  "files": [
+    "dist/*",
+    "lib/*",
+    "src/*",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": "^18.0.0"
+  },
+  "scripts": {
+    "build": "npm-run-all -p tsc esbuild",
+    "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
+    "esbuild": "node esbuild.config.mjs",
+    "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
+    "tsc": "tsc",
+    "tsc:watch": "tsc -w",
+    "clean": "rimraf lib dist",
+    "madge": "madge src/index.ts -c",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "eslint --fix 'src/**/*.ts'",
+    "lint:staged": "lint-staged"
+  },
+  "dependencies": {
+    "ethers": "5.7.2",
+    "ganache": "^7.9.1"
+  },
+  "devDependencies": {
+    "@owlprotocol/esbuild-config": "workspace:*",
+    "@owlprotocol/eslint-config": "workspace:*",
+    "@owlprotocol/prettier-config": "workspace:*",
+    "@owlprotocol/tsconfig": "workspace:*",
+    "@types/node": "^20.5.6",
+    "@types/dotenv": "^8.2.0",
+    "lint-staged": "^11.1.2",
+    "madge": "^5.0.2",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
+    "tsx": "^3.12.7",
+    "typescript": "4.9.5",
+    "vite": "^4.4.9",
+    "vitest": "^0.34.2"
+  }
+}

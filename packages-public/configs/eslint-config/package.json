@@ -1,28 +1,25 @@
 {
   "name": "@owlprotocol/eslint-config",
   "version": "2.0.2",
-  "keywords": [
-    "web3",
-    "solidity",
-    "trpc",
-    "react-query"
-  ],
   "private": false,
-  "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/owlprotocol/owlprotocol.git"
+    "url": "https://github.com/owlprotocol/eslint-config"
   },
   "copyright": "Copyright 2021 Owl Protocol",
-  "license": "MIT",
   "author": {
     "name": "Leo Vigna",
-    "email": "leo@owlprotocol.xyz",
-    "url": "https://github.com/leovigna"
+    "email": "leo.vigna@gmail.com",
+    "url": "https://github.com/leovigna/"
   },
+  "license": "MIT",
+  "type": "commonjs",
   "files": [
     ".eslintrc.cjs"
   ],
+  "engines": {
+    "node": "^18.0.0"
+  },
   "exports": {
     ".": "./.eslintrc.cjs",
     "./react": "./.eslintrc.react.cjs"
@@ -40,14 +37,5 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "prettier": "^2.5.1"
-  },
-  "bugs": {
-    "url": "https://github.com/owlprotocol/owlprotocol/issues",
-    "email": "leo@owlprotocol.xyz"
-  },
-  "funding": "https://owlprotocol.xyz",
-  "engines": {
-    "node": "^18.0.0"
-  },
-  "packageManager": "^pnpm@8.15.4"
+  }
 }
