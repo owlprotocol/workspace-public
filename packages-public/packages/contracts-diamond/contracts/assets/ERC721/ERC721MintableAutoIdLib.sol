@@ -50,12 +50,18 @@ library ERC721MintableAutoIdLib {
         //Increment totalSupply and cache start tokenId
         uint256 startId;
         unchecked {
-            startId = getData()._totalSupply + 1;
+            uint256 totalSupply = getData()._totalSupply;
+            getData()._totalSupply = totalSupply + to.length;
+            startId = totalSupply + 1;
         }
 
         uint256[] memory tokenIds = new uint256[](to.length);
         for (uint256 i; i < to.length; i++) {
-            uint256 tokenId = startId + i;
+            uint256 tokenId;
+            unchecked {
+                tokenId = startId + i;
+            }
+
             tokenIds[i] = tokenId;
             ERC721Lib._mint(to[i], tokenId);
         }
@@ -90,12 +96,18 @@ library ERC721MintableAutoIdLib {
         //Increment totalSupply and cache start tokenId
         uint256 startId;
         unchecked {
-            startId = getData()._totalSupply + 1;
+            uint256 totalSupply = getData()._totalSupply;
+            getData()._totalSupply = totalSupply + to.length;
+            startId = totalSupply + 1;
         }
 
         uint256[] memory tokenIds = new uint256[](to.length);
         for (uint256 i; i < to.length; i++) {
-            uint256 tokenId = startId + i;
+            uint256 tokenId;
+            unchecked {
+                tokenId = startId + i;
+            }
+
             tokenIds[i] = tokenId;
             ERC721Lib._safeMint(to[i], tokenId, "");
         }
