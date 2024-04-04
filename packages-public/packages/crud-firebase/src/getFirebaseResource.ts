@@ -257,7 +257,7 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
                 return collectionRef;
             } else if (typeof collection === "function") {
                 if (!collectionId) {
-                    throw new Error(`collection is function but collectionId undefined`);
+                    throw new Error("collection is function but collectionId undefined");
                 }
                 return collection(collectionId);
             } else {

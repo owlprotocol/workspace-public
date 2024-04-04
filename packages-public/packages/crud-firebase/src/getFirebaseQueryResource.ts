@@ -15,7 +15,7 @@ export type getFirebaseQueryResourceFn<SDK extends FirestoreSDK> = <
     QueryFn extends TypeEqual<CollectionId, Record<string, never>> extends true
         ? Query<SDK, ResourceDataEncoded> //undefined CollectionId, Query MUST be defined
         :
-              | Query<SDK, ResourceDataEncoded> //defined CollectionId, for group queries, for group queruesm Query MAY be defined, despite CollectionId defined, therefore union with QueryFactory
+              | Query<SDK, ResourceDataEncoded> //defined CollectionId, for group queries, for group queries Query MAY be defined, despite CollectionId defined, therefore union with QueryFactory
               | ((collectionId: CollectionId) => Query<SDK, ResourceDataEncoded>) = TypeEqual<
         CollectionId,
         Record<string, never>
@@ -72,7 +72,7 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
         QueryFn extends TypeEqual<CollectionId, Record<string, never>> extends true
             ? Query<SDK, ResourceDataEncoded> //undefined CollectionId, Query MUST be defined
             :
-                  | Query<SDK, ResourceDataEncoded> //defined CollectionId, for group queries, for group queruesm Query MAY be defined, despite CollectionId defined, therefore union with QueryFactory
+                  | Query<SDK, ResourceDataEncoded> //defined CollectionId, for group queries, for group queries Query MAY be defined, despite CollectionId defined, therefore union with QueryFactory
                   | ((collectionId: CollectionId) => Query<SDK, ResourceDataEncoded>) = TypeEqual<
             CollectionId,
             Record<string, never>
@@ -147,7 +147,7 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
                 return queryRef;
             } else if (typeof query === "function") {
                 if (!collectionId) {
-                    throw new Error(`query is function but collectionId undefined`);
+                    throw new Error("query is function but collectionId undefined");
                 }
                 return query(collectionId);
             } else {

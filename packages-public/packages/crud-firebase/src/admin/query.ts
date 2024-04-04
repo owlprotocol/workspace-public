@@ -1,3 +1,4 @@
+import { CollectionGroup } from "firebase-admin/firestore";
 import type { DocumentData, Firestore } from "../document.js";
 import type { AggregateField, AggregateQuerySnapshot, Query, QuerySnapshot } from "../query.js";
 import type { OrderByDirection, WhereFilterOp } from "../types.js";
@@ -6,9 +7,12 @@ export function getColGroupRef<T extends DocumentData = DocumentData>(
     firestore: Firestore<"admin">,
     path: string,
 ): Query<"admin", T> {
-    return firestore.collectionGroup(path) as unknown as Query<"admin", T>;
+    return firestore.collectionGroup(path) as CollectionGroup<T> as Query<"admin", T>;
 }
 
+/**
+ * @param value comparison value. Type is `unknown` to align with Firebase SDK
+ */
 export function where<Q extends Query<"admin"> = Query<"admin">>(
     query: Q,
     fieldPath: string,
