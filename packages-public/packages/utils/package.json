@@ -36,6 +36,11 @@
       "types": "./lib/types/index.d.ts",
       "require": "./lib/cjs/index.js",
       "import": "./lib/esm/index.js"
+    },
+    "./*": {
+      "types": "./lib/types/*.d.ts",
+      "require": "./lib/cjs/*.js",
+      "import": "./lib/esm/*.js"
     }
   },
   "scripts": {
@@ -68,6 +73,7 @@
     "vitest": "^0.34.2",
     "@typescript/analyze-trace": "^0.10.1",
     "lint-staged": "^11.1.2",
+    "ts-expect": "^1.3.0",
     "tsx": "^3.12.7"
   },
   "bugs": {

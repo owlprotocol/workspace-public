@@ -41,7 +41,7 @@ export {};
 // >(
 // firestore: Firestore,
 // collectionPath: string,
-// validators?: Omit<CrudValidators<ItemData, ItemIdPartial>, "validateData">,
+// validators?: Omit<CrudValidators<ItemData, ItemIdPartial>, "encodeData">,
 // ) {
 // type ItemId = Required<ItemIdPartial>;
 // type Item = ItemId & ItemData;
@@ -54,7 +54,7 @@ export {};
 //
 // const col = collection(firestore, collectionPath) as CollectionReference<ItemData>;
 //
-// const getDocRef = (id: ItemId | string): DocumentReference<ItemData, DocumentData> => {
+// const getDocRef = (id: ItemId): DocumentReference<ItemData, DocumentData> => {
 // if (typeof id === "string") return doc(col, id);
 //
 // return doc(col, getId(validateId(id)));

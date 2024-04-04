@@ -12,15 +12,12 @@ describe("admin/groupQueries.test.ts", async () => {
     });
 
     describe("itemSubcollection", () => {
-        const testSubCollection1 = itemSubcollectionResource({ id: "100000" });
-        const testSubCollection2 = itemSubcollectionResource({ id: "200000" });
-
         test("getAll", async () => {
             const testItemComposite1 = getTestItemComposite(id++);
             const testItemComposite2 = getTestItemComposite(id++);
 
-            await testSubCollection1.set(testItemComposite1);
-            await testSubCollection2.set(testItemComposite2);
+            await itemSubcollectionResource.set({ ...testItemComposite1, id: "100000" });
+            await itemSubcollectionResource.set({ ...testItemComposite2, id: "200000" });
 
             const items = await childrenGroupQuery.getAll();
             expect(items).toStrictEqual([

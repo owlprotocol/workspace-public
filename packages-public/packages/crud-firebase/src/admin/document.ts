@@ -6,6 +6,7 @@ import type {
     DocumentData,
     Firestore,
     Transaction,
+    WriteBatch,
 } from "../document.js";
 import type { SetOptions, UpdateData } from "../types.js";
 
@@ -47,7 +48,7 @@ export function setDoc<
 export function setDoc<
     T extends DocumentData = DocumentData,
     R extends DocumentReference<"admin", T> = DocumentReference<"admin", T>,
->(reference: R, data: Partial<T>, options?: SetOptions): Promise<void>;
+>(reference: R, data: Partial<T>, options: SetOptions): Promise<void>;
 export function setDoc<
     T extends DocumentData = DocumentData,
     R extends DocumentReference<"admin", T> = DocumentReference<"admin", T>,
@@ -66,6 +67,44 @@ export function deleteDoc<R extends DocumentReference<"admin"> = DocumentReferen
     reference: R,
 ): Promise<void> {
     return reference.delete() as unknown as Promise<void>;
+}
+
+/***** Write Batch *****/
+export function getWriteBatch(firestore: Firestore<"admin">): WriteBatch<"admin"> {
+    return firestore.batch();
+}
+
+export function setDocWriteBatch<
+    T extends DocumentData = DocumentData,
+    R extends DocumentReference<"admin", T> = DocumentReference<"admin", T>,
+>(batch: WriteBatch<"admin">, reference: R, data: T): WriteBatch<"admin">;
+export function setDocWriteBatch<
+    T extends DocumentData = DocumentData,
+    R extends DocumentReference<"admin", T> = DocumentReference<"admin", T>,
+>(batch: WriteBatch<"admin">, reference: R, data: Partial<T>, options?: SetOptions): WriteBatch<"admin">;
+export function setDocWriteBatch<
+    T extends DocumentData = DocumentData,
+    R extends DocumentReference<"admin", T> = DocumentReference<"admin", T>,
+>(batch: WriteBatch<"admin">, reference: R, data: Partial<T>, options?: SetOptions): WriteBatch<"admin"> {
+    return batch.set(reference, data, options ?? {});
+}
+
+export function updateDocWriteBatch<
+    T extends DocumentData = DocumentData,
+    R extends DocumentReference<"admin", T> = DocumentReference<"admin", T>,
+>(batch: WriteBatch<"admin">, reference: R, data: UpdateData<T>): WriteBatch<"admin"> {
+    return batch.update(reference, data as any);
+}
+
+export function deleteDocWriteBatch<
+    T extends DocumentData = DocumentData,
+    R extends DocumentReference<"admin", T> = DocumentReference<"admin", T>,
+>(batch: WriteBatch<"admin">, reference: R): WriteBatch<"admin"> {
+    return batch.delete(reference);
+}
+
+export function commitWriteBatch(batch: WriteBatch<"admin">): Promise<void> {
+    return batch.commit() as unknown as Promise<void>;
 }
 
 /***** Transactions *****/

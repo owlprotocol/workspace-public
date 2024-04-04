@@ -1,4 +1,5 @@
 import {
+    collectionGroup as getColGroupRefWeb,
     query as queryWeb,
     where as whereWeb,
     limit as limitWeb,
@@ -7,9 +8,16 @@ import {
     getDocs as getDocsWeb,
     getCountFromServer,
 } from "firebase/firestore";
-import type { DocumentData } from "../document.js";
+import type { DocumentData, Firestore } from "../document.js";
 import type { AggregateField, AggregateQuerySnapshot, Query, QuerySnapshot } from "../query.js";
 import type { OrderByDirection, WhereFilterOp } from "../types.js";
+
+export function getColGroupRef<T extends DocumentData = DocumentData>(
+    firestore: Firestore<"web">,
+    path: string,
+): Query<"web", T> {
+    return getColGroupRefWeb(firestore, path) as Query<"web", T>;
+}
 
 export function where<Q extends Query<"web"> = Query<"web">>(
     query: Q,

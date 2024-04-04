@@ -1,5 +1,6 @@
 import type {
     Firestore as FirestoreAdmin,
+    WriteBatch as WriteBatchAdmin,
     Transaction as TransactionAdmin,
     CollectionReference as CollectionReferenceAdmin,
     DocumentReference as DocumentReferenceAdmin,
@@ -8,6 +9,7 @@ import type {
 } from "firebase-admin/firestore";
 import type {
     Firestore as FirestoreWeb,
+    WriteBatch as WriteBatchWeb,
     Transaction as TransactionWeb,
     CollectionReference as CollectionReferenceWeb,
     DocumentReference as DocumentReferenceWeb,
@@ -66,13 +68,6 @@ export type QueryDocumentSnapshot<
     ? QueryDocumentSnapshotWeb<T>
     : QueryDocumentSnapshotAdmin<T> | QueryDocumentSnapshotWeb<T>;
 
-/***** Transaction *****/
-export type Transaction<SDK extends FirestoreSDK = FirestoreSDK> = SDK extends "admin"
-    ? TransactionAdmin
-    : SDK extends "web"
-    ? TransactionWeb
-    : TransactionAdmin | TransactionWeb;
-
 /***** Functions *****/
 /* Collection Reference */
 export type getColRefType<SDK extends FirestoreSDK = FirestoreSDK, T extends DocumentData = DocumentData> = (
@@ -85,7 +80,10 @@ export type getDocRefType<
     SDK extends FirestoreSDK = FirestoreSDK,
     T extends DocumentData = DocumentData,
     C extends CollectionReference<SDK, T> = CollectionReference<SDK, T>,
-> = (col: C, path: string, ...pathSegments: string[]) => DocumentReference<SDK, T>;
+> = {
+    (col: C, path: string, ...pathSegments: string[]): DocumentReference<SDK, T>;
+    (firestore: Firestore<SDK>, path: string, ...pathSegments: string[]): DocumentReference<SDK, T>;
+};
 
 /** Document Snapshot */
 /** Snapshot exists */
@@ -110,9 +108,7 @@ export type setDocType<
     SDK extends FirestoreSDK = FirestoreSDK,
     T extends DocumentData = DocumentData,
     R extends DocumentReference<SDK, T> = DocumentReference<SDK, T>,
-> =
-    | ((reference: R, data: T) => Promise<void>)
-    | ((reference: R, data: Partial<T>, options?: SetOptions) => Promise<void>);
+> = { (reference: R, data: T): Promise<void>; (reference: R, data: Partial<T>, options: SetOptions): Promise<void> };
 
 /** Update doc */
 export type updateDocType<
@@ -127,7 +123,48 @@ export type deleteDocType<
     R extends DocumentReference<SDK> = DocumentReference<SDK>,
 > = (reference: R) => Promise<void>;
 
+/***** WriteBatch ******/
+export type WriteBatch<SDK extends FirestoreSDK = FirestoreSDK> = SDK extends "admin"
+    ? WriteBatchAdmin
+    : SDK extends "web"
+    ? WriteBatchWeb
+    : WriteBatchAdmin | WriteBatchWeb;
+
+/** Create write batch */
+export type getWriteBatchType<SDK extends FirestoreSDK = FirestoreSDK> = (firestore: Firestore<SDK>) => WriteBatch<SDK>;
+
+/** Set doc with write batch */
+export type setDocWriteBatchType<
+    SDK extends FirestoreSDK = FirestoreSDK,
+    T extends DocumentData = DocumentData,
+    R extends DocumentReference<SDK, T> = DocumentReference<SDK, T>,
+> =
+    | ((batch: WriteBatch<SDK>, reference: R, data: T) => WriteBatch<SDK>)
+    | ((batch: WriteBatch<SDK>, reference: R, data: Partial<T>, options?: SetOptions) => WriteBatch<SDK>);
+
+/** Update doc with write batch */
+export type updateDocWriteBatchType<
+    SDK extends FirestoreSDK = FirestoreSDK,
+    T extends DocumentData = DocumentData,
+    R extends DocumentReference<SDK, T> = DocumentReference<SDK, T>,
+> = (batch: WriteBatch<SDK>, reference: R, data: UpdateData<T>) => WriteBatch<SDK>;
+
+/** Delete doc with write batch */
+export type deleteDocWriteBatchType<
+    SDK extends FirestoreSDK = FirestoreSDK,
+    R extends DocumentReference<SDK> = DocumentReference<SDK>,
+> = (batch: WriteBatch<SDK>, reference: R) => WriteBatch<SDK>;
+
+/** Delete doc with write batch */
+export type commitWriteBatchType<SDK extends FirestoreSDK = FirestoreSDK> = (batch: WriteBatch<SDK>) => Promise<void>;
+
 /***** Transactions *****/
+export type Transaction<SDK extends FirestoreSDK = FirestoreSDK> = SDK extends "admin"
+    ? TransactionAdmin
+    : SDK extends "web"
+    ? TransactionWeb
+    : TransactionAdmin | TransactionWeb;
+
 //TODO: Add getAll, create, overloads
 /** Run transaction */
 export type runTransactionType<SDK extends FirestoreSDK = FirestoreSDK, T = any> = (

@@ -1,6 +1,13 @@
-import type { DocumentData } from "../document.js";
+import type { DocumentData, Firestore } from "../document.js";
 import type { AggregateField, AggregateQuerySnapshot, Query, QuerySnapshot } from "../query.js";
 import type { OrderByDirection, WhereFilterOp } from "../types.js";
+
+export function getColGroupRef<T extends DocumentData = DocumentData>(
+    firestore: Firestore<"admin">,
+    path: string,
+): Query<"admin", T> {
+    return firestore.collectionGroup(path) as unknown as Query<"admin", T>;
+}
 
 export function where<Q extends Query<"admin"> = Query<"admin">>(
     query: Q,

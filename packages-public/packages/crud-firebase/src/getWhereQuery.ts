@@ -6,9 +6,9 @@ import { getFirestoreUpdateData } from "./utils/getFirestoreUpdateData.js";
 
 export type getWhereQueryFn<
     SDK extends FirestoreSDK,
-    ResourceData extends DocumentData = DocumentData,
-    Q extends Query<SDK, ResourceData> = Query<SDK, ResourceData>,
-> = (col: Q, filter: Partial<ResourceData> | undefined, options?: ResourceQueryOptions) => Q;
+    ResourceDataEncoded extends DocumentData = DocumentData,
+    Q extends Query<SDK, ResourceDataEncoded> = Query<SDK, ResourceDataEncoded>,
+> = (col: Q, filter: Partial<ResourceDataEncoded> | undefined, options?: ResourceQueryOptions) => Q;
 
 /**
  * Create getWhereQuery function for sdk
@@ -22,15 +22,15 @@ export function getWhereQueryForSdk<SDK extends FirestoreSDK = FirestoreSDK>(sdk
     startAfter: startAfterType<SDK>;
 }): getWhereQueryFn<SDK> {
     function getWhereQuery<
-        ResourceData extends DocumentData = DocumentData,
-        Q extends Query<SDK, ResourceData> = Query<SDK, ResourceData>,
-    >(col: Q, filter: Partial<ResourceData> | undefined, options?: ResourceQueryOptions): Q {
+        ResourceDataEncoded extends DocumentData = DocumentData,
+        Q extends Query<SDK, ResourceDataEncoded> = Query<SDK, ResourceDataEncoded>,
+    >(col: Q, filter: Partial<ResourceDataEncoded> | undefined, options?: ResourceQueryOptions): Q {
         //Cast to specific query type (resource data)
         const { where, limit, orderBy, startAfter } = sdk as unknown as {
-            where: whereType<SDK, ResourceData, Q>;
-            limit: limitType<SDK, ResourceData, Q>;
-            orderBy: orderByType<SDK, ResourceData, Q>;
-            startAfter: startAfterType<SDK, ResourceData, Q>;
+            where: whereType<SDK, ResourceDataEncoded, Q>;
+            limit: limitType<SDK, ResourceDataEncoded, Q>;
+            orderBy: orderByType<SDK, ResourceDataEncoded, Q>;
+            startAfter: startAfterType<SDK, ResourceDataEncoded, Q>;
         };
 
         let query: Q = col;

@@ -94,5 +94,3 @@ export type getDocsType<
     T extends DocumentData = DocumentData,
     Q extends Query<SDK, T> = Query<SDK, T>,
 > = (query: Q) => Promise<QuerySnapshot<SDK, T>>;
-
-//get

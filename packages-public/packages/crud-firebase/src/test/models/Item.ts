@@ -27,8 +27,8 @@ export const itemDataZod = z
         objectArray: z.array(z.record(z.string(), z.string())).describe("objectArray"),
     })
     .describe("team");
-export const validateItemData: (data: ItemData) => ItemData = itemDataZod.parse;
-export const validateItemDataPartial: (data: Partial<ItemData>) => Partial<ItemData> = itemDataZod.partial().parse;
+export const encodeItemData: (data: ItemData) => ItemData = itemDataZod.parse;
+export const encodeItemDataPartial: (data: Partial<ItemData>) => Partial<ItemData> = itemDataZod.partial().parse;
 
 export type Item = Required<ItemId> & ItemData;
 

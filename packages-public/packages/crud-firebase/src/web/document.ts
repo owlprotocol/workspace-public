@@ -6,6 +6,7 @@ import {
     doc as getDocRefWeb,
     collection as getColRefWeb,
     runTransaction as runTransactionWeb,
+    writeBatch as writeBatchWeb,
 } from "firebase/firestore";
 import type {
     CollectionReference,
@@ -15,6 +16,7 @@ import type {
     DocumentData,
     Firestore,
     Transaction,
+    WriteBatch,
 } from "../document.js";
 import type { SetOptions, UpdateData } from "../types.js";
 
@@ -56,7 +58,7 @@ export function setDoc<
 export function setDoc<
     T extends DocumentData = DocumentData,
     R extends DocumentReference<"web", T> = DocumentReference<"web", T>,
->(reference: R, data: Partial<T>, options?: SetOptions): Promise<void>;
+>(reference: R, data: Partial<T>, options: SetOptions): Promise<void>;
 export function setDoc<
     T extends DocumentData = DocumentData,
     R extends DocumentReference<"web", T> = DocumentReference<"web", T>,
@@ -73,6 +75,44 @@ export function updateDoc<
 
 export function deleteDoc<R extends DocumentReference<"web"> = DocumentReference<"web">>(reference: R): Promise<void> {
     return deleteDocWeb(reference) as unknown as Promise<void>;
+}
+
+/***** Write Batch *****/
+export function getWriteBatch(firestore: Firestore<"web">): WriteBatch<"web"> {
+    return writeBatchWeb(firestore);
+}
+
+export function setDocWriteBatch<
+    T extends DocumentData = DocumentData,
+    R extends DocumentReference<"web", T> = DocumentReference<"web", T>,
+>(batch: WriteBatch<"web">, reference: R, data: T): WriteBatch<"web">;
+export function setDocWriteBatch<
+    T extends DocumentData = DocumentData,
+    R extends DocumentReference<"web", T> = DocumentReference<"web", T>,
+>(batch: WriteBatch<"web">, reference: R, data: Partial<T>, options?: SetOptions): WriteBatch<"web">;
+export function setDocWriteBatch<
+    T extends DocumentData = DocumentData,
+    R extends DocumentReference<"web", T> = DocumentReference<"web", T>,
+>(batch: WriteBatch<"web">, reference: R, data: Partial<T>, options?: SetOptions): WriteBatch<"web"> {
+    return batch.set(reference, data, options ?? {});
+}
+
+export function updateDocWriteBatch<
+    T extends DocumentData = DocumentData,
+    R extends DocumentReference<"web", T> = DocumentReference<"web", T>,
+>(batch: WriteBatch<"web">, reference: R, data: UpdateData<T>): WriteBatch<"web"> {
+    return batch.update(reference, data as any);
+}
+
+export function deleteDocWriteBatch<
+    T extends DocumentData = DocumentData,
+    R extends DocumentReference<"web", T> = DocumentReference<"web", T>,
+>(batch: WriteBatch<"web">, reference: R): WriteBatch<"web"> {
+    return batch.delete(reference);
+}
+
+export function commitWriteBatch(batch: WriteBatch<"web">): Promise<void> {
+    return batch.commit();
 }
 
 /***** Transactions *****/

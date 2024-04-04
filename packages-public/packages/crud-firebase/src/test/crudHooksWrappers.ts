@@ -11,7 +11,7 @@
 // const [idPrefix, idSuffix] = id.split("-");
 // return { idPrefix, idSuffix };
 // },
-// validateId(idParams) {
+// encodeId(idParams) {
 // return idParams;
 // },
 // });
