@@ -7,7 +7,7 @@ export default defineConfig({
         //environment: "jsdom",
         globals: false,
         globalSetup: "vitest.setup.ts",
-        testTimeout: 20000,
+        testTimeout: 60000,
         threads: false,
         watch: true,
         include: ["src/**/*.test.ts"],

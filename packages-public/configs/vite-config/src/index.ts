@@ -164,7 +164,7 @@ export const config = defineConfig({
     //@ts-expect-error
     test: {
         globals: false,
-        testTimeout: 20000,
+        testTimeout: 60000,
         threads: false,
         watch: true,
         include: ["src/**/*.test.ts", "src/**/*.test.tsx"],

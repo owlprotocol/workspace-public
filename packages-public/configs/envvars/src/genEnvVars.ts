@@ -79,20 +79,9 @@ const SHOPIFY_ENVVARS: EnvVarDef[] = [
     { name: "SHOPIFY_HOSTNAME", platform: "neutral" },
 ];
 const SCRIPT_ENVVARS: EnvVarDef[] = [
-    //Cold-storage admin for beacons
-    { name: "BEACON_ADMIN", platform: "node", defaultValue: "0xad839Bc20a349b2502468c9d6ba47531f435491f" },
-    //Hot-wallet for contracts-api relayer
-    { name: "PRIVATE_KEY_RELAYER", platform: "node" },
-    //Hot-wallet for deployment
+    //Hardhat wallet (TODO: Deprecate this?)
     { name: "PRIVATE_KEY_CONTRACT_DEPLOYER", platform: "node" },
-    //Local private keys
-    {
-        name: "PRIVATE_KEY_ANVIL",
-        platform: "node",
-        defaultValue: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-    },
-    //Singleton factory
-    { name: "PRIVATE_KEY_FACTORY_DEPLOYER", platform: "node" },
+    //For networks that enforce EIP151, we deploy Create2Factory with 1 key
     {
         name: "PRIVATE_KEY_CREATE2FACTORY_DEPLOYER",
         platform: "node",
@@ -105,11 +94,12 @@ const SCRIPT_ENVVARS: EnvVarDef[] = [
 ];
 /** Add public defaults that are free */
 const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
+    //rpc providers
     { name: "INFURA_API_KEY", platform: "node", defaultValue: "f47a5c2dfc1f4c4385f6372fade38618" },
     { name: "THIRDWEB_API_KEY", platform: "node", defaultValue: "50072e65e03dfde6c855d89392bad2b6" },
     { name: "ANKR_API_KEY", platform: "node" },
-    { name: "ETHERSCAN_API_KEY", platform: "node" },
     { name: "BYTE4_URL", platform: "node", defaultValue: "https://www.4byte.directory/api/v1" },
+    //ipfs
     { name: "IPFS_URL", platform: "node", defaultValue: "http://localhost:5001" },
     { name: "IPFS_GATEWAY_URL", platform: "neutral", defaultValue: "https://public-owlprotocol.infura-ipfs.io" },
     {
@@ -120,7 +110,11 @@ const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
     },
     { name: "INFURA_IPFS_PROJECT_ID", platform: "node", defaultValue: "2OAhenU1T1fxTGyQMTTFDwdyW5p" },
     { name: "INFURA_IPFS_PROJECT_SECRET", platform: "node", defaultValue: "8ffddfdc95f32ea7aa43ee3ba9d2d603" },
-    { name: "PUBLIC_ADDRESS_RELAYER", platform: "neutral", defaultValue: "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720" },
+    //wallets
+    { name: "PRIVATE_KEY_UTILITY", platform: "node" },
+    { name: "PUBLIC_ADDRESS_UTILITY", platform: "neutral", defaultValue: "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720" },
+    { name: "PRIVATE_KEY_RELAYER", platform: "node" },
+    { name: "PUBLIC_ADDRESS_RELAYER", platform: "neutral", defaultValue: "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf" },
 ];
 
 const INDEXER_ENVVARS: EnvVarDef[] = [

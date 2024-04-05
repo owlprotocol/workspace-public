@@ -62,7 +62,7 @@ describe("SimpleAccount.test.ts", function () {
         /**
          * Get simple account address using different methods
          */
-        test.only("getSimpleAccountAddress", async () => {
+        test("getSimpleAccountAddress", async () => {
             //Check SimpleAccount implementation address matches expected
             const simpleAccountImplementation = await publicClient.readContract({
                 address: simpleAccountFactory,
