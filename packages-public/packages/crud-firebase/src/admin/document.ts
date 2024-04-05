@@ -81,7 +81,7 @@ export function setDocWriteBatch<
 export function setDocWriteBatch<
     T extends DocumentData = DocumentData,
     R extends DocumentReference<"admin", T> = DocumentReference<"admin", T>,
->(batch: WriteBatch<"admin">, reference: R, data: Partial<T>, options?: SetOptions): WriteBatch<"admin">;
+>(batch: WriteBatch<"admin">, reference: R, data: Partial<T>, options: SetOptions): WriteBatch<"admin">;
 export function setDocWriteBatch<
     T extends DocumentData = DocumentData,
     R extends DocumentReference<"admin", T> = DocumentReference<"admin", T>,
@@ -131,7 +131,7 @@ export function setDocTransaction<
 export function setDocTransaction<
     T extends DocumentData = DocumentData,
     R extends DocumentReference<"admin", T> = DocumentReference<"admin", T>,
->(transaction: Transaction<"admin">, reference: R, data: Partial<T>, options?: SetOptions): Transaction<"admin">;
+>(transaction: Transaction<"admin">, reference: R, data: Partial<T>, options: SetOptions): Transaction<"admin">;
 export function setDocTransaction<
     T extends DocumentData = DocumentData,
     R extends DocumentReference<"admin", T> = DocumentReference<"admin", T>,
