@@ -7,5 +7,5 @@ function join(...parameters: string[]) {
 
 export const itemPath = "item";
 export const itemCompositePath = "itemComposite";
-export const itemSubGroupPath = "children";
-export const itemSubPath = (collectionId: Required<ItemId>) => join(itemPath, collectionId.id, itemSubGroupPath);
+export const itemChildGroupPath = "children";
+export const itemChildPath = (collectionId: Required<ItemId>) => join(itemPath, collectionId.id, itemChildGroupPath);

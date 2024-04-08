@@ -54,6 +54,7 @@ export type getFirebaseQueryResourceFn<SDK extends FirestoreSDK> = <
 
 /**
  * Factory function for generating Firebase Query Resource.
+ * For docs/comments on specific functions, refer to the `FirebaseQueryResource` interface comments
  * @template SDK Firestore sdk type ("admin" or "web")
  * @param sdk generic sdk functions
  * @returns getFirebaseQueryResource function that works with relevant sdk
@@ -140,8 +141,6 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
 
         const queryRef = typeof query === "function" ? undefined : (query as Query<SDK, ResourceDataEncoded>);
 
-        function getQuery(): Q;
-        function getQuery(collectionId: CollectionId): Q;
         function getQuery(collectionId?: CollectionId): Q {
             if (queryRef) {
                 return queryRef;
@@ -156,7 +155,9 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
         }
 
         /**
-         * Decode polymorphic parameters
+         * Decode polymorphic parameters, if `Query` is object, simply return options, else return collectionId and options.
+         * @param collectionIdOrOptions
+         * @param optionsOrNoParam
          */
         function getCollectionIdQueryOptions(
             collectionIdOrOptions?: CollectionId | ResourceQueryOptions,
@@ -176,11 +177,10 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
         }
 
         /**
-         * Get all docs, no security checks
-         * @returns docs
+         * Get all snapshot, no filter
+         * @param parameters Polymorphic depending on `Query` object or query function `(collectionId) => Query`
+         * @returns snapshot of all docs
          */
-        async function getAllSnapshot(collectionId: CollectionId, options?: ResourceQueryOptions): Promise<QSnapshot>;
-        async function getAllSnapshot(options?: ResourceQueryOptions): Promise<QSnapshot>;
         async function getAllSnapshot(
             collectionIdOrOptions?: CollectionId | ResourceQueryOptions,
             optionsOrNoParam?: ResourceQueryOptions,
@@ -190,16 +190,20 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
             return getDocs(query);
         }
 
-        async function getAll(collectionId: CollectionId, options?: ResourceQueryOptions): Promise<Resource[]>;
-        async function getAll(options?: ResourceQueryOptions): Promise<Resource[]>;
         async function getAll(
             collectionIdOrOptions?: CollectionId | ResourceQueryOptions,
             optionsOrNoParam?: ResourceQueryOptions,
         ): Promise<Resource[]> {
-            //Overload errors
-            //@ts-expect-error
             const docs = (await getAllSnapshot(collectionIdOrOptions, optionsOrNoParam)).docs as QDocumentSnapshot[];
             return docs.map(decodeRefSnapshot);
+        }
+
+        async function getAllEncoded(
+            collectionIdOrOptions?: CollectionId | ResourceQueryOptions,
+            optionsOrNoParam?: ResourceQueryOptions,
+        ): Promise<ResourceDataEncoded[]> {
+            const docs = (await getAllSnapshot(collectionIdOrOptions, optionsOrNoParam)).docs as QDocumentSnapshot[];
+            return docs.map((d) => d.data());
         }
 
         /**
@@ -214,13 +218,6 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
             return getWhereQuery(getQuery(filter), encodeDataPartial(filter), options);
         }
 
-        /**
-         * Get docs that match filter, no security checks
-         * @param filter, will try to match the key-value pairs of this object as `where(key, "==", value)` queries.
-         *      For nested keys, this gets reformated as `where(key.subkey, "==", value)` similar as to the update function
-         * @param options limit, orderBy, order
-         * @returns docs
-         */
         async function getWhereSnapshot(filter: ResourceFilter, options?: ResourceQueryOptions): Promise<QSnapshot> {
             return getDocs(_getWhereQuery(filter, options));
         }
@@ -228,6 +225,14 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
         async function getWhere(filter: ResourceFilter, options?: ResourceQueryOptions): Promise<Resource[]> {
             const docs = (await getWhereSnapshot(filter, options)).docs as QDocumentSnapshot[];
             return docs.map(decodeRefSnapshot);
+        }
+
+        async function getWhereEncoded(
+            filter: ResourceFilter,
+            options?: ResourceQueryOptions,
+        ): Promise<ResourceDataEncoded[]> {
+            const docs = (await getWhereSnapshot(filter, options)).docs as QDocumentSnapshot[];
+            return docs.map((d) => d.data());
         }
 
         async function getWhereFirst(
@@ -238,12 +243,14 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
             return results[0] ?? null;
         }
 
-        /**
-         * Get docs that match filter count, no security checks
-         * @param filter
-         * @param options limit, orderBy, order
-         * @returns docs
-         */
+        async function getWhereFirstEncoded(
+            filter: ResourceFilter,
+            options?: Omit<ResourceQueryOptions, "limit">,
+        ): Promise<ResourceDataEncoded | null> {
+            const results = await getWhereEncoded(filter, { ...options, limit: 1 });
+            return results[0] ?? null;
+        }
+
         async function getWhereCount(filter: ResourceFilter, options?: ResourceQueryOptions): Promise<number> {
             const querySnapshot = await count(_getWhereQuery(filter, options));
             return querySnapshot.data().count;
@@ -252,25 +259,16 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
         return {
             query,
             getCollectionIdQueryOptions,
-            getQuery: getQuery as unknown as (
-                ...parameters: TypeEqual<QueryFn, Query<SDK, ResourceDataEncoded>> extends true
-                    ? []
-                    : [collectionId: CollectionId]
-            ) => Query<SDK, ResourceDataEncoded>,
-            getAllSnapshot: getAllSnapshot as unknown as (
-                ...parameters: TypeEqual<QueryFn, Query<SDK, ResourceDataEncoded>> extends true
-                    ? [options?: ResourceQueryOptions]
-                    : [collectionId: CollectionId, options?: ResourceQueryOptions]
-            ) => Promise<QSnapshot>,
-            getAll: getAll as unknown as (
-                ...parameters: TypeEqual<QueryFn, Query<SDK, ResourceDataEncoded>> extends true
-                    ? [options?: ResourceQueryOptions]
-                    : [collectionId: CollectionId, options?: ResourceQueryOptions]
-            ) => Promise<Resource[]>,
+            getQuery,
+            getAllSnapshot,
+            getAll,
+            getAllEncoded,
             getWhereQuery: _getWhereQuery,
             getWhereSnapshot,
             getWhere,
+            getWhereEncoded,
             getWhereFirst,
+            getWhereFirstEncoded,
             getWhereCount,
         };
     };

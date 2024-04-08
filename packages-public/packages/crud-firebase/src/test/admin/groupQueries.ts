@@ -1,27 +1,32 @@
-import { itemSubGroupPath } from "../collections.js";
-import { ItemCompositeId, ItemData, ItemId } from "../models/index.js";
-import { firestore, getFirebaseQueryResource } from "../../admin/index.js";
+import { itemChildColGroup } from "./collection.js";
+import {
+    ItemCompositeId,
+    ItemData,
+    ItemId,
+    decodeItemCompositeId,
+    decodeItemData,
+    decodeItemId,
+    encodeItemDataPartial,
+    encodeItemId,
+} from "../models/index.js";
+import { getFirebaseQueryResource } from "../../admin/index.js";
 import { Query } from "../../query.js";
 
 /**
  * Collection group query on `/children` path
  * will match the subcollection `/item/{id}/children/{idPrefix}-{idSuffix}`
  */
-const childrenColGroup = firestore.collectionGroup(itemSubGroupPath) as unknown as Query<"admin", ItemData>;
-export const childrenGroupQuery = getFirebaseQueryResource<
+export const itemChildGroupQuery = getFirebaseQueryResource<
     ItemData,
     ItemCompositeId,
     Required<ItemId>,
     ItemData,
     ItemData,
     Query<"admin", ItemData>
->(childrenColGroup, {
-    decodeId: (id) => {
-        const [idPrefix, idSuffix] = id.split("-");
-        return { idPrefix, idSuffix };
-    },
-    decodeParentDocId: (id: string) => {
-        return { id };
-    },
-    encodeDataPartial: (itemComposite) => itemComposite,
+>(itemChildColGroup, {
+    decodeId: decodeItemCompositeId,
+    encodeDataPartial: encodeItemDataPartial,
+    decodeData: decodeItemData,
+    encodeParentDocId: encodeItemId,
+    decodeParentDocId: decodeItemId,
 });

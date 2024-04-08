@@ -5,6 +5,7 @@ import { NumberBigintAsHex } from "../utils/NumberBigintAsString.js";
 import { addressZod } from "../solidity/address.js";
 import { bytes32Zod } from "../solidity/bytes.js";
 
+//TODO: Encode/Decode like other models
 export interface LogFilter {
     fromBlock?: number;
     toBlock?: number;

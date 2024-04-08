@@ -39,7 +39,7 @@ describe("SimpleAccount.test.ts", function () {
     // let verifyingPaymaster: Address;
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC } });
+        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
         transport = custom(provider);
         //const transport = http(localhost.rpcUrls.default.http[0]);
         publicClient = createPublicClient({

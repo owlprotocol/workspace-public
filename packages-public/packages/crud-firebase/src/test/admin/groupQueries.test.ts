@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach } from "vitest";
-import { itemSubcollectionResource } from "./resources.js";
-import { childrenGroupQuery } from "./groupQueries.js";
+import { itemChildResource } from "./resources.js";
+import { itemChildGroupQuery } from "./groupQueries.js";
 import { getTestItemComposite } from "../data.js";
 import { deleteEmulatorData } from "../../admin/config.js";
 
@@ -16,10 +16,10 @@ describe("admin/groupQueries.test.ts", async () => {
             const testItemComposite1 = getTestItemComposite(id++);
             const testItemComposite2 = getTestItemComposite(id++);
 
-            await itemSubcollectionResource.set({ ...testItemComposite1, id: "100000" });
-            await itemSubcollectionResource.set({ ...testItemComposite2, id: "200000" });
+            await itemChildResource.set({ ...testItemComposite1, id: "100000" });
+            await itemChildResource.set({ ...testItemComposite2, id: "200000" });
 
-            const items = await childrenGroupQuery.getAll();
+            const items = await itemChildGroupQuery.getAll();
             expect(items).toStrictEqual([
                 { ...testItemComposite1, id: "100000" },
                 { ...testItemComposite2, id: "200000" },

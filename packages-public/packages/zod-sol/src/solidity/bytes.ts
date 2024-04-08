@@ -19,7 +19,7 @@ export function getSolidityBytesZod(name: SolidityBytes): z.ZodEffects<z.ZodStri
     if (name === "bytes") {
         return z
             .string()
-            .regex(/^0x[a-fA-F0-9]+$/)
+            .regex(/^0x[a-fA-F0-9]*$/)
             .describe("solidity bytes") as unknown as z.ZodEffects<z.ZodString, Hex, Hex>;
     }
     const size = parseInt(name.replace("bytes", ""));

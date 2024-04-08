@@ -134,3 +134,23 @@ export const bigIntLikeToDecimalZod = bigIntLikeZod.transform((n) => n.toString(
     string,
     bigint | number | string
 >;
+
+/***** Quantity, represents bigint in Eth models *****/
+/**
+ * Zod validator encoding QuantityInput => QuantityEncoded
+ */
+export const quantityEncodeZod = bigIntLikeToHexZod;
+/**
+ * Zod validator encoding QuantityInput|QuantityEncoded => QuantityDecoded
+ */
+export const quantityDecodeZod = bigIntLikeZod;
+
+/***** Index, represents number in Eth models *****/
+/**
+ * Zod validator encoding IndexInput => IndexEncoded
+ */
+export const indexEncodeZod = numberLikeToHexZod;
+/**
+ * Zod validator encoding IndexInput|IndexEncoded => IndexDecoded
+ */
+export const indexDecodeZod = numberLikeZod;

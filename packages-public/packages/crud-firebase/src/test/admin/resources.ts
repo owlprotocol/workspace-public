@@ -1,17 +1,28 @@
-import { itemCol, itemCompositeCol, itemSubCol } from "./collection.js";
+import { itemCol, itemCompositeCol, itemChildCol } from "./collection.js";
 import { firestore, getFirebaseResource } from "../../admin/index.js";
-import { uuidDecodeId, uuidEncodeId } from "../../resource.js";
-import { ItemCompositeId, ItemData, ItemId, encodeItemData, encodeItemDataPartial } from "../models/index.js";
+import {
+    ItemCompositeId,
+    ItemData,
+    ItemId,
+    decodeItemCompositeId,
+    decodeItemData,
+    decodeItemId,
+    encodeItemCompositeId,
+    encodeItemData,
+    encodeItemDataPartial,
+    encodeItemId,
+} from "../models/index.js";
 
 /**
  * To keep patterns consistent, top-level collections are still functions
  * but we have them be a constant result to avoid unecessary gc.
  * */
 export const itemResource = getFirebaseResource<ItemData, ItemId>(firestore, itemCol, {
-    encodeId: uuidEncodeId,
-    decodeId: uuidDecodeId,
+    encodeId: encodeItemId,
+    decodeId: decodeItemId,
     encodeDataPartial: encodeItemDataPartial,
     encodeData: encodeItemData,
+    decodeData: decodeItemData,
 });
 
 /**
@@ -19,13 +30,11 @@ export const itemResource = getFirebaseResource<ItemData, ItemId>(firestore, ite
  * However, the library does not lock you into a specific implementation
  */
 export const itemCompositeResource = getFirebaseResource<ItemData, ItemCompositeId>(firestore, itemCompositeCol, {
-    encodeId: (idParams) => (typeof idParams === "string" ? idParams : `${idParams.idPrefix}-${idParams.idSuffix}`),
-    decodeId: (id) => {
-        const [idPrefix, idSuffix] = id.split("-");
-        return { idPrefix, idSuffix };
-    },
+    encodeId: encodeItemCompositeId,
+    decodeId: decodeItemCompositeId,
     encodeDataPartial: encodeItemDataPartial,
     encodeData: encodeItemData,
+    decodeData: decodeItemData,
 });
 
 /**
@@ -34,17 +43,17 @@ export const itemCompositeResource = getFirebaseResource<ItemData, ItemComposite
  * instead of `/itemComposite/{idPrefix}-{idSuffix}`
  * items will be at `/item/{id}/children/{idPrefix}-{idSuffix}`
  */
-export const itemSubcollectionResource = getFirebaseResource<ItemData, ItemCompositeId, Required<ItemId>>(
+export const itemChildResource = getFirebaseResource<ItemData, ItemCompositeId, Required<ItemId>>(
     firestore,
-    itemSubCol,
+    itemChildCol,
     {
-        encodeId: (idParams) => `${idParams.idPrefix}-${idParams.idSuffix}`,
-        decodeId: (id) => {
-            const [idPrefix, idSuffix] = id.split("-");
-            return { idPrefix, idSuffix };
-        },
+        encodeId: encodeItemCompositeId,
+        decodeId: decodeItemCompositeId,
         encodeDataPartial: encodeItemDataPartial,
         encodeData: encodeItemData,
+        decodeData: decodeItemData,
+        decodeParentDocId: decodeItemId,
+        encodeParentDocId: encodeItemId,
     },
 );
 
@@ -55,10 +64,11 @@ export const itemResourceCached = getFirebaseResource<ItemData, ItemId>(
     firestore,
     itemCol,
     {
-        encodeId: uuidEncodeId,
-        decodeId: uuidDecodeId,
+        encodeId: encodeItemId,
+        decodeId: decodeItemId,
         encodeDataPartial: encodeItemDataPartial,
         encodeData: encodeItemData,
+        decodeData: decodeItemData,
     },
     { lruCacheSize: 10 },
 );

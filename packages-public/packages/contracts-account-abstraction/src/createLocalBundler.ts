@@ -45,6 +45,7 @@ export function createLocalBundlerClient(
     }
     const supportedEntryPoints = [parameters.entryPoint];
 
+    //TODO: Unbound memory
     const userOpsByHash: Record<
         string,
         {

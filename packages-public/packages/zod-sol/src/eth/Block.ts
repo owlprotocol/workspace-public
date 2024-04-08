@@ -1,206 +1,135 @@
-//////////////////////
-// Block
-
 import { z } from "zod";
-import { TypeOf, expectType } from "ts-expect";
-import {
-    TransactionResponse,
-    TransactionResponseFromRpc,
-    transactionResponseFromRpcZod,
-    transactionResponseZod,
-} from "./TransactionResponse.js";
-import { bigIntLikeZod, bigIntLikeToHexZod, numberLikeToHexZod, numberLikeZod } from "./math.js";
-import { NumberBigintAsHex } from "../utils/NumberBigintAsString.js";
-
+import { Block as BlockViem } from "viem";
+import { PartialBy, Prettify } from "viem/types/utils";
+import { quantityEncodeZod, quantityDecodeZod } from "./math.js";
 import { bytes32Zod, bytesZod } from "../solidity/bytes.js";
 import { addressZod } from "../solidity/address.js";
 
-export const blockZod = z
+/***** Block *****/
+//TODO: Should we support pending blocks?
+
+/**
+ * Additional optional fields that are required in viem
+ */
+export type BlockInputOptionalFields =
+    | "baseFeePerGas"
+    | "blobGasUsed"
+    | "excessBlobGas"
+    | "sealFields"
+    | "totalDifficulty";
+
+/**
+ * Block with mixed types
+ * Matches both encoded RPC & decoded TS types.
+ */
+export type BlockInput = Prettify<
+    PartialBy<BlockViem<`0x${string}` | number | bigint, false, "safe">, BlockInputOptionalFields>
+>;
+
+/**
+ * Block with encoded types
+ * Bigint converted to Hex to support Firebase.
+ */
+export type BlockEncoded = BlockViem<`0x${string}`, false, "safe">;
+
+/**
+ * Block with decoded types
+ * Bigint decoded from Hex stored on Firebase.
+ */
+export type BlockDecoded = BlockViem<bigint, false, "safe">;
+
+/**
+ * Zod validator encoding BlockInput => BlockEncoded
+ */
+export const blockEncodeZod = z
     .object({
-        hash: bytes32Zod.describe("The block hash."),
-        number: numberLikeZod.describe("The block number."),
-        timestamp: numberLikeZod.describe(
-            "The timestamp for this block, which is the number of seconds since epoch that this block was included.",
-        ),
-        parentHash: bytes32Zod.describe(
-            "The hash of the previous block in the blockchain. The genesis block has the parentHash of zero.",
-        ),
-        parentBeaconBlockRoot: bytes32Zod
-            .optional()
+        /** Block Base  */
+        hash: bytes32Zod.describe("Block hash or `null` if pending"),
+        number: quantityEncodeZod.describe("Block number or `null` if pending "),
+        parentHash: bytes32Zod.describe("Parent block hash"),
+        nonce: bytesZod.describe("Proof-of-work hash or `null` if pending"),
+        difficulty: quantityEncodeZod.describe("Difficulty for this block"),
+        totalDifficulty: quantityEncodeZod
             .nullable()
-            .describe(
-                "The hash tree root of the parent beacon block for the given execution block. See https://eips.ethereum.org/EIPS/eip-4788",
-            ),
-        nonce: bytesZod.describe("A random sequence provided during the mining process for proof-of-work networks."),
-        difficulty: bigIntLikeZod.describe(
-            "For proof-of-work networks, the difficulty target is used to adjust the difficulty in mining to ensure a expected block rate.",
-        ),
-        gasLimit: bigIntLikeZod.describe("The maximum amount of gas a block can consume."),
-        gasUsed: bigIntLikeZod.describe("The amount of gas a block consumed."),
-        blobGasUsed: bigIntLikeZod
-            .optional()
-            .nullable()
-            .describe(
-                "The total amount of BLOb gas consumed by transactions within the block. See https://eips.ethereum.org/EIPS/eip-4844.",
-            ),
-        excessBlobGas: bigIntLikeZod
-            .optional()
-            .nullable()
-            .describe(
-                " The running total of BLOb gas consumed in excess of the target prior to the block. See https://eips.ethereum.org/EIPS/eip-4844.",
-            ),
-        miner: addressZod.describe("The miner (or author) of a block."),
-        extraData: bytesZod.describe("Additional data the miner choose to include."),
-        baseFeePerGas: bigIntLikeZod
+            .default(null)
+            .describe("Total difficulty of the chain until this block"),
+        miner: addressZod.describe("Address that received this block’s mining rewards"),
+        extraData: bytesZod.describe('"Extra data" field of this block'),
+        mixHash: bytes32Zod.describe("Unique identifier for the block."),
+        size: quantityEncodeZod.describe("Size of this block in bytes"),
+        stateRoot: bytes32Zod.describe("Root of this block’s final state trie"),
+        timestamp: quantityEncodeZod.describe("Unix timestamp of when this block was collated"),
+        /** Uncles */
+        uncles: z.array(bytes32Zod).describe("List of uncle hashes"),
+        sha3Uncles: bytes32Zod.describe("SHA3 of the uncles data in this block"),
+        /** Withdrawals */
+        //TODO: Add Withdrawal zod
+        withdrawals: z.array(z.any()).optional().describe("List of withdrawal objects"),
+        withdrawalsRoot: bytes32Zod.optional().describe("Root of the this block’s withdrawals trie"),
+        /** Gas & Fee Values */
+        gasLimit: quantityEncodeZod.describe("Maximum gas allowed in this block"),
+        gasUsed: quantityEncodeZod.describe("Total used gas by all transactions in this block"),
+        baseFeePerGas: quantityEncodeZod
             .nullable()
             .default(null)
             .describe("The protocol-defined base fee per gas in an https://eips.ethereum.org/EIPS/eip-1559 block."),
-        stateRoot: bytes32Zod
-            .nullable()
-            .default(null)
-            .describe("The root hash for the global state after applying changes in this block."),
-        receiptsRoot: bytes32Zod.nullable().default(null).describe("The hash of the transaction receipts trie."),
-        transactions: z
-            .union([z.array(z.string()), z.array(transactionResponseZod)])
-            .describe("The list of transactions in the block."),
+        blobGasUsed: quantityEncodeZod.default("0x0").describe("Total used blob gas by all transactions in this block"),
+        excessBlobGas: quantityEncodeZod.default("0x0").describe("Excess blob gas"),
+        /** Receipts */
+        receiptsRoot: bytes32Zod.describe("Root of the this block’s receipts trie"),
+        sealFields: z.array(bytes32Zod).default([]),
+        /** Logs */
+        logsBloom: bytesZod.describe("Logs bloom filter or `null` if pending"),
+        /** Transactions */
+        transactions: z.array(bytes32Zod).describe("The list of transactions in the block."),
+        transactionsRoot: bytes32Zod.describe("Root of this block’s transaction trie"),
     })
-    .passthrough()
-    .describe("a **Block** encodes the minimal required properties for a formatted block.");
-expectType<TypeOf<Block, z.output<typeof blockZod>>>(true);
-
-export const blockFromRpcZod = blockZod.extend({
-    number: numberLikeToHexZod.describe("The block number."),
-    timestamp: numberLikeToHexZod.describe(
-        "The timestamp for this block, which is the number of seconds since epoch that this block was included.",
-    ),
-    difficulty: bigIntLikeToHexZod.describe(
-        "For proof-of-work networks, the difficulty target is used to adjust the difficulty in mining to ensure a expected block rate.",
-    ),
-    gasLimit: bigIntLikeToHexZod.describe("The maximum amount of gas a block can consume."),
-    gasUsed: bigIntLikeToHexZod.describe("The amount of gas a block consumed."),
-    blobGasUsed: bigIntLikeToHexZod
-        .optional()
-        .nullable()
-        .describe(
-            "The total amount of BLOb gas consumed by transactions within the block. See https://eips.ethereum.org/EIPS/eip-4844.",
-        ),
-    excessBlobGas: bigIntLikeToHexZod
-        .optional()
-        .nullable()
-        .describe(
-            " The running total of BLOb gas consumed in excess of the target prior to the block. See https://eips.ethereum.org/EIPS/eip-4844.",
-        ),
-    baseFeePerGas: bigIntLikeToHexZod
-        .nullable()
-        .default(null)
-        .describe("The protocol-defined base fee per gas in an https://eips.ethereum.org/EIPS/eip-1559 block."),
-    transactions: z
-        .union([z.array(z.string()), z.array(transactionResponseFromRpcZod)])
-        .describe("The list of transactions in the block."),
-});
-expectType<TypeOf<BlockFromRpc, z.output<typeof blockFromRpcZod>>>(true);
+    .describe("An EVM Transaction, Quantity/Index hex/number");
 
 /**
- *  a **Block** encodes the minimal required properties for a
- *  formatted block.
+ * Zod validator encoding BlockEncoded => BlockDecoded
  */
-export interface Block {
-    /**
-     *  The block hash.
-     */
-    hash: string;
-
-    /**
-     *  The block number.
-     */
-    number: number;
-
-    /**
-     *  The timestamp for this block, which is the number of seconds
-     *  since epoch that this block was included.
-     */
-    timestamp: number;
-
-    /**
-     *  The hash of the previous block in the blockchain. The genesis block
-     *  has the parentHash of the [[ZeroHash.
-     */
-    parentHash: string;
-
-    /**
-     *  The hash tree root of the parent beacon block for the given
-     *  execution block. See https://eips.ethereum.org/EIPS/eip-4788.
-     */
-    parentBeaconBlockRoot?: null | string;
-
-    /**
-     *  A random sequence provided during the mining process for
-     *  proof-of-work networks.
-     */
-    nonce: string;
-
-    /**
-     *  For proof-of-work networks, the difficulty target is used to
-     *  adjust the difficulty in mining to ensure a expected block rate.
-     */
-    difficulty: bigint;
-
-    /**
-     *  The maximum amount of gas a block can consume.
-     */
-    gasLimit: bigint;
-
-    /**
-     *  The amount of gas a block consumed.
-     */
-    gasUsed: bigint;
-
-    /**
-     *  The total amount of BLOb gas consumed by transactions within
-     *  the block. See https://eips.ethereum.org/EIPS/eip4844].
-     */
-    blobGasUsed?: null | bigint;
-
-    /**
-     *  The running total of BLOb gas consumed in excess of the target
-     *  prior to the block. See https://eips.ethereum.org/EIPS/eip-4844.
-     */
-    excessBlobGas?: null | bigint;
-
-    /**
-     *  The miner (or author) of a block.
-     */
-    miner: string;
-
-    /**
-     *  Additional data the miner choose to include.
-     */
-    extraData: string;
-
-    /**
-     *  The protocol-defined base fee per gas in an https://eips.ethereum.org/EIPS/eip-1559
-     *  block.
-     */
-    baseFeePerGas: null | bigint;
-
-    /**
-     *  The root hash for the global state after applying changes
-     *  in this block.
-     */
-    stateRoot: null | string;
-
-    /**
-     *  The hash of the transaction receipts trie.
-     */
-    receiptsRoot: null | string;
-
-    /**
-     *  The list of transactions in the block.
-     */
-    transactions: string[] | TransactionResponse[];
-}
-
-/** JSON-RPC encoded response */
-export type BlockFromRpc = Omit<NumberBigintAsHex<Block>, "transactions"> & {
-    transactions: string[] | TransactionResponseFromRpc[];
-};
+export const blockDecodeZod = z
+    .object({
+        /** Block Base  */
+        hash: bytes32Zod.describe("Block hash or `null` if pending"),
+        number: quantityDecodeZod.describe("Block number or `null` if pending "),
+        parentHash: bytes32Zod.describe("Parent block hash"),
+        nonce: bytesZod.describe("Proof-of-work hash or `null` if pending"),
+        difficulty: quantityDecodeZod.describe("Difficulty for this block"),
+        totalDifficulty: quantityDecodeZod
+            .nullable()
+            .default(null)
+            .describe("Total difficulty of the chain until this block"),
+        miner: addressZod.describe("Address that received this block’s mining rewards"),
+        extraData: bytesZod.describe('"Extra data" field of this block'),
+        mixHash: bytes32Zod.describe("Unique identifier for the block."),
+        size: quantityDecodeZod.describe("Size of this block in bytes"),
+        stateRoot: bytes32Zod.describe("Root of this block’s final state trie"),
+        timestamp: quantityDecodeZod.describe("Unix timestamp of when this block was collated"),
+        /** Uncles */
+        uncles: z.array(bytes32Zod).describe("List of uncle hashes"),
+        sha3Uncles: bytes32Zod.describe("SHA3 of the uncles data in this block"),
+        /** Withdrawals */
+        //TODO: Add Withdrawal zod
+        withdrawals: z.array(z.any()).optional().describe("List of withdrawal objects"),
+        withdrawalsRoot: bytes32Zod.optional().describe("Root of the this block’s withdrawals trie"),
+        /** Gas & Fee Values */
+        gasLimit: quantityDecodeZod.describe("Maximum gas allowed in this block"),
+        gasUsed: quantityDecodeZod.describe("Total used gas by all transactions in this block"),
+        baseFeePerGas: quantityDecodeZod
+            .nullable()
+            .default(null)
+            .describe("The protocol-defined base fee per gas in an https://eips.ethereum.org/EIPS/eip-1559 block."),
+        blobGasUsed: quantityDecodeZod.default(0n).describe("Total used blob gas by all transactions in this block"),
+        excessBlobGas: quantityDecodeZod.default(0n).describe("Excess blob gas"),
+        /** Receipts */
+        receiptsRoot: bytes32Zod.describe("Root of the this block’s receipts trie"),
+        sealFields: z.array(bytes32Zod).default([]),
+        /** Logs */
+        logsBloom: bytesZod.describe("Logs bloom filter or `null` if pending"),
+        /** Transactions */
+        transactions: z.array(bytes32Zod).describe("The list of transactions in the block."),
+        transactionsRoot: bytes32Zod.describe("Root of this block’s transaction trie"),
+    })
+    .describe("An EVM Transaction, Quantity/Index bigint/number");

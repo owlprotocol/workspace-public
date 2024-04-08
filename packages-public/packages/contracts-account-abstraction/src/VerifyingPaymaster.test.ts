@@ -45,7 +45,7 @@ describe("VerifyingPaymaster.test.ts", function () {
     let verifyingPaymaster: Address;
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC } });
+        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
         transport = custom(provider);
         publicClient = createPublicClient({
             chain: localhost,

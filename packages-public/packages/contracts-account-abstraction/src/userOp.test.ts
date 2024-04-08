@@ -57,7 +57,7 @@ describe("userOp.test.ts", function () {
     };
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC } });
+        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
         transport = custom(provider);
         publicClient = createPublicClient({
             chain: localhost,

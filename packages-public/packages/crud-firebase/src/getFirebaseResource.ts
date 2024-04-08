@@ -21,6 +21,7 @@ import type {
     DocumentSnapshot,
     Firestore,
     FirestoreSDK,
+    QueryDocumentSnapshot,
     WriteBatch,
     commitWriteBatchType,
     deleteDocTransactionType,
@@ -84,6 +85,7 @@ export type getFirebaseResourceFn<SDK extends FirestoreSDK> = <
 
 /**
  * Factory function for generating Firebase Query Resource.
+ * For docs/comments on specific functions, refer to the `FirebaseResource` interface comments
  * @template SDK Firestore sdk type ("admin" or "web")
  * @param sdk generic sdk functions
  * @returns getFirebaseResource function that works with relevant sdk
@@ -204,11 +206,11 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             getFirebaseQueryResource: getFirebaseQueryResourceFn<SDK>;
         };
 
-        //TODO: Cache should use full path?
-        const cache: CacheWithDelete<string, Resource> | undefined = options?.lruCacheSize
-            ? //@ts-expect-error
-              new LRUMapWithDelete(options.lruCacheSize)
-            : undefined;
+        const cache: CacheWithDelete<string, QueryDocumentSnapshot<FirestoreSDK, ResourceDataEncoded>> | undefined =
+            options?.lruCacheSize
+                ? //@ts-expect-error
+                  new LRUMapWithDelete(options.lruCacheSize)
+                : undefined;
 
         const { encodeId, encodeParentDocId, decodeId, decodeParentDocId } = validators;
 
@@ -250,8 +252,6 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
                 ? undefined
                 : (collection as CollectionReference<SDK, ResourceDataEncoded>);
 
-        function getColRef(): CollectionReference<SDK, ResourceDataEncoded>;
-        function getColRef(collectionId: CollectionId): CollectionReference<SDK, ResourceDataEncoded>;
         function getColRef(collectionId?: CollectionId): CollectionReference<SDK, ResourceDataEncoded> {
             if (collectionRef) {
                 return collectionRef;
@@ -294,64 +294,81 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             return f.getDocRef(getColRef(id as unknown as CollectionId), encodeId(id));
         }
 
-        /**
-         * Get doc by id, no security checks
-         * @param id
-         * @returns doc by id
-         */
         async function get(id: ResourceIdFull): Promise<Resource> {
             const ref = getDocRef(id);
             if (cache) {
                 //Check LRU cache
-                const cacheResult = cache.get(ref.id);
-                if (cacheResult) return cacheResult;
+                const cacheResult = cache.get(ref.path);
+                if (cacheResult) return decodeRefSnapshot(cacheResult);
             }
 
             const refSnapshot = await f.getDoc(ref);
-
             if (!f.exists(refSnapshot)) {
                 throw new Error(`${ref.path} not found`);
             }
+            cache?.set(ref.path, refSnapshot);
 
-            const result = decodeRefSnapshot(refSnapshot);
-            cache?.set(ref.id, result);
-            return result;
+            return decodeRefSnapshot(refSnapshot);
         }
 
-        /**
-         * Get doc by id, no security checks
-         * @param id
-         * @returns doc by id
-         */
+        async function getEncoded(id: ResourceIdFull): Promise<ResourceDataEncoded> {
+            //TODO: Fix cache
+            const ref = getDocRef(id);
+            if (cache) {
+                //Check LRU cache
+                const cacheResult = cache.get(ref.path);
+                if (cacheResult) return cacheResult.data();
+            }
+
+            const refSnapshot = await f.getDoc(ref);
+            if (!f.exists(refSnapshot)) {
+                throw new Error(`${ref.path} not found`);
+            }
+            cache?.set(ref.path, refSnapshot);
+
+            return refSnapshot.data();
+        }
+
         async function getOrNull(id: ResourceIdFull): Promise<Resource | null> {
             const ref = getDocRef(id);
             if (cache) {
                 //Check LRU cache
-                const cacheResult = cache.get(ref.id);
-                if (cacheResult) return cacheResult;
+                const cacheResult = cache.get(ref.path);
+                if (cacheResult) return decodeRefSnapshot(cacheResult);
             }
 
             const refSnapshot = await f.getDoc(ref);
-
             if (!f.exists(refSnapshot)) {
                 return null;
             }
+            cache?.set(ref.path, refSnapshot);
 
-            const result = decodeRefSnapshot(refSnapshot);
-            cache?.set(ref.id, result);
-            return result;
+            return decodeRefSnapshot(refSnapshot);
         }
 
-        /**
-         * Get docs by id, no security checks
-         * @param ids
-         * @returns docs by id
-         * //TODO: Is this the fastest way? https://stackoverflow.com/questions/59572943/is-there-a-way-to-batch-read-firebase-documents
-         */
+        async function getOrNullEncoded(id: ResourceIdFull): Promise<ResourceDataEncoded | null> {
+            const ref = getDocRef(id);
+            if (cache) {
+                //Check LRU cache
+                const cacheResult = cache.get(ref.path);
+                if (cacheResult) return cacheResult.data();
+            }
+
+            const refSnapshot = await f.getDoc(ref);
+            if (!f.exists(refSnapshot)) {
+                return null;
+            }
+            cache?.set(ref.path, refSnapshot);
+
+            return refSnapshot.data();
+        }
+
         async function getBatch(ids: ResourceIdFull[]): Promise<(Resource | null)[]> {
+            //TODO: Implement caching?
             const refSnapshots: DocumentSnapshot<SDK, ResourceDataEncoded>[] = await f.runTransaction(
                 firestore,
                 async (transaction) => {
+                    //TODO: Is this the fastest way? https://stackoverflow.com/questions/59572943/is-there-a-way-to-batch-read-firebase-documents
                     //TODO: Promises in tx?
                     const operations = ids.map((id) => {
                         const ref = getDocRef(id);
@@ -367,11 +384,27 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             });
         }
 
-        /**
-         * Set doc, returns id, no security checks
-         * @param item (id optional)
-         * @returns id (parameter or default autogenerated with uuidv4())
-         */
+        async function getBatchEncoded(ids: ResourceIdFull[]): Promise<(ResourceDataEncoded | null)[]> {
+            //TODO: Implement caching?
+            const refSnapshots: DocumentSnapshot<SDK, ResourceDataEncoded>[] = await f.runTransaction(
+                firestore,
+                async (transaction) => {
+                    //TODO: Is this the fastest way? https://stackoverflow.com/questions/59572943/is-there-a-way-to-batch-read-firebase-documents
+                    //TODO: Promises in tx?
+                    const operations = ids.map((id) => {
+                        const ref = getDocRef(id);
+                        return f.getDocTransaction(transaction, ref);
+                    });
+
+                    return await Promise.all(operations);
+                },
+            );
+
+            return refSnapshots.map((refSnapshot) => {
+                return f.exists(refSnapshot) ? refSnapshot.data() : null;
+            });
+        }
+
         async function set(
             item: Prettify<AsEmptyRecord<CollectionId> & ResourceIdPartial & ResourceDataInput>,
         ): Promise<string>;
@@ -390,7 +423,7 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
 
             if (cache) {
                 //Purge LRU cache
-                cache.delete(ref.id);
+                cache.delete(ref.path);
             }
 
             if (!options) {
@@ -408,11 +441,6 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             return set(item, { merge: true });
         }
 
-        /**
-         * Set docs as a transaction (max 500 writes), no security checks
-         * @param items (all with ids or none with ids)
-         * @returns ids (parameter or default autogenerated with uuidv4())
-         */
         async function setBatch(
             items: Prettify<AsEmptyRecord<CollectionId> & ResourceIdPartial & ResourceDataInput>[],
         ): Promise<string[]>;
@@ -431,7 +459,7 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
 
             if (cache) {
                 //Purge LRU cache
-                refs.map((ref) => cache.delete(ref.id));
+                refs.map((ref) => cache.delete(ref.path));
             }
 
             //Create batch, reduce over update operations
@@ -456,18 +484,12 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             return setBatch(items, { merge: true });
         }
 
-        /**
-         * Get doc or create new one, no security checks
-         * @param id
-         * @param initialData
-         * @returns doc or initialValue
-         */
         async function getOrCreate(id: ResourceIdFull, initialData: ResourceDataInput): Promise<Resource> {
             const ref = getDocRef(id);
             if (cache) {
                 //Check LRU cache
-                const cacheResult = cache.get(ref.id);
-                if (cacheResult) return cacheResult;
+                const cacheResult = cache.get(ref.path);
+                if (cacheResult) return decodeRefSnapshot(cacheResult);
             }
 
             const initialDataEncoded = encodeData(initialData);
@@ -495,14 +517,6 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             return data;
         }
 
-        /**
-         * Get first doc that matches filter or create new one
-         * WARNING: NOT executed as transaction (only get supported in transaction)
-         * @param filter query filter (included in initialData)
-         * @param initialData initialData (write if query returns null)
-         * @param options orderBy, order
-         * @returns doc or initialValue
-         */
         async function getWhereFirstOrCreate(
             filter: ResourceFilter,
             initialData: Prettify<AsEmptyRecord<CollectionId> & ResourceIdPartial & ResourceDataInput>,
@@ -525,31 +539,21 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             return existing;
         }
 
-        /**
-         * Update existing doc, no security checks
-         * @param item
-         * @returns
-         */
         async function update(item: Prettify<ResourceIdFull & Partial<ResourceDataInput>>): Promise<void> {
             const ref = getDocRef(item as ResourceIdFull);
             if (cache) {
                 //Purge LRU cache
-                cache.delete(ref.id);
+                cache.delete(ref.path);
             }
 
             return f.updateDoc(ref, getFirestoreUpdateData(encodeDataPartial(item)) as UpdateData<ResourceDataEncoded>);
         }
 
-        /**
-         * Update existing docs as a transaction (max 500 writes), no security checks
-         * @param items
-         * @returns
-         */
         async function updateBatch(items: Prettify<ResourceIdFull & Partial<ResourceDataInput>>[]): Promise<void> {
             const refs = (items as ResourceIdFull[]).map(getDocRef);
             if (cache) {
                 //Purge LRU cache
-                refs.map((ref) => cache.delete(ref.id));
+                refs.map((ref) => cache.delete(ref.path));
             }
 
             //Create batch, reduce over update operations
@@ -564,29 +568,21 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             return f.commitWriteBatch(batch);
         }
 
-        /**
-         * Delete doc, no security checks
-         * @param id
-         * @returns
-         */
         async function deleteById(id: ResourceIdFull): Promise<void> {
             const ref = getDocRef(id);
             if (cache) {
                 //Purge LRU cache
-                cache.delete(ref.id);
+                cache.delete(ref.path);
             }
 
             return f.deleteDoc(ref);
         }
 
-        /**
-         * Delete docs as transaction (max 500 writes), no security checks
-         */
         async function deleteBatch(ids: ResourceIdFull[]): Promise<void> {
             const refs = ids.map(getDocRef);
             if (cache) {
                 //Purge LRU cache
-                refs.map((ref) => cache.delete(ref.id));
+                refs.map((ref) => cache.delete(ref.path));
             }
 
             //Create batch, reduce over delete operations
@@ -597,17 +593,12 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             return f.commitWriteBatch(batch);
         }
 
-        /**
-         * Delete all docs, no security checks
-         */
-        async function deleteAll(collectionId: CollectionId): Promise<void>;
-        async function deleteAll(): Promise<void>;
         async function deleteAll(collectionId?: CollectionId): Promise<void> {
             return f.runTransaction(firestore, async (transaction) => {
                 const snapshot = await f.getDocs(getColRef(collectionId!));
                 if (cache) {
                     //Purge LRU cache
-                    snapshot.docs.map((d) => cache.delete(d.id));
+                    snapshot.docs.map((d) => cache.delete(d.ref.path));
                 }
 
                 const operations = snapshot.docs.map((doc) => {
@@ -618,17 +609,11 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             });
         }
 
-        /**
-         * Increment string value, no security checks
-         * @param id
-         * @param path key or nested key
-         * @param value
-         */
         async function incrementStr(id: ResourceIdFull, path: string, value: BigNumberish): Promise<void> {
             const ref = getDocRef(id);
             if (cache) {
                 //Purge LRU cache
-                cache.delete(ref.id);
+                cache.delete(ref.path);
             }
 
             return f.runTransaction(firestore, async (transaction) => {
@@ -648,27 +633,15 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             }) as any;
         }
 
-        /**
-         * Decrement string value
-         * @param id
-         * @param path key or nested key
-         * @param value
-         */
         async function decrementStr(id: ResourceIdFull, path: string, value: BigNumberish): Promise<void> {
             return incrementStr(id, path, -BigInt(value));
         }
 
-        /**
-         * Increment number value, no security checks
-         * @param id
-         * @param path key or nested key
-         * @param value
-         */
         async function incrementNumber(id: ResourceIdFull, path: string, value: number): Promise<void> {
             const ref = getDocRef(id);
             if (cache) {
                 //Purge LRU cache
-                cache.delete(ref.id);
+                cache.delete(ref.path);
             }
 
             return f.runTransaction(firestore, async (transaction) => {
@@ -686,12 +659,6 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             });
         }
 
-        /**
-         * Decrement number value
-         * @param id
-         * @param path key or nested key
-         * @param value
-         */
         async function decrementNumber(id: ResourceIdFull, path: string, value: number): Promise<void> {
             return incrementNumber(id, path, value * -1);
         }
@@ -701,17 +668,16 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             ...validators,
             ...read,
             //other
-            collection: getColRef as unknown as (
-                ...parameters: TypeEqual<CollectionFn, CollectionReference<SDK, ResourceDataEncoded>> extends true
-                    ? []
-                    : [collectionId: CollectionId]
-            ) => CollectionReference<SDK, ResourceDataEncoded>,
+            collection: getColRef,
             doc: getDocRef,
             cache,
             //queries
             get,
+            getEncoded,
             getOrNull,
+            getOrNullEncoded,
             getBatch,
+            getBatchEncoded,
             set,
             upsert,
             setBatch,
@@ -722,11 +688,7 @@ export function getFirebaseResourceForSdk<SDK extends FirestoreSDK = FirestoreSD
             updateBatch,
             delete: deleteById,
             deleteBatch,
-            deleteAll: deleteAll as unknown as (
-                ...parameters: TypeEqual<CollectionFn, CollectionReference<SDK, ResourceDataEncoded>> extends true
-                    ? []
-                    : [collectionId: CollectionId]
-            ) => Promise<void>,
+            deleteAll,
             incrementStr,
             decrementStr,
             incrementNumber,

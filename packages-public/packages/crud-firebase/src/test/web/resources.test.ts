@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach } from "vitest";
-import { itemResource, itemCompositeResource, itemSubcollectionResource, itemResourceCached } from "./resources.js";
+import { itemResource, itemCompositeResource, itemChildResource, itemResourceCached } from "./resources.js";
 import { getTestItem, getTestItemComposite } from "../data.js";
 import { Item, ItemComposite } from "../models/index.js";
 import { deleteEmulatorData } from "../../web/config.js";
@@ -26,7 +26,8 @@ describe("web/resource.test.ts", async () => {
             const itemGet1 = await itemResourceCached.get({ id: testItem.id });
             expect(itemGet1).toStrictEqual(testItem);
             //Check cache populated
-            expect(itemResourceCached.cache!.has(testItem.id)).toBe(true);
+            const testItemPath = itemResourceCached.doc({ id: testItem.id }).path;
+            expect(itemResourceCached.cache!.has(testItemPath)).toBe(true);
         });
 
         test("set/get - cache purged", async () => {
@@ -36,14 +37,15 @@ describe("web/resource.test.ts", async () => {
             const itemGet1 = await itemResourceCached.get({ id: testItem.id });
             expect(itemGet1).toStrictEqual(testItem);
             //Check cache populated
-            expect(itemResourceCached.cache!.has(testItem.id)).toBe(true);
+            const testItemPath = itemResourceCached.doc({ id: testItem.id }).path;
+            expect(itemResourceCached.cache!.has(testItemPath)).toBe(true);
 
             //Update testItem using non-cached instance
             const testItem2 = { ...testItem, name: "jane" };
             await itemResourceCached.set(testItem2);
 
             //Cache still populated
-            expect(itemResourceCached.cache!.has(testItem.id)).toBe(false);
+            expect(itemResourceCached.cache!.has(testItemPath)).toBe(false);
             //Cache-stale, should return original item
             const itemGet2 = await itemResourceCached.get({ id: testItem.id });
             expect(itemGet2).toStrictEqual(testItem2);
@@ -55,15 +57,17 @@ describe("web/resource.test.ts", async () => {
             //Get Item - populate cache
             const itemGet1 = await itemResourceCached.get({ id: testItem.id });
             expect(itemGet1).toStrictEqual(testItem);
+
             //Check cache populated
-            expect(itemResourceCached.cache!.has(testItem.id)).toBe(true);
+            const testItemPath = itemResourceCached.doc({ id: testItem.id }).path;
+            expect(itemResourceCached.cache!.has(testItemPath)).toBe(true);
 
             //Update testItem using non-cached instance
             const testItem2 = { ...testItem, name: "jane" };
             await itemResource.set(testItem2);
 
             //Cache still populated
-            expect(itemResourceCached.cache!.has(testItem.id)).toBe(true);
+            expect(itemResourceCached.cache!.has(testItemPath)).toBe(true);
             //Cache-stale, should return original item
             const itemGet2 = await itemResourceCached.get({ id: testItem.id });
             expect(itemGet2).toStrictEqual(testItem);
@@ -74,14 +78,17 @@ describe("web/resource.test.ts", async () => {
                 const item = getTestItem(1000 + i);
                 await itemResourceCached.set(item);
                 await itemResourceCached.get({ id: item.id });
-                expect(itemResourceCached.cache!.has(item.id)).toBe(true);
+                const itemPath = itemResourceCached.doc({ id: item.id }).path;
+                expect(itemResourceCached.cache!.has(itemPath)).toBe(true);
             }
 
             const item0 = getTestItem(1000 + 0);
             const item1 = getTestItem(1000 + 1);
             //LRU capacity reached item0 no longer in cache
-            expect(itemResourceCached.cache!.has(item0.id)).toBe(false);
-            expect(itemResourceCached.cache!.has(item1.id)).toBe(true);
+            const item0Path = itemResourceCached.doc({ id: item0.id }).path;
+            const item1Path = itemResourceCached.doc({ id: item1.id }).path;
+            expect(itemResourceCached.cache!.has(item0Path)).toBe(false);
+            expect(itemResourceCached.cache!.has(item1Path)).toBe(true);
 
             //Get works regardless
             const itemGet0 = await itemResourceCached.get({ id: item0.id });
@@ -95,19 +102,19 @@ describe("web/resource.test.ts", async () => {
         let testItemComposite: ItemComposite;
 
         beforeEach(async () => {
-            await itemSubcollectionResource.deleteAll({ id: "100000" });
+            await itemChildResource.deleteAll({ id: "100000" });
             testItemComposite = getTestItemComposite(id);
         });
 
         test("set/get", async () => {
-            await itemSubcollectionResource.set({ ...testItemComposite, id: "100000" });
+            await itemChildResource.set({ ...testItemComposite, id: "100000" });
 
-            const itemByIdComponents = await itemSubcollectionResource.get({
+            const itemByIdComponents = await itemChildResource.get({
                 id: "100000",
                 idPrefix: testItemComposite.idPrefix,
                 idSuffix: testItemComposite.idSuffix,
             });
-            expect(itemByIdComponents).toStrictEqual(testItemComposite);
+            expect(itemByIdComponents).toStrictEqual({ ...testItemComposite, id: "100000" });
         });
     });
 

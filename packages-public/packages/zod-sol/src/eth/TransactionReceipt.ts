@@ -1,209 +1,176 @@
-//////////////////////
-// Transaction Receipt
-
 import { z } from "zod";
-import { TypeOf, expectType } from "ts-expect";
-import { Log, logZod, logFromRpcZod, LogFromRpc } from "./Log.js";
-import { numberLikeZod, bigIntLikeZod, bigIntLikeToHexZod, numberLikeToHexZod } from "./math.js";
-import { NumberBigintAsHex } from "../utils/NumberBigintAsString.js";
+import { TransactionReceipt as TransactionReceiptViem } from "viem";
+import { quantityEncodeZod, indexEncodeZod, quantityDecodeZod, indexDecodeZod } from "./math.js";
+import {
+    TransactionTypeEncoded,
+    TransactionTypeInput,
+    transactionTypeDecodeZod,
+    transactionTypeEncodeZod,
+} from "./Transaction.js";
 import { addressZod } from "../solidity/address.js";
 import { bytes32Zod, bytesZod } from "../solidity/bytes.js";
 
-export const transactionReceiptZod = z
+/***** Transaction Status *****/
+/**
+ * Transaction Status, hex & string literal
+ */
+export type TransactionStatusInput = "0x1" | "success" | "0x0" | "reverted";
+/**
+ * Transaction Status, string literal
+ */
+export type TransactionStatusEncoded = "0x1" | "0x0";
+/**
+ * Transaction Status, string literal
+ */
+export type TransactionStatusDecoded = "success" | "reverted";
+
+/**
+ * Transaction status zod, supports both hex & string literal
+ */
+export const transactionStatusZod = z
+    .union([z.literal("0x1"), z.literal("success"), z.literal("0x0"), z.literal("reverted")])
+    .describe("`success|0x1` if this transaction was successful or `reverted|0x0` if it failed");
+/**
+ * Encode transaction status to `"0x1" | "0x0"`
+ */
+export const transactionStatusEncodeZod = transactionStatusZod.transform((type) => {
+    if (type === "success") return "0x1";
+    if (type === "reverted") return "0x0";
+    return type;
+}) as unknown as z.ZodLiteral<TransactionStatusEncoded>;
+/**
+ * Decode transaction status to `"success" | "reverted"`
+ */
+export const transactionStatusDecodeZod = transactionStatusZod.transform((type) => {
+    if (type === "0x1") return "success";
+    if (type === "0x0") return "reverted";
+    return type;
+}) as unknown as z.ZodLiteral<TransactionStatusDecoded>;
+
+/***** Transaction Receipt *****/
+/**
+ * Omit these fields from viem model
+ */
+type TransactionReceiptOmitFields = "logs";
+
+/**
+ * Transaction receipt with mixed types
+ * Matches both encoded RPC & decoded TS types.
+ */
+export type TransactionReceiptInput = Omit<
+    TransactionReceiptViem<
+        `0x${string}` | number | bigint,
+        `0x${string}` | number,
+        TransactionStatusInput,
+        TransactionTypeInput
+    >,
+    TransactionReceiptOmitFields
+>;
+
+/**
+ * Transaction receipt with encoded types
+ * Bigint converted to Hex to support Firebase.
+ */
+export type TransactionReceiptEncoded = Omit<
+    TransactionReceiptViem<`0x${string}`, `0x${string}`, TransactionStatusEncoded, TransactionTypeEncoded>,
+    TransactionReceiptOmitFields
+>;
+
+/**
+ * Transaction receipt with decoded types
+ * Bigint decoded from Hex stored on Firebase.
+ */
+export type TransactionReceiptDecoded = Omit<
+    TransactionReceiptViem<bigint, number, TransactionStatusDecoded, TransactionTypeEncoded>,
+    TransactionReceiptOmitFields
+>;
+
+/**
+ * Zod validator encoding TransactionReceiptInput => TransactionReceiptEncoded
+ */
+export const transactionReceiptEncodeZod = z
     .object({
-        to: addressZod
-            .nullable()
-            .describe(
-                "The target of the transaction. If ``null``, the ``data`` is initcode and this transaction is a deployment transaction.",
-            ),
-        from: addressZod.describe("The sender of the transaction."),
+        /** Receipt Base  */
+        transactionHash: bytes32Zod.describe("Hash of this transaction"),
+        blockNumber: quantityEncodeZod.describe("Number of block containing this transaction or `null` if pending"),
+        blockHash: bytes32Zod.describe("Hash of block containing this transaction or `null` if pending"),
+        transactionIndex: indexEncodeZod.describe("Index of this transaction in the block or `null` if pending"),
+        from: addressZod.describe("Transaction sender"),
+        to: addressZod.nullable().describe("Transaction recipient or `null` if deploying a contract"),
         contractAddress: addressZod
             .nullable()
             .default(null)
             .describe(
                 "If the transaction was directly deploying a contract, the [[to]] will be null, the ``data`` will be initcode and if successful, this will be the address of the contract deployed.",
             ),
-        hash: bytes32Zod.describe("The transaction hash."),
-        index: numberLikeZod.describe("The transaction index."),
-        blockHash: bytes32Zod.describe("The block hash of the block that included this transaction."),
-        blockNumber: numberLikeZod.describe("The block number of the block that included this transaction."),
-        logsBloom: bytesZod.describe("The bloom filter for the logs emitted during execution of this transaction."),
-        logs: z.array(logZod).describe("The logs emitted during the execution of this transaction."),
-        gasUsed: bigIntLikeZod.describe("The amount of gas consumed executing this transaction."),
-        blobGasUsed: bigIntLikeZod
+        type: transactionTypeEncodeZod,
+        status: transactionStatusEncodeZod,
+        root: bytesZod
             .optional()
-            .nullable()
-            .describe("The amount of BLOb gas used. See https://eips.ethereum.org/EIPS/eip-4844."),
-        cumulativeGasUsed: bigIntLikeZod.describe(
-            "The total amount of gas consumed during the entire block up to and including this transaction.",
+            .describe(
+                "The post-transaction state root. Only specified for transactions included before the Byzantium upgrade.",
+            ),
+        /** Gas & Fee Values */
+        gasUsed: quantityEncodeZod.describe("The amount of gas consumed executing this transaction."),
+        cumulativeGasUsed: quantityEncodeZod.describe("Gas used by this and all preceding transactions in this block"),
+        effectiveGasPrice: quantityEncodeZod.describe(
+            "Pre-London, it is equal to the transaction's gasPrice. Post-London, it is equal to the actual gas price paid for inclusion.",
         ),
-        gasPrice: bigIntLikeZod
+        blobGasUsed: quantityEncodeZod
             .optional()
             .nullable()
-            .describe("The actual gas price per gas charged for this transaction."),
-        blobGasPrice: bigIntLikeZod
+            .describe("The amount of blob gas used. Only specified for blob transactions as defined by EIP-4844. "),
+        blobGasPrice: quantityEncodeZod
             .optional()
-            .nullable()
-            .describe("The actual BLOb gas price that was charged. See https://eips.ethereum.org/EIPS/eip-4844."),
-        effectiveGasPrice: bigIntLikeZod
-            .optional()
-            .nullable()
-            .describe("The actual gas price per gas charged for this transaction."),
-        type: numberLikeZod.describe("The https://eips.ethereum.org/EIPS/eip-2718 transaction type."),
-        status: numberLikeZod
+            .describe(
+                "The actual value per gas deducted from the sender's account for blob gas. Only specified for blob transactions as defined by EIP-4844. ",
+            ),
+        /** Logs */
+        logsBloom: bytesZod.describe("Logs bloom filter"),
+    })
+    .describe("An EVM Transaction, Quantity/Index hex/number");
+
+/**
+ * Zod validator encoding TransactionReceiptEncoded => TransactionReceiptDecoded
+ */
+export const transactionReceiptDecodeZod = z
+    .object({
+        /** Receipt Base  */
+        transactionHash: bytes32Zod.describe("Hash of this transaction"),
+        blockNumber: quantityDecodeZod.describe("Number of block containing this transaction or `null` if pending"),
+        blockHash: bytes32Zod.describe("Hash of block containing this transaction or `null` if pending"),
+        transactionIndex: indexDecodeZod.describe("Index of this transaction in the block or `null` if pending"),
+        from: addressZod.describe("Transaction sender"),
+        to: addressZod.nullable().describe("Transaction recipient or `null` if deploying a contract"),
+        contractAddress: addressZod
             .nullable()
             .default(null)
             .describe(
-                "The status of the transaction execution. If ``1`` then the the transaction returned success, if ``0`` then the transaction was reverted. For pre-byzantium blocks, this is usually null, but some nodes may have backfilled this data.",
+                "If the transaction was directly deploying a contract, the [[to]] will be null, the ``data`` will be initcode and if successful, this will be the address of the contract deployed.",
             ),
+        type: transactionTypeDecodeZod,
+        status: transactionStatusDecodeZod,
         root: bytesZod
-            .nullable()
-            .default(null)
-            .describe("The root of this transaction in a pre-bazatium block. In post-byzantium blocks this is null."),
-    })
-    .passthrough()
-    .describe("a **TransactionReceipt** encodes the minimal required properties for a formatted transaction receipt.");
-expectType<TypeOf<TransactionReceipt, z.output<typeof transactionReceiptZod>>>(true);
-
-export const transactionReceiptFromRpcZod = transactionReceiptZod.extend({
-    index: numberLikeToHexZod.describe("The transaction index."),
-    blockNumber: numberLikeToHexZod.describe("The block number of the block that included this transaction."),
-    logs: z.array(logFromRpcZod).describe("The logs emitted during the execution of this transaction."),
-    gasUsed: bigIntLikeToHexZod.describe("The amount of gas consumed executing this transaction."),
-    blobGasUsed: bigIntLikeToHexZod
-        .optional()
-        .nullable()
-        .describe("The amount of BLOb gas used. See https://eips.ethereum.org/EIPS/eip-4844."),
-    cumulativeGasUsed: bigIntLikeToHexZod.describe(
-        "The total amount of gas consumed during the entire block up to and including this transaction.",
-    ),
-    gasPrice: bigIntLikeToHexZod
-        .optional()
-        .nullable()
-        .describe("The actual gas price per gas charged for this transaction."),
-    blobGasPrice: bigIntLikeToHexZod
-        .optional()
-        .nullable()
-        .describe("The actual BLOb gas price that was charged. See https://eips.ethereum.org/EIPS/eip-4844."),
-    effectiveGasPrice: bigIntLikeToHexZod
-        .optional()
-        .nullable()
-        .describe("The actual gas price per gas charged for this transaction."),
-    type: numberLikeToHexZod.describe("The https://eips.ethereum.org/EIPS/eip-2718 transaction type."),
-    status: numberLikeToHexZod
-        .nullable()
-        .default(null)
-        .describe(
-            "The status of the transaction execution. If ``1`` then the the transaction returned success, if ``0`` then the transaction was reverted. For pre-byzantium blocks, this is usually null, but some nodes may have backfilled this data.",
+            .optional()
+            .describe(
+                "The post-transaction state root. Only specified for transactions included before the Byzantium upgrade.",
+            ),
+        /** Gas & Fee Values */
+        gasUsed: quantityDecodeZod.describe("The amount of gas consumed executing this transaction."),
+        cumulativeGasUsed: quantityDecodeZod.describe("Gas used by this and all preceding transactions in this block"),
+        effectiveGasPrice: quantityDecodeZod.describe(
+            "Pre-London, it is equal to the transaction's gasPrice. Post-London, it is equal to the actual gas price paid for inclusion.",
         ),
-});
-expectType<TypeOf<TransactionReceiptFromRpc, z.output<typeof transactionReceiptFromRpcZod>>>(true);
-
-/**
- *  a **TransactionReceipt** encodes the minimal required properties
- *  for a formatted transaction receipt.
- */
-export interface TransactionReceipt {
-    /**
-     *  The target of the transaction. If null, the transaction was trying
-     *  to deploy a transaction with the ``data`` as the initi=code.
-     */
-    to: null | string;
-
-    /**
-     *  The sender of the transaction.
-     */
-    from: string;
-
-    /**
-     *  If the transaction was directly deploying a contract, the [[to]]
-     *  will be null, the ``data`` will be initcode and if successful, this
-     *  will be the address of the contract deployed.
-     */
-    contractAddress: null | string;
-
-    /**
-     *  The transaction hash.
-     */
-    hash: string;
-
-    /**
-     *  The transaction index.
-     */
-    index: number;
-
-    /**
-     *  The block hash of the block that included this transaction.
-     */
-    blockHash: string;
-
-    /**
-     *  The block number of the block that included this transaction.
-     */
-    blockNumber: number;
-
-    /**
-     *  The bloom filter for the logs emitted during execution of this
-     *  transaction.
-     */
-    logsBloom: string;
-
-    /**
-     *  The logs emitted during the execution of this transaction.
-     */
-    logs: Log[];
-
-    /**
-     *  The amount of gas consumed executing this transaciton.
-     */
-    gasUsed: bigint;
-
-    /**
-     *  The amount of BLOb gas used. See [[link-eip-4844]].
-     */
-    blobGasUsed?: null | bigint;
-
-    /**
-     *  The total amount of gas consumed during the entire block up to
-     *  and including this transaction.
-     */
-    cumulativeGasUsed: bigint;
-
-    /**
-     *  The actual gas price per gas charged for this transaction.
-     */
-    gasPrice?: null | bigint;
-
-    /**
-     *  The actual BLOb gas price that was charged. See [[link-eip-4844]].
-     */
-    blobGasPrice?: null | bigint;
-
-    /**
-     *  The actual gas price per gas charged for this transaction.
-     */
-    effectiveGasPrice?: null | bigint;
-
-    /**
-     *  The [[link-eip-2718]] envelope type.
-     */
-    type: number;
-    //byzantium: boolean;
-
-    /**
-     *  The status of the transaction execution. If ``1`` then the
-     *  the transaction returned success, if ``0`` then the transaction
-     *  was reverted. For pre-byzantium blocks, this is usually null, but
-     *  some nodes may have backfilled this data.
-     */
-    status: null | number;
-
-    /**
-     *  The root of this transaction in a pre-bazatium block. In
-     *  post-byzantium blocks this is null.
-     */
-    root: null | string;
-}
-
-/** JSON-RPC encoded response */
-export type TransactionReceiptFromRpc = Omit<NumberBigintAsHex<TransactionReceipt>, "logs"> & { logs: LogFromRpc[] };
+        blobGasUsed: quantityDecodeZod
+            .optional()
+            .nullable()
+            .describe("The amount of blob gas used. Only specified for blob transactions as defined by EIP-4844. "),
+        blobGasPrice: quantityDecodeZod
+            .optional()
+            .describe(
+                "The actual value per gas deducted from the sender's account for blob gas. Only specified for blob transactions as defined by EIP-4844. ",
+            ),
+        /** Logs */
+        logsBloom: bytesZod.describe("Logs bloom filter"),
+    })
+    .describe("An EVM Transaction, Quantity/Index bigint/number");

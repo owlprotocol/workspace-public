@@ -42,7 +42,7 @@ describe("facets.test.ts", function () {
     let walletClient: WalletClient<CustomTransport, Chain, Account>;
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC } });
+        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
         publicClient = createPublicClient({
             chain: localhost,
             transport: custom(provider),

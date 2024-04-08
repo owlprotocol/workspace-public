@@ -19,7 +19,7 @@ describe("setupNetwork.test.ts", function () {
     let walletClient: WalletClient<CustomTransport, Chain, Account>;
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC } });
+        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
         const transport = custom(provider);
         //const transport = http(localhost.rpcUrls.default.http[0]);
         publicClient = createPublicClient({
