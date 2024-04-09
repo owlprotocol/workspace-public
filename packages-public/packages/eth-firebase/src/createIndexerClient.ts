@@ -21,16 +21,19 @@ import { BlockEncoded, TransactionEncoded, TransactionTypeInput } from "@owlprot
 import {
     EthBlockResource,
     EthBytecodeResource,
+    EthLogAbiResource,
     EthLogResource,
     EthTransactionReceiptResource,
     EthTransactionResource,
 } from "./models/index.js";
+import { decodeLog } from "./controllers/index.js";
 
 export interface EthResources {
     ethBlockResource: EthBlockResource;
     ethTransactionResource: EthTransactionResource;
     ethTransactionReceiptResource: EthTransactionReceiptResource;
     ethLogResource: EthLogResource;
+    ethLogAbiResource: EthLogAbiResource;
     ethBytecodeResource: EthBytecodeResource;
 }
 
@@ -99,6 +102,7 @@ export async function createIndexeEIP1193Request(
         ethTransactionResource,
         ethTransactionReceiptResource,
         ethLogResource,
+        ethLogAbiResource,
         ethBytecodeResource,
     }: EthResources,
 ): Promise<EIP1193RequestFn<PublicRpcSchema>> {
@@ -107,8 +111,6 @@ export async function createIndexeEIP1193Request(
     const chainIdHex = await request({ method: "eth_chainId" });
     const chainId = parseInt(chainIdHex);
 
-    //TODO: Block remove transactions
-    //TODO: TransactionReceipt remove logs
     const requestOverride: EIP1193RequestFn<PublicRpcSchema> = async function requestOverride(args, options) {
         if (args.method === "eth_chainId") {
             return chainIdHex;
@@ -260,11 +262,15 @@ export async function createIndexeEIP1193Request(
                 options,
             );
             ethTransactionReceiptResource.upsert({ ...transactionReceiptRpc, chainId });
-            ethLogResource.upsertBatch(
-                transactionReceiptRpc.logs.map((l) => {
-                    return { ...l, chainId, logIndex: parseInt(l.logIndex) };
+            Promise.all(
+                transactionReceiptRpc.logs.map(async (l) => {
+                    return {
+                        ...(await decodeLog(l, ethLogAbiResource)),
+                        chainId,
+                        logIndex: parseInt(l.logIndex),
+                    };
                 }),
-            );
+            ).then((logsRpcParsed) => ethLogResource.updateBatch(logsRpcParsed));
 
             return transactionReceiptRpc;
         } else if (
@@ -277,11 +283,16 @@ export async function createIndexeEIP1193Request(
                 (l) => l.blockHash,
             ) as Log<`0x${string}`, `0x${string}`, false>[];
 
-            ethLogResource.updateBatch(
-                logsRpcConfirmed.map((l) => {
-                    return { ...l, chainId, logIndex: parseInt(l.logIndex) };
+            //TODO: Non-blocking in batch? Not huge issues as high-cache hit rate
+            Promise.all(
+                logsRpcConfirmed.map(async (l) => {
+                    return {
+                        ...(await decodeLog(l, ethLogAbiResource)),
+                        chainId,
+                        logIndex: parseInt(l.logIndex),
+                    };
                 }),
-            );
+            ).then((logsRpcParsed) => ethLogResource.updateBatch(logsRpcParsed));
 
             return logsRpc;
         } else if (args.method === "eth_getCode") {

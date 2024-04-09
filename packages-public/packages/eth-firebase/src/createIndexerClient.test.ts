@@ -19,6 +19,7 @@ import { createIndexerPublicClient } from "./createIndexerClient.js";
 import {
     ethBlockResource,
     ethLogResource,
+    ethLogAbiResource,
     ethTransactionReceiptResource,
     ethTransactionResource,
     ethBytecodeResource,
@@ -81,6 +82,7 @@ describe("createIndexerClient.test.ts", function () {
                 ethTransactionResource,
                 ethTransactionReceiptResource,
                 ethLogResource,
+                ethLogAbiResource,
                 ethBytecodeResource,
             },
         );

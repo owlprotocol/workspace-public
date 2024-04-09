@@ -52,7 +52,7 @@
       "require": "./lib/cjs/web/index.js",
       "import": "./lib/esm/web/index.js"
     },
-    "./query": {
+    "./react-query": {
       "types": "./lib/types/query/index.d.ts",
       "require": "./lib/cjs/query/index.js",
       "import": "./lib/esm/query/index.js"
@@ -90,7 +90,8 @@
     "test:watch": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'vitest'",
     "tsc": "tsc",
     "tsc:trace": "tsc --generateTrace lib/trace && analyze-trace lib/trace",
-    "tsc:watch": "tsc -w"
+    "tsc:watch": "tsc -w",
+    "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",
@@ -106,6 +107,7 @@
     "lint-staged": "^11.1.2",
     "madge": "^5.0.2",
     "npm-run-all": "^4.1.5",
+    "ts-expect": "^1.3.0",
     "rimraf": "^3.0.2",
     "tsx": "^3.12.7",
     "typescript": "5.4.2",

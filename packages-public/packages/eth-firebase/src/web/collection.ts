@@ -19,9 +19,50 @@ import {
     ethUserOpPath,
     ethBytecodePath,
     ethBytecodeGroupPath,
+    erc1155BalanceGroupPath,
+    erc1155BalancePath,
+    erc1155GroupPath,
+    erc1155Path,
+    erc20AllowanceGroupPath,
+    erc20AllowancePath,
+    erc20BalanceGroupPath,
+    erc20BalancePath,
+    erc20GroupPath,
+    erc20Path,
+    erc721GroupPath,
+    erc721Path,
+    ethFunctionAbiPath,
+    ethLogAbiPath,
+    ethRoleAbiPath,
+    operatorGroupPath,
+    operatorPath,
+    ethRoleAdminPath,
+    ethRolePath,
 } from "../collections.js";
 import { NetworkId } from "../models/Network.js";
-import { EthBytecodeEncoded } from "../models/index.js";
+import {
+    ERC1155BalanceData,
+    ERC1155Data,
+    ERC20AllowanceData,
+    ERC20BalanceData,
+    ERC20Data,
+    ERC721Data,
+    EthBytecodeEncoded,
+    EthFunctionAbiData,
+    EthLogAbiData,
+    EthRoleAbiData,
+    EthRoleAdminData,
+    EthRoleData,
+    OperatorData,
+} from "../models/index.js";
+
+//ethmodels
+export const ethFunctionAbiCol = getColRef<EthFunctionAbiData>(firestore, ethFunctionAbiPath);
+export const ethLogAbiCol = getColRef<EthLogAbiData>(firestore, ethLogAbiPath);
+
+export const ethRoleCol = (collectionId: NetworkId) => getColRef<EthRoleData>(firestore, ethRolePath(collectionId));
+export const ethRoleAdminCol = (collectionId: NetworkId) =>
+    getColRef<EthRoleAdminData>(firestore, ethRoleAdminPath(collectionId));
 
 export const ethBlockColGroup = getColGroupRef<BlockEncoded>(firestore, ethBlockGroupPath);
 export const ethBlockCol = (collectionId: NetworkId) => getColRef<BlockEncoded>(firestore, ethBlockPath(collectionId));
@@ -47,3 +88,30 @@ export const ethLogCol = (collectionId: NetworkId) => getColRef<LogEncoded>(fire
 export const ethUserOpColGroup = getColGroupRef<UserOpEncoded>(firestore, ethUserOpGroupPath);
 export const ethUserOpCol = (collectionId: NetworkId) =>
     getColRef<UserOpEncoded>(firestore, ethUserOpPath(collectionId));
+
+//contractmodels
+export const erc20ColGroup = getColGroupRef<ERC20Data>(firestore, erc20GroupPath);
+export const erc20Col = (collectionId: NetworkId) => getColRef<ERC20Data>(firestore, erc20Path(collectionId));
+
+export const erc20AllowanceColGroup = getColGroupRef<ERC20AllowanceData>(firestore, erc20AllowanceGroupPath);
+export const erc20AllowanceCol = (collectionId: NetworkId) =>
+    getColRef<ERC20AllowanceData>(firestore, erc20AllowancePath(collectionId));
+
+export const erc20BalanceColGroup = getColGroupRef<ERC20BalanceData>(firestore, erc20BalanceGroupPath);
+export const erc20BalanceCol = (collectionId: NetworkId) =>
+    getColRef<ERC20BalanceData>(firestore, erc20BalancePath(collectionId));
+
+export const erc721ColGroup = getColGroupRef<ERC721Data>(firestore, erc721GroupPath);
+export const erc721Col = (collectionId: NetworkId) => getColRef<ERC721Data>(firestore, erc721Path(collectionId));
+
+export const erc1155ColGroup = getColGroupRef<ERC1155Data>(firestore, erc1155GroupPath);
+export const erc1155Col = (collectionId: NetworkId) => getColRef<ERC1155Data>(firestore, erc1155Path(collectionId));
+
+export const erc1155BalanceColGroup = getColGroupRef<ERC1155BalanceData>(firestore, erc1155BalanceGroupPath);
+export const erc1155BalanceCol = (collectionId: NetworkId) =>
+    getColRef<ERC1155BalanceData>(firestore, erc1155BalancePath(collectionId));
+
+export const operatorColGroup = getColGroupRef<OperatorData>(firestore, operatorGroupPath);
+export const operatorCol = (collectionId: NetworkId) => getColRef<OperatorData>(firestore, operatorPath(collectionId));
+
+export const ethRoleAbiCol = getColRef<EthRoleAbiData>(firestore, ethRoleAbiPath);

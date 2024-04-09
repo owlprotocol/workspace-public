@@ -8,6 +8,11 @@ function join(...parameters: string[]) {
 }
 
 const networkPath = "network";
+
+//ethmodels
+export const ethFunctionAbiPath = "ethFunctionAbi";
+export const ethLogAbiPath = "ethLogAbi";
+
 export const ethBlockGroupPath = "ethBlock";
 export const ethBlockPath = (collectionId: NetworkId) => {
     return join(networkPath, encodeNetworkId(collectionId), ethBlockGroupPath);
@@ -31,4 +36,43 @@ export const ethLogPath = (collectionId: NetworkId) => {
 export const ethUserOpGroupPath = "ethUserOp";
 export const ethUserOpPath = (collectionId: NetworkId) => {
     return join(networkPath, encodeNetworkId(collectionId), ethUserOpGroupPath);
+};
+
+//contractmodels
+export const erc20GroupPath = "erc20";
+export const erc20Path = (collectionId: NetworkId) => {
+    return join(networkPath, encodeNetworkId(collectionId), erc20GroupPath);
+};
+export const erc20AllowanceGroupPath = "erc20Allowance";
+export const erc20AllowancePath = (collectionId: NetworkId) => {
+    return join(networkPath, encodeNetworkId(collectionId), erc20AllowanceGroupPath);
+};
+export const erc20BalanceGroupPath = "erc20Balance";
+export const erc20BalancePath = (collectionId: NetworkId) => {
+    return join(networkPath, encodeNetworkId(collectionId), erc20BalanceGroupPath);
+};
+export const erc721GroupPath = "erc721";
+export const erc721Path = (collectionId: NetworkId) => {
+    return join(networkPath, encodeNetworkId(collectionId), erc721GroupPath);
+};
+export const erc1155GroupPath = "erc1155";
+export const erc1155Path = (collectionId: NetworkId) => {
+    return join(networkPath, encodeNetworkId(collectionId), erc1155GroupPath);
+};
+export const erc1155BalanceGroupPath = "erc1155Balance";
+export const erc1155BalancePath = (collectionId: NetworkId) => {
+    return join(networkPath, encodeNetworkId(collectionId), erc1155BalanceGroupPath);
+};
+export const operatorGroupPath = "operator";
+export const operatorPath = (collectionId: NetworkId) => {
+    return join(networkPath, encodeNetworkId(collectionId), operatorGroupPath);
+};
+export const ethRoleAbiPath = "ethRoleabi";
+export const ethRoleGroupPath = "ethRole";
+export const ethRolePath = (collectionId: NetworkId) => {
+    return join(networkPath, encodeNetworkId(collectionId), ethRoleGroupPath);
+};
+export const ethRoleAdminGroupPath = "ethRoleAdmin";
+export const ethRoleAdminPath = (collectionId: NetworkId) => {
+    return join(networkPath, encodeNetworkId(collectionId), ethRoleAdminGroupPath);
 };
