@@ -114,12 +114,12 @@ export function getFirebaseQueryReactQueryOptions<
         return queryOptions({
             queryKey: [ROOT_KEY, key, "getAll", options ?? null] as const,
             //Overload errors
-            queryFn: () => {
+            queryFn: async () => {
                 try {
                     //@ts-expect-error
-                    return resource.getAll(collectionIdOrOptions, optionsOrNoParam);
+                    return await resource.getAll(collectionIdOrOptions, optionsOrNoParam);
                 } catch (e) {
-                    throw new Error(`Error for getAll in ${key} :${e}`);
+                    throw new Error(`Error for getAll in ${JSON.stringify(key)}: ${e}`);
                 }
             },
         });
@@ -141,11 +141,11 @@ export function getFirebaseQueryReactQueryOptions<
                 : (rootQueryKey as FirebaseCollectionKey);
         return queryOptions({
             queryKey: [ROOT_KEY, key, "getWhere", filter, options ?? null] as const,
-            queryFn: () => {
+            queryFn: async () => {
                 try {
-                    return resource.getWhere(filter, options);
+                    return await resource.getWhere(filter, options);
                 } catch (e) {
-                    throw new Error(`Error for getWhere in ${key} :${e}`);
+                    throw new Error(`Error for getWhere in ${JSON.stringify(key)}: ${e}`);
                 }
             },
         });
@@ -166,11 +166,11 @@ export function getFirebaseQueryReactQueryOptions<
                 : (rootQueryKey as FirebaseCollectionKey);
         return queryOptions({
             queryKey: [ROOT_KEY, key, "getWhereCount", filter, options ?? null] as const,
-            queryFn: () => {
+            queryFn: async () => {
                 try {
-                    return resource.getWhereCount(filter, options);
+                    return await resource.getWhereCount(filter, options);
                 } catch (e) {
-                    throw new Error(`Error for getWhereCount in ${key} :${e}`);
+                    throw new Error(`Error for getWhereCount in ${JSON.stringify(key)}: ${e}`);
                 }
             },
         });
@@ -197,11 +197,11 @@ export function getFirebaseQueryReactQueryOptions<
                 : (rootQueryKey as FirebaseCollectionKey);
         return queryOptions({
             queryKey: [ROOT_KEY, key, "getWhereFirst", filter, options ?? null] as const,
-            queryFn: () => {
+            queryFn: async () => {
                 try {
-                    return resource.getWhereFirst(filter, options);
+                    return await resource.getWhereFirst(filter, options);
                 } catch (e) {
-                    throw new Error(`Error for getWhereFirst in ${key} :${e}`);
+                    throw new Error(`Error for getWhereFirst in ${JSON.stringify(key)}: ${e}`);
                 }
             },
         });
@@ -354,11 +354,11 @@ export function getFirebaseResourceReactQueryOptions<
 
         return queryOptions({
             queryKey: [ROOT_KEY, key, "get", id] as const,
-            queryFn: () => {
+            queryFn: async () => {
                 try {
-                    return resource.get(idParams);
+                    return await resource.get(idParams);
                 } catch (e) {
-                    throw new Error(`Error for get in ${key} :${e}`);
+                    throw new Error(`Error for get in ${JSON.stringify(key)}: ${e}`);
                 }
             },
         });
@@ -380,11 +380,11 @@ export function getFirebaseResourceReactQueryOptions<
 
         return queryOptions({
             queryKey: [ROOT_KEY, key, "getOrNull", id] as const,
-            queryFn: () => {
+            queryFn: async () => {
                 try {
-                    return resource.getOrNull(idParams);
+                    return await resource.getOrNull(idParams);
                 } catch (e) {
-                    throw new Error(`Error for getOrNull in ${key} :${e}`);
+                    throw new Error(`Error for getOrNull in ${JSON.stringify(key)}: ${e}`);
                 }
             },
         });
@@ -413,11 +413,11 @@ export function getFirebaseResourceReactQueryOptions<
 
         return queryOptions({
             queryKey: [ROOT_KEY, key, "getBatch", paths] as const,
-            queryFn: () => {
+            queryFn: async () => {
                 try {
-                    return resource.getBatch(idParamsList);
+                    return await resource.getBatch(idParamsList);
                 } catch (e) {
-                    throw new Error(`Error for getBatch in ${key} :${e}`);
+                    throw new Error(`Error for getBatch in ${JSON.stringify(key)}: ${e}`);
                 }
             },
         });
