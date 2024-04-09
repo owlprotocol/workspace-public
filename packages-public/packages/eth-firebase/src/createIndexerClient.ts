@@ -16,9 +16,15 @@ import {
     RpcBlockIdentifier,
     BlockTag,
     keccak256,
+    custom,
+    createPublicClient,
 } from "viem";
 import { BlockEncoded, TransactionEncoded, TransactionTypeInput } from "@owlprotocol/zod-sol";
 import {
+    ERC1155BalanceResource,
+    ERC20AllowanceResource,
+    ERC20BalanceResource,
+    ERC721Resource,
     EthBlockResource,
     EthBytecodeResource,
     EthLogAbiResource,
@@ -26,15 +32,19 @@ import {
     EthTransactionReceiptResource,
     EthTransactionResource,
 } from "./models/index.js";
-import { decodeLog } from "./controllers/index.js";
+import { decodeLogWithAbis, decodeLogWithFirebase } from "./controllers/index.js";
 
 export interface EthResources {
-    ethBlockResource: EthBlockResource;
-    ethTransactionResource: EthTransactionResource;
-    ethTransactionReceiptResource: EthTransactionReceiptResource;
-    ethLogResource: EthLogResource;
-    ethLogAbiResource: EthLogAbiResource;
-    ethBytecodeResource: EthBytecodeResource;
+    block: EthBlockResource;
+    transaction: EthTransactionResource;
+    transactionReceipt: EthTransactionReceiptResource;
+    log: EthLogResource;
+    logAbi: EthLogAbiResource;
+    bytecode: EthBytecodeResource;
+    erc20Balance?: ERC20BalanceResource;
+    erc20Allowance?: ERC20AllowanceResource;
+    erc721?: ERC721Resource;
+    erc1155Balance?: ERC1155BalanceResource;
 }
 
 /**
@@ -97,19 +107,30 @@ export async function createIndexerPublicClient<
  */
 export async function createIndexeEIP1193Request(
     request: EIP1193RequestFn<PublicRpcSchema>,
-    {
-        ethBlockResource,
-        ethTransactionResource,
-        ethTransactionReceiptResource,
-        ethLogResource,
-        ethLogAbiResource,
-        ethBytecodeResource,
-    }: EthResources,
+    sdk: EthResources,
 ): Promise<EIP1193RequestFn<PublicRpcSchema>> {
     //TODO: ChainId should be bigint eventually
     //Get chainId to pick correct firebase collection
     const chainIdHex = await request({ method: "eth_chainId" });
     const chainId = parseInt(chainIdHex);
+
+    //Internal publicClient for contract calls
+    const transport = custom({ request });
+    const publicClient = createPublicClient({
+        chain: {
+            id: chainId,
+            name: "internal",
+            nativeCurrency: {
+                decimals: 18,
+                name: "Ether",
+                symbol: "ETH",
+            },
+            rpcUrls: {
+                default: { http: [] },
+            },
+        },
+        transport,
+    });
 
     const requestOverride: EIP1193RequestFn<PublicRpcSchema> = async function requestOverride(args, options) {
         if (args.method === "eth_chainId") {
@@ -124,10 +145,10 @@ export async function createIndexeEIP1193Request(
                 const [hash] = args.params as [hash: `0x${string}`];
 
                 [block, transactions] = await Promise.all([
-                    ethBlockResource.getOrNullEncoded({ chainId, hash }),
+                    sdk.block.getOrNullEncoded({ chainId, hash }),
                     //Fetch transaction objects if requested
                     includeTransactionObjects
-                        ? ethTransactionResource.getWhereEncoded({ chainId, blockHash: hash })
+                        ? sdk.transaction.getWhereEncoded({ chainId, blockHash: hash })
                         : Promise.resolve([]),
                 ]);
             } else if (args.method === "eth_getBlockByNumber") {
@@ -137,10 +158,10 @@ export async function createIndexeEIP1193Request(
                 if (!blockTagOrHex.startsWith("0x")) return request(args as any, options);
 
                 [block, transactions] = await Promise.all([
-                    ethBlockResource.getWhereFirstEncoded({ chainId, number: blockTagOrHex }),
+                    sdk.block.getWhereFirstEncoded({ chainId, number: blockTagOrHex }),
                     //Fetch transaction objects if requested
                     includeTransactionObjects
-                        ? ethTransactionResource.getWhereEncoded({ chainId, blockNumber: blockTagOrHex })
+                        ? sdk.transaction.getWhereEncoded({ chainId, blockNumber: blockTagOrHex })
                         : Promise.resolve([]),
                 ]);
             } else {
@@ -171,16 +192,16 @@ export async function createIndexeEIP1193Request(
                     ...blockRpcWithTransactions,
                     transactions: transactionsRpc.map((t) => t.hash),
                 };
-                ethTransactionResource.upsertBatch(
+                sdk.transaction.upsertBatch(
                     transactionsRpc.map((t) => {
                         return { ...t, chainId };
                     }),
                 );
-                ethBlockResource.upsert({ ...blockRpc, chainId });
+                sdk.block.upsert({ ...blockRpc, chainId });
                 return blockRpcWithTransactions;
             } else {
                 const blockRpc: RpcBlock<"safe", false> = await request(args as any, options);
-                ethBlockResource.upsert({ ...blockRpc, chainId });
+                sdk.block.upsert({ ...blockRpc, chainId });
                 return blockRpc;
             }
         } else if (
@@ -192,14 +213,14 @@ export async function createIndexeEIP1193Request(
             let transaction: TransactionEncoded | null;
             if (args.method === "eth_getTransactionByHash") {
                 const [hash] = args.params as [hash: `0x${string}`];
-                transaction = await ethTransactionResource.getOrNullEncoded({ chainId, hash });
+                transaction = await sdk.transaction.getOrNullEncoded({ chainId, hash });
             } else if (args.method === "eth_getTransactionByBlockHashAndIndex") {
                 const [blockHash, transactionIndex] = args.params as [
                     blockHash: `0x${string}`,
                     transactionIndex: `0x${string}`,
                 ];
 
-                transaction = await ethTransactionResource.getWhereFirstEncoded({
+                transaction = await sdk.transaction.getWhereFirstEncoded({
                     chainId,
                     blockHash,
                     transactionIndex,
@@ -213,7 +234,7 @@ export async function createIndexeEIP1193Request(
                 //Fetching by block tag, avoid caching as higher likelihood of revert (eg. "pending", "latest")
                 if (!blockTagOrHexNumber.startsWith("0x")) return request(args as any, options);
 
-                transaction = await ethTransactionResource.getWhereFirstEncoded({
+                transaction = await sdk.transaction.getWhereFirstEncoded({
                     chainId,
                     blockNumber: blockTagOrHexNumber,
                     transactionIndex,
@@ -229,7 +250,7 @@ export async function createIndexeEIP1193Request(
             const transactionRpc: RpcTransaction = await request(args as any, options);
             if (transactionRpc.blockHash) {
                 //Update cache with confirmed tx only
-                ethTransactionResource.upsert({ ...(transactionRpc as RpcTransaction<false>), chainId });
+                sdk.transaction.upsert({ ...(transactionRpc as RpcTransaction<false>), chainId });
             }
             return transactionRpc;
         } else if (args.method === "eth_getTransactionReceipt") {
@@ -237,11 +258,11 @@ export async function createIndexeEIP1193Request(
 
             //Load transaction receipt from cache if exists
             const [transactionReceipt, logs] = await Promise.all([
-                ethTransactionReceiptResource.getOrNullEncoded({
+                sdk.transactionReceipt.getOrNullEncoded({
                     chainId,
                     transactionHash,
                 }),
-                ethLogResource.getWhereEncoded({ chainId, transactionHash }),
+                sdk.log.getWhereEncoded({ chainId, transactionHash }),
             ]);
 
             //Return cached transaction receipt
@@ -261,16 +282,25 @@ export async function createIndexeEIP1193Request(
                 args as any,
                 options,
             );
-            ethTransactionReceiptResource.upsert({ ...transactionReceiptRpc, chainId });
+            sdk.transactionReceipt.upsert({ ...transactionReceiptRpc, chainId });
             Promise.all(
                 transactionReceiptRpc.logs.map(async (l) => {
+                    const { eventName, args } =
+                        decodeLogWithAbis(l, {
+                            publicClient,
+                            ...sdk,
+                        }) ??
+                        (await decodeLogWithFirebase(l, sdk.logAbi)) ??
+                        {};
                     return {
-                        ...(await decodeLog(l, ethLogAbiResource)),
+                        ...l,
+                        eventName,
+                        args,
                         chainId,
                         logIndex: parseInt(l.logIndex),
                     };
                 }),
-            ).then((logsRpcParsed) => ethLogResource.updateBatch(logsRpcParsed));
+            ).then((logsRpcParsed) => sdk.log.updateBatch(logsRpcParsed));
 
             return transactionReceiptRpc;
         } else if (
@@ -286,13 +316,22 @@ export async function createIndexeEIP1193Request(
             //TODO: Non-blocking in batch? Not huge issues as high-cache hit rate
             Promise.all(
                 logsRpcConfirmed.map(async (l) => {
+                    const { eventName, args } =
+                        decodeLogWithAbis(l, {
+                            publicClient,
+                            ...sdk,
+                        }) ??
+                        (await decodeLogWithFirebase(l, sdk.logAbi)) ??
+                        {};
                     return {
-                        ...(await decodeLog(l, ethLogAbiResource)),
+                        ...l,
+                        eventName,
+                        args,
                         chainId,
                         logIndex: parseInt(l.logIndex),
                     };
                 }),
-            ).then((logsRpcParsed) => ethLogResource.updateBatch(logsRpcParsed));
+            ).then((logsRpcParsed) => sdk.log.updateBatch(logsRpcParsed));
 
             return logsRpc;
         } else if (args.method === "eth_getCode") {
@@ -309,7 +348,7 @@ export async function createIndexeEIP1193Request(
                 return request(args as any, options);
             }
 
-            const bytecode = await ethBytecodeResource.getOrNull({ chainId, address });
+            const bytecode = await sdk.bytecode.getOrNull({ chainId, address });
             let blockNumber: bigint;
             if (
                 blockTagOrHexNumber === "latest" ||
@@ -342,7 +381,7 @@ export async function createIndexeEIP1193Request(
                     const bytecodeRpc: `0x${string}` = await request(args as any, options);
                     if (bytecodeRpc != "0x") {
                         //Non empty-result, update cache with earlier block number
-                        ethBytecodeResource.update({ chainId, address, blockNumber });
+                        sdk.bytecode.update({ chainId, address, blockNumber });
                     }
                     return bytecodeRpc;
                 }
@@ -352,7 +391,7 @@ export async function createIndexeEIP1193Request(
             const bytecodeRpc: `0x${string}` = await request(args as any, options);
             if (bytecodeRpc != "0x") {
                 //Non empty-result, update cached earliers block
-                ethBytecodeResource.upsert({ chainId, address, blockNumber, bytecodeHash: keccak256(bytecodeRpc) });
+                sdk.bytecode.upsert({ chainId, address, blockNumber, bytecodeHash: keccak256(bytecodeRpc) });
             }
             return request(args as any, options);
         }

@@ -83,17 +83,13 @@ import {
     encodeEthLogAbiData,
     encodeEthLogAbiDataPartial,
     encodeEthLogAbiId,
-    ERC1155BalanceData,
     ERC1155BalanceId,
     ERC1155Data,
     ERC1155Id,
-    ERC20AllowanceData,
     ERC20AllowanceId,
-    ERC20BalanceData,
     ERC20BalanceId,
     ERC20Data,
     ERC20Id,
-    ERC721Data,
     ERC721Id,
     EthRoleAbiData,
     EthRoleAbiId,
@@ -143,6 +139,22 @@ import {
     encodeOperatorData,
     encodeOperatorDataPartial,
     encodeOperatorId,
+    ERC20AllowanceDecoded,
+    ERC20AllowanceInput,
+    ERC20AllowanceEncoded,
+    ERC20BalanceDecoded,
+    ERC20BalanceInput,
+    ERC20BalanceEncoded,
+    ERC1155BalanceDecoded,
+    ERC1155BalanceInput,
+    ERC1155BalanceEncoded,
+    decodeERC20BalanceData,
+    decodeERC20AllowanceData,
+    decodeERC1155BalanceData,
+    decodeERC721Data,
+    ERC721Decoded,
+    ERC721Encoded,
+    ERC721Input,
 } from "../models/index.js";
 import { NetworkId, encodeNetworkId, decodeNetworkId } from "../models/Network.js";
 
@@ -268,38 +280,49 @@ export const erc20Resource = getFirebaseResource<ERC20Data, ERC20Id, NetworkId>(
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });
-export const erc20AllowanceResource = getFirebaseResource<ERC20AllowanceData, ERC20AllowanceId, NetworkId>(
-    firestore,
-    erc20AllowanceCol,
-    {
-        encodeId: encodeERC20AllowanceId,
-        decodeId: decodeERC20AllowanceId,
-        encodeDataPartial: encodeERC20AllowanceDataPartial,
-        encodeData: encodeERC20AllowanceData,
-        encodeParentDocId: encodeNetworkId,
-        decodeParentDocId: decodeNetworkId,
-    },
-);
-export const erc20BalanceResource = getFirebaseResource<ERC20BalanceData, ERC20BalanceId, NetworkId>(
-    firestore,
-    erc20BalanceCol,
-    {
-        encodeId: encodeERC20BalanceId,
-        decodeId: decodeERC20BalanceId,
-        encodeDataPartial: encodeERC20BalanceDataPartial,
-        encodeData: encodeERC20BalanceData,
-        encodeParentDocId: encodeNetworkId,
-        decodeParentDocId: decodeNetworkId,
-    },
-);
-export const erc721Resource = getFirebaseResource<ERC721Data, ERC721Id, NetworkId>(firestore, erc721Col, {
-    encodeId: encodeERC721Id,
-    decodeId: decodeERC721Id,
-    encodeDataPartial: encodeERC721DataPartial,
-    encodeData: encodeERC721Data,
+export const erc20AllowanceResource = getFirebaseResource<
+    ERC20AllowanceDecoded,
+    ERC20AllowanceId,
+    NetworkId,
+    ERC20AllowanceInput,
+    ERC20AllowanceEncoded
+>(firestore, erc20AllowanceCol, {
+    encodeId: encodeERC20AllowanceId,
+    decodeId: decodeERC20AllowanceId,
+    encodeDataPartial: encodeERC20AllowanceDataPartial,
+    encodeData: encodeERC20AllowanceData,
+    decodeData: decodeERC20AllowanceData,
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });
+export const erc20BalanceResource = getFirebaseResource<
+    ERC20BalanceDecoded,
+    ERC20BalanceId,
+    NetworkId,
+    ERC20BalanceInput,
+    ERC20BalanceEncoded
+>(firestore, erc20BalanceCol, {
+    encodeId: encodeERC20BalanceId,
+    decodeId: decodeERC20BalanceId,
+    encodeDataPartial: encodeERC20BalanceDataPartial,
+    encodeData: encodeERC20BalanceData,
+    decodeData: decodeERC20BalanceData,
+    encodeParentDocId: encodeNetworkId,
+    decodeParentDocId: decodeNetworkId,
+});
+export const erc721Resource = getFirebaseResource<ERC721Decoded, ERC721Id, NetworkId, ERC721Input, ERC721Encoded>(
+    firestore,
+    erc721Col,
+    {
+        encodeId: encodeERC721Id,
+        decodeId: decodeERC721Id,
+        encodeDataPartial: encodeERC721DataPartial,
+        encodeData: encodeERC721Data,
+        decodeData: decodeERC721Data,
+        encodeParentDocId: encodeNetworkId,
+        decodeParentDocId: decodeNetworkId,
+    },
+);
 export const erc1155Resource = getFirebaseResource<ERC1155Data, ERC1155Id, NetworkId>(firestore, erc1155Col, {
     encodeId: encodeERC1155Id,
     decodeId: decodeERC1155Id,
@@ -308,18 +331,21 @@ export const erc1155Resource = getFirebaseResource<ERC1155Data, ERC1155Id, Netwo
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });
-export const erc1155BalanceResource = getFirebaseResource<ERC1155BalanceData, ERC1155BalanceId, NetworkId>(
-    firestore,
-    erc1155BalanceCol,
-    {
-        encodeId: encodeERC1155BalanceId,
-        decodeId: decodeERC1155BalanceId,
-        encodeDataPartial: encodeERC1155BalanceDataPartial,
-        encodeData: encodeERC1155BalanceData,
-        encodeParentDocId: encodeNetworkId,
-        decodeParentDocId: decodeNetworkId,
-    },
-);
+export const erc1155BalanceResource = getFirebaseResource<
+    ERC1155BalanceDecoded,
+    ERC1155BalanceId,
+    NetworkId,
+    ERC1155BalanceInput,
+    ERC1155BalanceEncoded
+>(firestore, erc1155BalanceCol, {
+    encodeId: encodeERC1155BalanceId,
+    decodeId: decodeERC1155BalanceId,
+    encodeDataPartial: encodeERC1155BalanceDataPartial,
+    encodeData: encodeERC1155BalanceData,
+    decodeData: decodeERC1155BalanceData,
+    encodeParentDocId: encodeNetworkId,
+    decodeParentDocId: decodeNetworkId,
+});
 export const operatorResource = getFirebaseResource<OperatorData, OperatorId, NetworkId>(firestore, operatorCol, {
     encodeId: encodeOperatorId,
     decodeId: decodeOperatorId,

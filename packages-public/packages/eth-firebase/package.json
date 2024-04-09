@@ -59,10 +59,12 @@
     }
   },
   "dependencies": {
+    "@owlprotocol/contracts-diamond": "workspace:*",
     "@owlprotocol/crud-firebase": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
+    "abitype": "1.0.0",
     "lodash-es": "4.17.21",
     "uuid": "^9.0.1",
     "viem": "2.8.6",

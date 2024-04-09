@@ -66,14 +66,22 @@ import {
     EthBytecodeId,
     EthBytecodeDecoded,
     EthBytecodeEncoded,
-    ERC1155BalanceData,
     ERC1155BalanceId,
-    ERC20AllowanceData,
     ERC20AllowanceId,
-    ERC20BalanceData,
     ERC20BalanceId,
-    ERC721Data,
     ERC721Id,
+    ERC1155BalanceDecoded,
+    ERC1155BalanceEncoded,
+    ERC1155BalanceInput,
+    ERC20AllowanceDecoded,
+    ERC20AllowanceEncoded,
+    ERC20AllowanceInput,
+    ERC20BalanceDecoded,
+    ERC20BalanceEncoded,
+    ERC20BalanceInput,
+    ERC721Encoded,
+    ERC721Input,
+    ERC721Decoded,
 } from "../models/index.js";
 import { NetworkId, encodeNetworkId } from "../models/Network.js";
 
@@ -236,34 +244,34 @@ export const ethRoleAdminQueryOptions = getFirebaseResourceReactQueryOptions(
 /*** Group Queries ***/
 //contractmodels
 export const erc20BalanceGroupQueryOptions = getFirebaseQueryReactQueryOptions<
-    ERC20BalanceData,
+    ERC20BalanceDecoded,
     ERC20BalanceId,
     NetworkId,
-    ERC20BalanceData,
-    ERC20BalanceData,
-    Query<"web", ERC20BalanceData>
+    ERC20BalanceInput,
+    ERC20BalanceEncoded,
+    Query<"web", ERC20BalanceEncoded>
 >(erc20BalanceGroupQuery, { prefixPath: [], collectionGroup: erc20BalanceGroupPath });
 export const erc20AllowanceGroupQueryOptions = getFirebaseQueryReactQueryOptions<
-    ERC20AllowanceData,
+    ERC20AllowanceDecoded,
     ERC20AllowanceId,
     NetworkId,
-    ERC20AllowanceData,
-    ERC20AllowanceData,
-    Query<"web", ERC20AllowanceData>
+    ERC20AllowanceInput,
+    ERC20AllowanceEncoded,
+    Query<"web", ERC20AllowanceEncoded>
 >(erc20AllowanceGroupQuery, { prefixPath: [], collectionGroup: erc20AllowanceGroupPath });
 export const erc721GroupQueryOptions = getFirebaseQueryReactQueryOptions<
-    ERC721Data,
+    ERC721Decoded,
     ERC721Id,
     NetworkId,
-    ERC721Data,
-    ERC721Data,
-    Query<"web", ERC721Data>
+    ERC721Input,
+    ERC721Encoded,
+    Query<"web", ERC721Encoded>
 >(erc721GroupQuery, { prefixPath: [], collectionGroup: erc721GroupPath });
 export const erc1155BalanceGroupQueryOptions = getFirebaseQueryReactQueryOptions<
-    ERC1155BalanceData,
+    ERC1155BalanceDecoded,
     ERC1155BalanceId,
     NetworkId,
-    ERC1155BalanceData,
-    ERC1155BalanceData,
-    Query<"web", ERC1155BalanceData>
+    ERC1155BalanceInput,
+    ERC1155BalanceEncoded,
+    Query<"web", ERC1155BalanceEncoded>
 >(erc1155BalanceGroupQuery, { prefixPath: [], collectionGroup: erc1155GroupPath });

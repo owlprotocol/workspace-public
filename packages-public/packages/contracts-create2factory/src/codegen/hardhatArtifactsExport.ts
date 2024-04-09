@@ -2,6 +2,8 @@ import { globSync } from "glob";
 import { generateBarrelFileForDir } from "@owlprotocol/utils";
 import { ESLint } from "eslint";
 import { Hex, Abi, zeroAddress, zeroHash, Address } from "viem";
+import { toFunctionSignature } from "viem/utils";
+import { AbiConstructor, AbiError, AbiEvent, AbiFallback, AbiFunction, AbiReceive, formatAbiItem } from "abitype";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { createHash } from "node:crypto";
 import { join } from "path";
@@ -23,6 +25,113 @@ interface Artifact {
 type Deployer = "Create2Factory" | "DeterministicDeployer";
 
 /**
+ * Export events, functions, errors
+ * Export individual
+ */
+
+/**
+ * Abi exports
+ */
+export type AbiExports = {
+    abi: string[];
+    functions: string[];
+    events: string[];
+    errors: string[];
+} & { [key: string]: AbiConstructor | AbiError | AbiEvent | AbiFallback | AbiFunction | AbiReceive };
+
+/**
+ * Parse abi to unique exports
+ * - individual functions, events, errors
+ * - all functions, events, errors
+ * - full abi
+ * @param abi
+ * @returns abi exports
+ */
+export function getAbiExports(abi: Abi): AbiExports {
+    //TODO: Reserved keywords (eg. abi, implementation, bytecode etc...)
+
+    const names: Record<string, string> = {};
+    const signatures: Record<string, boolean> = {};
+
+    const abiExports = {
+        abi: [],
+        functions: [],
+        events: [],
+        errors: [],
+    } as unknown as AbiExports;
+
+    abi.forEach((f) => {
+        if (f.type === "constructor") {
+            //Default reserved functions
+            abiExports.abi.push("_constructor");
+            abiExports.functions.push("_constructor");
+            //constructor is reserved keyword in js, use _constructor instead
+            abiExports["_constructor"] = f;
+        } else if (f.type === "fallback" || f.type === "receive") {
+            //Default reserved functions
+            abiExports.abi.push(f.type);
+            abiExports.functions.push(f.type);
+            abiExports[f.type] = f;
+        } else {
+            const abiFormatted = formatAbiItem(f);
+            const signature = toFunctionSignature(abiFormatted);
+            //skip
+            if (signatures[signature]) return;
+            signatures[signature] = true;
+            //remove return statement
+            let signatureClean = signature;
+            signatureClean = signature
+                .replaceAll("(", "_")
+                .replaceAll(")", "_")
+                .replaceAll(",", "_")
+                .replaceAll("[]", "array");
+            //Remove trailing _ from closing )
+            signatureClean = signatureClean.substring(0, signatureClean.length - 1);
+
+            //Export array
+            let exportsArray: string[];
+            if (f.type === "function") exportsArray = abiExports.functions;
+            else if (f.type === "event") exportsArray = abiExports.events;
+            else if (f.type === "error") exportsArray = abiExports.errors;
+            else throw new Error("Invalid abi type");
+
+            if (!names[f.name]) {
+                //Export friendly name
+                names[f.name] = signatureClean;
+                abiExports.abi.push(f.name);
+                exportsArray.push(f.name);
+                abiExports[f.name] = f;
+            } else {
+                //TODO: Also export original signature
+                //Duplicate name, export signature
+                abiExports.abi.push(signatureClean);
+                exportsArray.push(signatureClean);
+                abiExports[signatureClean] = f;
+            }
+        }
+    });
+
+    return abiExports;
+}
+
+export function getAbiExportsString(abiExports: AbiExports): string {
+    let abiExportsString = "";
+    Object.entries(abiExports).forEach(([key, value]) => {
+        if (key != "abi" && key != "functions" && key != "events" && key != "errors") {
+            abiExportsString = `${abiExportsString}export const ${key} = ${JSON.stringify(value)} as const;\n`;
+        }
+    });
+
+    abiExportsString = `${abiExportsString}export const functions = [${abiExports.functions.join(",")}] as const;
+export const events = [${abiExports.events.join(",")}] as const;
+export const errors = [${abiExports.errors.join(",")}] as const;
+export const abi = [...functions, ...events, ...errors] as const;
+`;
+
+    return abiExportsString;
+}
+
+/**
  * Takes an artifact and generates proper export file content.
  *   - Inidvidual keys are exported for better tree-shaking
  * @param artifact contains abi, bytecode, deployedBytecode
@@ -34,6 +143,7 @@ export function getArtifactExportFileContent(
     deployer: Deployer = "Create2Factory",
     implementations: Record<string, Address> = {},
 ): string {
+    const abiExportsString = getAbiExportsString(getAbiExports(artifact.abi));
     if (artifact.bytecode != "0x") {
         let implementation: Address;
         if (implementations[artifact.contractName]) {
@@ -57,7 +167,7 @@ export function getArtifactExportFileContent(
         }
         return `import { Hex, Address } from "viem";
 
-export const abi = ${JSON.stringify(artifact.abi)} as const;
+${abiExportsString}
 export const bytecode = "${artifact.bytecode}" as Hex;
 export const deployedBytecode = "${artifact.deployedBytecode}" as Hex;
 export const implementation = "${implementation}" as Address;
@@ -70,7 +180,7 @@ export const ${artifact.contractName} = {
 `;
     } else {
         return `
-export const abi = ${JSON.stringify(artifact.abi)} as const;
+${abiExportsString}
 export const ${artifact.contractName} = {
     abi,
 };

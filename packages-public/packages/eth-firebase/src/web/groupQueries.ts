@@ -56,26 +56,34 @@ import {
     encodeEthBytecodeDataPartial,
     EthBytecodeDecoded,
     EthBytecodeEncoded,
-    ERC1155BalanceData,
     ERC1155BalanceId,
-    ERC20AllowanceData,
     ERC20AllowanceId,
-    ERC20BalanceData,
     ERC20BalanceId,
-    ERC721Data,
     ERC721Id,
     decodeERC1155BalanceId,
     decodeERC20AllowanceId,
     decodeERC20BalanceId,
     decodeERC721Id,
-    encodeERC1155BalanceData,
     encodeERC1155BalanceDataPartial,
-    encodeERC20AllowanceData,
     encodeERC20AllowanceDataPartial,
-    encodeERC20BalanceData,
     encodeERC20BalanceDataPartial,
-    encodeERC721Data,
     encodeERC721DataPartial,
+    ERC1155BalanceDecoded,
+    ERC1155BalanceEncoded,
+    ERC1155BalanceInput,
+    ERC20AllowanceDecoded,
+    ERC20AllowanceEncoded,
+    ERC20AllowanceInput,
+    ERC20BalanceDecoded,
+    ERC20BalanceEncoded,
+    ERC20BalanceInput,
+    decodeERC20BalanceData,
+    decodeERC20AllowanceData,
+    decodeERC1155BalanceData,
+    ERC721Encoded,
+    ERC721Input,
+    ERC721Decoded,
+    decodeERC721Data,
 } from "../models/index.js";
 import { NetworkId, encodeNetworkId, decodeNetworkId } from "../models/Network.js";
 
@@ -172,58 +180,58 @@ export const ethUserOpGroupQuery = getFirebaseQueryResource<
 
 //contractmodels
 export const erc20BalanceGroupQuery = getFirebaseQueryResource<
-    ERC20BalanceData,
+    ERC20BalanceDecoded,
     ERC20BalanceId,
     NetworkId,
-    ERC20BalanceData,
-    ERC20BalanceData,
-    Query<"web", ERC20BalanceData>
+    ERC20BalanceInput,
+    ERC20BalanceEncoded,
+    Query<"web", ERC20BalanceEncoded>
 >(erc20BalanceColGroup, {
     decodeId: decodeERC20BalanceId,
     encodeDataPartial: encodeERC20BalanceDataPartial,
-    decodeData: encodeERC20BalanceData,
+    decodeData: decodeERC20BalanceData,
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });
 export const erc20AllowanceGroupQuery = getFirebaseQueryResource<
-    ERC20AllowanceData,
+    ERC20AllowanceDecoded,
     ERC20AllowanceId,
     NetworkId,
-    ERC20AllowanceData,
-    ERC20AllowanceData,
-    Query<"web", ERC20AllowanceData>
+    ERC20AllowanceInput,
+    ERC20AllowanceEncoded,
+    Query<"web", ERC20AllowanceEncoded>
 >(erc20AllowanceColGroup, {
     decodeId: decodeERC20AllowanceId,
     encodeDataPartial: encodeERC20AllowanceDataPartial,
-    decodeData: encodeERC20AllowanceData,
+    decodeData: decodeERC20AllowanceData,
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });
 export const erc721GroupQuery = getFirebaseQueryResource<
-    ERC721Data,
+    ERC721Decoded,
     ERC721Id,
     NetworkId,
-    ERC721Data,
-    ERC721Data,
-    Query<"web", ERC721Data>
+    ERC721Input,
+    ERC721Encoded,
+    Query<"web", ERC721Encoded>
 >(erc721ColGroup, {
     decodeId: decodeERC721Id,
     encodeDataPartial: encodeERC721DataPartial,
-    decodeData: encodeERC721Data,
+    decodeData: decodeERC721Data,
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });
 export const erc1155BalanceGroupQuery = getFirebaseQueryResource<
-    ERC1155BalanceData,
+    ERC1155BalanceDecoded,
     ERC1155BalanceId,
     NetworkId,
-    ERC1155BalanceData,
-    ERC1155BalanceData,
-    Query<"web", ERC1155BalanceData>
+    ERC1155BalanceInput,
+    ERC1155BalanceEncoded,
+    Query<"web", ERC1155BalanceEncoded>
 >(erc1155BalanceColGroup, {
     decodeId: decodeERC1155BalanceId,
     encodeDataPartial: encodeERC1155BalanceDataPartial,
-    decodeData: encodeERC1155BalanceData,
+    decodeData: decodeERC1155BalanceData,
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });

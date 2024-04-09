@@ -23,6 +23,10 @@ import {
     ethTransactionReceiptResource,
     ethTransactionResource,
     ethBytecodeResource,
+    erc20AllowanceResource,
+    erc20BalanceResource,
+    erc721Resource,
+    erc1155BalanceResource,
 } from "./admin/index.js";
 
 /**
@@ -67,6 +71,18 @@ describe("createIndexerClient.test.ts", function () {
     beforeEach(async () => {
         await deleteEmulatorData();
 
+        const sdk = {
+            block: ethBlockResource,
+            transaction: ethTransactionResource,
+            transactionReceipt: ethTransactionReceiptResource,
+            log: ethLogResource,
+            logAbi: ethLogAbiResource,
+            bytecode: ethBytecodeResource,
+            erc20Balance: erc20BalanceResource,
+            erc20Allowance: erc20AllowanceResource,
+            erc721: erc721Resource,
+            erc1155Balance: erc1155BalanceResource,
+        };
         const provider = ganache.provider({ logging: { quiet: true } });
         const transport = custom(provider);
         //const transport = http(localhost.rpcUrls.default.http[0]);
@@ -75,17 +91,7 @@ describe("createIndexerClient.test.ts", function () {
             transport,
         });
 
-        publicIndexerClient = await createIndexerPublicClient(
-            { chain: localhost, transport },
-            {
-                ethBlockResource,
-                ethTransactionResource,
-                ethTransactionReceiptResource,
-                ethLogResource,
-                ethLogAbiResource,
-                ethBytecodeResource,
-            },
-        );
+        publicIndexerClient = await createIndexerPublicClient({ chain: localhost, transport }, sdk);
 
         walletClient = createWalletClient({
             chain: localhost,

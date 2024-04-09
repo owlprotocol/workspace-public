@@ -1,4 +1,4 @@
-import { addressZod } from "@owlprotocol/zod-sol";
+import { addressZod, quantityDecodeZod, quantityEncodeZod } from "@owlprotocol/zod-sol";
 import { TypeOf, expectType } from "ts-expect";
 import { z } from "zod";
 import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
@@ -11,17 +11,12 @@ export interface ERC721Id {
     readonly tokenId: string;
 }
 const tokenIdZod = z.string().regex(/^\d+$/).describe("tokenId");
-export const erc721IdRegex = /^(?<address>0x[a-fA-F0-9]{40})-(?<tokenId>\d+$)/;
 export const erc721IdZod = z
-    .union([z.string().regex(erc721IdRegex), z.object({ address: addressZod, tokenId: tokenIdZod })])
-    .transform((arg) => {
-        if (typeof arg === "string") {
-            return arg;
-        } else {
-            return `${arg.address}-${arg.tokenId}`;
-        }
-    });
-export const encodeERC721Id: (id: string | ERC721Id) => string = erc721IdZod.parse;
+    .object({ address: addressZod, tokenId: tokenIdZod })
+    .transform(({ address, tokenId }) => `${address}-${tokenId}`);
+export const encodeERC721Id: (id: ERC721Id) => string = erc721IdZod.parse;
+
+export const erc721IdRegex = /^(?<address>0x[a-fA-F0-9]{40})-(?<tokenId>\d+$)/;
 export const decodeERC721Id: (id: string) => ERC721Id = (id) => erc721IdRegex.exec(id)!.groups! as unknown as ERC721Id;
 
 export interface ERC721Metadata {
@@ -29,46 +24,110 @@ export interface ERC721Metadata {
     readonly image?: string;
     [k: string]: any;
 }
-export interface ERC721Data {
+
+/**
+ * Cached ERC721. Store last known block for owner, approved.
+ * Matches both encoded RPC & decoded TS types.
+ */
+export interface ERC721Input {
     readonly address: Address;
     readonly tokenId: string;
-    readonly owner?: string;
-    readonly approved?: string;
+    readonly owner?: Address;
+    readonly ownerBlockNumber?: `0x${string}` | number | bigint;
+    readonly approved?: Address;
+    readonly approvedBlockNumber?: `0x${string}` | number | bigint;
     readonly tokenURI?: string;
     readonly metadata?: ERC721Metadata;
-    //Client-side computed
-    readonly dna?: string;
-    readonly dnaMetadata?: ERC721Metadata;
 }
-export const erc721DataZod = z.object({
+
+/**
+ * Cached ERC721. Store last known block for owner, approved.
+ * Bigint converted to Hex to support Firebase.
+ */
+export interface ERC721Encoded {
+    readonly address: Address;
+    readonly tokenId: string;
+    readonly owner?: Address;
+    readonly ownerBlockNumber?: `0x${string}`;
+    readonly approved?: Address;
+    readonly approvedBlockNumber?: `0x${string}`;
+    readonly tokenURI?: string;
+    readonly metadata?: ERC721Metadata;
+}
+
+/**
+ * Cached ERC721. Store last known block for owner, approved.
+ * Bigint decoded from Hex stored on Firebase.
+ */
+export interface ERC721Decoded {
+    readonly address: Address;
+    readonly tokenId: string;
+    readonly owner?: Address;
+    readonly ownerBlockNumber?: bigint;
+    readonly approved?: Address;
+    readonly approvedBlockNumber?: bigint;
+    readonly tokenURI?: string;
+    readonly metadata?: ERC721Metadata;
+}
+
+export const erc721EncodeZod = z.object({
     address: addressZod,
     tokenId: tokenIdZod,
     owner: addressZod.optional(),
+    ownerBlockNumber: quantityEncodeZod.optional(),
     approved: addressZod.optional(),
+    approvedBlockNumber: quantityEncodeZod.optional(),
     tokenURI: z.string().url().optional(),
     metadata: z.any().optional(),
-    dna: z.string().optional(),
-    dnaMetadata: z.any().optional(),
 });
-export const encodeERC721Data: (data: ERC721Data) => ERC721Data = erc721DataZod.parse;
-export const encodeERC721DataPartial: (data: Partial<ERC721Data>) => Partial<ERC721Data> =
-    erc721DataZod.partial().parse;
 
-export type ERC721 = ERC721Id & ERC721Data;
+export const erc721DecodeZod = z.object({
+    address: addressZod,
+    tokenId: tokenIdZod,
+    owner: addressZod.optional(),
+    ownerBlockNumber: quantityDecodeZod.optional(),
+    approved: addressZod.optional(),
+    approvedBlockNumber: quantityDecodeZod.optional(),
+    tokenURI: z.string().url().optional(),
+    metadata: z.any().optional(),
+});
+
+export const encodeERC721Data: (data: ERC721Input) => ERC721Encoded = erc721EncodeZod.parse;
+export const encodeERC721DataPartial: (data: Partial<ERC721Input>) => Partial<ERC721Encoded> =
+    erc721EncodeZod.partial().parse;
+export const decodeERC721Data: (data: ERC721Encoded) => ERC721Decoded = erc721DecodeZod.parse;
+
+export type ERC721 = ERC721Id & ERC721Input;
 //Generic interfaces for resource, useful for writing logic that works both in firebase admin/web
-export type ERC721Resource = FirebaseResource<FirestoreSDK, ERC721Data, ERC721Id>;
-//Generic interfaces for read resource, and group read resource (for subcollections)
-export type ERC721QueryResource = FirebaseQueryResource<FirestoreSDK, ERC721Data, ERC721Id>;
-export type ERC721GroupQueryResource = FirebaseQueryResource<
+export type ERC721Resource = FirebaseResource<
     FirestoreSDK,
-    ERC721Data,
+    ERC721Decoded,
     ERC721Id,
     NetworkId,
-    ERC721Data,
-    ERC721Data,
-    Query<FirestoreSDK, ERC721Data>
+    ERC721Input,
+    ERC721Encoded
+>;
+//Generic interfaces for read resource, and group read resource (for subcollections)
+export type ERC721QueryResource = FirebaseQueryResource<
+    FirestoreSDK,
+    ERC721Decoded,
+    ERC721Id,
+    NetworkId,
+    ERC721Input,
+    ERC721Encoded
+>;
+export type ERC721GroupQueryResource = FirebaseQueryResource<
+    FirestoreSDK,
+    ERC721Decoded,
+    ERC721Id,
+    NetworkId,
+    ERC721Input,
+    ERC721Encoded,
+    Query<FirestoreSDK, ERC721Encoded>
 >;
 
 //Check zod validator matches interface
-expectType<TypeOf<ERC721Data, z.input<typeof erc721DataZod>>>(true);
-expectType<TypeOf<ERC721Data, z.output<typeof erc721DataZod>>>(true);
+expectType<TypeOf<z.input<typeof erc721EncodeZod>, ERC721Input>>(true);
+expectType<TypeOf<z.output<typeof erc721EncodeZod>, ERC721Encoded>>(true);
+expectType<TypeOf<z.input<typeof erc721DecodeZod>, ERC721Encoded>>(true);
+expectType<TypeOf<z.output<typeof erc721DecodeZod>, ERC721Decoded>>(true);
