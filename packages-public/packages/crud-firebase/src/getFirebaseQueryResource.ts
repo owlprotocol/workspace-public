@@ -187,7 +187,11 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
         ): Promise<QSnapshot> {
             const { collectionId, options } = getCollectionIdQueryOptions(collectionIdOrOptions, optionsOrNoParam);
             const query = getWhereQuery(getQuery(collectionId!), undefined, options);
-            return getDocs(query);
+            try {
+                return getDocs(query);
+            } catch (e) {
+                throw new Error(`Error in getAllSnapshot, with collectionId: ${collectionId}: ${e}`);
+            }
         }
 
         async function getAll(
@@ -219,7 +223,11 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
         }
 
         async function getWhereSnapshot(filter: ResourceFilter, options?: ResourceQueryOptions): Promise<QSnapshot> {
-            return getDocs(_getWhereQuery(filter, options));
+            try {
+                return getDocs(_getWhereQuery(filter, options));
+            } catch (e) {
+                throw new Error(`Error in getWhereSnapshot, with filter: ${JSON.stringify(filter)}: ${e}`);
+            }
         }
 
         async function getWhere(filter: ResourceFilter, options?: ResourceQueryOptions): Promise<Resource[]> {
@@ -252,8 +260,12 @@ export function getFirebaseQueryResourceForSdk<SDK extends FirestoreSDK = Firest
         }
 
         async function getWhereCount(filter: ResourceFilter, options?: ResourceQueryOptions): Promise<number> {
-            const querySnapshot = await count(_getWhereQuery(filter, options));
-            return querySnapshot.data().count;
+            try {
+                const querySnapshot = await count(_getWhereQuery(filter, options));
+                return querySnapshot.data().count;
+            } catch (e) {
+                throw new Error(`Error in getWhereCount, with filter: ${JSON.stringify(filter)}: ${e}`);
+            }
         }
 
         return {

@@ -114,8 +114,14 @@ export function getFirebaseQueryReactQueryOptions<
         return queryOptions({
             queryKey: [ROOT_KEY, key, "getAll", options ?? null] as const,
             //Overload errors
-            //@ts-expect-error
-            queryFn: () => resource.getAll(collectionIdOrOptions, optionsOrNoParam),
+            queryFn: () => {
+                try {
+                    //@ts-expect-error
+                    return resource.getAll(collectionIdOrOptions, optionsOrNoParam);
+                } catch (e) {
+                    throw new Error(`Error for getAll in ${key} :${e}`);
+                }
+            },
         });
     }
 
@@ -135,7 +141,13 @@ export function getFirebaseQueryReactQueryOptions<
                 : (rootQueryKey as FirebaseCollectionKey);
         return queryOptions({
             queryKey: [ROOT_KEY, key, "getWhere", filter, options ?? null] as const,
-            queryFn: () => resource.getWhere(filter, options),
+            queryFn: () => {
+                try {
+                    return resource.getWhere(filter, options);
+                } catch (e) {
+                    throw new Error(`Error for getWhere in ${key} :${e}`);
+                }
+            },
         });
     }
 
@@ -154,7 +166,13 @@ export function getFirebaseQueryReactQueryOptions<
                 : (rootQueryKey as FirebaseCollectionKey);
         return queryOptions({
             queryKey: [ROOT_KEY, key, "getWhereCount", filter, options ?? null] as const,
-            queryFn: () => resource.getWhereCount(filter, options),
+            queryFn: () => {
+                try {
+                    return resource.getWhereCount(filter, options);
+                } catch (e) {
+                    throw new Error(`Error for getWhereCount in ${key} :${e}`);
+                }
+            },
         });
     }
 
@@ -179,7 +197,13 @@ export function getFirebaseQueryReactQueryOptions<
                 : (rootQueryKey as FirebaseCollectionKey);
         return queryOptions({
             queryKey: [ROOT_KEY, key, "getWhereFirst", filter, options ?? null] as const,
-            queryFn: () => resource.getWhereFirst(filter, options),
+            queryFn: () => {
+                try {
+                    return resource.getWhereFirst(filter, options);
+                } catch (e) {
+                    throw new Error(`Error for getWhereFirst in ${key} :${e}`);
+                }
+            },
         });
     }
 
@@ -330,7 +354,13 @@ export function getFirebaseResourceReactQueryOptions<
 
         return queryOptions({
             queryKey: [ROOT_KEY, key, "get", id] as const,
-            queryFn: () => resource.get(idParams),
+            queryFn: () => {
+                try {
+                    return resource.get(idParams);
+                } catch (e) {
+                    throw new Error(`Error for get in ${key} :${e}`);
+                }
+            },
         });
     }
 
@@ -350,7 +380,13 @@ export function getFirebaseResourceReactQueryOptions<
 
         return queryOptions({
             queryKey: [ROOT_KEY, key, "getOrNull", id] as const,
-            queryFn: () => resource.getOrNull(idParams),
+            queryFn: () => {
+                try {
+                    return resource.getOrNull(idParams);
+                } catch (e) {
+                    throw new Error(`Error for getOrNull in ${key} :${e}`);
+                }
+            },
         });
     }
 
@@ -377,7 +413,13 @@ export function getFirebaseResourceReactQueryOptions<
 
         return queryOptions({
             queryKey: [ROOT_KEY, key, "getBatch", paths] as const,
-            queryFn: () => resource.getBatch(idParamsList),
+            queryFn: () => {
+                try {
+                    return resource.getBatch(idParamsList);
+                } catch (e) {
+                    throw new Error(`Error for getBatch in ${key} :${e}`);
+                }
+            },
         });
     }
 
