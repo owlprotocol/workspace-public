@@ -15,7 +15,7 @@ import { getAddress } from "viem/utils";
 import { deleteEmulatorData } from "@owlprotocol/crud-firebase/admin";
 import { sleep } from "@owlprotocol/utils";
 import { omit } from "lodash-es";
-import { createIndexerPublicClient } from "./createIndexerClient.js";
+import { createIndexerPublicClientForSdk } from "./createIndexerClient.js";
 import {
     ethBlockResource,
     ethLogResource,
@@ -91,7 +91,7 @@ describe("createIndexerClient.test.ts", function () {
             transport,
         });
 
-        publicIndexerClient = await createIndexerPublicClient({ chain: localhost, transport }, sdk);
+        publicIndexerClient = await createIndexerPublicClientForSdk({ chain: localhost, transport }, sdk);
 
         walletClient = createWalletClient({
             chain: localhost,

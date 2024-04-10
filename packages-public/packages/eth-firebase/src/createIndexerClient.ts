@@ -54,13 +54,13 @@ export interface EthResources {
  * @warning For client-side use, you MUST have an Eth*Resource implementation that supports writes so a simple firebase client will
  * NOT work. You should have an implementation that has the same interface but uses core-trpc backend to write.
  * @param client a public client
- * @param resources ethBlockResource, ethTransactionResource, ethTransactionReceiptResource, ethLogResource to read/write from firebase cache
+ * @param sdk ethBlockResource, ethTransactionResource, ethTransactionReceiptResource, ethLogResource to read/write from firebase cache
  * @returns same client but with overriden actions
  */
-export async function createIndexerPublicClient<
+export async function createIndexerPublicClientForSdk<
     transport extends Transport,
     chain extends Chain | undefined = undefined,
->(parameters: PublicClientConfig<transport, chain>, resources: EthResources): Promise<PublicClient<transport, chain>> {
+>(parameters: PublicClientConfig<transport, chain>, sdk: EthResources): Promise<PublicClient<transport, chain>> {
     //TODO: Override getTransaction This does not return same data as receipt
     const { key = "public", name = "Indexer Public Client" } = parameters;
 
@@ -70,7 +70,7 @@ export async function createIndexerPublicClient<
         name,
         type: "publicClient",
     });
-    client.request = await createIndexeEIP1193Request(client.request, resources);
+    client.request = await createIndexeEIP1193Request(client.request, sdk);
 
     return client.extend(publicActions);
 }
@@ -283,7 +283,7 @@ export async function createIndexeEIP1193Request(
                 options,
             );
             sdk.transactionReceipt.upsert({ ...transactionReceiptRpc, chainId });
-            Promise.all(
+            const logsDecoded = await Promise.all(
                 transactionReceiptRpc.logs.map(async (l) => {
                     const { eventName, args } =
                         decodeLogWithAbis(l, {
@@ -300,9 +300,13 @@ export async function createIndexeEIP1193Request(
                         logIndex: parseInt(l.logIndex),
                     };
                 }),
-            ).then((logsRpcParsed) => sdk.log.updateBatch(logsRpcParsed));
+            );
+            sdk.log.upsertBatch(logsDecoded);
 
-            return transactionReceiptRpc;
+            return {
+                ...transactionReceiptRpc,
+                logs: logsDecoded,
+            };
         } else if (
             args.method === "eth_getLogs" ||
             args.method === "eth_getFilterLogs" ||
@@ -313,8 +317,7 @@ export async function createIndexeEIP1193Request(
                 (l) => l.blockHash,
             ) as Log<`0x${string}`, `0x${string}`, false>[];
 
-            //TODO: Non-blocking in batch? Not huge issues as high-cache hit rate
-            Promise.all(
+            const logsDecoded = await Promise.all(
                 logsRpcConfirmed.map(async (l) => {
                     const { eventName, args } =
                         decodeLogWithAbis(l, {
@@ -331,9 +334,10 @@ export async function createIndexeEIP1193Request(
                         logIndex: parseInt(l.logIndex),
                     };
                 }),
-            ).then((logsRpcParsed) => sdk.log.updateBatch(logsRpcParsed));
+            );
+            sdk.log.upsertBatch(logsDecoded);
 
-            return logsRpc;
+            return logsDecoded;
         } else if (args.method === "eth_getCode") {
             const [address, blockTagOrHexNumber] = args.params as [
                 address: Address,

@@ -158,6 +158,9 @@ import {
 } from "../models/index.js";
 import { NetworkId, encodeNetworkId, decodeNetworkId } from "../models/Network.js";
 
+//Disabled for now
+const lruCacheSize = 0;
+
 //ethmodels
 //global
 export const ethFunctionAbiResource = getFirebaseResource<EthFunctionAbiData, EthFunctionAbiId>(
@@ -169,13 +172,19 @@ export const ethFunctionAbiResource = getFirebaseResource<EthFunctionAbiData, Et
         encodeDataPartial: encodeEthFunctionAbiDataPartial,
         encodeData: encodeEthFunctionAbiData,
     },
+    { lruCacheSize },
 );
-export const ethLogAbiResource = getFirebaseResource<EthLogAbiData, EthLogAbiId>(firestore, ethLogAbiCol, {
-    encodeId: encodeEthLogAbiId,
-    decodeId: decodeEthLogAbiId,
-    encodeDataPartial: encodeEthLogAbiDataPartial,
-    encodeData: encodeEthLogAbiData,
-});
+export const ethLogAbiResource = getFirebaseResource<EthLogAbiData, EthLogAbiId>(
+    firestore,
+    ethLogAbiCol,
+    {
+        encodeId: encodeEthLogAbiId,
+        decodeId: decodeEthLogAbiId,
+        encodeDataPartial: encodeEthLogAbiDataPartial,
+        encodeData: encodeEthLogAbiData,
+    },
+    { lruCacheSize },
+);
 
 //network-bound
 export const ethBlockResource = getFirebaseResource<BlockDecoded, EthBlockId, NetworkId, BlockInput, BlockEncoded>(
@@ -190,6 +199,7 @@ export const ethBlockResource = getFirebaseResource<BlockDecoded, EthBlockId, Ne
         encodeParentDocId: encodeNetworkId,
         decodeParentDocId: decodeNetworkId,
     },
+    { lruCacheSize },
 );
 export const ethBytecodeResource = getFirebaseResource<
     EthBytecodeDecoded,
@@ -197,53 +207,68 @@ export const ethBytecodeResource = getFirebaseResource<
     NetworkId,
     EthBytecodeInput,
     EthBytecodeEncoded
->(firestore, ethBytecodeCol, {
-    encodeId: encodeEthBytecodeId,
-    decodeId: decodeEthBytecodeId,
-    encodeDataPartial: encodeEthBytecodeDataPartial,
-    encodeData: encodeEthBytecodeData,
-    decodeData: decodeEthBytecodeData,
-    encodeParentDocId: encodeNetworkId,
-    decodeParentDocId: decodeNetworkId,
-});
+>(
+    firestore,
+    ethBytecodeCol,
+    {
+        encodeId: encodeEthBytecodeId,
+        decodeId: decodeEthBytecodeId,
+        encodeDataPartial: encodeEthBytecodeDataPartial,
+        encodeData: encodeEthBytecodeData,
+        decodeData: decodeEthBytecodeData,
+        encodeParentDocId: encodeNetworkId,
+        decodeParentDocId: decodeNetworkId,
+    },
+    { lruCacheSize },
+);
 export const ethTransactionResource = getFirebaseResource<
     TransactionDecoded,
     EthTransactionId,
     NetworkId,
     TransactionInput,
     TransactionEncoded
->(firestore, ethTransactionCol, {
-    encodeId: encodeEthTransactionId,
-    decodeId: decodeEthTransactionId,
-    encodeDataPartial: transactionEncodeZod.partial().parse as (
-        transaction: Partial<TransactionInput>,
-    ) => Partial<TransactionEncoded>,
-    encodeData: transactionEncodeZod.parse as unknown as (transaction: TransactionInput) => TransactionEncoded,
-    decodeData: transactionDecodeZod.parse as unknown as (transaction: TransactionEncoded) => TransactionDecoded,
-    encodeParentDocId: encodeNetworkId,
-    decodeParentDocId: decodeNetworkId,
-});
+>(
+    firestore,
+    ethTransactionCol,
+    {
+        encodeId: encodeEthTransactionId,
+        decodeId: decodeEthTransactionId,
+        encodeDataPartial: transactionEncodeZod.partial().parse as (
+            transaction: Partial<TransactionInput>,
+        ) => Partial<TransactionEncoded>,
+        encodeData: transactionEncodeZod.parse as unknown as (transaction: TransactionInput) => TransactionEncoded,
+        decodeData: transactionDecodeZod.parse as unknown as (transaction: TransactionEncoded) => TransactionDecoded,
+        encodeParentDocId: encodeNetworkId,
+        decodeParentDocId: decodeNetworkId,
+    },
+    { lruCacheSize },
+);
 export const ethTransactionReceiptResource = getFirebaseResource<
     TransactionReceiptDecoded,
     EthTransactionReceiptId,
     NetworkId,
     TransactionReceiptInput,
     TransactionReceiptEncoded
->(firestore, ethTransactionReceiptCol, {
-    encodeId: encodeEthTransactionReceiptId,
-    decodeId: decodeEthTransactionReceiptId,
-    encodeDataPartial: transactionReceiptEncodeZod.partial().parse as (
-        transactionReceipt: Partial<TransactionReceiptInput>,
-    ) => Partial<TransactionReceiptEncoded>,
-    encodeData: transactionReceiptEncodeZod.parse as (
-        transactionReceipt: TransactionReceiptInput,
-    ) => TransactionReceiptEncoded,
-    decodeData: transactionReceiptDecodeZod.parse as unknown as (
-        transactionReceipt: TransactionReceiptEncoded,
-    ) => TransactionReceiptDecoded,
-    encodeParentDocId: encodeNetworkId,
-    decodeParentDocId: decodeNetworkId,
-});
+>(
+    firestore,
+    ethTransactionReceiptCol,
+    {
+        encodeId: encodeEthTransactionReceiptId,
+        decodeId: decodeEthTransactionReceiptId,
+        encodeDataPartial: transactionReceiptEncodeZod.partial().parse as (
+            transactionReceipt: Partial<TransactionReceiptInput>,
+        ) => Partial<TransactionReceiptEncoded>,
+        encodeData: transactionReceiptEncodeZod.parse as (
+            transactionReceipt: TransactionReceiptInput,
+        ) => TransactionReceiptEncoded,
+        decodeData: transactionReceiptDecodeZod.parse as unknown as (
+            transactionReceipt: TransactionReceiptEncoded,
+        ) => TransactionReceiptDecoded,
+        encodeParentDocId: encodeNetworkId,
+        decodeParentDocId: decodeNetworkId,
+    },
+    { lruCacheSize },
+);
 export const ethLogResource = getFirebaseResource<LogDecoded, EthLogId, NetworkId, LogInput, LogEncoded>(
     firestore,
     ethLogCol,
@@ -269,6 +294,7 @@ export const ethUserOpResource = getFirebaseResource<UserOpDecoded, EthUserOpId,
         encodeParentDocId: encodeNetworkId,
         decodeParentDocId: decodeNetworkId,
     },
+    { lruCacheSize },
 );
 
 //contractmodels
@@ -354,12 +380,17 @@ export const operatorResource = getFirebaseResource<OperatorData, OperatorId, Ne
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });
-export const ethRoleAbiResource = getFirebaseResource<EthRoleAbiData, EthRoleAbiId>(firestore, ethRoleAbiCol, {
-    encodeId: encodeEthRoleAbiId,
-    decodeId: decodeEthRoleAbiId,
-    encodeDataPartial: encodeEthRoleAbiDataPartial,
-    encodeData: encodeEthRoleAbiData,
-});
+export const ethRoleAbiResource = getFirebaseResource<EthRoleAbiData, EthRoleAbiId>(
+    firestore,
+    ethRoleAbiCol,
+    {
+        encodeId: encodeEthRoleAbiId,
+        decodeId: decodeEthRoleAbiId,
+        encodeDataPartial: encodeEthRoleAbiDataPartial,
+        encodeData: encodeEthRoleAbiData,
+    },
+    { lruCacheSize },
+);
 export const ethRoleResource = getFirebaseResource<EthRoleData, EthRoleId, NetworkId>(firestore, ethRoleCol, {
     encodeId: encodeEthRoleId,
     decodeId: decodeEthRoleId,

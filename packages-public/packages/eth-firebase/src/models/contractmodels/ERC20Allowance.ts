@@ -29,8 +29,8 @@ export interface ERC20AllowanceInput {
     readonly address: Address;
     readonly account: Address;
     readonly spender: Address;
-    readonly balance: `0x${string}` | number | bigint;
-    readonly blockNumber: `0x${string}` | number | bigint;
+    balance: `0x${string}` | number | bigint;
+    blockNumber: `0x${string}` | number | bigint;
 }
 
 /**
@@ -41,8 +41,8 @@ export interface ERC20AllowanceEncoded {
     readonly address: Address;
     readonly account: Address;
     readonly spender: Address;
-    readonly balance: `0x${string}`;
-    readonly blockNumber: `0x${string}`;
+    balance: `0x${string}`;
+    blockNumber: `0x${string}`;
 }
 
 /**
@@ -53,8 +53,8 @@ export interface ERC20AllowanceDecoded {
     readonly address: Address;
     readonly account: Address;
     readonly spender: Address;
-    readonly balance: bigint;
-    readonly blockNumber: bigint;
+    balance: bigint;
+    blockNumber: bigint;
 }
 
 export const erc20AllowanceEncodeZod = z.object({

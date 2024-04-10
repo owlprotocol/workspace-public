@@ -20,8 +20,8 @@ export const erc721IdRegex = /^(?<address>0x[a-fA-F0-9]{40})-(?<tokenId>\d+$)/;
 export const decodeERC721Id: (id: string) => ERC721Id = (id) => erc721IdRegex.exec(id)!.groups! as unknown as ERC721Id;
 
 export interface ERC721Metadata {
-    readonly name?: string;
-    readonly image?: string;
+    name?: string;
+    image?: string;
     [k: string]: any;
 }
 
@@ -32,12 +32,14 @@ export interface ERC721Metadata {
 export interface ERC721Input {
     readonly address: Address;
     readonly tokenId: string;
-    readonly owner?: Address;
-    readonly ownerBlockNumber?: `0x${string}` | number | bigint;
-    readonly approved?: Address;
-    readonly approvedBlockNumber?: `0x${string}` | number | bigint;
-    readonly tokenURI?: string;
-    readonly metadata?: ERC721Metadata;
+    owner?: Address;
+    ownerBlockNumber?: `0x${string}` | number | bigint;
+    approved?: Address;
+    approvedBlockNumber?: `0x${string}` | number | bigint;
+    tokenURI?: string;
+    tokenURIBlockNumber?: `0x${string}` | number | bigint;
+    metadata?: ERC721Metadata;
+    metadataUpdatedAt?: number;
 }
 
 /**
@@ -47,12 +49,14 @@ export interface ERC721Input {
 export interface ERC721Encoded {
     readonly address: Address;
     readonly tokenId: string;
-    readonly owner?: Address;
-    readonly ownerBlockNumber?: `0x${string}`;
-    readonly approved?: Address;
-    readonly approvedBlockNumber?: `0x${string}`;
-    readonly tokenURI?: string;
-    readonly metadata?: ERC721Metadata;
+    owner?: Address;
+    ownerBlockNumber?: `0x${string}`;
+    approved?: Address;
+    approvedBlockNumber?: `0x${string}`;
+    tokenURI?: string;
+    tokenURIBlockNumber?: `0x${string}`;
+    metadata?: ERC721Metadata;
+    metadataUpdatedAt?: number;
 }
 
 /**
@@ -62,12 +66,14 @@ export interface ERC721Encoded {
 export interface ERC721Decoded {
     readonly address: Address;
     readonly tokenId: string;
-    readonly owner?: Address;
-    readonly ownerBlockNumber?: bigint;
-    readonly approved?: Address;
-    readonly approvedBlockNumber?: bigint;
-    readonly tokenURI?: string;
-    readonly metadata?: ERC721Metadata;
+    owner?: Address;
+    ownerBlockNumber?: bigint;
+    approved?: Address;
+    approvedBlockNumber?: bigint;
+    tokenURI?: string;
+    tokenURIBlockNumber?: bigint;
+    metadata?: ERC721Metadata;
+    metadataUpdatedAt?: number;
 }
 
 export const erc721EncodeZod = z.object({
@@ -78,7 +84,9 @@ export const erc721EncodeZod = z.object({
     approved: addressZod.optional(),
     approvedBlockNumber: quantityEncodeZod.optional(),
     tokenURI: z.string().url().optional(),
+    tokenURIBlockNumber: quantityEncodeZod.optional(),
     metadata: z.any().optional(),
+    metadataUpdatedAt: z.number().optional(),
 });
 
 export const erc721DecodeZod = z.object({
@@ -89,7 +97,9 @@ export const erc721DecodeZod = z.object({
     approved: addressZod.optional(),
     approvedBlockNumber: quantityDecodeZod.optional(),
     tokenURI: z.string().url().optional(),
+    tokenURIBlockNumber: quantityDecodeZod.optional(),
     metadata: z.any().optional(),
+    metadataUpdatedAt: z.number().optional(),
 });
 
 export const encodeERC721Data: (data: ERC721Input) => ERC721Encoded = erc721EncodeZod.parse;

@@ -26,27 +26,22 @@ export const decodeERC1155Id: (id: string) => ERC1155Id = (id) =>
     erc1155IdRegex.exec(id)!.groups! as unknown as ERC1155Id;
 
 export interface ERC1155Metadata {
-    readonly name?: string;
-    readonly image?: string;
+    name?: string;
+    image?: string;
     [k: string]: any;
 }
 
 export interface ERC1155Data {
     readonly address: Address;
     readonly id: string;
-    readonly uri?: string;
-    readonly metadata?: ERC1155Metadata;
-    readonly dna?: string;
-    //Client-side computed
-    readonly dnaMetadata?: ERC1155Metadata;
+    uri?: string;
+    metadata?: ERC1155Metadata;
 }
 export const erc1155DataZod = z.object({
     address: addressZod,
     id: tokenIdZod,
     uri: z.string().url().optional(),
     metadata: z.any().optional(),
-    dna: z.string().optional(),
-    dnaMetadata: z.any().optional(),
 });
 export const encodeERC1155Data: (data: ERC1155Data) => ERC1155Data = erc1155DataZod.parse;
 export const encodeERC1155DataPartial: (data: Partial<ERC1155Data>) => Partial<ERC1155Data> =

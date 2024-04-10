@@ -26,8 +26,8 @@ export const decodeERC20BalanceId: (id: string) => ERC20BalanceId = (id) =>
 export interface ERC20BalanceInput {
     readonly address: Address;
     readonly account: Address;
-    readonly balance: `0x${string}` | number | bigint;
-    readonly blockNumber: `0x${string}` | number | bigint;
+    balance: `0x${string}` | number | bigint;
+    blockNumber: `0x${string}` | number | bigint;
 }
 
 /**
@@ -37,8 +37,8 @@ export interface ERC20BalanceInput {
 export interface ERC20BalanceEncoded {
     readonly address: Address;
     readonly account: Address;
-    readonly balance: `0x${string}`;
-    readonly blockNumber: `0x${string}`;
+    balance: `0x${string}`;
+    blockNumber: `0x${string}`;
 }
 
 /**
@@ -48,8 +48,8 @@ export interface ERC20BalanceEncoded {
 export interface ERC20BalanceDecoded {
     readonly address: Address;
     readonly account: Address;
-    readonly balance: bigint;
-    readonly blockNumber: bigint;
+    balance: bigint;
+    blockNumber: bigint;
 }
 
 export const erc20BalanceEncodeZod = z.object({
