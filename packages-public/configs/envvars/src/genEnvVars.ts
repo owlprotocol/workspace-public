@@ -115,6 +115,8 @@ const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
     { name: "PUBLIC_ADDRESS_UTILITY", platform: "neutral", defaultValue: "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720" },
     { name: "PRIVATE_KEY_RELAYER", platform: "node" },
     { name: "PUBLIC_ADDRESS_RELAYER", platform: "neutral", defaultValue: "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf" },
+    //owl chain (hedwig)
+    { name: "OWL_TESTNET_NETWORK_ID", platform: "neutral", defaultValue: "1337" },
 ];
 
 const INDEXER_ENVVARS: EnvVarDef[] = [
