@@ -59,6 +59,8 @@
     }
   },
   "dependencies": {
+    "@owlprotocol/contracts-create2factory": "workspace:*",
+    "@owlprotocol/contracts-account-abstraction": "workspace:*",
     "@owlprotocol/contracts-diamond": "workspace:*",
     "@owlprotocol/crud-firebase": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",

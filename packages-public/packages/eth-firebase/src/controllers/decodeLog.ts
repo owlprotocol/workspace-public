@@ -1,9 +1,24 @@
-import { Abi, decodeEventLog, parseAbi, toEventHash, Log, PublicClient, Transport, Chain, zeroAddress } from "viem";
-import { AbiEvent } from "abitype";
+import {
+    Abi,
+    decodeEventLog,
+    parseAbi,
+    toEventHash,
+    Log,
+    PublicClient,
+    Transport,
+    Chain,
+    zeroAddress,
+    toFunctionSignature,
+} from "viem";
+import { AbiEvent, formatAbiItem } from "abitype";
+import { events as Create2FactoryEvents } from "@owlprotocol/contracts-create2factory/artifacts/events";
+import { events as AccountAbstractionEvents } from "@owlprotocol/contracts-account-abstraction/artifacts/events";
+import { events as DiamondEvents } from "@owlprotocol/contracts-diamond/artifacts/events";
 import { Transfer as TransferERC20, Approval as ApprovalERC20 } from "@owlprotocol/contracts-diamond/artifacts/IERC20";
 import { Transfer as TransferERC721 } from "@owlprotocol/contracts-diamond/artifacts/IERC721";
 import { TransferSingle, TransferBatch } from "@owlprotocol/contracts-diamond/artifacts/IERC1155";
 
+import { uniqBy } from "lodash-es";
 import { updateERC20Allowance, updateERC20Balance } from "./erc20.js";
 import { updateERC1155Balance } from "./erc1155.js";
 import { updateERC721Owner } from "./erc721.js";
@@ -225,7 +240,17 @@ export function decodeLogWithAbis(
 
             return { eventName, args } as any;
         } else {
-            return null;
+            const { eventName, args } = decodeEventLog({
+                abi: uniqBy(
+                    [...Create2FactoryEvents, ...AccountAbstractionEvents, ...DiamondEvents] as AbiEvent[],
+                    (f) =>
+                        `${toFunctionSignature(formatAbiItem(f))}-${f.inputs.filter((input) => input.indexed).length}`,
+                ),
+                data: log.data,
+                topics: log.topics,
+                strict: true,
+            });
+            return { eventName, args } as any;
         }
     } catch (error) {
         //Failed to decode log

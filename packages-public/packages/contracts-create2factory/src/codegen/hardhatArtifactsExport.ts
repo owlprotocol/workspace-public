@@ -4,6 +4,7 @@ import { ESLint } from "eslint";
 import { Hex, Abi, zeroAddress, zeroHash, Address } from "viem";
 import { toFunctionSignature } from "viem/utils";
 import { AbiConstructor, AbiError, AbiEvent, AbiFallback, AbiFunction, AbiReceive, formatAbiItem } from "abitype";
+import { flatten, uniqBy } from "lodash-es";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { createHash } from "node:crypto";
 import { join } from "path";
@@ -244,6 +245,46 @@ export async function hardhatArtifactsExport(
         writeFileSync(join(artifactDir, `${contractName}.ts`), artifactData);
     });
 
+    //Check if all contracts cached
+    const allCached = contractArtifactsChanged.length === 0;
+
+    if (!allCached) {
+        //All functions
+        const functions = uniqBy(
+            flatten(
+                contractArtifacts.map((artifact) => artifact.abi.filter((item) => item.type === "function")),
+            ) as AbiFunction[],
+            (f) => toFunctionSignature(formatAbiItem(f)),
+        );
+        writeFileSync(
+            join(artifactDir, "functions.ts"),
+            `export const functions = [${functions.map((f) => JSON.stringify(f)).join(",")}] as const;`,
+        );
+
+        //All events
+        const events = uniqBy(
+            flatten(
+                contractArtifacts.map((artifact) => artifact.abi.filter((item) => item.type === "event")),
+            ) as AbiEvent[],
+            (f) => `${toFunctionSignature(formatAbiItem(f))}-${f.inputs.filter((input) => input.indexed).length}`,
+        );
+        writeFileSync(
+            join(artifactDir, "events.ts"),
+            `export const events = [${events.map((f) => JSON.stringify(f)).join(",")}] as const;`,
+        );
+        //All errors
+        const errors = uniqBy(
+            flatten(
+                contractArtifacts.map((artifact) => artifact.abi.filter((item) => item.type === "error")),
+            ) as AbiError[],
+            (f) => toFunctionSignature(formatAbiItem(f)),
+        );
+        writeFileSync(
+            join(artifactDir, "errors.ts"),
+            `export const errors = [${errors.map((f) => JSON.stringify(f)).join(",")}] as const;`,
+        );
+    }
+
     generateBarrelFileForDir(artifactDir, "namedModule");
 
     //save cache
@@ -254,7 +295,12 @@ export async function hardhatArtifactsExport(
         join(artifactDir, `${artifact.contractName}.ts`),
     );
     if (eslintArtifactsFiles.length > 0) {
-        //files changed, lint index.ts too
+        //files changed, lint functions.ts, events.ts, errors.ts
+        eslintArtifactsFiles.push(join(artifactDir, "functions.ts"));
+        eslintArtifactsFiles.push(join(artifactDir, "events.ts"));
+        eslintArtifactsFiles.push(join(artifactDir, "errors.ts"));
+
+        //files changed, lint index.ts
         eslintArtifactsFiles.push(join(artifactDir, "index.ts"));
     }
 
