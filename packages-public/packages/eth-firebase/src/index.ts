@@ -1,4 +1,5 @@
 export * from "./models/index.js";
 export * from "./collections.js";
-export * from "./createIndexerClient.js";
-export * from "./controllers/index.js";
+
+//Export  all from crud-firebase
+export * from "@owlprotocol/crud-firebase";

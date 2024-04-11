@@ -1,11 +1,5 @@
 import { firestore, getColRef, getColGroupRef } from "@owlprotocol/crud-firebase/admin";
-import {
-    BlockEncoded,
-    TransactionEncoded,
-    TransactionReceiptEncoded,
-    LogEncoded,
-    UserOpEncoded,
-} from "@owlprotocol/zod-sol";
+import { BlockEncoded, TransactionEncoded, TransactionReceiptEncoded, LogEncoded } from "@owlprotocol/zod-sol";
 import {
     ethBlockGroupPath,
     ethBlockPath,
@@ -53,6 +47,7 @@ import {
     EthRoleAbiData,
     EthRoleAdminData,
     EthRoleData,
+    EthUserOpEncoded,
     OperatorData,
 } from "../models/index.js";
 
@@ -85,9 +80,9 @@ export const ethTransactionReceiptCol = (collectionId: NetworkId) =>
 export const ethLogColGroup = getColGroupRef<LogEncoded>(firestore, ethLogGroupPath);
 export const ethLogCol = (collectionId: NetworkId) => getColRef<LogEncoded>(firestore, ethLogPath(collectionId));
 
-export const ethUserOpColGroup = getColGroupRef<UserOpEncoded>(firestore, ethUserOpGroupPath);
+export const ethUserOpColGroup = getColGroupRef<EthUserOpEncoded>(firestore, ethUserOpGroupPath);
 export const ethUserOpCol = (collectionId: NetworkId) =>
-    getColRef<UserOpEncoded>(firestore, ethUserOpPath(collectionId));
+    getColRef<EthUserOpEncoded>(firestore, ethUserOpPath(collectionId));
 
 //contractmodels
 export const erc20ColGroup = getColGroupRef<ERC20Data>(firestore, erc20GroupPath);

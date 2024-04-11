@@ -6,7 +6,7 @@ export interface NetworkId {
 export const chainIdZod = z.number().describe("Network chain id");
 export const chainIdZodObject = z.object({ chainId: chainIdZod });
 
-const chainIdEncodeZod = z
+export const chainIdEncodeZod = z
     .union([z.string().regex(/^\d+$/), z.object({ chainId: z.number() })])
     .transform((arg) => (typeof arg === "string" ? arg : `${arg.chainId}`));
 

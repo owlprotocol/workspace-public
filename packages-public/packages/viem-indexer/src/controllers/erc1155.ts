@@ -1,7 +1,7 @@
 import { Address } from "abitype";
 import { Chain, PublicClient, Transport } from "viem";
 import { balanceOf } from "@owlprotocol/contracts-diamond/artifacts/IERC1155";
-import { ERC1155Balance } from "../models/index.js";
+import { ERC1155Balance } from "@owlprotocol/eth-firebase/models";
 import { EthResources } from "../createIndexerClient.js";
 
 /**

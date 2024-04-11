@@ -1,14 +1,14 @@
 import { expect, describe, test, beforeEach } from "vitest";
 import { deleteEmulatorData } from "@owlprotocol/crud-firebase/admin";
 import { Log, zeroAddress } from "viem";
-import { decodeLogWithAbis, decodeLogWithFirebase } from "./decodeLog.js";
 import {
     erc1155BalanceResource,
     erc20AllowanceResource,
     erc20BalanceResource,
     erc721Resource,
     ethLogAbiResource,
-} from "../admin/resources.js";
+} from "@owlprotocol/eth-firebase/admin";
+import { decodeLogWithAbis, decodeLogWithFirebase } from "./decodeLog.js";
 
 describe("decodeLog.test.ts", function () {
     const sdk = {

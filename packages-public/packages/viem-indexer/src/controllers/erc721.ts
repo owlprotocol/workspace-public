@@ -2,9 +2,9 @@ import { Address } from "abitype";
 import { Chain, PublicClient, Transport } from "viem";
 import { ownerOf } from "@owlprotocol/contracts-diamond/artifacts/IERC721";
 import { tokenURI } from "@owlprotocol/contracts-diamond/artifacts/ITokenURI";
-import { ERC721 } from "../models/index.js";
+import { ERC721 } from "@owlprotocol/eth-firebase/models";
+import { NetworkId } from "@owlprotocol/eth-firebase/models";
 import { EthResources } from "../createIndexerClient.js";
-import { NetworkId } from "../models/Network.js";
 
 /**
  * Update ERC721 owner if no cached data or stale

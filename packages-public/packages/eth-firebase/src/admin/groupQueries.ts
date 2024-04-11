@@ -12,9 +12,6 @@ import {
     TransactionReceiptDecoded,
     TransactionReceiptEncoded,
     TransactionReceiptInput,
-    UserOpDecoded,
-    UserOpEncoded,
-    UserOpInput,
     blockDecodeZod,
     blockEncodeZod,
     logDecodeZod,
@@ -23,8 +20,6 @@ import {
     transactionEncodeZod,
     transactionReceiptDecodeZod,
     transactionReceiptEncodeZod,
-    userOpDecodeZod,
-    userOpEncodeZod,
 } from "@owlprotocol/zod-sol";
 import {
     ethBlockColGroup,
@@ -84,6 +79,11 @@ import {
     ERC721Input,
     ERC721Decoded,
     decodeERC721Data,
+    encodeEthUserOpDataPartial,
+    decodeEthUserOpData,
+    EthUserOpDecoded,
+    EthUserOpEncoded,
+    EthUserOpInput,
 } from "../models/index.js";
 import { NetworkId, encodeNetworkId, decodeNetworkId } from "../models/Network.js";
 
@@ -164,16 +164,16 @@ export const ethLogGroupQuery = getFirebaseQueryResource<
     decodeParentDocId: decodeNetworkId,
 });
 export const ethUserOpGroupQuery = getFirebaseQueryResource<
-    UserOpDecoded,
+    EthUserOpDecoded,
     EthUserOpId,
     NetworkId,
-    UserOpInput,
-    UserOpEncoded,
-    Query<"admin", UserOpEncoded>
+    EthUserOpInput,
+    EthUserOpEncoded,
+    Query<"admin", EthUserOpEncoded>
 >(ethUserOpColGroup, {
     decodeId: decodeEthUserOpId,
-    encodeDataPartial: userOpEncodeZod.partial().parse as (userOp: Partial<UserOpInput>) => Partial<UserOpEncoded>,
-    decodeData: userOpDecodeZod.parse as unknown as (userOp: UserOpEncoded) => UserOpDecoded,
+    encodeDataPartial: encodeEthUserOpDataPartial,
+    decodeData: decodeEthUserOpData,
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });

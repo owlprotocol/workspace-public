@@ -10,7 +10,7 @@ import {
     ethLogResource,
     ethTransactionReceiptResource,
     ethTransactionResource,
-} from "./resources.js";
+} from "@owlprotocol/eth-firebase/admin";
 import { createIndexerPublicClientForSdk } from "../createIndexerClient.js";
 
 export function createIndexerPublicClient<transport extends Transport, chain extends Chain | undefined = undefined>(

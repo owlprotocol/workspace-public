@@ -15,11 +15,6 @@ import {
     LogEncoded,
     logEncodeZod,
     logDecodeZod,
-    UserOpDecoded,
-    UserOpEncoded,
-    UserOpInput,
-    userOpDecodeZod,
-    userOpEncodeZod,
     TransactionReceiptDecoded,
     TransactionReceiptEncoded,
     TransactionReceiptInput,
@@ -155,6 +150,12 @@ import {
     ERC721Decoded,
     ERC721Encoded,
     ERC721Input,
+    encodeEthUserOpDataPartial,
+    decodeEthUserOpData,
+    EthUserOpDecoded,
+    EthUserOpEncoded,
+    EthUserOpInput,
+    encodeEthUserOpData,
 } from "../models/index.js";
 import { NetworkId, encodeNetworkId, decodeNetworkId } from "../models/Network.js";
 
@@ -282,15 +283,21 @@ export const ethLogResource = getFirebaseResource<LogDecoded, EthLogId, NetworkI
         decodeParentDocId: decodeNetworkId,
     },
 );
-export const ethUserOpResource = getFirebaseResource<UserOpDecoded, EthUserOpId, NetworkId, UserOpInput, UserOpEncoded>(
+export const ethUserOpResource = getFirebaseResource<
+    EthUserOpDecoded,
+    EthUserOpId,
+    NetworkId,
+    EthUserOpInput,
+    EthUserOpEncoded
+>(
     firestore,
     ethUserOpCol,
     {
         encodeId: encodeEthUserOpId,
         decodeId: decodeEthUserOpId,
-        encodeDataPartial: userOpEncodeZod.partial().parse as (userOp: Partial<UserOpInput>) => Partial<UserOpEncoded>,
-        encodeData: userOpEncodeZod.parse as (userOp: UserOpInput) => UserOpEncoded,
-        decodeData: userOpDecodeZod.parse as unknown as (userOp: UserOpEncoded) => UserOpDecoded,
+        encodeDataPartial: encodeEthUserOpDataPartial,
+        encodeData: encodeEthUserOpData,
+        decodeData: decodeEthUserOpData,
         encodeParentDocId: encodeNetworkId,
         decodeParentDocId: decodeNetworkId,
     },

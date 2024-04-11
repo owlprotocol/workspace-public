@@ -8,9 +8,8 @@ export interface EthLogId {
     readonly blockHash: Hash;
     readonly logIndex: number;
 }
-export const ethLogIdEncodeZod = z
-    .object({ blockHash: bytes32Zod, logIndex: z.number() })
-    .transform(({ blockHash, logIndex }) => `${blockHash}-${logIndex}`);
+export const ethLogIdZod = z.object({ blockHash: bytes32Zod, logIndex: z.number() });
+export const ethLogIdEncodeZod = ethLogIdZod.transform(({ blockHash, logIndex }) => `${blockHash}-${logIndex}`);
 export const encodeEthLogId: (id: EthLogId) => string = ethLogIdEncodeZod.parse;
 
 export const ethLogIdRegex = /^(?<blockHash>0x[a-fA-F0-9]{64})-(?<logIndex>\d+$)/;

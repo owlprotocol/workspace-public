@@ -12,6 +12,7 @@ import {
     LocalAccount,
     Account,
     ClientConfig,
+    numberToHex,
 } from "viem";
 import { PimlicoPaymasterClient } from "permissionless/clients/pimlico";
 import { pimlicoPaymasterActions } from "permissionless/actions/pimlico";
@@ -85,9 +86,9 @@ export function createLocalPaymasterClient(
             }
 
             //Gas estimation mock
-            const callGasLimit = userOperation.callGasLimit ?? (("0x" + 10_000_000n.toString(16)) as Hex);
+            const callGasLimit = userOperation.callGasLimit ?? numberToHex(10_000_000n);
             const verificationGasLimit = userOperation.verificationGasLimit ?? callGasLimit;
-            const preVerificationGas = userOperation.preVerificationGas ?? (("0x" + 1_000_000n.toString(16)) as Hex);
+            const preVerificationGas = userOperation.preVerificationGas ?? numberToHex(1_000_000n);
             const paymasterVerificationGasLimit = userOperation.paymasterVerificationGasLimit ?? callGasLimit;
             const paymasterPostOpGasLimit = userOperation.paymasterPostOpGasLimit ?? callGasLimit;
 

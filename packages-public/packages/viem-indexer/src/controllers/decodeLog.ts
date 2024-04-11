@@ -19,10 +19,10 @@ import { Transfer as TransferERC721 } from "@owlprotocol/contracts-diamond/artif
 import { TransferSingle, TransferBatch } from "@owlprotocol/contracts-diamond/artifacts/IERC1155";
 
 import { uniqBy } from "lodash-es";
+import { EthLogAbiResource } from "@owlprotocol/eth-firebase/models";
 import { updateERC20Allowance, updateERC20Balance } from "./erc20.js";
 import { updateERC1155Balance } from "./erc1155.js";
 import { updateERC721Owner } from "./erc721.js";
-import { EthLogAbiResource } from "../models/EthLogAbi.js";
 import { EthResources } from "../createIndexerClient.js";
 
 /**

@@ -31,7 +31,7 @@ import {
     EthLogResource,
     EthTransactionReceiptResource,
     EthTransactionResource,
-} from "./models/index.js";
+} from "@owlprotocol/eth-firebase/models";
 import { decodeLogWithAbis, decodeLogWithFirebase } from "./controllers/index.js";
 
 export interface EthResources {

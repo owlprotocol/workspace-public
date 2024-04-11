@@ -11,6 +11,9 @@ import {
     concatHex,
     Hash,
     Account,
+    slice,
+    getAddress,
+    numberToHex,
 } from "viem";
 //permissionles
 import { GetUserOperationReceiptReturnType, UserOperation, getAccountNonce } from "permissionless";
@@ -30,23 +33,19 @@ import { UserOperationWithBigIntAsHex, PackedUserOperation } from "./types/permi
 export function encodeUserOp(userOp: UserOperation<"v0.7">): UserOperationWithBigIntAsHex<"v0.7"> {
     return {
         sender: userOp.sender,
-        nonce: ("0x" + userOp.nonce.toString(16)) as Hex,
+        nonce: numberToHex(userOp.nonce),
         factory: userOp.factory ?? zeroAddress,
         factoryData: userOp.factoryData ?? "0x",
         signature: userOp.signature,
         callData: userOp.callData,
-        callGasLimit: ("0x" + userOp.callGasLimit.toString(16)) as Hex,
-        verificationGasLimit: ("0x" + userOp.verificationGasLimit.toString(16)) as Hex,
-        preVerificationGas: ("0x" + userOp.preVerificationGas.toString(16)) as Hex,
-        maxFeePerGas: ("0x" + userOp.maxFeePerGas.toString(16)) as Hex,
-        maxPriorityFeePerGas: ("0x" + userOp.maxPriorityFeePerGas.toString(16)) as Hex,
+        callGasLimit: numberToHex(userOp.callGasLimit),
+        verificationGasLimit: numberToHex(userOp.verificationGasLimit),
+        preVerificationGas: numberToHex(userOp.preVerificationGas),
+        maxFeePerGas: numberToHex(userOp.maxFeePerGas),
+        maxPriorityFeePerGas: numberToHex(userOp.maxPriorityFeePerGas),
         paymaster: userOp.paymaster ?? zeroAddress,
-        paymasterVerificationGasLimit: userOp.paymasterVerificationGasLimit
-            ? (("0x" + userOp.paymasterVerificationGasLimit.toString(16)) as Hex)
-            : "0x0",
-        paymasterPostOpGasLimit: userOp.paymasterVerificationGasLimit
-            ? (("0x" + userOp.paymasterVerificationGasLimit.toString(16)) as Hex)
-            : "0x0",
+        paymasterVerificationGasLimit: numberToHex(userOp.paymasterVerificationGasLimit ?? 0n),
+        paymasterPostOpGasLimit: numberToHex(userOp.paymasterVerificationGasLimit ?? 0n),
         paymasterData: userOp.paymasterData ?? "0x",
     };
 }
@@ -60,8 +59,8 @@ export function decodeUserOp(userOp: UserOperationWithBigIntAsHex<"v0.7">): User
     return {
         sender: userOp.sender,
         nonce: BigInt(userOp.nonce),
-        factory: userOp.factory ?? zeroAddress,
-        factoryData: userOp.factoryData ?? "0x",
+        factory: userOp.factory != zeroAddress ? userOp.factory : undefined,
+        factoryData: userOp.factory != zeroAddress && userOp.factoryData != "0x" ? userOp.factoryData : undefined,
         signature: userOp.signature,
         callData: userOp.callData,
         callGasLimit: BigInt(userOp.callGasLimit),
@@ -69,10 +68,10 @@ export function decodeUserOp(userOp: UserOperationWithBigIntAsHex<"v0.7">): User
         preVerificationGas: BigInt(userOp.preVerificationGas),
         maxFeePerGas: BigInt(userOp.maxFeePerGas),
         maxPriorityFeePerGas: BigInt(userOp.maxPriorityFeePerGas),
-        paymaster: userOp.paymaster ?? zeroAddress,
+        paymaster: userOp.paymaster != zeroAddress ? userOp.paymaster : undefined,
         paymasterVerificationGasLimit: BigInt(userOp.paymasterVerificationGasLimit),
         paymasterPostOpGasLimit: BigInt(userOp.paymasterVerificationGasLimit),
-        paymasterData: userOp.paymasterData,
+        paymasterData: userOp.paymasterData != "0x" ? userOp.paymasterData : undefined,
     };
 }
 
@@ -109,6 +108,73 @@ export function packAccountGasLimits(verificationGasLimit: Hex, callGasLimit: He
         pad(verificationGasLimit, { dir: "left", size: 16 }),
         pad(callGasLimit, { dir: "left", size: 16 }),
     ]);
+}
+
+export function unpackInitCode(initCode: Hex) {
+    if (initCode === "0x") {
+        return {
+            factory: null,
+            factoryData: null,
+        };
+    }
+    return {
+        factory: getAddress(slice(initCode, 0, 20)),
+        factoryData: slice(initCode, 20),
+    };
+}
+
+export function unpackGasLimits(gasLimits: Hex) {
+    return {
+        maxPriorityFeePerGas: BigInt(slice(gasLimits, 0, 16)),
+        maxFeePerGas: BigInt(slice(gasLimits, 16)),
+    };
+}
+
+export function unpackPaymasterAndData(paymasterAndData: Hex) {
+    if (paymasterAndData === "0x") {
+        return {
+            paymaster: null,
+            paymasterVerificationGasLimit: null,
+            paymasterPostOpGasLimit: null,
+            paymasterData: null,
+        };
+    }
+    return {
+        paymaster: getAddress(slice(paymasterAndData, 0, 20)),
+        paymasterVerificationGasLimit: BigInt(slice(paymasterAndData, 20, 36)),
+        paymasterPostOpGasLimit: BigInt(slice(paymasterAndData, 36, 52)),
+        paymasterData: slice(paymasterAndData, 52),
+    };
+}
+
+export function unpackUserOp(packedUserOperation: PackedUserOperation): UserOperationWithBigIntAsHex<"v0.7"> {
+    const { factory, factoryData } = unpackInitCode(packedUserOperation.initCode);
+
+    const { callGasLimit, verificationGasLimit } = unpackAccountGasLimits(packedUserOperation.accountGasLimits);
+
+    const { maxFeePerGas, maxPriorityFeePerGas } = unpackGasLimits(packedUserOperation.gasFees);
+
+    const { paymaster, paymasterVerificationGasLimit, paymasterPostOpGasLimit, paymasterData } = unpackPaymasterAndData(
+        packedUserOperation.paymasterAndData,
+    );
+
+    return {
+        sender: packedUserOperation.sender,
+        nonce: numberToHex(packedUserOperation.nonce),
+        factory: factory ?? zeroAddress,
+        factoryData: factoryData ?? "0x",
+        callData: packedUserOperation.callData,
+        callGasLimit: numberToHex(callGasLimit),
+        verificationGasLimit: numberToHex(verificationGasLimit),
+        preVerificationGas: numberToHex(packedUserOperation.preVerificationGas),
+        maxFeePerGas: numberToHex(maxFeePerGas),
+        maxPriorityFeePerGas: numberToHex(maxPriorityFeePerGas),
+        paymaster: paymaster ?? zeroAddress,
+        paymasterVerificationGasLimit: numberToHex(paymasterVerificationGasLimit ?? 0n),
+        paymasterPostOpGasLimit: numberToHex(paymasterPostOpGasLimit ?? 0n),
+        paymasterData: paymasterData ?? "0x",
+        signature: packedUserOperation.signature,
+    };
 }
 
 /**

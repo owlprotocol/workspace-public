@@ -15,7 +15,6 @@ import { getAddress } from "viem/utils";
 import { deleteEmulatorData } from "@owlprotocol/crud-firebase/admin";
 import { sleep } from "@owlprotocol/utils";
 import { omit } from "lodash-es";
-import { createIndexerPublicClientForSdk } from "./createIndexerClient.js";
 import {
     ethBlockResource,
     ethLogResource,
@@ -27,7 +26,8 @@ import {
     erc20BalanceResource,
     erc721Resource,
     erc1155BalanceResource,
-} from "./admin/index.js";
+} from "@owlprotocol/eth-firebase/admin";
+import { createIndexerPublicClientForSdk } from "./createIndexerClient.js";
 
 /**
  * For block comparisons between viem

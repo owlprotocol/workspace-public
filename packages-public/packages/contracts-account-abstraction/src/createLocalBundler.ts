@@ -12,6 +12,8 @@ import {
     createPublicClient,
     createWalletClient,
     ClientConfig,
+    decodeFunctionData,
+    numberToHex,
 } from "viem";
 import { bundlerActions } from "permissionless";
 import { PimlicoBundlerClient } from "permissionless/clients/pimlico";
@@ -19,9 +21,30 @@ import { pimlicoBundlerActions } from "permissionless/actions/pimlico";
 import { ENTRYPOINT_ADDRESS_V07_TYPE, GetEntryPointVersion } from "permissionless/types";
 import { getEntryPointVersion, getUserOperationHash } from "permissionless/utils";
 import { omit } from "lodash-es";
-import { IEntryPoint } from "./artifacts/IEntryPoint.js";
-import { packUserOp, decodeUserOp } from "./userOp.js";
-import { UserOperationReceiptWithBigIntAsHex, UserOperationWithBigIntAsHex } from "./types/permissionless.js";
+import { ethUserOpResource } from "@owlprotocol/eth-firebase/admin";
+import { IEntryPoint, UserOperationEvent, handleOps } from "./artifacts/IEntryPoint.js";
+import { packUserOp, decodeUserOp, unpackUserOp } from "./userOp.js";
+import {
+    PackedUserOperation,
+    UserOperationReceiptWithBigIntAsHex,
+    UserOperationWithBigIntAsHex,
+} from "./types/permissionless.js";
+
+/**
+ * Local bundler config
+ */
+export type LocalBundlerConfig = ClientConfig<Transport, Chain, Account> & {
+    /** EntryPoint address (only v0.7 supported) */
+    entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
+    /** Chain config */
+    chain: Chain;
+    /** Public client override. Use this instead of instantiating a new one */
+    publicClient?: PublicClient<Transport, Chain>;
+    /** Wallet client override. Use this instead of instantiating a new one */
+    walletClient?: WalletClient<Transport, Chain, Account>;
+    /** Rpc max block range. Max block range for fetching logs. Used by `eth_getUserOperationByHash` */
+    rpcMaxBlockRange?: bigint;
+};
 
 /**
  * Creates a local bundler EIP1193 client that can be used for
@@ -29,12 +52,7 @@ import { UserOperationReceiptWithBigIntAsHex, UserOperationWithBigIntAsHex } fro
  * Needs an account to submit transactions.
  */
 export function createLocalBundlerClient(
-    parameters: ClientConfig<Transport, Chain, Account> & {
-        entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
-        chain: Chain;
-        publicClient?: PublicClient<Transport, Chain>;
-        walletClient?: WalletClient<Transport, Chain, Account>;
-    },
+    parameters: LocalBundlerConfig,
 ): PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE> {
     const entryPointVersion = getEntryPointVersion(parameters.entryPoint);
     if (entryPointVersion != "v0.7" && entryPointVersion != "v0.6") {
@@ -45,19 +63,7 @@ export function createLocalBundlerClient(
     }
     const supportedEntryPoints = [parameters.entryPoint];
 
-    //TODO: Unbound memory
-    const userOpsByHash: Record<
-        string,
-        {
-            userOperation: UserOperationWithBigIntAsHex<GetEntryPointVersion<ENTRYPOINT_ADDRESS_V07_TYPE>>;
-            entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
-            transactionHash: Hash;
-            blockHash: Hash;
-            blockNumber: Hex;
-        }
-    > = {};
-
-    const { key = "public", name = "Local Bundler Client", chain } = parameters;
+    const { key = "public", name = "Local Bundler Client", chain, rpcMaxBlockRange } = parameters;
     //Remove non-standard keys from config, doesn't break anything but more aligned with original
     const clientConfig: ClientConfig<Transport, Chain, Account> = omit(parameters, [
         "walletClient",
@@ -98,7 +104,7 @@ export function createLocalBundlerClient(
 
             //TODO: Add bundling, aggregate UserOps and submit
 
-            //Submit userOp
+            //Simulate userOp
             const { request } = await publicClient.simulateContract({
                 account: walletClient.account,
                 address: entryPoint,
@@ -106,7 +112,9 @@ export function createLocalBundlerClient(
                 functionName: "handleOps",
                 args: handleOpsArgs,
             });
-            const hash = await walletClient.writeContract(request as any);
+
+            //Submit userOp in background
+            walletClient.writeContract(request as any);
 
             //Compute userOp hash
             const userOpHash: Hash = getUserOperationHash<ENTRYPOINT_ADDRESS_V07_TYPE>({
@@ -115,16 +123,14 @@ export function createLocalBundlerClient(
                 chainId: chain.id,
             });
 
-            //Asynchronously fetch receipt
-            publicClient.waitForTransactionReceipt({ hash }).then((receipt) => {
-                userOpsByHash[userOpHash] = {
-                    userOperation: userOp,
-                    entryPoint,
-                    transactionHash: hash,
-                    blockHash: receipt.blockHash,
-                    blockNumber: ("0x" + receipt.blockNumber.toString(16)) as Hex,
-                };
+            //Cache userOp
+            //To get transactionHash and other post-execution data, call `eth_getUserOperationReceipt`
+            ethUserOpResource.upsert({
+                chainId: chain.id,
+                userOpHash,
+                ...userOp,
             });
+
             return userOpHash;
         } else if (args.method === "eth_estimateUserOperationGas") {
             //TODO: Add support v0.6
@@ -138,11 +144,11 @@ export function createLocalBundlerClient(
                 const paymasterVerificationGasLimit = verificationGasLimit;
                 const paymasterPostOpGasLimit = verificationGasLimit;
                 return {
-                    preVerificationGas: "0x" + preVerificationGas.toString(16),
-                    verificationGasLimit: "0x" + verificationGasLimit.toString(16),
-                    callGasLimit: "0x" + callGasLimit.toString(16),
-                    paymasterVerificationGasLimit: "0x" + paymasterVerificationGasLimit.toString(16),
-                    paymasterPostOpGasLimit: "0x" + paymasterPostOpGasLimit.toString(16),
+                    preVerificationGas: numberToHex(preVerificationGas),
+                    verificationGasLimit: numberToHex(verificationGasLimit),
+                    callGasLimit: numberToHex(callGasLimit),
+                    paymasterVerificationGasLimit: numberToHex(paymasterVerificationGasLimit),
+                    paymasterPostOpGasLimit: numberToHex(paymasterPostOpGasLimit),
                 } as {
                     preVerificationGas: Hex;
                     verificationGasLimit: Hex;
@@ -154,35 +160,206 @@ export function createLocalBundlerClient(
         } else if (args.method === "eth_supportedEntryPoints") {
             return supportedEntryPoints;
         } else if (args.method === "eth_getUserOperationByHash") {
-            const [hash] = args.params as [Hash];
-            return userOpsByHash[hash];
+            const [userOpHash] = args.params as [Hash];
+            let fromBlock: bigint | undefined = undefined;
+            let toBlock: "latest" | undefined = undefined;
+            if (rpcMaxBlockRange !== undefined) {
+                const latestBlock = await publicClient.getBlockNumber();
+                fromBlock = latestBlock - rpcMaxBlockRange;
+                if (fromBlock < 0n) {
+                    fromBlock = 0n;
+                }
+                toBlock = "latest";
+            }
+
+            const filterResult = await publicClient.getLogs({
+                address: parameters.entryPoint,
+                event: UserOperationEvent,
+                fromBlock,
+                toBlock,
+                args: {
+                    userOpHash,
+                },
+            });
+
+            if (filterResult.length === 0) {
+                return null;
+            }
+
+            const userOperationEvent = filterResult[0];
+            const txHash = userOperationEvent.transactionHash;
+            if (txHash === null) {
+                // transaction pending
+                return null;
+            }
+            const tx = await publicClient.getTransaction({ hash: txHash });
+
+            let op: PackedUserOperation | undefined = undefined;
+            try {
+                const decoded = decodeFunctionData({
+                    abi: [handleOps],
+                    data: tx.input,
+                });
+
+                const ops = decoded.args[0];
+                op = ops.find(
+                    (op: PackedUserOperation) =>
+                        op.sender === userOperationEvent.args.sender && op.nonce === userOperationEvent.args.nonce,
+                );
+            } catch {
+                return null;
+            }
+
+            if (op === undefined) {
+                return null;
+            }
+
+            const result = {
+                userOperation: unpackUserOp(op),
+                entryPoint: parameters.entryPoint,
+                transactionHash: txHash,
+                blockHash: tx.blockHash ?? "0x",
+                blockNumber: numberToHex(tx.blockNumber ?? 0n),
+            } as {
+                userOperation: UserOperationWithBigIntAsHex<GetEntryPointVersion<ENTRYPOINT_ADDRESS_V07_TYPE>>;
+                entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
+                transactionHash: Hash;
+                blockHash: Hash;
+                blockNumber: Hex;
+            };
+
+            //Cache userOp
+            ethUserOpResource.upsert({
+                chainId: chain.id,
+                userOpHash,
+                transactionHash: txHash,
+                blockHash: tx.blockHash ?? "0x",
+                blockNumber: numberToHex(tx.blockNumber ?? 0n),
+                ...result.userOperation,
+            });
+
+            return result;
         } else if (args.method === "eth_getUserOperationReceipt") {
-            const [hash] = args.params as [Hash];
-            const userOp = userOpsByHash[hash];
-            if (!userOp) return null;
+            const [userOpHash] = args.params as [Hash];
+            let fromBlock: bigint | undefined = undefined;
+            let toBlock: "latest" | undefined = undefined;
+            if (rpcMaxBlockRange !== undefined) {
+                const latestBlock = await publicClient.getBlockNumber();
+                fromBlock = latestBlock - rpcMaxBlockRange;
+                if (fromBlock < 0n) {
+                    fromBlock = 0n;
+                }
+                toBlock = "latest";
+            }
+
+            const filterResult = await publicClient.getLogs({
+                address: parameters.entryPoint,
+                event: UserOperationEvent,
+                fromBlock,
+                toBlock,
+                args: {
+                    userOpHash,
+                },
+            });
+
+            if (filterResult.length === 0) {
+                return null;
+            }
+
+            const userOperationEvent = filterResult[0];
+            // throw if any of the members of userOperationEvent are undefined
+            if (
+                userOperationEvent.args.actualGasCost === undefined ||
+                userOperationEvent.args.sender === undefined ||
+                userOperationEvent.args.nonce === undefined ||
+                userOperationEvent.args.userOpHash === undefined ||
+                userOperationEvent.args.success === undefined ||
+                userOperationEvent.args.paymaster === undefined ||
+                userOperationEvent.args.actualGasUsed === undefined
+            ) {
+                throw new Error("userOperationEvent has undefined members");
+            }
+
+            const txHash = userOperationEvent.transactionHash;
+            if (txHash === null) {
+                // transaction pending
+                return null;
+            }
+
             const receipt: RpcTransactionReceipt = await publicClient.request({
                 method: "eth_getTransactionReceipt",
-                params: [userOp.transactionHash],
+                params: [txHash],
             });
-            //TODO: Add data here
+
+            //We will filter the receipt logs, sanity check makes sure logs are confirmed
+            //This is a bit overkill as we could also just check if receipt is confirmed
+            const logs = receipt.logs;
+            if (
+                logs.some(
+                    (log) =>
+                        log.blockHash === null ||
+                        log.blockNumber === null ||
+                        log.transactionIndex === null ||
+                        log.transactionHash === null ||
+                        log.logIndex === null ||
+                        log.topics.length === 0,
+                )
+            ) {
+                // transaction pending
+                return null;
+            }
+
+            //This logic filters logs emitted for this UserOp
+            let startIndex = -1;
+            let endIndex = -1;
+            logs.forEach((log, index) => {
+                if (log?.topics[0] === userOperationEvent.topics[0]) {
+                    // process UserOperationEvent
+                    if (log.topics[1] === userOperationEvent.topics[1]) {
+                        // it's our userOpHash. save as end of logs array
+                        endIndex = index;
+                    } else if (endIndex === -1) {
+                        // it's a different hash. remember it as beginning index, but only if we didn't find our end index yet.
+                        startIndex = index;
+                    }
+                }
+            });
+            if (endIndex === -1) {
+                throw new Error("fatal: no UserOperationEvent in logs");
+            }
+
+            const filteredLogs = logs.slice(startIndex + 1, endIndex);
+
             const response: UserOperationReceiptWithBigIntAsHex = {
-                userOpHash: hash,
-                sender: userOp.userOperation.sender,
-                nonce: userOp.userOperation.nonce,
-                //TODO: Return full gas for now
-                actualGasUsed: receipt.gasUsed,
-                //TODO: unkown, is this gasUsed * effectiveGasPrice?
-                actualGasCost: "0x0",
-                success: true,
+                userOpHash,
+                sender: userOperationEvent.args.sender,
+                nonce: numberToHex(userOperationEvent.args.nonce),
+                actualGasUsed: numberToHex(userOperationEvent.args.actualGasUsed),
+                actualGasCost: numberToHex(userOperationEvent.args.actualGasCost),
+                success: userOperationEvent.args.success,
                 receipt,
-                logs: receipt.logs,
+                logs: filteredLogs,
             };
+
+            //Cache userOp
+            ethUserOpResource.update({
+                chainId: chain.id,
+                userOpHash,
+                transactionHash: receipt.transactionHash,
+                actualGasUsed: numberToHex(userOperationEvent.args.actualGasUsed),
+                actualGasCost: numberToHex(userOperationEvent.args.actualGasCost),
+                success: userOperationEvent.args.success,
+                logIds: filteredLogs.map((l) => {
+                    return { blockHash: l.blockHash, logIndex: parseInt(l.logIndex) };
+                }),
+            });
+
             return response;
         } else if (args.method === "pimlico_getUserOperationGasPrice") {
             const gasPrice = await publicClient.estimateFeesPerGas();
             const gasPriceHex = {
-                maxFeePerGas: "0x" + gasPrice.maxFeePerGas!.toString(16),
-                maxPriorityFeePerGas: "0x" + gasPrice.maxPriorityFeePerGas!.toString(16),
+                maxFeePerGas: numberToHex(gasPrice.maxFeePerGas!),
+                maxPriorityFeePerGas: numberToHex(gasPrice.maxPriorityFeePerGas!),
             } as {
                 maxFeePerGas: Hex;
                 maxPriorityFeePerGas: Hex;
