@@ -9,10 +9,17 @@ import {
     userOpEncodeZod,
 } from "@owlprotocol/zod-sol";
 import { z } from "zod";
-import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
+import {
+    FirestoreSDK,
+    FirebaseQueryResource,
+    Query,
+    FirebaseResource,
+    FieldOverridesSchema,
+} from "@owlprotocol/crud-firebase";
 import { Hash } from "viem";
 import { NetworkId } from "./Network.js";
 import { EthLogId, ethLogIdZod } from "./EthLog.js";
+export * from "@owlprotocol/zod-sol/eth/UserOp";
 
 export interface EthUserOpId {
     readonly userOpHash: Hash;
@@ -136,3 +143,29 @@ export type EthUserOpGroupQueryResource = FirebaseQueryResource<
     EthUserOpEncoded,
     Query<FirestoreSDK, EthUserOpEncoded>
 >;
+
+export const EthUserOpFieldOverrides: FieldOverridesSchema<keyof EthUserOpInput> = {
+    userOpHash: "COLLECTION_GROUP",
+    blockHash: "COLLECTION_GROUP",
+    blockNumber: "COLLECTION",
+    transactionHash: "COLLECTION_GROUP",
+    actualGasUsed: "IGNORE",
+    actualGasCost: "IGNORE",
+    success: "IGNORE",
+    logIds: "IGNORE",
+    sender: "COLLECTION_GROUP",
+    nonce: "IGNORE",
+    factory: "COLLECTION",
+    factoryData: "IGNORE",
+    callData: "IGNORE",
+    callGasLimit: "IGNORE",
+    verificationGasLimit: "IGNORE",
+    preVerificationGas: "IGNORE",
+    maxFeePerGas: "IGNORE",
+    maxPriorityFeePerGas: "IGNORE",
+    paymaster: "COLLECTION",
+    paymasterVerificationGasLimit: "IGNORE",
+    paymasterPostOpGasLimit: "IGNORE",
+    paymasterData: "IGNORE",
+    signature: "IGNORE",
+};

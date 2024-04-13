@@ -37,6 +37,16 @@
       "require": "./lib/cjs/index.js",
       "import": "./lib/esm/index.js"
     },
+    "./eth": {
+      "types": "./lib/types/eth/index.d.ts",
+      "require": "./lib/cjs/eth/index.js",
+      "import": "./lib/esm/eth/index.js"
+    },
+    "./eth/*": {
+      "types": "./lib/types/eth/*.d.ts",
+      "require": "./lib/cjs/eth/*.js",
+      "import": "./lib/esm/eth/*.js"
+    },
     "./zod-codegen": {
       "types": "./lib/types/zod-codegen/index.d.ts",
       "require": "./lib/cjs/zod-codegen/index.js",

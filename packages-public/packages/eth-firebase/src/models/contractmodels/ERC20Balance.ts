@@ -1,4 +1,10 @@
-import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
+import {
+    FirestoreSDK,
+    FirebaseQueryResource,
+    Query,
+    FirebaseResource,
+    FieldOverridesSchema,
+} from "@owlprotocol/crud-firebase";
 import { addressZod, quantityDecodeZod, quantityEncodeZod } from "@owlprotocol/zod-sol";
 import { z } from "zod";
 import { Address } from "viem";
@@ -105,3 +111,10 @@ expectType<TypeOf<z.input<typeof erc20BalanceEncodeZod>, ERC20BalanceInput>>(tru
 expectType<TypeOf<z.output<typeof erc20BalanceEncodeZod>, ERC20BalanceEncoded>>(true);
 expectType<TypeOf<z.input<typeof erc20BalanceDecodeZod>, ERC20BalanceEncoded>>(true);
 expectType<TypeOf<z.output<typeof erc20BalanceDecodeZod>, ERC20BalanceDecoded>>(true);
+
+export const ERC20BalanceFieldOverrides: FieldOverridesSchema<keyof ERC20BalanceInput> = {
+    address: "COLLECTION_GROUP",
+    account: "COLLECTION_GROUP",
+    balance: "IGNORE",
+    blockNumber: "IGNORE",
+};

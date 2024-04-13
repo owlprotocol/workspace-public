@@ -342,17 +342,20 @@ export function createLocalBundlerClient(
             };
 
             //Cache userOp
-            ethUserOpResource.update({
-                chainId: chain.id,
-                userOpHash,
-                transactionHash: receipt.transactionHash,
-                actualGasUsed: numberToHex(userOperationEvent.args.actualGasUsed),
-                actualGasCost: numberToHex(userOperationEvent.args.actualGasCost),
-                success: userOperationEvent.args.success,
-                logIds: filteredLogs.map((l) => {
-                    return { blockHash: l.blockHash, logIndex: parseInt(l.logIndex) };
-                }),
-            });
+            ethUserOpResource.set(
+                {
+                    chainId: chain.id,
+                    userOpHash,
+                    transactionHash: receipt.transactionHash,
+                    actualGasUsed: numberToHex(userOperationEvent.args.actualGasUsed),
+                    actualGasCost: numberToHex(userOperationEvent.args.actualGasCost),
+                    success: userOperationEvent.args.success,
+                    logIds: filteredLogs.map((l) => {
+                        return { blockHash: l.blockHash, logIndex: parseInt(l.logIndex) };
+                    }),
+                },
+                { merge: true },
+            );
 
             return response;
         } else if (args.method === "pimlico_getUserOperationGasPrice") {

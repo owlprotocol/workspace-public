@@ -1,4 +1,10 @@
-import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
+import {
+    FirestoreSDK,
+    FirebaseQueryResource,
+    Query,
+    FirebaseResource,
+    FieldOverridesSchema,
+} from "@owlprotocol/crud-firebase";
 import { addressZod, quantityDecodeZod, quantityEncodeZod } from "@owlprotocol/zod-sol";
 import { expectType, TypeOf } from "ts-expect";
 import { z } from "zod";
@@ -114,3 +120,11 @@ expectType<TypeOf<z.input<typeof erc20AllowanceEncodeZod>, ERC20AllowanceInput>>
 expectType<TypeOf<z.output<typeof erc20AllowanceEncodeZod>, ERC20AllowanceEncoded>>(true);
 expectType<TypeOf<z.input<typeof erc20AllowanceDecodeZod>, ERC20AllowanceEncoded>>(true);
 expectType<TypeOf<z.output<typeof erc20AllowanceDecodeZod>, ERC20AllowanceDecoded>>(true);
+
+export const ERC20AllowanceFieldOverrides: FieldOverridesSchema<keyof ERC20AllowanceInput> = {
+    address: "COLLECTION_GROUP",
+    account: "COLLECTION_GROUP",
+    spender: "COLLECTION_GROUP",
+    balance: "IGNORE",
+    blockNumber: "IGNORE",
+};

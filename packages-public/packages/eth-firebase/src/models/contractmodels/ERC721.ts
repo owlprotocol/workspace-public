@@ -1,7 +1,13 @@
 import { addressZod, quantityDecodeZod, quantityEncodeZod } from "@owlprotocol/zod-sol";
 import { TypeOf, expectType } from "ts-expect";
 import { z } from "zod";
-import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
+import {
+    FirestoreSDK,
+    FirebaseQueryResource,
+    Query,
+    FirebaseResource,
+    FieldOverridesSchema,
+} from "@owlprotocol/crud-firebase";
 import { Address } from "viem";
 import { NetworkId } from "../Network.js";
 
@@ -141,3 +147,16 @@ expectType<TypeOf<z.input<typeof erc721EncodeZod>, ERC721Input>>(true);
 expectType<TypeOf<z.output<typeof erc721EncodeZod>, ERC721Encoded>>(true);
 expectType<TypeOf<z.input<typeof erc721DecodeZod>, ERC721Encoded>>(true);
 expectType<TypeOf<z.output<typeof erc721DecodeZod>, ERC721Decoded>>(true);
+
+export const ERC721FieldOverrides: FieldOverridesSchema<keyof ERC721Input> = {
+    address: "COLLECTION_GROUP",
+    tokenId: "IGNORE",
+    owner: "COLLECTION_GROUP",
+    approved: "COLLECTION_GROUP",
+    ownerBlockNumber: "IGNORE",
+    approvedBlockNumber: "IGNORE",
+    tokenURI: "IGNORE",
+    tokenURIBlockNumber: "IGNORE",
+    metadata: "IGNORE",
+    metadataUpdatedAt: "IGNORE",
+};

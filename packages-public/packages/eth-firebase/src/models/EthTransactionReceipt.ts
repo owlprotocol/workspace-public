@@ -5,9 +5,16 @@ import {
     bytes32Zod,
 } from "@owlprotocol/zod-sol";
 import { z } from "zod";
-import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
+import {
+    FirestoreSDK,
+    FirebaseQueryResource,
+    Query,
+    FirebaseResource,
+    FieldOverridesSchema,
+} from "@owlprotocol/crud-firebase";
 import { Hash } from "viem";
 import { NetworkId } from "./Network.js";
+export * from "@owlprotocol/zod-sol/eth/TransactionReceipt";
 
 export interface EthTransactionReceiptId {
     readonly transactionHash: Hash;
@@ -49,3 +56,22 @@ export type EthTransactionReceiptGroupQueryResource = FirebaseQueryResource<
     TransactionReceiptEncoded,
     Query<FirestoreSDK, TransactionReceiptEncoded>
 >;
+
+export const EthTransactionReceiptFieldOverrides: FieldOverridesSchema<keyof TransactionReceiptInput> = {
+    transactionHash: "COLLECTION_GROUP",
+    blockNumber: "COLLECTION",
+    blockHash: "COLLECTION_GROUP",
+    transactionIndex: "IGNORE",
+    from: "COLLECTION_GROUP",
+    to: "COLLECTION_GROUP",
+    contractAddress: "IGNORE",
+    type: "IGNORE",
+    status: "IGNORE",
+    root: "IGNORE",
+    gasUsed: "IGNORE",
+    cumulativeGasUsed: "IGNORE",
+    effectiveGasPrice: "IGNORE",
+    blobGasUsed: "IGNORE",
+    blobGasPrice: "IGNORE",
+    logsBloom: "IGNORE",
+};

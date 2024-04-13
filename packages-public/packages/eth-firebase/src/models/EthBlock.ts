@@ -1,8 +1,15 @@
 import { BlockDecoded, BlockEncoded, BlockInput, bytes32Zod } from "@owlprotocol/zod-sol";
 import { z } from "zod";
-import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
+import {
+    FirestoreSDK,
+    FirebaseQueryResource,
+    Query,
+    FirebaseResource,
+    FieldOverridesSchema,
+} from "@owlprotocol/crud-firebase";
 import { Hash } from "viem";
 import { NetworkId } from "./Network.js";
+export * from "@owlprotocol/zod-sol/eth/Block";
 export interface EthBlockId {
     readonly hash: Hash;
 }
@@ -41,3 +48,32 @@ export type EthBlockGroupQueryResource = FirebaseQueryResource<
     BlockEncoded,
     Query<FirestoreSDK, BlockEncoded>
 >;
+
+export const EthBlockFieldOverrides: FieldOverridesSchema<keyof BlockInput> = {
+    hash: "COLLECTION_GROUP",
+    number: "COLLECTION",
+    parentHash: "IGNORE",
+    nonce: "IGNORE",
+    difficulty: "IGNORE",
+    totalDifficulty: "IGNORE",
+    miner: "IGNORE",
+    extraData: "IGNORE",
+    mixHash: "IGNORE",
+    size: "IGNORE",
+    stateRoot: "IGNORE",
+    timestamp: "IGNORE",
+    uncles: "IGNORE",
+    sha3Uncles: "IGNORE",
+    withdrawals: "IGNORE",
+    withdrawalsRoot: "IGNORE",
+    gasLimit: "IGNORE",
+    gasUsed: "IGNORE",
+    baseFeePerGas: "IGNORE",
+    blobGasUsed: "IGNORE",
+    excessBlobGas: "IGNORE",
+    receiptsRoot: "IGNORE",
+    sealFields: "IGNORE",
+    logsBloom: "IGNORE",
+    transactions: "IGNORE",
+    transactionsRoot: "IGNORE",
+};

@@ -1,8 +1,15 @@
-import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
+import {
+    FirestoreSDK,
+    FirebaseQueryResource,
+    Query,
+    FirebaseResource,
+    FieldOverridesSchema,
+} from "@owlprotocol/crud-firebase";
 import { LogDecoded, LogEncoded, LogInput, bytes32Zod } from "@owlprotocol/zod-sol";
 import { z } from "zod";
 import { Hash } from "viem";
 import { NetworkId } from "./Network.js";
+export * from "@owlprotocol/zod-sol/eth/Log";
 
 export interface EthLogId {
     readonly blockHash: Hash;
@@ -36,3 +43,17 @@ export type EthLogGroupQueryResource = FirebaseQueryResource<
     LogEncoded,
     Query<FirestoreSDK, LogEncoded>
 >;
+
+export const EthLogFieldOverrides: FieldOverridesSchema<keyof LogInput> = {
+    transactionHash: "COLLECTION_GROUP",
+    logIndex: "IGNORE",
+    blockNumber: "COLLECTION",
+    blockHash: "COLLECTION_GROUP",
+    transactionIndex: "IGNORE",
+    address: "COLLECTION_GROUP",
+    removed: "IGNORE",
+    topics: "IGNORE",
+    data: "IGNORE",
+    eventName: "COLLECTION_GROUP",
+    args: "COLLECTION_GROUP",
+};

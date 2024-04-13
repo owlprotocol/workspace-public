@@ -4,3 +4,4 @@ export * from "./cache.js";
 export * from "./common.js";
 export * from "./document.js";
 export * from "./query.js";
+export * from "./getIndexes.js";

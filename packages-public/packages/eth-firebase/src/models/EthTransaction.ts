@@ -1,8 +1,15 @@
 import { TransactionDecoded, TransactionEncoded, TransactionInput, bytes32Zod } from "@owlprotocol/zod-sol";
 import { z } from "zod";
-import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
+import {
+    FirestoreSDK,
+    FirebaseQueryResource,
+    Query,
+    FirebaseResource,
+    FieldOverridesSchema,
+} from "@owlprotocol/crud-firebase";
 import { Hash } from "viem";
 import { NetworkId } from "./Network.js";
+export * from "@owlprotocol/zod-sol/eth/Transaction";
 
 export interface EthTransactionId {
     readonly hash: Hash;
@@ -41,3 +48,28 @@ export type EthTransactionGroupQueryResource = FirebaseQueryResource<
     TransactionEncoded,
     Query<FirestoreSDK, TransactionEncoded>
 >;
+
+export const EthTransactionFieldOverrides: FieldOverridesSchema<keyof TransactionInput> = {
+    hash: "COLLECTION_GROUP",
+    blockNumber: "COLLECTION",
+    blockHash: "COLLECTION_GROUP",
+    transactionIndex: "IGNORE",
+    from: "COLLECTION_GROUP",
+    to: "COLLECTION_GROUP",
+    nonce: "IGNORE",
+    input: "IGNORE",
+    value: "IGNORE",
+    gas: "IGNORE",
+    r: "IGNORE",
+    s: "IGNORE",
+    v: "IGNORE",
+    yParity: "IGNORE",
+    type: "IGNORE",
+    chainId: "IGNORE",
+    accessList: "IGNORE",
+    blobVersionedHashes: "IGNORE",
+    gasPrice: "IGNORE",
+    maxPriorityFeePerGas: "IGNORE",
+    maxFeePerGas: "IGNORE",
+    maxFeePerBlobGas: "IGNORE",
+};

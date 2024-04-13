@@ -1,4 +1,10 @@
-import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
+import {
+    FirestoreSDK,
+    FirebaseQueryResource,
+    Query,
+    FirebaseResource,
+    FieldOverridesSchema,
+} from "@owlprotocol/crud-firebase";
 import { addressZod } from "@owlprotocol/zod-sol";
 import { TypeOf, expectType } from "ts-expect";
 import { z } from "zod";
@@ -56,3 +62,12 @@ export type ERC20GroupQueryResource = FirebaseQueryResource<
 //Check zod validator matches interface
 expectType<TypeOf<ERC20Data, z.input<typeof erc20DataZod>>>(true);
 expectType<TypeOf<ERC20Data, z.output<typeof erc20DataZod>>>(true);
+
+export const ERC20FieldOverrides: FieldOverridesSchema<keyof ERC20Data> = {
+    name: "COLLECTION_GROUP",
+    symbol: "COLLECTION_GROUP",
+    decimals: "IGNORE",
+    totalSupply: "IGNORE",
+    logoURI: "IGNORE",
+    listedIn: "IGNORE",
+};

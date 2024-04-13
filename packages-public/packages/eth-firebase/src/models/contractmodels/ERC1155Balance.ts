@@ -1,4 +1,10 @@
-import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
+import {
+    FirestoreSDK,
+    FirebaseQueryResource,
+    Query,
+    FirebaseResource,
+    FieldOverridesSchema,
+} from "@owlprotocol/crud-firebase";
 import { addressZod, quantityDecodeZod, quantityEncodeZod } from "@owlprotocol/zod-sol";
 import { TypeOf, expectType } from "ts-expect";
 import { z } from "zod";
@@ -114,3 +120,11 @@ expectType<TypeOf<z.input<typeof erc1155BalanceEncodeZod>, ERC1155BalanceInput>>
 expectType<TypeOf<z.output<typeof erc1155BalanceEncodeZod>, ERC1155BalanceEncoded>>(true);
 expectType<TypeOf<z.input<typeof erc1155BalanceDecodeZod>, ERC1155BalanceEncoded>>(true);
 expectType<TypeOf<z.output<typeof erc1155BalanceDecodeZod>, ERC1155BalanceDecoded>>(true);
+
+export const ERC1155BalanceFieldOverrides: FieldOverridesSchema<keyof ERC1155BalanceInput> = {
+    address: "COLLECTION_GROUP",
+    account: "COLLECTION_GROUP",
+    id: "IGNORE",
+    balance: "IGNORE",
+    blockNumber: "IGNORE",
+};

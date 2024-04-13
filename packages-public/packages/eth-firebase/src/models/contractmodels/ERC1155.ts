@@ -1,7 +1,13 @@
 import { addressZod } from "@owlprotocol/zod-sol";
 import { TypeOf, expectType } from "ts-expect";
 import { z } from "zod";
-import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
+import {
+    FirestoreSDK,
+    FirebaseQueryResource,
+    Query,
+    FirebaseResource,
+    FieldOverridesSchema,
+} from "@owlprotocol/crud-firebase";
 import { Address } from "viem";
 import { NetworkId } from "../Network.js";
 
@@ -65,3 +71,10 @@ export type ERC1155GroupQueryResource = FirebaseQueryResource<
 //Check zod validator matches interface
 expectType<TypeOf<ERC1155Data, z.input<typeof erc1155DataZod>>>(true);
 expectType<TypeOf<ERC1155Data, z.output<typeof erc1155DataZod>>>(true);
+
+export const ERC1155FieldOverrides: FieldOverridesSchema<keyof ERC1155Data> = {
+    address: "COLLECTION_GROUP",
+    id: "IGNORE",
+    uri: "IGNORE",
+    metadata: "IGNORE",
+};
