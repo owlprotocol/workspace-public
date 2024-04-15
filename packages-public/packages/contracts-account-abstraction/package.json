@@ -49,6 +49,11 @@
       "require": "./lib/cjs/artifacts/*.js",
       "import": "./lib/esm/artifacts/*.js"
     },
+    "./userOp": {
+      "types": "./lib/types/userOp.d.ts",
+      "require": "./lib/cjs/userOp.js",
+      "import": "./lib/esm/userOp.js"
+    },
     "./zsol": {
       "types": "./lib/types/zsol/index.d.ts",
       "require": "./lib/cjs/zsol/index.js",

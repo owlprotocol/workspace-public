@@ -8,5 +8,6 @@ export * from "./Log.js";
 
 export * from "./Transaction.js";
 export * from "./TransactionReceipt.js";
+export * from "./TransactionRequest.js";
 
 export * from "./UserOp.js";

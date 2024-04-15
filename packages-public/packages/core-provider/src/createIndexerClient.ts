@@ -18,6 +18,7 @@ import {
     keccak256,
     custom,
     createPublicClient,
+    numberToHex,
 } from "viem";
 import { BlockEncoded, TransactionEncoded, TransactionTypeInput } from "@owlprotocol/zod-sol";
 import {
@@ -60,7 +61,10 @@ export interface EthResources {
 export async function createIndexerPublicClientForSdk<
     transport extends Transport,
     chain extends Chain | undefined = undefined,
->(parameters: PublicClientConfig<transport, chain>, sdk: EthResources): Promise<PublicClient<transport, chain>> {
+>(
+    parameters: PublicClientConfig<transport, chain> & { chainId?: number },
+    sdk: EthResources,
+): Promise<PublicClient<transport, chain>> {
     //TODO: Override getTransaction This does not return same data as receipt
     const { key = "public", name = "Indexer Public Client" } = parameters;
 
@@ -70,7 +74,14 @@ export async function createIndexerPublicClientForSdk<
         name,
         type: "publicClient",
     });
-    client.request = await createIndexeEIP1193Request(client.request, sdk);
+    client.request = await createIndexeEIP1193RequestForSdk(
+        {
+            request: client.request,
+            chain: parameters.chain,
+            chainId: parameters.chainId,
+        },
+        sdk,
+    );
 
     return client.extend(publicActions);
 }
@@ -105,20 +116,18 @@ export async function createIndexerPublicClientForSdk<
  * @param resources ethBlockResource, ethTransactionResource, ethTransactionReceiptResource, ethLogResource to read/write from firebase cache
  * @returns same client but with overriden actions
  */
-export async function createIndexeEIP1193Request(
-    request: EIP1193RequestFn<PublicRpcSchema>,
+export async function createIndexeEIP1193RequestForSdk(
+    parameters: { request: EIP1193RequestFn<PublicRpcSchema>; chain?: Chain; chainId?: number },
     sdk: EthResources,
 ): Promise<EIP1193RequestFn<PublicRpcSchema>> {
-    //TODO: ChainId should be bigint eventually
-    //Get chainId to pick correct firebase collection
-    const chainIdHex = await request({ method: "eth_chainId" });
-    const chainId = parseInt(chainIdHex);
+    const { request } = parameters;
 
-    //Internal publicClient for contract calls
-    const transport = custom({ request });
-    const publicClient = createPublicClient({
-        chain: {
-            id: chainId,
+    let chain: Chain;
+    if (parameters.chain) {
+        chain = parameters.chain;
+    } else {
+        chain = {
+            id: parameters.chainId ?? parseInt(await request({ method: "eth_chainId" })),
             name: "internal",
             nativeCurrency: {
                 decimals: 18,
@@ -128,13 +137,22 @@ export async function createIndexeEIP1193Request(
             rpcUrls: {
                 default: { http: [] },
             },
-        },
+        };
+    }
+
+    //Get chainId to pick correct firebase collection
+    const chainId = chain.id;
+
+    //Internal publicClient for contract calls
+    const transport = custom({ request });
+    const publicClient = createPublicClient({
+        chain,
         transport,
     });
 
     const requestOverride: EIP1193RequestFn<PublicRpcSchema> = async function requestOverride(args, options) {
         if (args.method === "eth_chainId") {
-            return chainIdHex;
+            return numberToHex(chainId);
         } else if (args.method === "eth_getBlockByHash" || args.method === "eth_getBlockByNumber") {
             //Load transaction from cache if exists
             let block: BlockEncoded | null;

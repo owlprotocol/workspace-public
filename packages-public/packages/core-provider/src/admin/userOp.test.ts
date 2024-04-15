@@ -25,15 +25,16 @@ import { signerToSimpleSmartAccount } from "permissionless/accounts";
 import { createSmartAccountClient } from "permissionless";
 import { signUserOperationHashWithECDSA } from "permissionless";
 import { PimlicoBundlerClient, PimlicoPaymasterClient } from "permissionless/clients/pimlico";
-import { setupNetwork } from "./setupNetwork.js";
+import {
+    getSimpleAccountAddress,
+    createUserOp,
+    executeBatchUserOp,
+    setupNetwork,
+    decodeViemError,
+} from "@owlprotocol/contracts-account-abstraction";
+import { SimpleAccount, VerifyingPaymaster, EntryPoint } from "@owlprotocol/contracts-account-abstraction/artifacts";
 import { createLocalBundlerClient } from "./createLocalBundler.js";
 import { createLocalPaymasterClient } from "./createLocalPaymaster.js";
-import { decodeViemError } from "./isViemError.js";
-import { getSimpleAccountAddress } from "./SimpleAccount.js";
-import { createUserOp, executeBatchUserOp } from "./userOp.js";
-import { VerifyingPaymaster } from "./artifacts/VerifyingPaymaster.js";
-import { abi as EntryPointAbi } from "./artifacts/EntryPoint.js";
-import { SimpleAccount } from "./artifacts/SimpleAccount.js";
 
 describe("userOp.test.ts", function () {
     //Clients
@@ -281,7 +282,7 @@ describe("userOp.test.ts", function () {
             const balance = await publicClient.getBalance({ address: to });
             expect(balance).toBe(value);
         } catch (err: any) {
-            const errorEntryPoint = decodeViemError(err, EntryPointAbi);
+            const errorEntryPoint = decodeViemError(err, EntryPoint.abi);
             if (errorEntryPoint) {
                 console.error(errorEntryPoint);
                 if (errorEntryPoint.errorName === "FailedOpWithRevert") {

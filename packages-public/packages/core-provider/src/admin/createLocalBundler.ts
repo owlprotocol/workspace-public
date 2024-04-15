@@ -22,13 +22,43 @@ import { ENTRYPOINT_ADDRESS_V07_TYPE, GetEntryPointVersion } from "permissionles
 import { getEntryPointVersion, getUserOperationHash } from "permissionless/utils";
 import { omit } from "lodash-es";
 import { ethUserOpResource } from "@owlprotocol/eth-firebase/admin";
-import { IEntryPoint, UserOperationEvent, handleOps } from "./artifacts/IEntryPoint.js";
-import { packUserOp, decodeUserOp, unpackUserOp } from "./userOp.js";
-import {
+import type {
     PackedUserOperation,
     UserOperationReceiptWithBigIntAsHex,
     UserOperationWithBigIntAsHex,
-} from "./types/permissionless.js";
+} from "@owlprotocol/contracts-account-abstraction";
+import {
+    IEntryPoint,
+    UserOperationEvent,
+    handleOps,
+} from "@owlprotocol/contracts-account-abstraction/artifacts/IEntryPoint";
+import { packUserOp, decodeUserOp, unpackUserOp } from "@owlprotocol/contracts-account-abstraction/userOp";
+
+export type BundlerRpcMethod = (typeof bundlerRpcMethods)[number];
+
+export const bundlerRpcMethods = [
+    "eth_sendUserOperation",
+    "eth_estimateUserOperationGas",
+    "eth_supportedEntryPoints",
+    "eth_getUserOperationByHash",
+    "eth_getUserOperationReceipt",
+    //pimlico
+    "eth_getUserOperationGasPrice",
+    "pimlico_getUserOperationGasPrice",
+    "eth_getUserOperationStatus",
+    "pimlico_getUserOperationStatus",
+    "eth_sendCompressedUserOperation",
+    "pimlico_sendCompressedUserOperation",
+] as const;
+
+/**
+ * Check if RPC method is for bundler.
+ * @param method
+ * @returns true if bundler rpc method
+ */
+export function isBundlerRpcMethod(method: string): method is BundlerRpcMethod {
+    return bundlerRpcMethods.includes(method as any);
+}
 
 /**
  * Local bundler config
@@ -54,6 +84,35 @@ export type LocalBundlerConfig = ClientConfig<Transport, Chain, Account> & {
 export function createLocalBundlerClient(
     parameters: LocalBundlerConfig,
 ): PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE> {
+    const { key = "public", name = "Local Bundler Client" } = parameters;
+
+    //Remove non-standard keys from config, doesn't break anything but more aligned with original
+    const clientConfig: ClientConfig<Transport, Chain, Account> = omit(parameters, [
+        "walletClient",
+        "publicClient",
+    ]) as any;
+
+    //We use unknown to speedup type inference. Does this help?
+    const client = createClient({
+        ...clientConfig,
+        key,
+        name,
+        type: "bundlerClient",
+    }) as unknown as PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE>;
+    client.request = createLocalBundlerEIP1193Request({ ...parameters, request: client.request });
+
+    return client.extend(bundlerActions(parameters.entryPoint)).extend(pimlicoBundlerActions(parameters.entryPoint));
+}
+
+//TODO: Add BundlerRPCSchema
+/**
+ * Creates a local bundler EIP1193 function that can be used for
+ * local testing or to get a minimal in-memory ERC4337 solution.
+ * Needs an account to submit transactions.
+ */
+export function createLocalBundlerEIP1193Request(
+    parameters: Omit<LocalBundlerConfig, "key" | "name"> & { request: EIP1193RequestFn },
+): EIP1193RequestFn {
     const entryPointVersion = getEntryPointVersion(parameters.entryPoint);
     if (entryPointVersion != "v0.7" && entryPointVersion != "v0.6") {
         throw new Error(`Unknown entrypoint version ${entryPointVersion} for ${parameters.entryPoint}`);
@@ -63,19 +122,12 @@ export function createLocalBundlerClient(
     }
     const supportedEntryPoints = [parameters.entryPoint];
 
-    const { key = "public", name = "Local Bundler Client", chain, rpcMaxBlockRange } = parameters;
+    const { chain, rpcMaxBlockRange, request } = parameters;
     //Remove non-standard keys from config, doesn't break anything but more aligned with original
     const clientConfig: ClientConfig<Transport, Chain, Account> = omit(parameters, [
         "walletClient",
         "publicClient",
     ]) as any;
-    //We use unknown to speedup type inference. Does this help?
-    const client = createClient({
-        ...clientConfig,
-        key,
-        name,
-        type: "bundlerClient",
-    }) as unknown as PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE>;
 
     const publicClient: PublicClient<Transport, Chain> =
         (parameters as { publicClient: PublicClient<Transport, Chain> }).publicClient ??
@@ -83,8 +135,6 @@ export function createLocalBundlerClient(
     const walletClient: WalletClient<Transport, Chain, Account> =
         (parameters as { walletClient: WalletClient<Transport, Chain, Account> }).walletClient ??
         createWalletClient(clientConfig);
-
-    const requestDefault = client.request;
 
     //@ts-expect-error
     const requestOverride: EIP1193RequestFn = async function requestOverride(args, options) {
@@ -358,7 +408,10 @@ export function createLocalBundlerClient(
             );
 
             return response;
-        } else if (args.method === "pimlico_getUserOperationGasPrice") {
+        } else if (
+            args.method === "eth_getUserOperationGasPrice" ||
+            args.method === "pimlico_getUserOperationGasPrice"
+        ) {
             const gasPrice = await publicClient.estimateFeesPerGas();
             const gasPriceHex = {
                 maxFeePerGas: numberToHex(gasPrice.maxFeePerGas!),
@@ -372,18 +425,20 @@ export function createLocalBundlerClient(
                 standard: gasPriceHex,
                 fast: gasPriceHex,
             };
-        } else if (args.method === "pimlico_getUserOperationStatus") {
+        } else if (args.method === "eth_getUserOperationStatus" || args.method === "pimlico_getUserOperationStatus") {
             //TODO: For now default
-            return requestDefault(args as any, options);
-        } else if (args.method === "pimlico_sendCompressedUserOperation") {
+            return request(args as any, options);
+        } else if (
+            args.method === "eth_sendCompressedUserOperation" ||
+            args.method === "pimlico_sendCompressedUserOperation"
+        ) {
             //TODO: For now default
-            return requestDefault(args as any, options);
+            return request(args as any, options);
         }
 
-        return requestDefault(args as any, options);
+        return request(args as any, options);
     };
 
     //Override request function
-    client.request = requestOverride;
-    return client.extend(bundlerActions(parameters.entryPoint)).extend(pimlicoBundlerActions(parameters.entryPoint));
+    return requestOverride;
 }

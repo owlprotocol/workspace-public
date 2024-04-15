@@ -20,9 +20,29 @@ import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { getEntryPointVersion } from "permissionless/utils";
 import { PartialBy } from "viem/types/utils";
 import { omit } from "lodash-es";
-import { UserOperationWithBigIntAsHex } from "./types/permissionless.js";
-import { packUserOp } from "./userOp.js";
-import { VerifyingPaymaster } from "./artifacts/VerifyingPaymaster.js";
+import type { UserOperationWithBigIntAsHex } from "@owlprotocol/contracts-account-abstraction";
+import { packUserOp } from "@owlprotocol/contracts-account-abstraction/userOp";
+import { VerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction/artifacts/VerifyingPaymaster";
+
+export type PaymasterRpcMethod = (typeof paymasterRpcMethods)[number];
+
+export const paymasterRpcMethods = ["pm_sponsorUserOperation", "pm_validateSponsorshipPolicies"] as const;
+
+/**
+ * Check if RPC method is for paymaster.
+ * @param method
+ * @returns true if paymaster rpc method
+ */
+export function isPaymasterRpcMethod(method: string): method is PaymasterRpcMethod {
+    return paymasterRpcMethods.includes(method as any);
+}
+
+export type LocalPaymasterConfig = ClientConfig<Transport, Chain, Account> & {
+    entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
+    paymaster: Address;
+    paymasterOwner: LocalAccount;
+    publicClient?: PublicClient<Transport, Chain>;
+};
 
 /**
  * Creates a local paymaster EIP1193 client that can be used for
@@ -37,17 +57,7 @@ export function createLocalPaymasterClient(
         publicClient?: PublicClient<Transport, Chain>;
     },
 ): PimlicoPaymasterClient<ENTRYPOINT_ADDRESS_V07_TYPE> {
-    const entryPointVersion = getEntryPointVersion(parameters.entryPoint);
-    if (entryPointVersion != "v0.7" && entryPointVersion != "v0.6") {
-        throw new Error(`Unknown entrypoint version ${entryPointVersion} for ${parameters.entryPoint}`);
-    }
-    if (entryPointVersion === "v0.6") {
-        throw new Error(`Known but unsupported entrypoint version ${entryPointVersion}`);
-    }
-    const supportedEntryPoints = [parameters.entryPoint];
-    const paymaster = parameters.paymaster;
-
-    const { key = "public", name = "Local Paymaster Client", paymasterOwner } = parameters;
+    const { key = "public", name = "Local Paymaster Client" } = parameters;
     //Remove non-standard keys from config, doesn't break anything but more aligned with original
     const clientConfig: ClientConfig<Transport, Chain, Account> = omit(parameters, [
         "paymaster",
@@ -60,12 +70,40 @@ export function createLocalPaymasterClient(
         name,
         type: "bundlerClient",
     }) as unknown as PimlicoPaymasterClient<ENTRYPOINT_ADDRESS_V07_TYPE>;
+    client.request = createLocalPaymasterEIP1193Request({ ...parameters, request: client.request });
+
+    return client.extend(pimlicoPaymasterActions(parameters.entryPoint));
+}
+
+//TODO: Add PaymasterRPCSchema
+/**
+ * Creates a local paymaster EIP1193 function that can be used for
+ * local testing or to get a minimal in-memory ERC4337 solution.
+ * Needs an account to sign paymaster transactions.
+ */
+export function createLocalPaymasterEIP1193Request(
+    parameters: Omit<LocalPaymasterConfig, "key" | "name"> & { request: EIP1193RequestFn },
+): EIP1193RequestFn {
+    const entryPointVersion = getEntryPointVersion(parameters.entryPoint);
+    if (entryPointVersion != "v0.7" && entryPointVersion != "v0.6") {
+        throw new Error(`Unknown entrypoint version ${entryPointVersion} for ${parameters.entryPoint}`);
+    }
+    if (entryPointVersion === "v0.6") {
+        throw new Error(`Known but unsupported entrypoint version ${entryPointVersion}`);
+    }
+    const supportedEntryPoints = [parameters.entryPoint];
+    const paymaster = parameters.paymaster;
+
+    const { paymasterOwner, request } = parameters;
+    //Remove non-standard keys from config, doesn't break anything but more aligned with original
+    const clientConfig: ClientConfig<Transport, Chain, Account> = omit(parameters, [
+        "walletClient",
+        "publicClient",
+    ]) as any;
 
     const publicClient: PublicClient<Transport, Chain> =
         (parameters as { publicClient: PublicClient<Transport, Chain> }).publicClient ??
         createPublicClient(clientConfig);
-
-    const requestDefault = client.request;
 
     //@ts-expect-error
     const requestOverride: EIP1193RequestFn = async function requestOverride(args, options) {
@@ -149,13 +187,11 @@ export function createLocalPaymasterClient(
             return result;
         } else if (args.method === "pm_validateSponsorshipPolicies") {
             //TODO: For now default
-            return requestDefault(args as any, options);
+            return request(args as any, options);
         }
 
-        return requestDefault(args as any, options);
+        return request(args as any, options);
     };
 
-    //Override request function
-    client.request = requestOverride;
-    return client.extend(pimlicoPaymasterActions(parameters.entryPoint));
+    return requestOverride;
 }

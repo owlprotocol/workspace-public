@@ -1,5 +1,5 @@
 {
-  "name": "@owlprotocol/viem-indexer",
+  "name": "@owlprotocol/core-provider",
   "version": "2.0.1",
   "keywords": [
     "web3",
@@ -9,7 +9,7 @@
   ],
   "private": false,
   "type": "module",
-  "homepage": "https://owlprotocol.github.io/viem-indexer",
+  "homepage": "https://owlprotocol.github.io/core-provider",
   "repository": {
     "type": "git",
     "url": "https://github.com/owlprotocol/owlprotocol.git"
@@ -67,15 +67,22 @@
     "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol"
   },
   "dependencies": {
+    "@dfns/lib-viem": "0.3.3",
+    "@dfns/sdk": "0.3.3",
+    "@dfns/sdk-keysigner": "0.3.3",
     "@owlprotocol/contracts-create2factory": "workspace:*",
     "@owlprotocol/contracts-account-abstraction": "workspace:*",
     "@owlprotocol/contracts-diamond": "workspace:*",
+    "@owlprotocol/core-firebase": "workspace:*",
     "@owlprotocol/crud-firebase": "workspace:*",
+    "@owlprotocol/dfns-sdk-mock": "workspace:*",
+    "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/eth-firebase": "workspace:*",
     "@owlprotocol/utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
     "abitype": "1.0.0",
     "lodash-es": "4.17.21",
+    "permissionless": "^0.1.10",
     "viem": "2.8.6"
   },
   "devDependencies": {
