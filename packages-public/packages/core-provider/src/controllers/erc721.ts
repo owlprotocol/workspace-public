@@ -73,9 +73,20 @@ export async function updateERC721Owner(
             //tokenURI updated, fetch metadata cache
             try {
                 const metadataResponse = await fetch(tokenURIRpcSettled.value);
-                const metadata = await metadataResponse.json();
-                tokenUpdated.metadata = metadata;
-                tokenUpdated.metadataUpdatedAt = Date.now();
+                if (metadataResponse.ok) {
+                    const metadata = await metadataResponse.json();
+                    tokenUpdated.metadata = metadata;
+                    tokenUpdated.metadataUpdatedAt = Date.now();
+                } else {
+                    console.error(
+                        `Error fetching metadata for ${JSON.stringify({
+                            chainId,
+                            address,
+                            tokenId,
+                        })}`,
+                    );
+                    console.error(metadataResponse);
+                }
             } catch (error) {
                 console.error(error);
             }
