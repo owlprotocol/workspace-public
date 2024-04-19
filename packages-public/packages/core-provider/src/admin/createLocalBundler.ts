@@ -291,15 +291,15 @@ export function createLocalBundlerEIP1193Request(
             return result;
         } else if (args.method === "eth_getUserOperationReceipt") {
             const [userOpHash] = args.params as [Hash];
-            let fromBlock: bigint | undefined = undefined;
-            let toBlock: "latest" | undefined = undefined;
+            //TODO: Review filter block range logic
+            let fromBlock = 0n;
+            const toBlock = "latest";
             if (rpcMaxBlockRange !== undefined) {
                 const latestBlock = await publicClient.getBlockNumber();
                 fromBlock = latestBlock - rpcMaxBlockRange;
                 if (fromBlock < 0n) {
                     fromBlock = 0n;
                 }
-                toBlock = "latest";
             }
 
             const filterResult = await publicClient.getLogs({
@@ -331,15 +331,20 @@ export function createLocalBundlerEIP1193Request(
             }
 
             const txHash = userOperationEvent.transactionHash;
-            if (txHash === null) {
+            if (!txHash) {
                 // transaction pending
                 return null;
             }
+            // console.debug(txHash);
 
-            const receipt: RpcTransactionReceipt = await publicClient.request({
+            const receipt: RpcTransactionReceipt | null = await publicClient.request({
                 method: "eth_getTransactionReceipt",
                 params: [txHash],
             });
+            if (!receipt) {
+                return null;
+            }
+            // console.debug(receipt);
 
             //We will filter the receipt logs, sanity check makes sure logs are confirmed
             //This is a bit overkill as we could also just check if receipt is confirmed
@@ -351,8 +356,8 @@ export function createLocalBundlerEIP1193Request(
                         log.blockNumber === null ||
                         log.transactionIndex === null ||
                         log.transactionHash === null ||
-                        log.logIndex === null ||
-                        log.topics.length === 0,
+                        log.logIndex === null,
+                    // log.topics.length === 0,
                 )
             ) {
                 // transaction pending

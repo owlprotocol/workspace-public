@@ -203,7 +203,8 @@ export async function createIndexeEIP1193RequestForSdk(
 
             //Cache has insufficient data, fetch block and update cache
             if (includeTransactionObjects) {
-                const blockRpcWithTransactions: RpcBlock<"safe", true> = await request(args as any, options);
+                const blockRpcWithTransactions: RpcBlock<"safe", true> | null = await request(args as any, options);
+                if (!blockRpcWithTransactions) return blockRpcWithTransactions;
 
                 const transactionsRpc = blockRpcWithTransactions.transactions;
                 const blockRpc: RpcBlock<"safe", false> = {
@@ -265,7 +266,8 @@ export async function createIndexeEIP1193RequestForSdk(
             if (transaction) return transaction as RpcTransaction<false>;
 
             //Fetch transaction and update cache
-            const transactionRpc: RpcTransaction = await request(args as any, options);
+            const transactionRpc: RpcTransaction | null = await request(args as any, options);
+            if (!transactionRpc) return transactionRpc;
             if (transactionRpc.blockHash) {
                 //Update cache with confirmed tx only
                 sdk.transaction.upsert({ ...(transactionRpc as RpcTransaction<false>), chainId });
@@ -288,6 +290,8 @@ export async function createIndexeEIP1193RequestForSdk(
                 const logsRpc: Log<`0x${string}`, `0x${string}`, false>[] = logs.map((l) => {
                     return { ...l, logIndex: ("0x" + l.logIndex.toString(16)) as `0x${string}` };
                 });
+                //TODO: Fix type issue (from added opstack/zksync transaction types)
+                //@ts-expect-error
                 const transactionReceiptRpc: RpcTransactionReceipt & { type: TransactionTypeInput } = {
                     ...transactionReceipt,
                     logs: logsRpc,
@@ -296,10 +300,13 @@ export async function createIndexeEIP1193RequestForSdk(
             }
 
             //Fetch transaction receipt and update cache
-            const transactionReceiptRpc: RpcTransactionReceipt & { type: TransactionTypeInput } = await request(
-                args as any,
-                options,
-            );
+            const transactionReceiptRpc: (RpcTransactionReceipt & { type: TransactionTypeInput }) | null =
+                await request(args as any, options);
+
+            if (!transactionReceiptRpc) {
+                return transactionReceiptRpc;
+            }
+
             sdk.transactionReceipt.upsert({ ...transactionReceiptRpc, chainId });
             const logsDecoded = await Promise.all(
                 transactionReceiptRpc.logs.map(async (l) => {
@@ -331,6 +338,22 @@ export async function createIndexeEIP1193RequestForSdk(
             args.method === "eth_getFilterChanges"
         ) {
             const logsRpc: RpcLog[] = await request(args as any, options);
+            //TODO: Is this logic required? Only accept if all logs confirmed
+            if (
+                logsRpc.some(
+                    (log) =>
+                        log.blockHash === null ||
+                        log.blockNumber === null ||
+                        log.transactionIndex === null ||
+                        log.transactionHash === null ||
+                        log.logIndex === null,
+                    // log.topics.length === 0,
+                )
+            ) {
+                // transaction pending
+                return logsRpc;
+            }
+
             const logsRpcConfirmed: Log<`0x${string}`, `0x${string}`, false>[] = logsRpc.filter(
                 (l) => l.blockHash,
             ) as Log<`0x${string}`, `0x${string}`, false>[];

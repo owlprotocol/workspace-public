@@ -20,51 +20,74 @@ export const txHashZod = bytes32Zod.describe("transaction hash");
 /***** Transaction ******/
 /**
  * Input Transaction Type, hex & string literal
+ * - Main Ethereum transaction types `"legacy" | "eip2930" | "eip1559" | "eip4844"`
+ * - OPStack transaction types `"deposit"`
+ * - ZKSync transaction types `"eip712" | "priority"`
  */
-export type TransactionTypeInput = "0x0" | "legacy" | "0x1" | "eip2930" | "0x2" | "eip1559" | "0x3" | "eip4844";
+export type TransactionTypeInput =
+    | "0x0"
+    | "legacy"
+    | "0x1"
+    | "eip2930"
+    | "0x2"
+    | "eip1559"
+    | "0x3"
+    | "eip4844"
+    | "0x7e"
+    | "deposit"
+    | "eip721"
+    | "priority";
 /**
  * Encoded Transaction Type, string literal
+ * - Main Ethereum transaction types `"0x0" | "0x1" | "0x2" | "0x3"`
+ * - OPStack transaction types `"0x7e"`
+ * - ZKSync transaction types `"0x71" | "0xff"`
  */
-export type TransactionTypeEncoded = "0x0" | "0x1" | "0x2" | "0x3";
+export type TransactionTypeEncoded = "0x0" | "0x1" | "0x2" | "0x3" | "0x7e" | "0x71" | "0xff";
 /**
  * Decode Transaction Type, string literal
+ * - Main Ethereum transaction types `"legacy" | "eip2930" | "eip1559" | "eip4844"`
+ * - OPStack transaction types `"deposit"`
+ * - ZKSync transaction types `"eip712" | "priority"`
  */
-export type TransactionTypeDecoded = "legacy" | "eip2930" | "eip1559" | "eip4844";
+export type TransactionTypeDecoded = "legacy" | "eip2930" | "eip1559" | "eip4844" | "deposit" | "eip712" | "priority";
 
 /**
  * Transaction type zod, supports both hex & string literal
+ * We use z.string() to support all transaction types
  */
-export const transactionTypeZod = z
-    .union([
-        z.literal("0x0"),
-        z.literal("legacy"),
-        z.literal("0x1"),
-        z.literal("eip2930"),
-        z.literal("0x2"),
-        z.literal("eip1559"),
-        z.literal("0x3"),
-        z.literal("eip4844"),
-    ])
-    .describe("Transaction type");
+export const transactionTypeZod = z.string().describe("Transaction type");
 /**
- * Encode transaction type to `"0x0" | "0x1" | "0x2" | "0x3"`
+ * Encode transaction type to hex
+ * - Main Ethereum transaction types `"0x0" | "0x1" | "0x2" | "0x3"`
+ * - OPStack transaction types `"0x7e"`
+ * - ZKSync transaction types `"0x71" | "0xff"`
  */
 export const transactionTypeEncodeZod = transactionTypeZod.transform((type) => {
     if (type === "legacy") return "0x0";
     if (type === "eip2930") return "0x1";
     if (type === "eip1559") return "0x2";
     if (type === "eip4844") return "0x3";
-    return type;
+    if (type === "deposit") return "0x7e";
+    if (type === "eip712") return "0x71";
+    if (type === "priority") return "0xff";
+    if (type) return type;
 }) as unknown as z.ZodLiteral<TransactionTypeEncoded>;
 
 /**
- * Decode transaction type to `"legacy" | "eip2930" | "eip1559" | "eip4844"`
+ * Decode transaction type to string literal
+ * - Main Ethereum transaction types `"legacy" | "eip2930" | "eip1559" | "eip4844"`
+ * - OPStack transaction types `"deposit"`
+ * - ZKSync transaction types `"eip712" | "priority"`
  */
 export const transactionTypeDecodeZod = transactionTypeZod.transform((type) => {
     if (type === "0x0") return "legacy";
     if (type === "0x1") return "eip2930";
     if (type === "0x2") return "eip1559";
     if (type === "0x3") return "eip4844";
+    if (type.toLowerCase() === "0x7e") return "deposit";
+    if (type === "0x71") return "eip712";
+    if (type.toLowerCase() === "0xff") return "priority";
     return type;
 }) as unknown as z.ZodLiteral<TransactionTypeDecoded>;
 
@@ -90,6 +113,7 @@ export type TransactionInput = Prettify<
     >
 >;
 
+//TODO: Add OpStack & ZKSync transaction type fields
 /**
  * Transaction with encoded types
  * Bigint converted to Hex to support Firebase.
@@ -111,6 +135,7 @@ export type TransactionEncoded = Prettify<
     >
 >;
 
+//TODO: Add OpStack & ZKSync transaction type fields
 /**
  * Transaction with decoded types
  * Bigint decoded from Hex stored on Firebase.
@@ -132,6 +157,7 @@ export type TransactionDecoded = Prettify<
     >
 >;
 
+//TODO: Add OpStack & ZKSync transaction type fields
 /**
  * Zod validator encoding TransactionInput => TransactionEncoded
  */
@@ -173,6 +199,7 @@ export const transactionEncodeZod = z
     })
     .describe("An EVM Transaction, Quantity/Index hex/number");
 
+//TODO: Add OpStack & ZKSync transaction type fields
 /**
  * Zod validator encoding TransactionEncoded => TransactionDecoded
  */
