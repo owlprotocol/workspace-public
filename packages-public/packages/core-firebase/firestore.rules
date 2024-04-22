@@ -1,0 +1,110 @@
+rules_version = '2';
+
+service cloud.firestore {
+    match /databases/{database}/documents {
+        function isSignedIn() {
+            return debug(request.auth != null);
+        }
+
+        //Check owner of new doc (request.resource.data.owner)
+    // function isOwnerWrite() {
+        //     return debug(request.auth.uid == request.resource.data.owner);
+        // }
+        //
+        // //Check owner of existing doc (resource.data.owner)
+    // function isOwnerRead() {
+        //     return debug(request.auth.uid == resource.data.owner);
+        // }
+        //
+    // function signedInAndIsOwner() {
+        //     return debug(request.auth != null) && debug(request.auth.uid == resource.data.owner);
+        // }
+
+        // For now disable all writes in the database if not admin
+        allow write: if false;
+
+        match /user/{id} {
+            allow read: if isSignedIn() && id == request.auth.uid
+        }
+
+        match /network/{document=**} {
+            allow read: if true;
+        }
+
+        match /team/{teamId} {
+            function belongsToTeam() {
+                let userId = request.auth.uid;
+                return exists(/databases/$(database)/documents/team/$(teamId)/teamMember/$(userId));
+            }
+
+            function signedInAndBelongsToTeam() {
+                return isSignedIn() && belongsToTeam();
+            }
+
+            function isTeamOwner() {
+                let teamOwner = get(/databases/$(database)/documents/team/$(teamId)).data.owner;
+                let userId = request.auth.uid;
+
+                return teamOwner == userId;
+            }
+
+            // FIXME signedInAndBelongsToTeam is causing issues on what seems to be a list call;
+            // allow read: if signedInAndBelongsToTeam();
+            allow read: if isSignedIn();
+            // allow write: if isSignedIn() && request.resource.data.owner === request.auth.uid;
+
+            match /teamMember/{id} {
+                allow read: if isTeamOwner() || request.auth.uid == resource.data.userId;
+            }
+
+            match /teamNetwork/{id} {
+                allow read: if isSignedIn();
+            }
+        }
+
+        // For group queries
+        match /{teamPath=**}/teamMember/{id} {
+        // function isTeamOwner() {
+            //     let teamOwner = get(/databases/$(database)/documents/$(teamPath)).data.owner;
+            //     let userId = request.auth.uid;
+            //
+            //     return teamOwner == userId;
+            // }
+
+            // allow read: if isTeamOwner() || request.auth.uid == resource.data.userId ;
+            allow read: if request.auth.uid == resource.data.userId ;
+        }
+
+        match /project/{projectId} {
+            function belongsToProject() {
+                let userId = request.auth.uid;
+                let projectTeamId = get(/databases/$(database)/documents/project/$(projectId)).data.teamId;
+                return exists(/databases/$(database)/documents/team/$(projectTeamId)/teamMember/$(userId));
+            }
+
+            function signedInAndBelongsToProject() {
+                return isSignedIn() && belongsToProject();
+            }
+
+            // Rules on the project document itself
+            allow read: if isSignedIn();
+            // allow write: if belongsToProject();
+
+            match /{subCollection}/{subDocument=**} {
+                allow read: if signedInAndBelongsToProject();
+            }
+
+            match /projectUser/{id} {
+                allow read: if resource.data.userId == request.auth.uid || signedInAndBelongsToProject();
+            }
+
+            match /projectUserWalletDfns/{id} {
+                allow read: if resource.data.userId == request.auth.uid || signedInAndBelongsToProject();
+            }
+
+            match /projectUserWalletSafe/{id} {
+                allow read: if resource.data.userId == request.auth.uid || signedInAndBelongsToProject();
+            }
+        }
+    }
+}

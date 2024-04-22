@@ -1,6 +1,6 @@
 {
   "name": "@owlprotocol/contracts-create2factory",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "keywords": [
     "web3",
     "solidity",
@@ -145,7 +145,7 @@
     "tsx": "^3.12.7",
     "typescript": "5.4.2",
     "vite": "^5.1.6",
-    "vitest": "^0.34.2",
+    "vitest": "^1.4.0",
     "@typescript/analyze-trace": "^0.10.1",
     "lint-staged": "^11.1.2"
   },

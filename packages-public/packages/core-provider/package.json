@@ -1,6 +1,6 @@
 {
   "name": "@owlprotocol/core-provider",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "keywords": [
     "web3",
     "solidity",
@@ -54,6 +54,7 @@
     "clean": "rimraf lib dist",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
+    "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
     "lint:staged": "lint-staged",
@@ -63,8 +64,7 @@
     "test:watch": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'vitest'",
     "tsc": "tsc",
     "tsc:trace": "tsc --generateTrace lib/trace && analyze-trace lib/trace",
-    "tsc:watch": "tsc -w",
-    "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol"
+    "tsc:watch": "tsc -w"
   },
   "dependencies": {
     "@dfns/lib-viem": "0.3.3",
@@ -102,7 +102,7 @@
     "tsx": "^3.12.7",
     "typescript": "5.4.2",
     "vite": "^5.1.6",
-    "vitest": "^0.34.2"
+    "vitest": "^1.4.0"
   },
   "bugs": {
     "url": "https://github.com/owlprotocol/owlprotocol/issues",

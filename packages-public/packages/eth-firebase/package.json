@@ -1,6 +1,6 @@
 {
   "name": "@owlprotocol/eth-firebase",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "keywords": [
     "web3",
     "solidity",
@@ -58,6 +58,24 @@
       "import": "./lib/esm/query/index.js"
     }
   },
+  "scripts": {
+    "build": "npm-run-all -p tsc esbuild",
+    "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
+    "clean": "rimraf lib dist",
+    "esbuild": "node esbuild.config.mjs",
+    "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
+    "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "eslint --fix 'src/**/*.ts'",
+    "lint:staged": "lint-staged",
+    "madge": "madge src/index.ts -c",
+    "test": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'pnpm run test:ci'",
+    "test:ci": "vitest --run",
+    "test:watch": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'vitest'",
+    "tsc": "tsc",
+    "tsc:trace": "tsc --generateTrace lib/trace && analyze-trace lib/trace",
+    "tsc:watch": "tsc -w"
+  },
   "dependencies": {
     "@owlprotocol/crud-firebase": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",
@@ -75,24 +93,6 @@
     "firebase": "^10.3.1",
     "firebase-admin": "^11.10.1",
     "react": "^18.2.0"
-  },
-  "scripts": {
-    "build": "npm-run-all -p tsc esbuild",
-    "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
-    "clean": "rimraf lib dist",
-    "esbuild": "node esbuild.config.mjs",
-    "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
-    "lint": "eslint 'src/**/*.ts'",
-    "lint:fix": "eslint --fix 'src/**/*.ts'",
-    "lint:staged": "lint-staged",
-    "madge": "madge src/index.ts -c",
-    "test": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'pnpm run test:ci'",
-    "test:ci": "vitest --run",
-    "test:watch": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'vitest'",
-    "tsc": "tsc",
-    "tsc:trace": "tsc --generateTrace lib/trace && analyze-trace lib/trace",
-    "tsc:watch": "tsc -w",
-    "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",
@@ -113,7 +113,7 @@
     "tsx": "^3.12.7",
     "typescript": "5.4.2",
     "vite": "^5.1.6",
-    "vitest": "^0.34.2"
+    "vitest": "^1.4.0"
   },
   "bugs": {
     "url": "https://github.com/owlprotocol/owlprotocol/issues",
