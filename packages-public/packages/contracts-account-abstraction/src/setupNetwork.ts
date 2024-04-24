@@ -30,6 +30,7 @@ export async function setupNetwork(clients: SetupNetworkClients) {
         publicClient,
         walletClient,
     });
+    // console.debug(deterministicDeployer);
     if (deterministicDeployer.hash) {
         await publicClient.waitForTransactionReceipt({ hash: deterministicDeployer.hash });
     }
@@ -39,6 +40,7 @@ export async function setupNetwork(clients: SetupNetworkClients) {
         publicClient,
         walletClient,
     });
+    // console.debug(create2Factory);
     if (create2Factory.hash) {
         await publicClient.waitForTransactionReceipt({ hash: create2Factory.hash });
     }
@@ -53,6 +55,7 @@ export async function setupNetwork(clients: SetupNetworkClients) {
             bytecode: EntryPoint.bytecode,
         },
     )) as { address: ENTRYPOINT_ADDRESS_V07_TYPE; hash: Hash | undefined; existed: boolean };
+    // console.debug(entrypoint);
     if (entrypoint.address != ENTRYPOINT_ADDRESS_V07) {
         throw new Error(
             `Entrypoint v0.7 deployed address ${ENTRYPOINT_ADDRESS_V07} (expected) != ${entrypoint.address} (actual)`,
@@ -74,6 +77,7 @@ export async function setupNetwork(clients: SetupNetworkClients) {
             }),
         },
     );
+    // console.debug(simpleAccountFactory);
     if (simpleAccountFactory.hash) {
         await publicClient.waitForTransactionReceipt({ hash: simpleAccountFactory.hash });
     }
@@ -90,6 +94,7 @@ export async function setupNetwork(clients: SetupNetworkClients) {
             }),
         },
     );
+    // console.debug(verifyingPaymaster);
     if (verifyingPaymaster.hash) {
         await publicClient.waitForTransactionReceipt({ hash: verifyingPaymaster.hash });
     }

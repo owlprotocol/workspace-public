@@ -24,10 +24,8 @@ import {
     NetworkPrivate,
     decodeNetworkId,
     encodeNetworkId,
-    encodeNetwork,
-    encodeNetworkPartial,
-    encodeNetworkPrivate,
-    encodeNetworkPrivatePartial,
+    encodeNetworkData,
+    encodeNetworkDataPartial,
     UserData,
     UserId,
     decodeUserId,
@@ -118,14 +116,14 @@ import {
 export const networkResource = getFirebaseResource<Network, NetworkId>(firestore, networkCol, {
     encodeId: encodeNetworkId,
     decodeId: decodeNetworkId,
-    encodeDataPartial: encodeNetworkPartial,
-    encodeData: encodeNetwork,
+    encodeDataPartial: encodeNetworkDataPartial,
+    encodeData: encodeNetworkData,
 });
 export const networkPrivateResource = getFirebaseResource<NetworkPrivate, NetworkId>(firestore, networkPrivateCol, {
     encodeId: encodeNetworkId,
     decodeId: decodeNetworkId,
-    encodeDataPartial: encodeNetworkPrivatePartial,
-    encodeData: encodeNetworkPrivate,
+    encodeDataPartial: encodeNetworkDataPartial,
+    encodeData: encodeNetworkData,
 });
 
 //user & team

@@ -19,15 +19,11 @@ import {
     userCol,
 } from "./collection.js";
 import {
-    Network,
     NetworkId,
-    NetworkPrivate,
     decodeNetworkId,
     encodeNetworkId,
-    encodeNetwork,
-    encodeNetworkPartial,
-    encodeNetworkPrivate,
-    encodeNetworkPrivatePartial,
+    encodeNetworkData,
+    encodeNetworkDataPartial,
     UserData,
     UserId,
     decodeUserId,
@@ -112,20 +108,21 @@ import {
     encodeProjectWalletSafeData,
     encodeProjectWalletSafeDataPartial,
     encodeProjectWalletSafeId,
+    NetworkData,
 } from "../models/index.js";
 
 //networks
-export const networkResource = getFirebaseResource<Network, NetworkId>(firestore, networkCol, {
+export const networkResource = getFirebaseResource<NetworkData, NetworkId>(firestore, networkCol, {
     encodeId: encodeNetworkId,
     decodeId: decodeNetworkId,
-    encodeDataPartial: encodeNetworkPartial,
-    encodeData: encodeNetwork,
+    encodeDataPartial: encodeNetworkDataPartial,
+    encodeData: encodeNetworkData,
 });
-export const networkPrivateResource = getFirebaseResource<NetworkPrivate, NetworkId>(firestore, networkPrivateCol, {
+export const networkPrivateResource = getFirebaseResource<NetworkData, NetworkId>(firestore, networkPrivateCol, {
     encodeId: encodeNetworkId,
     decodeId: decodeNetworkId,
-    encodeDataPartial: encodeNetworkPrivatePartial,
-    encodeData: encodeNetworkPrivate,
+    encodeDataPartial: encodeNetworkDataPartial,
+    encodeData: encodeNetworkData,
 });
 
 //user & team

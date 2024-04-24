@@ -151,8 +151,13 @@ export async function createIndexeEIP1193RequestForSdk(
     });
 
     const requestOverride: EIP1193RequestFn<PublicRpcSchema> = async function requestOverride(args, options) {
+        // console.debug(args);
         if (args.method === "eth_chainId") {
             return numberToHex(chainId);
+        } else if (args.method === "eth_blockNumber") {
+            const blockNumber = await request(args as any, options);
+            // console.debug(blockNumber);
+            return blockNumber;
         } else if (args.method === "eth_getBlockByHash" || args.method === "eth_getBlockByNumber") {
             //Load transaction from cache if exists
             let block: BlockEncoded | null;
@@ -274,6 +279,7 @@ export async function createIndexeEIP1193RequestForSdk(
             }
             return transactionRpc;
         } else if (args.method === "eth_getTransactionReceipt") {
+            // console.debug(args);
             const [transactionHash] = args.params as [transactionHash: `0x${string}`];
 
             //Load transaction receipt from cache if exists
@@ -302,6 +308,7 @@ export async function createIndexeEIP1193RequestForSdk(
             //Fetch transaction receipt and update cache
             const transactionReceiptRpc: (RpcTransactionReceipt & { type: TransactionTypeInput }) | null =
                 await request(args as any, options);
+            // console.debug(transactionReceiptRpc);
 
             if (!transactionReceiptRpc) {
                 return transactionReceiptRpc;

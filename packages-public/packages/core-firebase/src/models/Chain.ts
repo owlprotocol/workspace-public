@@ -1,3 +1,54 @@
+import { addressZod } from "@owlprotocol/zod-sol";
+import { z } from "zod";
+
+export const chainBlockExplorerZod = z.object({
+    name: z.string(),
+    url: z.string(),
+    apiUrl: z.string().optional(),
+});
+
+export const chainContractZod = z.object({
+    address: addressZod,
+    blockCreated: z.number().optional(),
+});
+
+export const chainNativeCurrencyZod = z
+    .object({
+        name: z.string(),
+        symbol: z.string(),
+        decimals: z.number(),
+    })
+    .describe("Currency used by chain");
+
+export const chainRpcUrlsZod = z.object({
+    http: z.array(z.string()),
+    webSocket: z.array(z.string()).optional(),
+});
+
+/** Zod for viem chain interface (omit id) */
+export const chainZod = z
+    .object({
+        blockExplorers: z
+            .record(z.string(), chainBlockExplorerZod)
+            .optional()
+            .describe("Collection of block explorers"),
+        contracts: z
+            .record(
+                z.string().describe("contract name"),
+                z.union([chainContractZod, z.record(z.string().describe("sourceId"), chainContractZod)]),
+            )
+            .optional()
+            .describe("Collection of contracts"),
+        name: z.string(),
+        nativeCurrency: chainNativeCurrencyZod,
+        rpcUrls: z.record(z.string(), chainRpcUrlsZod).describe("Collection of RPC endpoints"),
+        sourceId: z.number().optional().describe("Source Chain ID (ie. the L1 chain)"),
+        testnet: z.boolean().optional().describe("Flag for test networks"),
+    })
+    .describe("viem chain");
+
+/*
+//Old interface from ethereum-lists/ThirdWeb
 export type ChainIcon = {
     url: string;
     width: number;
@@ -184,3 +235,4 @@ export function getChainWithData(chain: Chain, options?: GetChainWithDataOptions
         explorerApiKey,
     };
 }
+*/

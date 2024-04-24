@@ -1,5 +1,6 @@
 import { map, flatten } from "lodash-es";
 import { Address, Hash, zeroHash } from "viem";
+import { hedwig, localhost, opBedrockL1, opBedrockL2 } from "./networks.js";
 import {
     DfnsWalletStatus,
     // ERC1155,
@@ -111,45 +112,15 @@ export function getBytes32(n: number | bigint): Hash {
  */
 
 //network
+
+//anvil localhost
 export const chainId1337 = 1337;
-export const network1337: Network = {
-    name: "Localhost",
-    chainId: chainId1337,
-    enabled: true,
-    rpc: ["http://127.0.0.1:8545"],
-    rpcDefault: "http://127.0.0.1:8545",
-    chain: "localhost",
-    testnet: true,
-    shortName: "localhost",
-    slug: "localhost",
-    nativeCurrency: {
-        name: "Ethereum",
-        symbol: "ETH",
-        decimals: 18,
-    },
-};
-
+//caldera testnet (hosted)
 export const chainId130130 = 130130;
-export const network130130: Network = {
-    name: "Hedwig",
-    chainId: chainId130130,
-    enabled: true,
-    rpc: ["https://owl-hedwig-testnet.rpc.caldera.xyz/http"],
-    rpcDefault: "https://owl-hedwig-testnet.rpc.caldera.xyz/http",
-    chain: "hedwig",
-    testnet: true,
-    shortName: "hedwig",
-    slug: "hedwig",
-    nativeCurrency: {
-        name: "Ethereum",
-        symbol: "ETH",
-        decimals: 18,
-    },
-};
+export const network130130: Network = hedwig;
 
-export const networks: Network[] = [network1337, network130130];
-
-export const networkPrivates: NetworkPrivate[] = [network1337, network130130];
+export const networks: Network[] = [localhost, opBedrockL1, opBedrockL2, hedwig];
+export const networkPrivates: NetworkPrivate[] = [localhost, opBedrockL1, opBedrockL2, hedwig];
 
 //contractmodels
 // export const erc20s: ERC20[] = [
@@ -374,12 +345,14 @@ export const teamNetworks: TeamNetwork[] = [
     {
         name: "My Chain",
         chainId: 2024,
-        chain: "mychain",
         enabled: true,
-        rpc: ["http://localhost:2024"],
+        rpcDefault: "http://localhost:2024",
+        rpcUrls: {
+            default: {
+                http: ["http://localhost:2024"],
+            },
+        },
         testnet: true,
-        shortName: "mychain",
-        slug: "mychain",
         nativeCurrency: {
             name: "Chain Token",
             symbol: "CTK",
