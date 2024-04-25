@@ -26,6 +26,8 @@ export const userDataZod = z
 export const encodeUserData: (data: UserData) => UserData = userDataZod.parse;
 export const encodeUserDataPartial: (data: Partial<UserData>) => Partial<UserData> = userDataZod.partial().parse;
 
+export const userZod = userDataZod.extend({ userId: z.string().describe("user id") });
+
 export type User = Required<UserId> & UserData;
 //Generic interfaces for resource, useful for writing logic that works both in firebase admin/web
 export type UserResource = FirebaseResource<FirestoreSDK, UserData, UserId>;
