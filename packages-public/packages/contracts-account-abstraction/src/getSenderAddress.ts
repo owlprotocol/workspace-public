@@ -14,8 +14,8 @@ import {
 } from "viem";
 
 import { simulateContract } from "viem/actions";
-import { getAction } from "permissionless";
 import type { ENTRYPOINT_ADDRESS_V06_TYPE, EntryPoint, Prettify } from "permissionless/types";
+import { getAction } from "viem/utils";
 
 export type GetSenderAddressParams<entryPoint extends EntryPoint> = entryPoint extends ENTRYPOINT_ADDRESS_V06_TYPE
     ? {
@@ -89,6 +89,7 @@ export const getSenderAddress = async <
         await getAction(
             client,
             simulateContract,
+            "simulateContract",
         )({
             address: entryPoint,
             abi: [

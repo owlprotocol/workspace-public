@@ -88,7 +88,7 @@ export function getFirestoreInitialized(app: FirebaseApp, settings: FirestoreSet
         const firestore = initializeFirestore(app, settings);
         //Initialize Emulator
         if (NODE_ENV !== "production" && NODE_ENV !== "staging") {
-            connectFirestoreEmulator(firestore, "127.0.0.1", 9080);
+            connectFirestoreEmulator(firestore, "127.0.0.1", 18080);
         }
         console.debug("Initialized Firebase Firestore", settings);
         return firestore;
