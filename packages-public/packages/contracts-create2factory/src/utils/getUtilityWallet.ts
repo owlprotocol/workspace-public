@@ -1,25 +1,26 @@
-import { PRIVATE_KEY_UTILITY, isProductionOrStaging } from "@owlprotocol/envvars";
+import { NODE_ENV, PRIVATE_KEY_UTILITY, isProductionOrStaging } from "@owlprotocol/envvars";
 import { Hex } from "viem";
 import { PrivateKeyAccount, privateKeyToAccount } from "viem/accounts";
-
-/** Default mnemonic on most local test nodes */
-export const ANVIL_MNEMONIC = "test test test test test test test test test test test junk";
 
 /**
  * Get utility account for deploying core contracts required by our infra.
  * This was formerly known as the "relayer" but no longer really the case
  * as we use an ERC4337 bundler (except in local dev).
- * @returns LocalAccount
+ * @returns `LocalAccount<"privateKey", 0x2B5AD5c4795c026514f8317c7a215E218DcCD6cF (local) | 0xa2E8B0AE8B5A51d494eCf7E35F3734A6CEd7eeCf (prod)
  */
 export function getUtilityAccount(): PrivateKeyAccount {
     if (isProductionOrStaging()) {
         if (!PRIVATE_KEY_UTILITY) {
-            throw new Error("missing PRIVATE_KEY_UTILITY");
+            throw new Error(`Missing PRIVATE_KEY_RELAYER with NODE_ENV (${NODE_ENV}).`);
         }
+        if (PRIVATE_KEY_UTILITY.startsWith("0x00000000000000000000000000000000")) {
+            throw new Error(`Using insecure PRIVATE_KEY_RELAYER ${PRIVATE_KEY_UTILITY} with NODE_ENV (${NODE_ENV}).`);
+        }
+
         return privateKeyToAccount(PRIVATE_KEY_UTILITY! as Hex);
     } else {
-        //Anvil account 10, address 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720
-        const pKey: Hex = "0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6";
+        // Address 0x2B5AD5c4795c026514f8317c7a215E218DcCD6cF (pkey 0x0..2)
+        const pKey: Hex = "0x0000000000000000000000000000000000000000000000000000000000000002";
         return privateKeyToAccount(pKey);
     }
 }

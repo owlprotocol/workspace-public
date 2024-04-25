@@ -112,7 +112,7 @@ const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
     { name: "INFURA_IPFS_PROJECT_SECRET", platform: "node", defaultValue: "8ffddfdc95f32ea7aa43ee3ba9d2d603" },
     //wallets
     { name: "PRIVATE_KEY_UTILITY", platform: "node" },
-    { name: "PUBLIC_ADDRESS_UTILITY", platform: "neutral", defaultValue: "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720" },
+    { name: "PUBLIC_ADDRESS_UTILITY", platform: "neutral", defaultValue: "0x2B5AD5c4795c026514f8317c7a215E218DcCD6cF" },
     { name: "PRIVATE_KEY_RELAYER", platform: "node" },
     { name: "PUBLIC_ADDRESS_RELAYER", platform: "neutral", defaultValue: "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf" },
     //owl chain (hedwig)

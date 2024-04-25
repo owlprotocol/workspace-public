@@ -17,7 +17,7 @@ import {
     getOrDeployCreate2Factory,
     getOrDeployContracts,
     ANVIL_MNEMONIC,
-    getUtilityAccount,
+    getLocalAccount,
     getOrDeployDeterministicDeployer,
     getDeployAddress,
     getOrDeployImplementations,
@@ -48,7 +48,7 @@ describe("facets.test.ts", function () {
             transport: custom(provider),
         });
         walletClient = createWalletClient({
-            account: getUtilityAccount(),
+            account: getLocalAccount(0),
             chain: localhost,
             transport: custom(provider),
         });

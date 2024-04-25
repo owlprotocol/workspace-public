@@ -19,7 +19,7 @@ import { getOrDeployCreate2Factory } from "./deployCreate2Factory.js";
 import { CREATE2_FACTORY_ADDRESS } from "./constants.js";
 import { getOrDeployContracts } from "./getTransaction.js";
 import { getDeployAddress } from "./getAddress.js";
-import { ANVIL_MNEMONIC, getUtilityAccount } from "../utils/getUtilityWallet.js";
+import { ANVIL_MNEMONIC, getLocalAccount } from "../utils/getLocalMnemonic.js";
 import { DETERMINISTIC_DEPLOYER_ADDRESS, getOrDeployDeterministicDeployer } from "../DeterministicDeployer/index.js";
 import { MyContract } from "../artifacts/MyContract.js";
 import { Create2Factory } from "../artifacts/Create2Factory.js";
@@ -35,7 +35,7 @@ describe("deployCreate2Factory.test.ts", function () {
             transport: custom(provider),
         });
         walletClient = createWalletClient({
-            account: getUtilityAccount(),
+            account: getLocalAccount(0),
             chain: localhost,
             transport: custom(provider),
         });

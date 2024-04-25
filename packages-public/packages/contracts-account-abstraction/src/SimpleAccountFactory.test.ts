@@ -18,7 +18,7 @@ import {
     getDeployDeterministicAddress,
     getOrDeployDeterministicContract,
     getOrDeployDeterministicDeployer,
-    getUtilityAccount,
+    getLocalAccount,
 } from "@owlprotocol/contracts-create2factory";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { ENTRYPOINT_ADDRESS_V07, SIMPLE_ACCOUNT_FACTORY_ADDRESS } from "./constants.js";
@@ -36,7 +36,7 @@ describe("SimpleAccountFactory.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getUtilityAccount(),
+            account: getLocalAccount(0),
             chain: localhost,
             transport,
         });

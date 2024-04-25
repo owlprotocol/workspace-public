@@ -16,7 +16,7 @@ import {
     getOrDeployDeterministicContract,
     getDeployDeterministicAddress,
     ANVIL_MNEMONIC,
-    getUtilityAccount,
+    getLocalAccount,
 } from "@owlprotocol/contracts-create2factory";
 import { EntryPoint } from "./artifacts/EntryPoint.js";
 import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./constants.js";
@@ -34,7 +34,7 @@ describe("EntryPoint.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getUtilityAccount(),
+            account: getLocalAccount(0),
             chain: localhost,
             transport,
         });

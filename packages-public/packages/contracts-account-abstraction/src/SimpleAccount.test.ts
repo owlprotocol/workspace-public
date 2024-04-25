@@ -15,7 +15,7 @@ import {
     parseEther,
 } from "viem";
 import { localhost } from "viem/chains";
-import { ANVIL_MNEMONIC, getUtilityAccount } from "@owlprotocol/contracts-create2factory";
+import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/contracts-create2factory";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { ENTRYPOINT_ADDRESS_V07_TYPE, UserOperation } from "permissionless/types";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
@@ -47,7 +47,7 @@ describe("SimpleAccount.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getUtilityAccount(),
+            account: getLocalAccount(0),
             chain: localhost,
             transport,
         });

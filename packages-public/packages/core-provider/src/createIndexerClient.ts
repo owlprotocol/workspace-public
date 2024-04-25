@@ -294,7 +294,7 @@ export async function createIndexeEIP1193RequestForSdk(
             //Return cached transaction receipt
             if (transactionReceipt) {
                 const logsRpc: Log<`0x${string}`, `0x${string}`, false>[] = logs.map((l) => {
-                    return { ...l, logIndex: ("0x" + l.logIndex.toString(16)) as `0x${string}` };
+                    return { ...l, logIndex: numberToHex(l.logIndex) };
                 });
                 //TODO: Fix type issue (from added opstack/zksync transaction types)
                 //@ts-expect-error
@@ -315,6 +315,8 @@ export async function createIndexeEIP1193RequestForSdk(
             }
 
             sdk.transactionReceipt.upsert({ ...transactionReceiptRpc, chainId });
+
+            //Decode logs
             const logsDecoded = await Promise.all(
                 transactionReceiptRpc.logs.map(async (l) => {
                     const { eventName, args } =
@@ -324,16 +326,23 @@ export async function createIndexeEIP1193RequestForSdk(
                         }) ??
                         (await decodeLogWithFirebase(l, sdk.logAbi)) ??
                         {};
-                    return {
-                        ...l,
-                        eventName,
-                        args,
-                        chainId,
-                        logIndex: parseInt(l.logIndex),
+
+                    const logDecoded = l as Log<`0x${string}`, `0x${string}`, false> & {
+                        eventName?: string;
+                        args?: any;
                     };
+                    if (eventName) logDecoded.eventName = eventName;
+                    if (args) logDecoded.args = args;
+                    return logDecoded;
                 }),
             );
-            sdk.log.upsertBatch(logsDecoded);
+
+            //Upsert logs, `logIndex` parsed as number as part of composite id
+            sdk.log.upsertBatch(
+                logsDecoded.map((l) => {
+                    return { ...l, logIndex: parseInt(l.logIndex), chainId };
+                }),
+            );
 
             return {
                 ...transactionReceiptRpc,
@@ -374,16 +383,23 @@ export async function createIndexeEIP1193RequestForSdk(
                         }) ??
                         (await decodeLogWithFirebase(l, sdk.logAbi)) ??
                         {};
-                    return {
-                        ...l,
-                        eventName,
-                        args,
-                        chainId,
-                        logIndex: parseInt(l.logIndex),
+
+                    const logDecoded = l as Log<`0x${string}`, `0x${string}`, false> & {
+                        eventName?: string;
+                        args?: any;
                     };
+                    if (eventName) logDecoded.eventName = eventName;
+                    if (args) logDecoded.args = args;
+                    return logDecoded;
                 }),
             );
-            sdk.log.upsertBatch(logsDecoded);
+
+            //Upsert logs, `logIndex` parsed as number as part of composite id
+            sdk.log.upsertBatch(
+                logsDecoded.map((l) => {
+                    return { ...l, logIndex: parseInt(l.logIndex), chainId };
+                }),
+            );
 
             return logsDecoded;
         } else if (args.method === "eth_getCode") {

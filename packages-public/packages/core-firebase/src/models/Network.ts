@@ -2,6 +2,7 @@ import { z } from "zod";
 import { FirebaseQueryResource, FirebaseResource, FirestoreSDK } from "@owlprotocol/crud-firebase";
 import { NetworkId } from "@owlprotocol/eth-firebase/models";
 import { Chain } from "viem";
+import { quantityEncodeZod } from "@owlprotocol/zod-sol";
 import { chainZod } from "./Chain.js";
 
 export {
@@ -28,8 +29,38 @@ export interface NetworkData extends NetworkId, Omit<Chain, "id"> {
     rank?: number;
     /** Does network support Pimlico or use mock bundler */
     pimlicoEnabled?: boolean;
+    /***** Balance management *****/
+    /**
+     * Minimum utility balance, used for deploying contracts and topups.
+     * Can be funded by an L1 topup (if possible) or triggers error if under-funded.
+     */
+    minUtilityBalance?: string;
+    /**
+     * Target utility balance (for L1 topup).
+     * L1 should have sufficient balance at same address.
+     * See this viem guide for more info https://viem.sh/op-stack/guides/deposits
+     */
+    targetUtilityBalance?: string;
+    /**
+     * Minimum paymaster balance, triggers a topup from utility account if below.
+     * Determines total sponsorable ERC4337 gas
+     */
+    minPaymasterBalance?: string;
+    /** Target paymaster balance, topup from utility account will fill up to this amount (target - currentBalance) */
+    targetPaymasterBalance?: string;
+    /**
+     * Minimum relayer balance (aka bundler), triggers a topup if below
+     * Determines total in-flight ERC4337 gas sent by bundler (~ bandwith)
+     * Account does not get drained as UserOps refund their own gas
+     */
+    minRelayerBalance?: string;
+    /**
+     * Target relayer balance (aka bundler), topup will fill up to this amount (target - currentBalance)
+     */
+    targetRelayerBalance?: string;
 }
 
+//TODO: Add encode/decode zod to make balance configs auto-decode to bigint
 /** Zod for Owl Protocol NetworkData interface, extends viem chain interface */
 const networkDataZodInternal = chainZod.extend({
     chainId: z.number(),
@@ -37,6 +68,12 @@ const networkDataZodInternal = chainZod.extend({
     rpcDefault: z.string().optional(),
     rank: z.number().optional(),
     pimlicoEnabled: z.boolean().optional(),
+    minUtilityBalance: quantityEncodeZod.optional(),
+    targetUtilityBalance: quantityEncodeZod.optional(),
+    minPaymasterBalance: quantityEncodeZod.optional(),
+    targetPaymasterBalance: quantityEncodeZod.optional(),
+    minRelayerBalance: quantityEncodeZod.optional(),
+    targetRelayerBalance: quantityEncodeZod.optional(),
 });
 
 //Fix Zod vs TS types

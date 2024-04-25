@@ -11,7 +11,7 @@ import {
     custom,
 } from "viem";
 import { localhost } from "viem/chains";
-import { ANVIL_MNEMONIC, getUtilityAccount } from "@owlprotocol/contracts-create2factory";
+import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/contracts-create2factory";
 import { setupNetwork } from "./setupNetwork.js";
 
 describe("setupNetwork.test.ts", function () {
@@ -27,7 +27,7 @@ describe("setupNetwork.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getUtilityAccount(),
+            account: getLocalAccount(0),
             chain: localhost,
             transport,
         });

@@ -16,11 +16,11 @@ import {
     parseEther,
     hexToBytes,
     concatHex,
-    PrivateKeyAccount,
     decodeErrorResult,
+    HDAccount,
 } from "viem";
 import { localhost } from "viem/chains";
-import { ANVIL_MNEMONIC, getUtilityAccount } from "@owlprotocol/contracts-create2factory";
+import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/contracts-create2factory";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
 import { UserOperation } from "permissionless/types";
@@ -38,7 +38,7 @@ import { setupNetwork } from "./setupNetwork.js";
 describe("VerifyingPaymaster.test.ts", function () {
     let transport: CustomTransport;
     let publicClient: PublicClient<CustomTransport, Chain>;
-    let walletClient: WalletClient<CustomTransport, Chain, PrivateKeyAccount>;
+    let walletClient: WalletClient<CustomTransport, Chain, HDAccount>;
 
     // let entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
     let simpleAccountFactory: Address;
@@ -52,7 +52,7 @@ describe("VerifyingPaymaster.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getUtilityAccount(),
+            account: getLocalAccount(0),
             chain: localhost,
             transport,
         });

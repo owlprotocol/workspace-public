@@ -1,4 +1,5 @@
 import { localhost as localhostViem } from "viem/chains";
+import { numberToHex, parseEther } from "viem";
 import { Network } from "../models/Network.js";
 
 /***** Local networks *****/
@@ -6,6 +7,12 @@ export const localhost: Network = {
     chainId: 1337,
     rpcDefault: "http://127.0.0.1:8545",
     ...localhostViem,
+    minUtilityBalance: numberToHex(parseEther("1")),
+    targetUtilityBalance: numberToHex(parseEther("1000")),
+    minPaymasterBalance: numberToHex(parseEther("1")),
+    targetPaymasterBalance: numberToHex(parseEther("10")),
+    minRelayerBalance: numberToHex(parseEther("1")),
+    targetRelayerBalance: numberToHex(parseEther("10")),
     enabled: true,
     rank: -1,
 };
@@ -23,6 +30,12 @@ export const opBedrockL1: Network = {
             http: ["http://127.0.0.1:8545"],
         },
     },
+    minUtilityBalance: numberToHex(parseEther("1")),
+    targetUtilityBalance: numberToHex(parseEther("1000")),
+    minPaymasterBalance: numberToHex(parseEther("1")),
+    targetPaymasterBalance: numberToHex(parseEther("10")),
+    minRelayerBalance: numberToHex(parseEther("1")),
+    targetRelayerBalance: numberToHex(parseEther("10")),
     enabled: true,
     rank: -1,
 };
@@ -37,6 +50,19 @@ export const opBedrockL2: Network = {
     rpcUrls: {
         default: {
             http: ["http://127.0.0.1:9545"],
+        },
+    },
+    minUtilityBalance: numberToHex(parseEther("0.1")),
+    targetUtilityBalance: numberToHex(parseEther("10")),
+    minPaymasterBalance: numberToHex(parseEther("0.1")),
+    targetPaymasterBalance: numberToHex(parseEther("1")),
+    minRelayerBalance: numberToHex(parseEther("0.1")),
+    targetRelayerBalance: numberToHex(parseEther("1")),
+    contracts: {
+        portal: {
+            [900]: {
+                address: "0x9A676e781A523b5d0C0e43731313A708CB607508",
+            },
         },
     },
     enabled: true,
