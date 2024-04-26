@@ -15,7 +15,8 @@ export const project: Pick<ProjectData, "name" | "description" | "coverImage"> =
     name: "Event Tickets and POAPs Demo",
     description:
         "For event organizers or ticketing. Easily create POAPs (Proof-of-Active-Participations) and reward badges for event attendees or as prizes during events.",
-    coverImage: "/demo/event-cover.jpg",
+    coverImage:
+        "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fevent-cover.jpg?alt=media",
 };
 
 // project user - we don't create Clerk users for them so userId is fake
@@ -41,12 +42,13 @@ export const collections = [
     {
         name: "Event Attendance Badge (POAP)",
         symbol: "OWL_EVT",
-        contractImageUrlOverride: "/demo/event-poaps.jpg",
+        contractImageUrlOverride:
+            "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fevent-poaps.jpg?alt=media",
         itemTypes: [
             {
                 metadata: {
                     name: "Celestia Infinite Space Bazaar POAP - Lumentree",
-                    image: "/demo/event-poap-lumentree.jpg",
+                    image: "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fevent-poap-lumentree.jpg?alt=media",
                     attributes: [
                         {
                             trait_type: "Description",
@@ -66,7 +68,7 @@ export const collections = [
             {
                 metadata: {
                     name: "Celestia Infinite Space Bazaar POAP - Mindflux",
-                    image: "/demo/event-poap-mindflux.jpg",
+                    image: "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fevent-poap-mindflux.jpg?alt=media",
                     attributes: [
                         {
                             trait_type: "Description",
@@ -86,7 +88,7 @@ export const collections = [
             {
                 metadata: {
                     name: "Celestia Infinite Space Bazaar POAP - Whimsfall",
-                    image: "/demo/event-poap-whimsfall.jpg",
+                    image: "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fevent-poap-whimsfall.jpg?alt=media",
                     attributes: [
                         {
                             trait_type: "Description",
@@ -106,7 +108,7 @@ export const collections = [
             {
                 metadata: {
                     name: "Celestia Infinite Space Bazaar POAP - Puddletrail",
-                    image: "/demo/event-poap-puddletrail.jpg",
+                    image: "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fevent-poap-puddletrail.jpg?alt=media",
                     attributes: [
                         {
                             trait_type: "Description",
@@ -128,12 +130,13 @@ export const collections = [
     {
         name: "Ticket Raffle Prizes",
         symbol: "OWL_TICKET",
-        contractImageUrlOverride: "/demo/event-reward-ticket.jpg",
+        contractImageUrlOverride:
+            "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fevent-reward-ticket.jpg?alt=media",
         itemTypes: [
             {
                 metadata: {
                     name: "REGULAR ENTRY - Celestia Meetup Ticket",
-                    image: "/demo/event-reward-ticket.jpg",
+                    image: "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fevent-reward-ticket.jpg?alt=media",
                     attributes: [
                         {
                             trait_type: "Ticket Type",
@@ -161,7 +164,7 @@ export const collections = [
             {
                 metadata: {
                     name: "GOLD ENTRY - Celestia Meetup Ticket",
-                    image: "/demo/event-reward-ticket-gold.jpg",
+                    image: "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fevent-reward-ticket-gold.jpg?alt=media",
                     attributes: [
                         {
                             trait_type: "Ticket Type",
@@ -189,7 +192,7 @@ export const collections = [
             {
                 metadata: {
                     name: "VIP PLATINUM ENTRY - Celestia Meetup Ticket",
-                    image: "/demo/event-reward-ticket-platinum.jpg",
+                    image: "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fevent-reward-ticket-platinum.jpg?alt=media",
                     attributes: [
                         {
                             trait_type: "Ticket Type",

@@ -16,7 +16,8 @@ export const project: Pick<ProjectData, "name" | "description" | "coverImage"> =
     name: "OWL Gaming Collectibles Demo",
     description:
         "For integrating with games. Easily create item types for in-game items, and issue digital items on-chain based on an API trigger.",
-    coverImage: "/demo/gaming-cover.jpg",
+    coverImage:
+        "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fgaming-cover.jpg?alt=media",
 };
 
 // project user - we don't create Clerk users for them so userId is fake
@@ -42,12 +43,13 @@ export const collections = [
     {
         name: "Rare Weapons",
         symbol: "OWL_WEAPON",
-        contractImageUrlOverride: "/demo/gaming-coll-weapons.jpg",
+        contractImageUrlOverride:
+            "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fgaming-coll-weapons.jpg?alt=media",
         itemTypes: [
             {
                 metadata: {
                     name: "Dancing Edge",
-                    image: "/demo/gaming-item_type-weapon-1.jpg",
+                    image: "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fgaming-item_type-weapon-1.jpg?alt=media",
                     attributes: [
                         {
                             trait_type: "Attack Power",
@@ -67,7 +69,7 @@ export const collections = [
             {
                 metadata: {
                     name: "Mythril Sword",
-                    image: "/demo/gaming-item_type-weapon-2.jpg",
+                    image: "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fgaming-item_type-weapon-2.jpg?alt=media",
                     attributes: [
                         {
                             trait_type: "Attack Power",
@@ -89,12 +91,13 @@ export const collections = [
     {
         name: "Achievement Medals",
         symbol: "OWL_MEDALS",
-        contractImageUrlOverride: "/demo/gaming-coll-medals.jpg",
+        contractImageUrlOverride:
+            "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fgaming-coll-medals.jpg?alt=media",
         itemTypes: [
             {
                 metadata: {
                     name: "Fire Temple Medal",
-                    image: "/demo/gaming-medal-1.jpg",
+                    image: "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fgaming-medal-1.jpg?alt=media",
                     attributes: [
                         {
                             trait_type: "Fire Resist",
@@ -114,7 +117,7 @@ export const collections = [
             {
                 metadata: {
                     name: "Water Temple Medal",
-                    image: "/demo/gaming-medal-2.jpg",
+                    image: "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fgaming-medal-2.jpg?alt=media",
                     attributes: [
                         {
                             trait_type: "Water Resist",
@@ -134,7 +137,7 @@ export const collections = [
             {
                 metadata: {
                     name: "Poison Amulet",
-                    image: "/demo/gaming-medal-3.jpg",
+                    image: "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fgaming-medal-3.jpg?alt=media",
                     attributes: [
                         {
                             trait_type: "Poison Resist",

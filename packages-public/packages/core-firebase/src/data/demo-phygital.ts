@@ -16,7 +16,8 @@ export const projectName = "Digital Items and Phygitals Demo";
 export const projectDesc =
     "Create digital twins of your real world items. Easily integrate your E-Commerce, PoS, or merchandise platform to trigger digital item creation on purchase or any other event.";
 
-export const projectCoverImage = "/demo/events-cover.png";
+export const projectCoverImage =
+    "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fevents-cover.png?alt=media";
 
 // network
 export const chainId = 130130;
