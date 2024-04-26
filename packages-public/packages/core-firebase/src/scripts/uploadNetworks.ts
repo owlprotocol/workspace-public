@@ -1,4 +1,4 @@
-import { localhost, hedwigTestnet, opBedrockL1, opBedrockL2 } from "@owlprotocol/chains/chains";
+import { localhost, opBedrockL1, opBedrockL2 } from "@owlprotocol/chains/chains";
 import * as chains from "@owlprotocol/chains/chains";
 
 import { NODE_ENV, isProductionOrStaging } from "@owlprotocol/envvars";
@@ -56,18 +56,24 @@ export function uploadNetworks(networks: Network[]) {
  * @returns
  */
 export function uploadAllNetworks() {
-    return uploadNetworks(Object.values(chains));
+    //Exclude local networks
+    const locaNetworkIds = localNetworks.map((c) => c.chainId);
+    return uploadNetworks(Object.values(chains).filter((c) => !locaNetworkIds.includes(c.chainId)));
 }
+
+export const localNetworks = [localhost, opBedrockL1, opBedrockL2];
 
 /**
  * Upload local development chain configurations to firebase
  * @returns
  */
 export function uploadLocalNetworks() {
-    return uploadNetworks([localhost, opBedrockL1, opBedrockL2, hedwigTestnet]);
+    return uploadNetworks(localNetworks);
 }
 
 export async function main() {
+    await Promise.all([networkResource.deleteAll(), networkPrivateResource.deleteAll()]);
+
     if (!isProductionOrStaging()) {
         console.debug(`NODE_ENV (${NODE_ENV}) Uploading local development networks`);
         //Upload local dev networks
