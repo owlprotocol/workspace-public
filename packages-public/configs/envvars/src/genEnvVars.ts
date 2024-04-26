@@ -95,9 +95,12 @@ const SCRIPT_ENVVARS: EnvVarDef[] = [
 /** Add public defaults that are free */
 const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
     //rpc providers
+    { name: "ANKR_API_KEY", platform: "node" },
+    { name: "DRPC_API_KEY", platform: "node" },
+    { name: "FLARE_API_KEY", platform: "node" },
     { name: "INFURA_API_KEY", platform: "node", defaultValue: "f47a5c2dfc1f4c4385f6372fade38618" },
     { name: "THIRDWEB_API_KEY", platform: "node", defaultValue: "50072e65e03dfde6c855d89392bad2b6" },
-    { name: "ANKR_API_KEY", platform: "node" },
+    //byte4 pre-image db
     { name: "BYTE4_URL", platform: "node", defaultValue: "https://www.4byte.directory/api/v1" },
     //ipfs
     { name: "IPFS_URL", platform: "node", defaultValue: "http://localhost:5001" },

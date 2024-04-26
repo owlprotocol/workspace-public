@@ -1,16 +1,11 @@
 import { FieldOverridesSchema } from "@owlprotocol/crud-firebase";
-import { Network, networkDataZod, encodeNetworkData, encodeNetworkDataPartial } from "./Network.js";
+import { Network, networkDataEncodeZod } from "./Network.js";
 
-/**
- * TeamNetwork config, similar to Network bot for teams
- */
+//Alias for team network config
 export type TeamNetwork = Network;
 
-export const encodeTeamNetwork: (data: TeamNetwork) => TeamNetwork = encodeNetworkData;
-export const encodeTeamNetworkPartial: (data: Partial<TeamNetwork>) => Partial<TeamNetwork> = encodeNetworkDataPartial;
-
 //Fix Zod vs TS types for TeamNetwork
-export const teamNetworkZod = networkDataZod;
+export const teamNetworkZod = networkDataEncodeZod;
 
 //TODO: Setup for full keys
 export const TeamNetworkFieldOverrides: FieldOverridesSchema<"chainId"> = {

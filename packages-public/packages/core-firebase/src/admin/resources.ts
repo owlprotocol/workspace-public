@@ -42,9 +42,6 @@ import {
     encodeTeamMemberData,
     encodeTeamMemberDataPartial,
     encodeTeamMemberId,
-    TeamNetwork,
-    encodeTeamNetwork,
-    encodeTeamNetworkPartial,
     ProjectData,
     ProjectId,
     decodeProjectId,
@@ -108,21 +105,38 @@ import {
     encodeProjectWalletSafeData,
     encodeProjectWalletSafeDataPartial,
     encodeProjectWalletSafeId,
-    NetworkData,
+    NetworkDataInput,
+    NetworkDataDecoded,
+    NetworkDataEncoded,
+    decodeNetworkData,
 } from "../models/index.js";
 
 //networks
-export const networkResource = getFirebaseResource<NetworkData, NetworkId>(firestore, networkCol, {
+export const networkResource = getFirebaseResource<
+    NetworkDataDecoded,
+    NetworkId,
+    Record<string, never>,
+    NetworkDataInput,
+    NetworkDataEncoded
+>(firestore, networkCol, {
     encodeId: encodeNetworkId,
     decodeId: decodeNetworkId,
     encodeDataPartial: encodeNetworkDataPartial,
     encodeData: encodeNetworkData,
+    decodeData: decodeNetworkData,
 });
-export const networkPrivateResource = getFirebaseResource<NetworkData, NetworkId>(firestore, networkPrivateCol, {
+export const networkPrivateResource = getFirebaseResource<
+    NetworkDataDecoded,
+    NetworkId,
+    Record<string, never>,
+    NetworkDataInput,
+    NetworkDataEncoded
+>(firestore, networkPrivateCol, {
     encodeId: encodeNetworkId,
     decodeId: decodeNetworkId,
     encodeDataPartial: encodeNetworkDataPartial,
     encodeData: encodeNetworkData,
+    decodeData: decodeNetworkData,
 });
 
 //user & team
@@ -147,11 +161,18 @@ export const teamMemberResource = getFirebaseResource<TeamMemberData, TeamMember
     decodeParentDocId: decodeTeamId,
 });
 //TODO: Rename as alias TeamNetworkId, TeamNetworkData
-export const teamNetworkResource = getFirebaseResource<TeamNetwork, NetworkId, TeamId>(firestore, teamNetworkCol, {
+export const teamNetworkResource = getFirebaseResource<
+    NetworkDataDecoded,
+    NetworkId,
+    TeamId,
+    NetworkDataInput,
+    NetworkDataEncoded
+>(firestore, teamNetworkCol, {
     encodeId: encodeNetworkId,
     decodeId: decodeNetworkId,
-    encodeDataPartial: encodeTeamNetworkPartial,
-    encodeData: encodeTeamNetwork,
+    encodeDataPartial: encodeNetworkDataPartial,
+    encodeData: encodeNetworkData,
+    decodeData: decodeNetworkData,
     encodeParentDocId: encodeTeamId,
     decodeParentDocId: decodeTeamId,
 });

@@ -30,8 +30,7 @@ import {
     projectWalletSafeGroupPath,
 } from "../collections.js";
 import {
-    Network,
-    NetworkPrivate,
+    NetworkDataEncoded,
     ProjectApiKeyData,
     ProjectContractData,
     ProjectContractMetadataData,
@@ -50,13 +49,12 @@ import {
     TeamData,
     TeamId,
     TeamMemberData,
-    TeamNetwork,
     UserData,
 } from "../models/index.js";
 
 //networks
-export const networkCol = getColRef<Network>(firestore, networkPath);
-export const networkPrivateCol = getColRef<NetworkPrivate>(firestore, networkPrivatePath);
+export const networkCol = getColRef<NetworkDataEncoded>(firestore, networkPath);
+export const networkPrivateCol = getColRef<NetworkDataEncoded>(firestore, networkPrivatePath);
 
 //users
 export const userCol = getColRef<UserData>(firestore, userPath);
@@ -66,9 +64,9 @@ export const teamMemberColGroup = getColGroupRef<TeamMemberData>(firestore, team
 export const teamMemberCol = (collectionId: TeamId) =>
     getColRef<TeamMemberData>(firestore, teamMemberPath(collectionId));
 
-export const teamNetworkColGroup = getColGroupRef<TeamNetwork>(firestore, teamNetworkGroupPath);
+export const teamNetworkColGroup = getColGroupRef<NetworkDataEncoded>(firestore, teamNetworkGroupPath);
 export const teamNetworkCol = (collectionId: TeamId) =>
-    getColRef<TeamNetwork>(firestore, teamNetworkPath(collectionId));
+    getColRef<NetworkDataEncoded>(firestore, teamNetworkPath(collectionId));
 
 //project
 export const projectCol = getColRef<ProjectData>(firestore, projectPath);

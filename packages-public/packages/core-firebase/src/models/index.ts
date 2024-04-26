@@ -1,7 +1,6 @@
 export * from "./projects/index.js";
 
 export * from "./common.js";
-export * from "./Network.js";
 export * from "./Team.js";
 export * from "./TeamMember.js";
 export * from "./TeamNetwork.js";

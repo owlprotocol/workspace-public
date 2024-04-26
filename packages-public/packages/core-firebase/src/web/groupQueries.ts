@@ -12,6 +12,9 @@ import {
     teamNetworkColGroup,
 } from "./collection.js";
 import {
+    NetworkDataDecoded,
+    NetworkDataEncoded,
+    NetworkDataInput,
     NetworkId,
     ProjectApiKeyData,
     ProjectApiKeyId,
@@ -31,7 +34,6 @@ import {
     TeamId,
     TeamMemberData,
     TeamMemberId,
-    TeamNetwork,
     decodeNetworkId,
     decodeProjectApiKeyId,
     decodeProjectContractId,
@@ -81,12 +83,12 @@ export const teamMemberGroupQuery = getFirebaseQueryResource<
 });
 //TODO: ADD encode/decode
 export const teamNetworkGroupQuery = getFirebaseQueryResource<
-    TeamNetwork,
+    NetworkDataDecoded,
     NetworkId,
     TeamId,
-    TeamNetwork,
-    TeamNetwork,
-    Query<"web", TeamNetwork>
+    NetworkDataInput,
+    NetworkDataEncoded,
+    Query<"web", NetworkDataEncoded>
 >(teamNetworkColGroup, {
     decodeId: decodeNetworkId,
     encodeParentDocId: encodeTeamId,
