@@ -4,7 +4,9 @@ import { externalizeDeps } from "vite-plugin-externalize-deps";
 import { resolve } from "path";
 
 //Dependency aliases
-const alias = {};
+const alias = {
+    "@": resolve(__dirname, "./src"),
+};
 
 const formats = {
     es: "mjs",

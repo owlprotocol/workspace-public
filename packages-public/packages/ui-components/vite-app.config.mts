@@ -1,12 +1,15 @@
 import { mergeConfig } from "vite";
 import { config } from "@owlprotocol/vite-config";
 import { dotenvConfig } from "@owlprotocol/envvars";
+import { resolve } from "path";
 
 dotenvConfig();
 
 const overrideConfig = {
     resolve: {
-        //alias: {},
+        alias: {
+            "@": resolve(__dirname, "./src"),
+        },
     },
     define: {
         global: "globalThis",
