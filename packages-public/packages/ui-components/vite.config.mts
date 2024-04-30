@@ -3,11 +3,6 @@ import { config } from "@owlprotocol/vite-config";
 import { externalizeDeps } from "vite-plugin-externalize-deps";
 import { resolve } from "path";
 
-//Dependency aliases
-const alias = {
-    "@": resolve(__dirname, "./src"),
-};
-
 const formats = {
     es: "mjs",
     cjs: "cjs",
@@ -33,9 +28,7 @@ const build = {
 };
 const configOverrides = {
     plugins: [externalizeDeps()],
-    resolve: {
-        alias,
-    },
+    resolve: {},
     build,
 };
 
