@@ -1,0 +1,35 @@
+{
+  "twitter": {
+    "title": "Twitter ↗",
+    "type": "page",
+    "href": "https://twitter.com/owlprotocol_xyz",
+    "newWindow": true
+  },
+  "introduction": {
+    "title": "Introduction"
+  },
+  "quickstart": {
+    "title": "Quickstart"
+  },
+  "guides": {
+    "title": "Guides"
+  },
+  "sdks": {
+    "title": "SDKs"
+  },
+  "integrations": {
+    "title": "Integrations"
+  },
+  "use-cases": {
+    "title": "Use Cases",
+    "display": "hidden"
+  },
+  "contracts": {
+    "title": "Contracts",
+    "display": "hidden"
+  },
+  "mission": {
+    "title": "Our Mission",
+    "display": "hidden"
+  }
+}

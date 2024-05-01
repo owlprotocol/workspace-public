@@ -1,0 +1,131 @@
+# On-Chain Renewable Energy Certificates (RECs)
+Having on-chain Renewable Energy Certificates (RECs) offer traceability and fungibility on across sources. Additionally, using the blockchains for these RECs offers both auditability, since the data is public, and liquidity, since the Renewable Energy Originations (REOs) can more easily be traded.
+
+Our simple API allows you to easily integrate with legacy systems.
+
+In this guide, we will show you how to set up a REOs asset collection. REOs could then be redeemed (burned) for a REC. This collection can then be used to generates REOs for multiple energy sources. You can then, later automate their generation.
+
+# The REO Collection Model
+
+We define an ERC-1155 Asset Collection. This is a type of token collection where you can create multiple instances of a same token id. Each token id shall represent one source of renewable energy, say a wind turbine farm. Each instance of a token shall represent one megawatt-hour (MWh) of renewable energy generated. This model allows for each certificate to
+
+The metadata of a token should contain at least:
+
+- A name (`name`)
+- An optional description (`description`)
+- And these attributes:
+  - Facility location (`location`)
+  - Fuel type (`fuelType`)
+
+Note: it is standard to put attributes inside an `attributes`  array in the metadata.
+
+You can then mint as many instances of a token as MWh of energy generated. That is, if token 1 represents wind turbine farm "Farm A", and "Farm A" has generated 10 MWh of energy, you can mint 10 instances of token 1.
+
+# REO Collection Setup
+
+## Step 1: Create a Project
+
+First, you need to create a project for your collection. To do so, you need to initialize the Owl Protocol client and load your environment variables. This includes your API key, which is necessary for interacting with the Owl Protocol API. You can grab it from the [Owl Protocol Dashboard](https://dashboard.owlprotocol.xyz/home)
+
+Next, you create a client with your API credentials.
+
+```typescript
+// Initialize Owl Protocol client
+import { createClient } from "@owlprotocol/contracts-api-client-trpc";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
+const { API_KEY } = process.env;
+if (!API_KEY) {
+    throw new Error("API_KEY not found! Ensure it's added to the environment.");
+}
+
+// Create client with API credentials
+const client = createClient({ apiKey: API_KEY });
+const { id: projectId } = await client.projects.createProject({                                                                                                                                                       ─╯
+    name: "REC Project",
+    description: "My REC Project"
+});
+
+```
+
+Note that this step can be done from the dashboard.
+
+## Step 2: Launch a Collection
+
+Next, you deploy an ERC-1155 collection. We reuse the `client` and the `projectId` from the previous snippet. You will also need to pick a network ID to deploy your collection on. Here, we use `80001` which represents Polygon's test network: Mumbai.
+
+```typescript
+// Define network ID (replace with your choice)
+const networkId = "80001";
+
+const contract = await client.collection.deploy.mutate({                                                                                                              ─╯
+    networkId,
+    name: "My REO Collection",
+    symbol: "REO",
+    txWait: 1,
+    type: "ERC1155" as any,
+});
+
+// `contract` now contains data about the deployed ERC-1155 collection
+```
+
+Note: you can also deploy an ERC-1155 collection through our dashboard. See [🚀 Deploy an Owl ERC1155 Collection](https://docs-api.owlprotocol.xyz/docs/1-deploy-erc1155-collection).
+
+## Step 3: Defining Asset Metadata
+
+We will pick token id 1 to represent Farm A. As per the REO Collection Model, we specify the following attributes as metadata:
+
+```typescript
+const address = contract.contractAddress;                                                                                                                             ─╯
+const tokenId = "1";
+
+const farmAMetadata = {
+    name: "Farm A",
+    description: "Farm A Renewable Energy Originations (REOs). One instance corresponds to 1 MWh of energy",
+    attributes: [
+        { trait_type: "location", value: "Dubai" },
+        { trait_type: "fuelType", value: "wind" },
+    ],
+};
+
+await client.collection.collectionMetadata.collectionTokenMetadataPut.mutate({
+    networkId,
+    tokenId,
+    address,
+    tokenMetadata: farmAMetadata,
+});
+```
+
+Note: you can also define asset metadata through our dashboard. See [🚀 Deploy an Owl ERC1155 Collection](https://docs-api.owlprotocol.xyz/docs/1-deploy-erc1155-collection).
+
+## Step 4: Mint 10 Farm A REOs
+
+Now, suppose Farm A has produced 10 MWh of renewable energy. We will now mint 10 REO tokens accordingly.
+
+Here, we assume that you would mint the REOs to yourself, and then distribute them. Therefore, we first grab our own wallet address, and then mint the tokens to ourselves
+
+```typescript
+const { address: myAccount } = await client.safe.safeAddressMe.mutate();                                                                                              ─╯
+const { hash } = await client.collection.erc1155.mint.mutate({
+    networkId,
+    address,
+    mints: [
+        {
+            to: myAccount,
+            tokens: [{ tokenId, amount: "10" }],
+        },
+    ],
+    txWait: 1,
+});
+
+console.log("Transaction Hash: ", hash);
+```
+
+When automating REO generation, you should aim to use similar code to periodically mint REOs to the relevant token IDs, according to the amount of energy generated.
+
+## Advanced Steps
+
+In order to create on-chain Renewable Energy Certificates (RECs), you could then create an ERC-721 collection. You could then generate (mint) an REC when a user redeems (burns) a certain number of REOs. Your REC would then have in its metadata REO information.

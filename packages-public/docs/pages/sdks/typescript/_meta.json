@@ -1,0 +1,17 @@
+{
+  "collection": {
+    "title": "Collection"
+  },
+  "user": {
+    "title": "User"
+  },
+  "token": {
+    "title": "Token (NFT)"
+  },
+  "token-template": {
+    "title": "Token Metadata Template (NFT)"
+  },
+  "contract-metadata": {
+    "title": "Contract Metadata"
+  }
+}

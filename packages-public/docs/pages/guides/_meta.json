@@ -1,0 +1,18 @@
+{
+  "loyalty": {
+    "title": "Deploying a Loyalty Program",
+    "display": "hidden"
+  },
+  "memberships": {
+    "title": "Memberships",
+    "display": "hidden"
+  },
+  "rwas": {
+    "title": "Real World Assets",
+    "display": "hidden"
+  },
+  "rwas_recs": {
+    "title": "Renewable Energy Certificates",
+    "display": "hidden"
+  }
+}
