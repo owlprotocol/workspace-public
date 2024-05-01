@@ -1,3 +1,4 @@
+import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { CLERK_PUBLISHABLE_KEY } from "@owlprotocol/envvars/browser";
 import { API_TRPC_BASE_URL } from "@owlprotocol/envvars";
 import {
@@ -5,8 +6,20 @@ import {
     SignInButton,
     SignUpButton,
 } from "@clerk/clerk-react";
-import { withTRPCProvider } from "./components/reactProviders.js";
-import { Button } from "./components/ui/button.js";
+import { routeTree } from "./routeTree.gen";
+import { withTRPCProvider } from "./components/reactProviders";
+import { Button } from "./components/ui/button";
+import { ThemeProvider } from "./components/theme-provider";
+import { Toaster } from "./components/ui/sonner";
+
+const router = createRouter({
+    routeTree,
+});
+declare module "@tanstack/react-router" {
+    interface Register {
+        router: typeof router;
+    }
+}
 
 const InnerApp = () => {
     const clerkUserStatus = useClerkUser();
@@ -15,12 +28,12 @@ const InnerApp = () => {
         isLoaded: clerkIsLoaded,
         user,
     } = clerkUserStatus;
-    console.log({ clerkUserStatus });
     const userId = user?.id;
     const currentUrl: string = location.href || "";
 
     return (
         <>
+            <RouterProvider router={router} />
             <h1>Hello</h1>
             <p>{userId}</p>
             {clerkIsLoaded && !clerkSignedIn && (
@@ -44,5 +57,12 @@ const InnerAppWithTRPC = withTRPCProvider(
 );
 
 export const App = () => {
-    return <InnerAppWithTRPC />;
+    return (
+        <>
+            <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+                <InnerAppWithTRPC />
+                <Toaster />
+            </ThemeProvider>
+        </>
+    );
 };

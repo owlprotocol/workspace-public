@@ -1,21 +1,34 @@
-import { mergeConfig } from "vite";
-import { config } from "@owlprotocol/vite-config";
+import { defineConfig } from "vite";
+import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
+import ReactPlugin from "@vitejs/plugin-react-swc";
+import CheckerPlugin from "vite-plugin-checker";
+import SVGRPlugin from "vite-plugin-svgr";
+import DTSPlugin from "vite-plugin-dts";
 import { dotenvConfig } from "@owlprotocol/envvars";
+import path from "path";
 
 dotenvConfig();
 
-const overrideConfig = {
-    resolve: {},
-    define: {
-        global: "globalThis",
-    },
-    commonjsOptions: {
-        transformMixedEsModules: false,
-    },
-    build: {},
-};
-const finalConfig = mergeConfig(config, overrideConfig);
-
 // https://vitejs.dev/config/
-// eslint-disable-next-line import/no-default-export
-export default finalConfig;
+export default defineConfig({
+    plugins: [
+        ReactPlugin(),
+        TanStackRouterVite(),
+        SVGRPlugin({
+            svgrOptions: {
+                icon: "100%",
+            },
+        }),
+        //DTSPlugin(),
+        CheckerPlugin({
+            typescript: true, //TODO: Disable for now
+            overlay: true,
+            /*
+        eslint: {
+            lintCommand: 'eslint .  --ext .ts,.tsx',
+        },
+        */
+        }),
+    ],
+    resolve: {},
+});

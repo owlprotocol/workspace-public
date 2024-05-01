@@ -3,6 +3,8 @@ import { config } from "@owlprotocol/vite-config";
 import { externalizeDeps } from "vite-plugin-externalize-deps";
 import { resolve } from "path";
 
+//Library vite config.
+//This is used to generate the npm package NOT the dev app for local dev "storybook"
 const formats = {
     es: "mjs",
     cjs: "cjs",
