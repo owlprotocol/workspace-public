@@ -22,7 +22,6 @@ import {
     encodeTeamId,
 } from "../models/index.js";
 import {
-    networkResource,
     projectApiKeyResource,
     projectContractMetadataResource,
     projectContractResource,
@@ -40,7 +39,6 @@ import {
     teamNetworkResource,
 } from "../web/resources.js";
 import {
-    networkPath,
     projectPath,
     teamPath,
     userPath,
@@ -68,12 +66,6 @@ import {
 
 /*** Collection Queries ***/
 //TODO: REQUIRED Replace prefixPath/collectionGroup with computed => need getWhere to support getColPath()
-//networks
-export const networkQueryOptions = getFirebaseResourceReactQueryOptions(networkResource, {
-    prefixPath: [],
-    collectionGroup: networkPath,
-});
-
 //user & team
 export const userQueryOptions = getFirebaseResourceReactQueryOptions(userResource, {
     prefixPath: [],

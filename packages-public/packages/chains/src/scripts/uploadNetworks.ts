@@ -1,9 +1,8 @@
-import { localhost, opBedrockL1, opBedrockL2 } from "@owlprotocol/chains/chains";
-import * as chains from "@owlprotocol/chains/chains";
-
 import { NODE_ENV, isProductionOrStaging } from "@owlprotocol/envvars";
-import { Network } from "../models/index.js";
-import { networkPrivateResource, networkResource } from "../admin/resources.js";
+import { Network, networkPrivateResource, networkResource } from "@owlprotocol/eth-firebase/admin";
+
+import { localhost, opBedrockL1, opBedrockL2 } from "../chains/index.js";
+import * as chains from "../chains/index.js";
 
 /**
  * Upload chain configurations to firebase
@@ -84,5 +83,3 @@ export async function main() {
         await uploadAllNetworks();
     }
 }
-
-uploadAllNetworks();

@@ -1,6 +1,5 @@
 import { firestore, getColRef, getColGroupRef } from "@owlprotocol/crud-firebase/admin";
 import {
-    networkPath,
     projectPath,
     teamPath,
     userPath,
@@ -25,7 +24,6 @@ import {
     projectContractPath,
     projectTokenPath,
     projectTokenTemplatePath,
-    networkPrivatePath,
     projectWalletDfnsGroupPath,
     projectWalletSafeGroupPath,
 } from "../collections.js";
@@ -51,10 +49,6 @@ import {
     TeamMemberData,
     UserData,
 } from "../models/index.js";
-
-//networks
-export const networkCol = getColRef<NetworkDataEncoded>(firestore, networkPath);
-export const networkPrivateCol = getColRef<NetworkDataEncoded>(firestore, networkPrivatePath);
 
 //users
 export const userCol = getColRef<UserData>(firestore, userPath);

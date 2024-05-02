@@ -32,8 +32,9 @@ import {
     operatorPath,
     ethRoleAdminPath,
     ethRolePath,
+    networkPath,
+    networkPrivatePath,
 } from "../collections.js";
-import { NetworkId } from "../models/Network.js";
 import {
     ERC1155BalanceEncoded,
     ERC1155Data,
@@ -49,7 +50,13 @@ import {
     EthRoleData,
     EthUserOpEncoded,
     OperatorData,
+    NetworkDataEncoded,
+    NetworkId,
 } from "../models/index.js";
+
+//networks
+export const networkCol = getColRef<NetworkDataEncoded>(firestore, networkPath);
+export const networkPrivateCol = getColRef<NetworkDataEncoded>(firestore, networkPrivatePath);
 
 //ethmodels
 export const ethFunctionAbiCol = getColRef<EthFunctionAbiData>(firestore, ethFunctionAbiPath);

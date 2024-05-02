@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
+import { networkResource, NetworkId } from "@owlprotocol/eth-firebase/admin";
 import { isUUID } from "../../utils/uuid.js";
-import { Project, TeamNetwork, NetworkId } from "../../models/index.js";
-import { networkResource, teamNetworkResource, projectApiKeyResource, projectResource } from "../resources.js";
+import { Project, TeamNetwork } from "../../models/index.js";
+import { teamNetworkResource, projectApiKeyResource, projectResource } from "../resources.js";
 import { projectApiKeyGroupQuery } from "../groupQueries.js";
 
 // We export these messages so they can be used in the API when changing defaultChainId"

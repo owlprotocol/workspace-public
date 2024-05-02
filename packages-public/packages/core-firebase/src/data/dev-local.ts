@@ -1,6 +1,6 @@
 import { map, flatten } from "lodash-es";
 import { Address, Hash, zeroHash } from "viem";
-import { hedwigTestnet, localhost, opBedrockL1, opBedrockL2 } from "@owlprotocol/chains";
+import { localhost } from "./chains.js";
 import {
     DfnsWalletStatus,
     // ERC1155,
@@ -115,12 +115,10 @@ export function getBytes32(n: number | bigint): Hash {
 
 //anvil localhost
 export const chainId1337 = 1337;
-//caldera testnet (hosted)
-export const chainId130130 = 130130;
-export const network130130: Network = hedwigTestnet;
 
-export const networks: Network[] = [localhost, opBedrockL1, opBedrockL2, hedwigTestnet];
-export const networkPrivates: NetworkPrivate[] = [localhost, opBedrockL1, opBedrockL2, hedwigTestnet];
+//TODO: Add back opBedrockL1, opBedrockL2, hedwigTestnet. Do NOT add chains package as dependency
+export const networks: Network[] = [localhost];
+export const networkPrivates: NetworkPrivate[] = [localhost];
 
 //contractmodels
 // export const erc20s: ERC20[] = [

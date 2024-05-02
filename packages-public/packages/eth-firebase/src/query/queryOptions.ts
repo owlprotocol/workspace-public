@@ -39,6 +39,7 @@ import {
     ethRoleAdminResource,
     ethRoleResource,
     operatorResource,
+    networkResource,
 } from "../web/index.js";
 import {
     ethBlockGroupPath,
@@ -57,6 +58,7 @@ import {
     ethRoleAdminGroupPath,
     ethRoleGroupPath,
     operatorGroupPath,
+    networkPath,
 } from "../collections.js";
 import {
     EthBlockId,
@@ -85,7 +87,12 @@ import {
 } from "../models/index.js";
 import { NetworkId, encodeNetworkId } from "../models/Network.js";
 
-const networkPath = "network";
+//TODO: REQUIRED Replace prefixPath/collectionGroup with computed => need getWhere to support getColPath()
+//networks
+export const networkQueryOptions = getFirebaseResourceReactQueryOptions(networkResource, {
+    prefixPath: [],
+    collectionGroup: networkPath,
+});
 
 //ethmodels
 //global

@@ -1,7 +1,16 @@
 import { firestore, getFirebaseResource } from "@owlprotocol/crud-firebase/admin";
 import {
-    networkCol,
-    networkPrivateCol,
+    NetworkDataDecoded,
+    NetworkDataEncoded,
+    NetworkDataInput,
+    NetworkId,
+    decodeNetworkData,
+    decodeNetworkId,
+    encodeNetworkData,
+    encodeNetworkDataPartial,
+    encodeNetworkId,
+} from "@owlprotocol/eth-firebase/models";
+import {
     projectApiKeyCol,
     projectCol,
     projectContractCol,
@@ -19,11 +28,6 @@ import {
     userCol,
 } from "./collection.js";
 import {
-    NetworkId,
-    decodeNetworkId,
-    encodeNetworkId,
-    encodeNetworkData,
-    encodeNetworkDataPartial,
     UserData,
     UserId,
     decodeUserId,
@@ -105,39 +109,7 @@ import {
     encodeProjectWalletSafeData,
     encodeProjectWalletSafeDataPartial,
     encodeProjectWalletSafeId,
-    NetworkDataInput,
-    NetworkDataDecoded,
-    NetworkDataEncoded,
-    decodeNetworkData,
 } from "../models/index.js";
-
-//networks
-export const networkResource = getFirebaseResource<
-    NetworkDataDecoded,
-    NetworkId,
-    Record<string, never>,
-    NetworkDataInput,
-    NetworkDataEncoded
->(firestore, networkCol, {
-    encodeId: encodeNetworkId,
-    decodeId: decodeNetworkId,
-    encodeDataPartial: encodeNetworkDataPartial,
-    encodeData: encodeNetworkData,
-    decodeData: decodeNetworkData,
-});
-export const networkPrivateResource = getFirebaseResource<
-    NetworkDataDecoded,
-    NetworkId,
-    Record<string, never>,
-    NetworkDataInput,
-    NetworkDataEncoded
->(firestore, networkPrivateCol, {
-    encodeId: encodeNetworkId,
-    decodeId: decodeNetworkId,
-    encodeDataPartial: encodeNetworkDataPartial,
-    encodeData: encodeNetworkData,
-    decodeData: decodeNetworkData,
-});
 
 //user & team
 export const userResource = getFirebaseResource<UserData, UserId>(firestore, userCol, {

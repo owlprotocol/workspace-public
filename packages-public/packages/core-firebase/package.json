@@ -101,7 +101,6 @@
     "tsc:watch": "tsc -w"
   },
   "dependencies": {
-    "@owlprotocol/chains": "workspace:*",
     "@owlprotocol/crud-firebase": "workspace:*",
     "@owlprotocol/eth-firebase": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",

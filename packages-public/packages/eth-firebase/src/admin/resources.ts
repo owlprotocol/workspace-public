@@ -22,6 +22,8 @@ import {
     transactionReceiptEncodeZod,
 } from "@owlprotocol/zod-sol";
 import {
+    networkCol,
+    networkPrivateCol,
     ethBlockCol,
     ethTransactionCol,
     ethTransactionReceiptCol,
@@ -156,11 +158,47 @@ import {
     EthUserOpEncoded,
     EthUserOpInput,
     encodeEthUserOpData,
+    NetworkId,
+    encodeNetworkId,
+    decodeNetworkId,
+    NetworkDataDecoded,
+    NetworkDataEncoded,
+    NetworkDataInput,
+    decodeNetworkData,
+    encodeNetworkData,
+    encodeNetworkDataPartial,
 } from "../models/index.js";
-import { NetworkId, encodeNetworkId, decodeNetworkId } from "../models/Network.js";
 
 //Disabled for now
 const lruCacheSize = 0;
+
+//networks
+export const networkResource = getFirebaseResource<
+    NetworkDataDecoded,
+    NetworkId,
+    Record<string, never>,
+    NetworkDataInput,
+    NetworkDataEncoded
+>(firestore, networkCol, {
+    encodeId: encodeNetworkId,
+    decodeId: decodeNetworkId,
+    encodeDataPartial: encodeNetworkDataPartial,
+    encodeData: encodeNetworkData,
+    decodeData: decodeNetworkData,
+});
+export const networkPrivateResource = getFirebaseResource<
+    NetworkDataDecoded,
+    NetworkId,
+    Record<string, never>,
+    NetworkDataInput,
+    NetworkDataEncoded
+>(firestore, networkPrivateCol, {
+    encodeId: encodeNetworkId,
+    decodeId: decodeNetworkId,
+    encodeDataPartial: encodeNetworkDataPartial,
+    encodeData: encodeNetworkData,
+    decodeData: decodeNetworkData,
+});
 
 //ethmodels
 //global

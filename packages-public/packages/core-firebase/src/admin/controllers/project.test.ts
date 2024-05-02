@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeAll } from "vitest";
 import { deleteEmulatorData } from "@owlprotocol/crud-firebase/admin";
+import { networkResource } from "@owlprotocol/eth-firebase/admin";
 import { createProject } from "./project.js";
-import { networkResource } from "../resources.js";
 import { ProjectData } from "../../models/index.js";
 import { chainId1337, networks } from "../../data/dev-local.js";
 

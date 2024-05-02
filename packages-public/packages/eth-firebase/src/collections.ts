@@ -7,7 +7,9 @@ function join(...parameters: string[]) {
     return parameters.join("/");
 }
 
-const networkPath = "network";
+//networks
+export const networkPath = "network";
+export const networkPrivatePath = "networkPrivate";
 
 //ethmodels
 export const ethFunctionAbiPath = "ethFunctionAbi";

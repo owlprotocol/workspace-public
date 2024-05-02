@@ -14,10 +14,6 @@ function join(...parameters: string[]) {
     return parameters.join("/");
 }
 
-//networks
-export const networkPath = "network";
-export const networkPrivatePath = "networkPrivate";
-
 //users
 export const userPath = "user";
 export const teamPath = "team";
