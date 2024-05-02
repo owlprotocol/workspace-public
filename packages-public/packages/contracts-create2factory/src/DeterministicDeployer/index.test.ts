@@ -16,7 +16,7 @@ import { DETERMINISTIC_DEPLOYER_ADDRESS } from "./constants.js";
 import { getOrDeployDeterministicDeployer } from "./deployDeterministicDeployer.js";
 import { getOrDeployDeterministicContract } from "./getTransaction.js";
 import { getDeployDeterministicAddress } from "./getAddress.js";
-import { ANVIL_MNEMONIC, getLocalAccount } from "../utils/getLocalMnemonic.js";
+import { ANVIL_MNEMONIC, getLocalAccount } from "../utils/index.js";
 import { MyContract } from "../artifacts/MyContract.js";
 
 describe("DeterministicDeployer.test.ts", function () {

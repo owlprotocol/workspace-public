@@ -115,6 +115,7 @@
   },
   "dependencies": {
     "@owlprotocol/envvars": "workspace:*",
+    "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
     "@openzeppelin/contracts": "5.0.2",
     "abitype": "1.0.0",

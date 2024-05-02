@@ -1,6 +1,6 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getOrDeployCreate2Factory } from "../Create2Factory/deployCreate2Factory.js";
-import { logDeployment } from "../utils/logDeployment.js";
+import { logDeployment } from "../utils/index.js";
 
 const name = "Create2Factory";
 const deploy = async ({ viem, deployments }: HardhatRuntimeEnvironment) => {
