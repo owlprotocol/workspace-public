@@ -123,12 +123,28 @@ export function createLocalPaymasterEIP1193Request(
                 throw new Error(`Unsupported entrypoint ${entryPoint}`);
             }
 
-            //Gas estimation mock
-            const callGasLimit = userOperation.callGasLimit ?? numberToHex(10_000_000n);
-            const verificationGasLimit = userOperation.verificationGasLimit ?? callGasLimit;
-            const preVerificationGas = userOperation.preVerificationGas ?? numberToHex(1_000_000n);
-            const paymasterVerificationGasLimit = userOperation.paymasterVerificationGasLimit ?? callGasLimit;
-            const paymasterPostOpGasLimit = userOperation.paymasterPostOpGasLimit ?? callGasLimit;
+            //TODO: Proper gas estimation, remove hardcoded
+            //Default values, if defined & not 0x, we set value
+            let callGasLimit = numberToHex(10_000_000n);
+            if (userOperation.callGasLimit && userOperation.callGasLimit != "0x") {
+                callGasLimit = userOperation.callGasLimit;
+            }
+            let verificationGasLimit = numberToHex(1_000_000n);
+            if (userOperation.verificationGasLimit && userOperation.verificationGasLimit != "0x") {
+                verificationGasLimit = userOperation.verificationGasLimit;
+            }
+            let preVerificationGas = numberToHex(1_000_000n);
+            if (userOperation.preVerificationGas && userOperation.preVerificationGas != "0x") {
+                preVerificationGas = userOperation.preVerificationGas;
+            }
+            let paymasterVerificationGasLimit = numberToHex(1_000_000n);
+            if (userOperation.paymasterVerificationGasLimit && userOperation.paymasterVerificationGasLimit != "0x") {
+                paymasterVerificationGasLimit = userOperation.paymasterVerificationGasLimit;
+            }
+            let paymasterPostOpGasLimit = numberToHex(1_000_000n);
+            if (userOperation.paymasterPostOpGasLimit && userOperation.paymasterPostOpGasLimit != "0x") {
+                paymasterPostOpGasLimit = userOperation.paymasterPostOpGasLimit;
+            }
 
             //Sign
             const validUntil = Date.now() + 3600;

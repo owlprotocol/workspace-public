@@ -186,19 +186,19 @@ export function createLocalBundlerEIP1193Request(
             //TODO: Add support v0.6
             //TODO: See alto rpcHandler.ts eth_estimateUserOperationGas
             if (entryPointVersion === "v0.7") {
-                const preVerificationGas = 1_000_000n;
-                const callGasLimit = 10_000_000n;
+                //in alto some of these are the same in the end (but lower then these defaults)
+                const callGasLimit = numberToHex(10_000_000n);
+                const verificationGasLimit = numberToHex(1_000_000n);
+                const preVerificationGas = numberToHex(1_000_000n);
+                const paymasterVerificationGasLimit = numberToHex(1_000_000n);
+                const paymasterPostOpGasLimit = numberToHex(1_000_000n);
 
-                //in alto all 3 are same in the end (but lower then this default)
-                const verificationGasLimit = 10_000_000n;
-                const paymasterVerificationGasLimit = verificationGasLimit;
-                const paymasterPostOpGasLimit = verificationGasLimit;
                 return {
-                    preVerificationGas: numberToHex(preVerificationGas),
-                    verificationGasLimit: numberToHex(verificationGasLimit),
-                    callGasLimit: numberToHex(callGasLimit),
-                    paymasterVerificationGasLimit: numberToHex(paymasterVerificationGasLimit),
-                    paymasterPostOpGasLimit: numberToHex(paymasterPostOpGasLimit),
+                    callGasLimit,
+                    verificationGasLimit,
+                    preVerificationGas,
+                    paymasterVerificationGasLimit,
+                    paymasterPostOpGasLimit,
                 } as {
                     preVerificationGas: Hex;
                     verificationGasLimit: Hex;

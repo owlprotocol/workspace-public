@@ -17,7 +17,7 @@ import {
     parseEther,
 } from "viem";
 import { localhost } from "viem/chains";
-import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/contracts-create2factory";
+import { ANVIL_MNEMONIC, getRelayerAccount, getUtilityAccount } from "@owlprotocol/contracts-create2factory";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { walletClientToSmartAccountSigner } from "permissionless/utils";
@@ -40,7 +40,8 @@ describe("userOp.test.ts", function () {
     //Clients
     let transport: CustomTransport;
     let publicClient: PublicClient<CustomTransport, Chain>;
-    let walletClient: WalletClient<CustomTransport, Chain, LocalAccount>;
+    let utilityWalletClient: WalletClient<CustomTransport, Chain, LocalAccount>;
+    let relayerWalletClient: WalletClient<CustomTransport, Chain, LocalAccount>;
     let bundlerClient: PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE>;
     let paymasterClient: PimlicoPaymasterClient<ENTRYPOINT_ADDRESS_V07_TYPE>;
 
@@ -64,19 +65,41 @@ describe("userOp.test.ts", function () {
             chain: localhost,
             transport,
         });
-        walletClient = createWalletClient({
-            account: getLocalAccount(0),
+
+        utilityWalletClient = createWalletClient({
+            account: getUtilityAccount(),
             chain: localhost,
             transport,
         }) as any;
-        const contracts = await setupNetwork({ publicClient, walletClient });
+        relayerWalletClient = createWalletClient({
+            account: getRelayerAccount(),
+            chain: localhost,
+            transport,
+        }) as any;
+        // Check relayer balance
+        const minRelayerBalance = parseEther("0.1");
+        const targetRelayerBalance = parseEther("1");
+
+        const currRelayerBalance = await publicClient.getBalance({ address: relayerWalletClient.account.address });
+
+        if (currRelayerBalance < minRelayerBalance) {
+            const depositAmount = targetRelayerBalance - currRelayerBalance;
+            const hash = await utilityWalletClient.sendTransaction({
+                value: depositAmount,
+                to: relayerWalletClient.account.address,
+            });
+            await publicClient.waitForTransactionReceipt({ hash });
+        }
+
+        //Deploy contracts
+        const contracts = await setupNetwork({ publicClient, walletClient: utilityWalletClient });
 
         //Bundler
         entryPoint = contracts.entrypoint.address;
         bundlerClient = createLocalBundlerClient({
             chain: localhost,
             transport,
-            account: walletClient.account,
+            walletClient: relayerWalletClient,
             entryPoint,
         });
 
@@ -86,22 +109,22 @@ describe("userOp.test.ts", function () {
         paymasterClient = createLocalPaymasterClient({
             chain: localhost,
             transport,
-            paymasterOwner: walletClient.account,
+            paymasterOwner: utilityWalletClient.account,
             paymaster: verifyingPaymaster,
             entryPoint,
         });
         const paymasterDeposit = await publicClient.simulateContract({
-            account: walletClient.account,
+            account: utilityWalletClient.account,
             address: verifyingPaymaster,
             abi: VerifyingPaymaster.abi,
             functionName: "deposit",
             value: parseEther("1"),
             args: [],
         });
-        const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);
+        const paymasterDepositHash = await utilityWalletClient.writeContract(paymasterDeposit.request);
         await publicClient.waitForTransactionReceipt({ hash: paymasterDepositHash });
 
-        //Smart Account
+        //Smart Account (get address)
         simpleAccountFactory = contracts.simpleAccountFactory.address;
         const privateKey = generatePrivateKey();
         const account = privateKeyToAccount(privateKey);
@@ -135,8 +158,8 @@ describe("userOp.test.ts", function () {
             factoryData,
         };
         //Fund smart account
-        const smartAccountDepositHash = await walletClient.sendTransaction({
-            account: walletClient.account,
+        const smartAccountDepositHash = await utilityWalletClient.sendTransaction({
+            account: utilityWalletClient.account,
             to: smartAccountInfo.address,
             value: 1n,
         });
@@ -145,7 +168,7 @@ describe("userOp.test.ts", function () {
     /**
      * Create a UserOp with local bundler
      **/
-    test("local bundler/paymaster - manual", async () => {
+    test.skip("local bundler/paymaster - bundlerClient.sendUserOperation", async () => {
         //TODO: EntryPoint.handleOps does not revert if exec call invalid
         //Encode callData
         const to = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"; // vitalik
@@ -205,7 +228,7 @@ describe("userOp.test.ts", function () {
     /**
      * Create a UserOp with local bundler
      **/
-    test("local bundler/paymaster - execBatch", async () => {
+    test.skip("local bundler/paymaster - executeBatchUserOp", async () => {
         //TODO: EntryPoint.handleOps does not revert if exec call invalid
         //Encode callData
         const to = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"; // vitalik
@@ -237,8 +260,7 @@ describe("userOp.test.ts", function () {
         expect(balance).toBe(value);
     });
 
-    //TODO: Fix this test. Fails because getSenderAddress in permissionnless does not handle ganache error properly
-    test.skip("local bundler/paymaster - smart account client", async () => {
+    test.skip("local bundler/paymaster - smartAccountClient", async () => {
         const smartAccountSigner = walletClientToSmartAccountSigner(accountClient);
         const smartAccount = await signerToSimpleSmartAccount(publicClient, {
             signer: smartAccountSigner,

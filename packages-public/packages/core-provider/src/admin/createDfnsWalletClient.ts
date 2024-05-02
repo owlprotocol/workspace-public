@@ -78,7 +78,7 @@ export async function createDfnsWalletClient(parameters: DfnsAccountConfig): Pro
     });
     client.request = await createDfnsWalletEIP1193Request({ ...parameters, request: client.request });
 
-    return client.extend(walletActions) as WalletClient;
+    return client.extend(walletActions) as unknown as WalletClient;
 }
 
 export type DfnsWalletEIP1193Config = {
