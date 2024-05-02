@@ -49,6 +49,7 @@ export function defineNetwork(chain: Omit<Network, "chainId"> & ({ chainId: numb
         ...chain,
         chainId,
         rpcUrls,
+        enabled: chain.enabled ?? false,
     };
 
     return network;

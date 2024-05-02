@@ -1,3 +1,4 @@
+//TODO: Use codegen util to generate barrelfile
 export * from "./arbitrum.js";
 export * from "./arbitrumNova.js";
 export * from "./arbitrumSepolia.js";
@@ -6,6 +7,7 @@ export * from "./baseSepolia.js";
 export * from "./berachainTestnet.js";
 export * from "./bitfinityTestnet.js";
 export * from "./bitlayer.js";
+export * from "./bitlayerTestnet.js";
 export * from "./bitfinityTestnet.js";
 export * from "./blast.js";
 export * from "./blastSepolia.js";

@@ -11,26 +11,28 @@ import * as chains from "../chains/index.js";
  */
 export function uploadNetworks(networks: Network[]) {
     //Configure default rpc as the public rpc
-    const networksPublic: Network[] = networks.map((chain) => {
-        const rpcUrls: Network["rpcUrls"] = {
-            default: chain.rpcUrls.public ?? chain.rpcUrls.default,
-        };
-        //Only include public rpc configs
-        if (chain.rpcUrls.public) rpcUrls.public = chain.rpcUrls.public;
-        if (chain.rpcUrls.ankrPublic) rpcUrls.ankrPublic = chain.rpcUrls.ankrPublic;
-        if (chain.rpcUrls.drpcPublic) rpcUrls.drpcPublic = chain.rpcUrls.drpcPublic;
+    const networksPublic: Network[] = networks
+        .filter((chain) => chain.enabled)
+        .map((chain) => {
+            const rpcUrls: Network["rpcUrls"] = {
+                default: chain.rpcUrls.public ?? chain.rpcUrls.default,
+            };
+            //Only include public rpc configs
+            if (chain.rpcUrls.public) rpcUrls.public = chain.rpcUrls.public;
+            if (chain.rpcUrls.ankrPublic) rpcUrls.ankrPublic = chain.rpcUrls.ankrPublic;
+            if (chain.rpcUrls.drpcPublic) rpcUrls.drpcPublic = chain.rpcUrls.drpcPublic;
 
-        //Override default rpc drpcPublic => ankrPublic => public
-        if (rpcUrls.drpcPublic) rpcUrls.default = rpcUrls.drpcPublic;
-        else if (rpcUrls.ankrPublic) rpcUrls.default = rpcUrls.ankrPublic;
+            //Override default rpc drpcPublic => ankrPublic => public
+            if (rpcUrls.drpcPublic) rpcUrls.default = rpcUrls.drpcPublic;
+            else if (rpcUrls.ankrPublic) rpcUrls.default = rpcUrls.ankrPublic;
 
-        return {
-            ...chain,
-            //Use public rpc
-            rpcDefault: chain.rpcUrls.default.http[0],
-            rpcUrls,
-        };
-    });
+            return {
+                ...chain,
+                //Use public rpc
+                rpcDefault: chain.rpcUrls.default.http[0],
+                rpcUrls,
+            };
+        });
 
     const networksPrivate: Network[] = networks.map((chain) => {
         //Include all rpc configs, set default as private rpc

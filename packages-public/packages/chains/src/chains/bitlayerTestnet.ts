@@ -31,7 +31,7 @@ export const bitlayerTestnet = /*#__PURE__*/ defineNetwork({
             url: "https://www.bitlayer.org/faucet",
         },
     },
-    enabled: false,
+    enabled: true,
     rank: 9999,
     minUtilityBalance: parseEther("0.001"),
     //TODO: Topup code what if utility < target?
