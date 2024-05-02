@@ -30,6 +30,26 @@ export const chainRpcUrlsZod = z.object({
     webSocket: z.array(z.string()).optional(),
 });
 
+export interface ChainFaucet {
+    name: string;
+    url: string;
+}
+
+export const chainFaucetZod = z.object({
+    name: z.string(),
+    url: z.string(),
+});
+
+export interface ChainBridge {
+    name: string;
+    url: string;
+}
+
+export const chainBridgeZod = z.object({
+    name: z.string(),
+    url: z.string(),
+});
+
 /** Zod for viem chain interface (omit id) */
 export const chainZod = z
     .object({

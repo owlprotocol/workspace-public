@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Chain } from "viem";
 import { quantityDecodeZod, quantityEncodeZod } from "@owlprotocol/zod-sol";
 import type { FirebaseQueryResource, FirebaseResource, FirestoreSDK } from "@owlprotocol/crud-firebase";
-import { ChainRpcUrls, chainZod } from "./Chain.js";
+import { ChainBridge, ChainFaucet, ChainRpcUrls, chainBridgeZod, chainFaucetZod, chainZod } from "./Chain.js";
 
 export interface NetworkId {
     readonly chainId: number;
@@ -53,6 +53,20 @@ export type NetworkData<TQuantity> = NetworkId &
             infura?: ChainRpcUrls;
             thirdweb?: ChainRpcUrls;
         };
+        /** Collection of bridges */
+        bridges?:
+            | {
+                  [key: string]: ChainBridge;
+                  default: ChainBridge;
+              }
+            | undefined;
+        /** Collection of faucets */
+        faucets?:
+            | {
+                  [key: string]: ChainFaucet;
+                  default: ChainFaucet;
+              }
+            | undefined;
         /** Network rank sorting in terms of relevance, lower = higher priority in search result */
         rank?: number;
         /** Does network support Pimlico or use local bundler */
@@ -111,6 +125,8 @@ const networkDataEncodeZodInternal = chainZod.extend({
     slug: z.string().optional(),
     enabled: z.boolean().optional(),
     rpcDefault: z.string().optional(),
+    bridges: z.record(z.string(), chainBridgeZod).optional().describe("Collection of bridges"),
+    faucets: z.record(z.string(), chainFaucetZod).optional().describe("Collection of faucets"),
     rank: z.number().optional(),
     pimlicoEnabled: z.boolean().optional(),
     minUtilityBalance: quantityEncodeZod.optional(),
@@ -137,6 +153,8 @@ const networkDataDecodeZodInternal = chainZod.extend({
     slug: z.string().optional(),
     enabled: z.boolean().optional(),
     rpcDefault: z.string().optional(),
+    bridges: z.record(z.string(), chainBridgeZod).optional().describe("Collection of bridges"),
+    faucets: z.record(z.string(), chainFaucetZod).optional().describe("Collection of faucets"),
     rank: z.number().optional(),
     pimlicoEnabled: z.boolean().optional(),
     minUtilityBalance: quantityDecodeZod.optional(),

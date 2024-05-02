@@ -25,13 +25,31 @@ export const bitlayer = /*#__PURE__*/ defineNetwork({
             webSocket: ["wss://ws.bitlayer.org"],
         },
     },
+    bridges: {
+        meson: {
+            name: "meson",
+            url: "https://meson.fi",
+        },
+        orbiter: {
+            name: "orbiter",
+            url: "https://www.orbiter.finance/?source=Ethereum&dest=Bitlayer&token=BTC",
+        },
+        owlto: {
+            name: "owlto",
+            url: "https://owlto.finance",
+        },
+        default: {
+            name: "bitlayer",
+            url: "https://www.bitlayer.org/bridge",
+        },
+    },
     enabled: false,
     rank: 9999,
-    minUtilityBalance: parseEther("1"),
+    minUtilityBalance: parseEther("0.001"),
     //TODO: Topup code what if utility < target?
-    targetUtilityBalance: parseEther("8"),
-    minPaymasterBalance: parseEther("0.1"),
-    targetPaymasterBalance: parseEther("2"),
-    minRelayerBalance: parseEther("0.1"),
-    targetRelayerBalance: parseEther("1"),
+    targetUtilityBalance: parseEther("0.01"),
+    minPaymasterBalance: parseEther("0.001"),
+    targetPaymasterBalance: parseEther("0.004"),
+    minRelayerBalance: parseEther("0.001"),
+    targetRelayerBalance: parseEther("0.002"),
 });
