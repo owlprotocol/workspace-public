@@ -15,12 +15,12 @@ import {
     zeroHash,
 } from "viem";
 import { localhost } from "viem/chains";
+import { DETERMINISTIC_DEPLOYER_ADDRESS, getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
 import { getOrDeployCreate2Factory } from "./deployCreate2Factory.js";
 import { CREATE2_FACTORY_ADDRESS } from "./constants.js";
 import { getOrDeployContracts } from "./getTransaction.js";
 import { getDeployAddress } from "./getAddress.js";
 import { ANVIL_MNEMONIC, getLocalAccount } from "../utils/index.js";
-import { DETERMINISTIC_DEPLOYER_ADDRESS, getOrDeployDeterministicDeployer } from "../DeterministicDeployer/index.js";
 import { MyContract } from "../artifacts/MyContract.js";
 import { Create2Factory } from "../artifacts/Create2Factory.js";
 

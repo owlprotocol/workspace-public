@@ -19,7 +19,7 @@ import {
     getOrDeployDeterministicContract,
     getOrDeployDeterministicDeployer,
     getLocalAccount,
-} from "@owlprotocol/contracts-create2factory";
+} from "@owlprotocol/viem-utils";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { ENTRYPOINT_ADDRESS_V07, SIMPLE_ACCOUNT_FACTORY_ADDRESS } from "./constants.js";
 

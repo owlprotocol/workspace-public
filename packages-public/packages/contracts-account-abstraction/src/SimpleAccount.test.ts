@@ -15,7 +15,7 @@ import {
     parseEther,
 } from "viem";
 import { localhost } from "viem/chains";
-import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/contracts-create2factory";
+import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { ENTRYPOINT_ADDRESS_V07_TYPE, UserOperation } from "permissionless/types";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
@@ -26,7 +26,7 @@ import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";
 import { SimpleAccount } from "./artifacts/SimpleAccount.js";
 import { packUserOp, encodeUserOp } from "./userOp.js";
 import { IEntryPoint } from "./artifacts/IEntryPoint.js";
-import { setupNetwork } from "./setupNetwork.js";
+import { setupERC4337Contracts } from "./setupERC4337Contracts.js";
 import { getSenderAddress } from "./getSenderAddress.js";
 
 describe("SimpleAccount.test.ts", function () {
@@ -51,7 +51,7 @@ describe("SimpleAccount.test.ts", function () {
             chain: localhost,
             transport,
         });
-        const contracts = await setupNetwork({ publicClient, walletClient });
+        const contracts = await setupERC4337Contracts({ publicClient, walletClient });
         entryPoint = contracts.entrypoint.address;
         simpleAccountFactory = contracts.simpleAccountFactory.address;
         // verifyingPaymaster = contracts.verifyingPaymaster.address;

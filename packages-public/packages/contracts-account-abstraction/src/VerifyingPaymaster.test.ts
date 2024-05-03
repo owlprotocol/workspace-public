@@ -20,7 +20,7 @@ import {
     HDAccount,
 } from "viem";
 import { localhost } from "viem/chains";
-import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/contracts-create2factory";
+import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
 import { UserOperation } from "permissionless/types";
@@ -33,7 +33,7 @@ import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { encodeUserOp, packUserOp } from "./userOp.js";
 import { decodeViemError } from "./isViemError.js";
-import { setupNetwork } from "./setupNetwork.js";
+import { setupERC4337Contracts, setupVerifyingPaymaster } from "./setupERC4337Contracts.js";
 
 describe("VerifyingPaymaster.test.ts", function () {
     let transport: CustomTransport;
@@ -56,10 +56,10 @@ describe("VerifyingPaymaster.test.ts", function () {
             chain: localhost,
             transport,
         });
-        const contracts = await setupNetwork({ publicClient, walletClient });
+        const contracts = await setupERC4337Contracts({ publicClient, walletClient });
         // entryPoint = contracts.entrypoint.address;
         simpleAccountFactory = contracts.simpleAccountFactory.address;
-        verifyingPaymaster = contracts.verifyingPaymaster.address;
+        verifyingPaymaster = (await setupVerifyingPaymaster({ publicClient, walletClient })).address;
     });
 
     /** Tests involving interacting with an existing paymaster */

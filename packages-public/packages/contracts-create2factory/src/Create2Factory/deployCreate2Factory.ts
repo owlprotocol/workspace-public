@@ -1,13 +1,12 @@
 import { PUBLIC_ADDRESS_CREATE2FACTORY_DEPLOYER } from "@owlprotocol/envvars";
 import { Address, Hash, Hex, formatEther, zeroHash } from "viem";
+import { getDeployDeterministicFunctionData, DETERMINISTIC_DEPLOYER_ADDRESS } from "@owlprotocol/viem-utils";
 import {
     CREATE2_FACTORY_PRESIGN_ETH_COST,
     CREATE2_FACTORY_ADDRESS_PRESIGN,
     CREATE2_FACTORY_ADDRESS,
 } from "./constants.js";
-import { getDeployDeterministicFunctionData } from "../DeterministicDeployer/getTransaction.js";
 import { Create2Factory } from "../artifacts/Create2Factory.js";
-import { DETERMINISTIC_DEPLOYER_ADDRESS } from "../DeterministicDeployer/constants.js";
 import { Clients } from "../clients.js";
 
 //Check if already deployed

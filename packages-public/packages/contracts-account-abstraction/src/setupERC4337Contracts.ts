@@ -1,30 +1,24 @@
-import {
-    getOrDeployDeterministicDeployer,
-    getOrDeployCreate2Factory,
-    getOrDeployDeterministicContract,
-} from "@owlprotocol/contracts-create2factory";
-import { Account, Chain, Hash, PublicClient, Transport, WalletClient, encodeDeployData, zeroHash } from "viem";
+import { getOrDeployDeterministicDeployer, getOrDeployDeterministicContract, Clients } from "@owlprotocol/viem-utils";
+import { Address, Hash, encodeDeployData, zeroHash } from "viem";
 import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./constants.js";
 import { EntryPoint } from "./artifacts/EntryPoint.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { VerifyingPaymaster } from "./artifacts/VerifyingPaymaster.js";
 
-export interface SetupNetworkClients {
-    publicClient: PublicClient<Transport, Chain>;
-    walletClient: WalletClient<Transport, Chain, Account>;
-}
 /**
- * Setup network by deploying core contracts required by our infra. We try to only deployed contracts
- * that are required, and prefer to lazy-deploy any other implementations.
+ * Deploy public ERC4337 contracts. These have no permissions system whatsoever and are shared contract infrastructure.
+ * These are often pre-deployed on certain frameworks (eg. OPStack) and can be used by anyone.
+ * This guarantees compatibility on any EVM chain.
  *   - DeterministicDeployer (0x4e59b44847b379578588920cA78FbF26c0B4956C)
- *   - Create2Factory (0x3e81e1efD6E62E0A243CaEC342EBAfbD9257E6fD)
  *   - EntryPointV07  (0x0000000071727De22E5E9d8BAf0edAc6f37da032)
  *   - SimpleAccountFactory (0x91E60e0613810449d098b0b5Ec8b51A0FE8c8985)
- *   - VerifyingPaymaster () //TODO: TBD after research if we should deploy AA stack.
+ * @param clients publicClient, walletClient for deploying contracts
+ * @returns contract info
  */
-export async function setupNetwork(clients: SetupNetworkClients) {
+export async function setupERC4337Contracts(clients: Clients) {
     const { publicClient, walletClient } = clients;
+    //Step 1 - Deterministic Deployer
     //If no DeterminsticDeployer, wait for deploy (mostly used for local testing)
     const deterministicDeployer = await getOrDeployDeterministicDeployer({
         publicClient,
@@ -35,16 +29,7 @@ export async function setupNetwork(clients: SetupNetworkClients) {
         await publicClient.waitForTransactionReceipt({ hash: deterministicDeployer.hash });
     }
 
-    //If no Create2Factory, wait for deploy (mostly used for local testing)
-    const create2Factory = await getOrDeployCreate2Factory({
-        publicClient,
-        walletClient,
-    });
-    // console.debug(create2Factory);
-    if (create2Factory.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: create2Factory.hash });
-    }
-
+    //Step 2 - EntryPoint & SimpleAccountFactory
     //If no EntryPoint v0.7, wait for deploy (mostly used for local testing)
     const entrypoint = (await getOrDeployDeterministicContract(
         { publicClient, walletClient },
@@ -61,9 +46,6 @@ export async function setupNetwork(clients: SetupNetworkClients) {
             `Entrypoint v0.7 deployed address ${ENTRYPOINT_ADDRESS_V07} (expected) != ${entrypoint.address} (actual)`,
         );
     }
-    if (entrypoint.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: entrypoint.hash });
-    }
 
     //If no SimpleAccountFactory, wait for deploy (mostly used for local testing)
     const simpleAccountFactory = await getOrDeployDeterministicContract(
@@ -78,11 +60,39 @@ export async function setupNetwork(clients: SetupNetworkClients) {
         },
     );
     // console.debug(simpleAccountFactory);
-    if (simpleAccountFactory.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: simpleAccountFactory.hash });
+
+    //EntryPoint & SimpleAccountFactory can be deployed concurrently
+    const transactions: Hash[] = [];
+    if (entrypoint.hash) transactions.push(entrypoint.hash);
+    if (simpleAccountFactory.hash) transactions.push(simpleAccountFactory.hash);
+
+    if (transactions.length > 0) {
+        await Promise.all(transactions.map((hash) => publicClient.waitForTransactionReceipt({ hash })));
+    }
+
+    return { deterministicDeployer, entrypoint, simpleAccountFactory };
+}
+
+/**
+ * Deploy ERC4337 VerifyingPaymaster.
+ * This contracts stores a balance of ETH to sponsor UserOps (aka "Paymaster").
+ * It approves UserOp sponsorship if these are signed by the `verifyingSignerAddress` (the "Verifying" part).
+ *   - VerifyingPaymaster () //TODO: TBD after research if we should deploy AA stack.
+ * @param clients publicClient, walletClient for deploying contracts, verifyingSignerAddress address for paymaster (defaults to walletClient)
+ * @returns contract info
+ *
+ */
+export async function setupVerifyingPaymaster(clients: Clients & { verifyingSignerAddress?: Address }) {
+    const { publicClient, walletClient, verifyingSignerAddress } = clients;
+    const entrypointBytecode = await publicClient.getBytecode({ address: ENTRYPOINT_ADDRESS_V07 });
+    if (!entrypointBytecode) {
+        throw new Error(
+            `EntryPoint v0.7 ${ENTRYPOINT_ADDRESS_V07} not deployed. Consider deploying with setupERC4337Contracts()`,
+        );
     }
 
     //If no VerifyingPaymaster, wait for deploy (mostly used for local testing)
+    //EntryPoint MUST be deployed for this to work
     const verifyingPaymaster = await getOrDeployDeterministicContract(
         { publicClient, walletClient },
         {
@@ -90,7 +100,7 @@ export async function setupNetwork(clients: SetupNetworkClients) {
             bytecode: encodeDeployData({
                 abi: VerifyingPaymaster.abi,
                 bytecode: VerifyingPaymaster.bytecode,
-                args: [entrypoint.address, walletClient.account.address],
+                args: [ENTRYPOINT_ADDRESS_V07, verifyingSignerAddress ?? walletClient.account.address],
             }),
         },
     );
@@ -99,5 +109,5 @@ export async function setupNetwork(clients: SetupNetworkClients) {
         await publicClient.waitForTransactionReceipt({ hash: verifyingPaymaster.hash });
     }
 
-    return { deterministicDeployer, create2Factory, entrypoint, simpleAccountFactory, verifyingPaymaster };
+    return verifyingPaymaster;
 }

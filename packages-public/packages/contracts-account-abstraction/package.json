@@ -93,9 +93,9 @@
     "tsc:watch": "tsc -w"
   },
   "dependencies": {
-    "@owlprotocol/contracts-create2factory": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/eth-firebase": "workspace:*",
+    "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
     "@openzeppelin/contracts": "5.0.2",
     "@account-abstraction/contracts": "0.7.0",

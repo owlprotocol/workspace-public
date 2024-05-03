@@ -11,10 +11,10 @@ import {
     custom,
 } from "viem";
 import { localhost } from "viem/chains";
-import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/contracts-create2factory";
-import { setupNetwork } from "./setupNetwork.js";
+import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/viem-utils";
+import { setupERC4337Contracts, setupVerifyingPaymaster } from "./setupERC4337Contracts.js";
 
-describe("setupNetwork.test.ts", function () {
+describe("setupERC4337Contracts.test.ts", function () {
     let publicClient: PublicClient<CustomTransport, Chain>;
     let walletClient: WalletClient<CustomTransport, Chain, Account>;
 
@@ -33,13 +33,14 @@ describe("setupNetwork.test.ts", function () {
         });
     });
 
-    test("setupNetwork", async () => {
-        const result = await setupNetwork({ publicClient, walletClient });
+    test("setupERC4337Contracts", async () => {
+        const result = await setupERC4337Contracts({ publicClient, walletClient });
 
         expect(await publicClient.getBytecode({ address: result.deterministicDeployer.address })).toBeDefined();
-        expect(await publicClient.getBytecode({ address: result.create2Factory.address })).toBeDefined();
         expect(await publicClient.getBytecode({ address: result.entrypoint.address })).toBeDefined();
         expect(await publicClient.getBytecode({ address: result.simpleAccountFactory.address })).toBeDefined();
-        expect(await publicClient.getBytecode({ address: result.verifyingPaymaster.address })).toBeDefined();
+
+        const verifyingPaymaster = await setupVerifyingPaymaster({ publicClient, walletClient });
+        expect(await publicClient.getBytecode({ address: verifyingPaymaster.address })).toBeDefined();
     });
 });

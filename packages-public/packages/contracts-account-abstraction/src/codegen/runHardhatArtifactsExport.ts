@@ -1,4 +1,4 @@
-import { hardhatArtifactsExport } from "@owlprotocol/contracts-create2factory";
+import { hardhatArtifactsExport, getArtifactImplementationFactory } from "@owlprotocol/viem-utils";
 import {
     ENTRYPOINT_ADDRESS_V07,
     SIMPLE_ACCOUNT_FACTORY_ADDRESS,
@@ -18,10 +18,9 @@ hardhatArtifactsExport(
         "node_modules/@account-abstraction/contracts/artifacts/EntryPointSimulation.json",
         "node_modules/@account-abstraction/contracts/artifacts/IEntryPointSimulation.json",
     ],
-    "DeterministicDeployer",
-    {
+    getArtifactImplementationFactory({
         Entrypoint: ENTRYPOINT_ADDRESS_V07,
         SimpleAccountFactory: SIMPLE_ACCOUNT_FACTORY_ADDRESS,
         SimpleAccount: SIMPLE_ACCOUNT_IMPLEMENTATION_ADDRESS,
-    },
+    }),
 );

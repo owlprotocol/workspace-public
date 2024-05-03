@@ -17,7 +17,7 @@ import {
     parseEther,
 } from "viem";
 import { localhost } from "viem/chains";
-import { ANVIL_MNEMONIC, getRelayerAccount, getUtilityAccount } from "@owlprotocol/contracts-create2factory";
+import { ANVIL_MNEMONIC, getRelayerAccount, getUtilityAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { walletClientToSmartAccountSigner } from "permissionless/utils";
@@ -29,8 +29,9 @@ import {
     getSimpleAccountAddress,
     createUserOp,
     executeBatchUserOp,
-    setupNetwork,
+    setupERC4337Contracts,
     decodeViemError,
+    setupVerifyingPaymaster,
 } from "@owlprotocol/contracts-account-abstraction";
 import { SimpleAccount, VerifyingPaymaster, EntryPoint } from "@owlprotocol/contracts-account-abstraction/artifacts";
 import { createLocalBundlerClient } from "./createLocalBundler.js";
@@ -92,7 +93,7 @@ describe("userOp.test.ts", function () {
         }
 
         //Deploy contracts
-        const contracts = await setupNetwork({ publicClient, walletClient: utilityWalletClient });
+        const contracts = await setupERC4337Contracts({ publicClient, walletClient: utilityWalletClient });
 
         //Bundler
         entryPoint = contracts.entrypoint.address;
@@ -104,7 +105,11 @@ describe("userOp.test.ts", function () {
         });
 
         //Paymaster
-        verifyingPaymaster = contracts.verifyingPaymaster.address;
+        const verifyingPaymasterInfo = await setupVerifyingPaymaster({
+            publicClient,
+            walletClient: utilityWalletClient,
+        });
+        verifyingPaymaster = verifyingPaymasterInfo.address;
         //Fund paymaster
         paymasterClient = createLocalPaymasterClient({
             chain: localhost,

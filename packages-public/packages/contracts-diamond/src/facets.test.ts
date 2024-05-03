@@ -16,12 +16,10 @@ import { localhost } from "viem/chains";
 import {
     getOrDeployCreate2Factory,
     getOrDeployContracts,
-    ANVIL_MNEMONIC,
-    getLocalAccount,
-    getOrDeployDeterministicDeployer,
     getDeployAddress,
     getOrDeployImplementations,
 } from "@owlprotocol/contracts-create2factory";
+import { ANVIL_MNEMONIC, getLocalAccount, getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
 import { MyContract } from "@owlprotocol/contracts-create2factory/artifacts/MyContract";
 import { ERC721PresetDiamondSpec } from "./diamondSpec.js";
 import {

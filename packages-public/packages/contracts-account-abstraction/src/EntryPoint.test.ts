@@ -17,7 +17,7 @@ import {
     getDeployDeterministicAddress,
     ANVIL_MNEMONIC,
     getLocalAccount,
-} from "@owlprotocol/contracts-create2factory";
+} from "@owlprotocol/viem-utils";
 import { EntryPoint } from "./artifacts/EntryPoint.js";
 import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./constants.js";
 
