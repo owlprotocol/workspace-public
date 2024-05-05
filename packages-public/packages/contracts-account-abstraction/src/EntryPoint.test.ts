@@ -15,7 +15,7 @@ import {
     getOrDeployDeterministicDeployer,
     getOrDeployDeterministicContract,
     getDeployDeterministicAddress,
-    ANVIL_MNEMONIC,
+    DEFAULT_GANACHE_CONFIG,
     getLocalAccount,
 } from "@owlprotocol/viem-utils";
 import { EntryPoint } from "./artifacts/EntryPoint.js";
@@ -26,7 +26,7 @@ describe("EntryPoint.test.ts", function () {
     let walletClient: WalletClient<CustomTransport, Chain, Account>;
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
+        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
         const transport = custom(provider);
         //const transport = http(localhost.rpcUrls.default.http[0]);
         publicClient = createPublicClient({

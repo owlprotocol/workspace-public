@@ -6,6 +6,7 @@ import {
     createClient,
     createPublicClient,
     PublicClient,
+    WalletClient,
     Address,
     encodeAbiParameters,
     concatHex,
@@ -13,6 +14,7 @@ import {
     Account,
     ClientConfig,
     numberToHex,
+    parseEther,
 } from "viem";
 import { PimlicoPaymasterClient } from "permissionless/clients/pimlico";
 import { pimlicoPaymasterActions } from "permissionless/actions/pimlico";
@@ -23,6 +25,7 @@ import { omit } from "lodash-es";
 import type { UserOperationWithBigIntAsHex } from "@owlprotocol/contracts-account-abstraction";
 import { packUserOp } from "@owlprotocol/contracts-account-abstraction/userOp";
 import { VerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction/artifacts/VerifyingPaymaster";
+import { topupPaymaster } from "@owlprotocol/contracts-account-abstraction";
 
 export type PaymasterRpcMethod = (typeof paymasterRpcMethods)[number];
 
@@ -37,12 +40,30 @@ export function isPaymasterRpcMethod(method: string): method is PaymasterRpcMeth
     return paymasterRpcMethods.includes(method as any);
 }
 
-export type LocalPaymasterConfig = ClientConfig<Transport, Chain, Account> & {
+/** Min paymaster balance, determines total sponsorable ERC4337 gas */
+export const DEFAULT_MIN_PAYMASTER_BALANCE = parseEther("0.05");
+/** Target paymaster balance */
+export const DEFAULT_TARGET_PAYMASTER_BALANCE = parseEther("0.1");
+
+/**
+ * Paymaster configuration, extends `ClientConfig` with defined Transport, Chain, but no account
+ * @field entryPoint contract address
+ * @field paymaster contract address
+ * @field paymaster signer that signs UserOps
+ * @field publicClient (optional) to read blockchain (defaults to `createPublicClient` using client config)
+ * @field topupWalletClient (optional) topup wallet
+ * @field minBalance for topup trigger
+ * @field targetBalance for topup
+ */
+export type LocalPaymasterConfig = ClientConfig<Transport, Chain, undefined> & {
     entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
     paymaster: Address;
-    paymasterOwner: LocalAccount;
+    paymasterSigner: LocalAccount;
     publicClient?: PublicClient<Transport, Chain>;
-};
+} & ( //TODO: With dynamic gas estimation, make `minBalance` optional and if defined use Max(minBalance, txCost)
+        | { topupWalletClient: WalletClient<Transport, Chain, Account>; minBalance: bigint; targetBalance: bigint }
+        | { topupWalletClient?: undefined; minBalance?: undefined; targetBalance?: undefined }
+    );
 
 /**
  * Creates a local paymaster EIP1193 client that can be used for
@@ -50,18 +71,13 @@ export type LocalPaymasterConfig = ClientConfig<Transport, Chain, Account> & {
  * Needs an account to sign paymaster transactions.
  */
 export function createLocalPaymasterClient(
-    parameters: ClientConfig<Transport, Chain, Account> & {
-        entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
-        paymaster: Address;
-        paymasterOwner: LocalAccount;
-        publicClient?: PublicClient<Transport, Chain>;
-    },
+    parameters: LocalPaymasterConfig,
 ): PimlicoPaymasterClient<ENTRYPOINT_ADDRESS_V07_TYPE> {
     const { key = "public", name = "Local Paymaster Client" } = parameters;
     //Remove non-standard keys from config, doesn't break anything but more aligned with original
-    const clientConfig: ClientConfig<Transport, Chain, Account> = omit(parameters, [
+    const clientConfig: ClientConfig<Transport, Chain, undefined> = omit(parameters, [
         "paymaster",
-        "paymasterOwner",
+        "paymasterSigner",
     ]) as any;
     //We use unknown to speedup type inference. Does this help?
     const client = createClient({
@@ -72,7 +88,7 @@ export function createLocalPaymasterClient(
     }) as unknown as PimlicoPaymasterClient<ENTRYPOINT_ADDRESS_V07_TYPE>;
     client.request = createLocalPaymasterEIP1193Request({ ...parameters, request: client.request });
 
-    return client.extend(pimlicoPaymasterActions(parameters.entryPoint));
+    return client.extend(pimlicoPaymasterActions(parameters.entryPoint)) as any;
 }
 
 //TODO: Add PaymasterRPCSchema
@@ -94,7 +110,7 @@ export function createLocalPaymasterEIP1193Request(
     const supportedEntryPoints = [parameters.entryPoint];
     const paymaster = parameters.paymaster;
 
-    const { paymasterOwner, request } = parameters;
+    const { paymasterSigner, request, topupWalletClient, minBalance, targetBalance } = parameters;
     //Remove non-standard keys from config, doesn't break anything but more aligned with original
     const clientConfig: ClientConfig<Transport, Chain, Account> = omit(parameters, [
         "walletClient",
@@ -108,6 +124,19 @@ export function createLocalPaymasterEIP1193Request(
     //@ts-expect-error
     const requestOverride: EIP1193RequestFn = async function requestOverride(args, options) {
         if (args.method === "pm_sponsorUserOperation") {
+            if (topupWalletClient && minBalance && targetBalance) {
+                const paymasterTopup = await topupPaymaster({
+                    publicClient,
+                    walletClient: topupWalletClient,
+                    paymaster,
+                    minBalance,
+                    targetBalance,
+                });
+                if (paymasterTopup.hash) {
+                    await publicClient.waitForTransactionReceipt({ hash: paymasterTopup.hash });
+                }
+            }
+
             const [userOperation, entryPoint] = args.params as [
                 PartialBy<
                     UserOperationWithBigIntAsHex<"v0.7">,
@@ -175,7 +204,7 @@ export function createLocalPaymasterEIP1193Request(
                 functionName: "getHash",
                 args: [userOpPaymasterPacked as any, validUntil, validAfter],
             });
-            const paymasterSignature = await paymasterOwner.signMessage({
+            const paymasterSignature = await paymasterSigner.signMessage({
                 message: {
                     raw: userOpPaymasterHash,
                 },

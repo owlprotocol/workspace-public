@@ -16,7 +16,8 @@ import { DETERMINISTIC_DEPLOYER_ADDRESS } from "./constants.js";
 import { getOrDeployDeterministicDeployer } from "./deployDeterministicDeployer.js";
 import { getOrDeployDeterministicContract } from "./getTransaction.js";
 import { getDeployDeterministicAddress } from "./getAddress.js";
-import { ANVIL_MNEMONIC, getLocalAccount } from "../getLocalMnemonic.js";
+import { DEFAULT_GANACHE_CONFIG } from "../utils.js";
+import { getLocalAccount } from "../accounts.js";
 //Copied artifact just for testing contract deployment
 import { MyContract } from "../artifacts/MyContract.js";
 
@@ -25,7 +26,7 @@ describe("DeterministicDeployer.test.ts", function () {
     let walletClient: WalletClient<CustomTransport, Chain, Account>;
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
+        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
         const transport = custom(provider);
         //const transport = http(localhost.rpcUrls.default.http[0]);
         publicClient = createPublicClient({

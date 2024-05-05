@@ -11,7 +11,7 @@ import {
     custom,
 } from "viem";
 import { localhost } from "viem/chains";
-import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/viem-utils";
+import { DEFAULT_GANACHE_CONFIG, getLocalAccount } from "@owlprotocol/viem-utils";
 import { setupERC4337Contracts, setupVerifyingPaymaster } from "./setupERC4337Contracts.js";
 
 describe("setupERC4337Contracts.test.ts", function () {
@@ -19,7 +19,7 @@ describe("setupERC4337Contracts.test.ts", function () {
     let walletClient: WalletClient<CustomTransport, Chain, Account>;
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
+        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
         const transport = custom(provider);
         //const transport = http(localhost.rpcUrls.default.http[0]);
         publicClient = createPublicClient({
@@ -40,7 +40,11 @@ describe("setupERC4337Contracts.test.ts", function () {
         expect(await publicClient.getBytecode({ address: result.entrypoint.address })).toBeDefined();
         expect(await publicClient.getBytecode({ address: result.simpleAccountFactory.address })).toBeDefined();
 
-        const verifyingPaymaster = await setupVerifyingPaymaster({ publicClient, walletClient });
+        const verifyingPaymaster = await setupVerifyingPaymaster({
+            publicClient,
+            walletClient,
+            verifyingSignerAddress: walletClient.account.address,
+        });
         expect(await publicClient.getBytecode({ address: verifyingPaymaster.address })).toBeDefined();
     });
 });

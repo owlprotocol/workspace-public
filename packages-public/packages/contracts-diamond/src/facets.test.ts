@@ -19,7 +19,7 @@ import {
     getDeployAddress,
     getOrDeployImplementations,
 } from "@owlprotocol/contracts-create2factory";
-import { ANVIL_MNEMONIC, getLocalAccount, getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
+import { DEFAULT_GANACHE_CONFIG, getLocalAccount, getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
 import { MyContract } from "@owlprotocol/contracts-create2factory/artifacts/MyContract";
 import { ERC721PresetDiamondSpec } from "./diamondSpec.js";
 import {
@@ -40,7 +40,7 @@ describe("facets.test.ts", function () {
     let walletClient: WalletClient<CustomTransport, Chain, Account>;
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
+        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
         publicClient = createPublicClient({
             chain: localhost,
             transport: custom(provider),
@@ -218,7 +218,8 @@ describe("facets.test.ts", function () {
 
     test("deploy ERC721 diamond", async () => {
         const deployFacets = await getERC721ImplementationDeployParams({ publicClient });
-        await walletClient.sendTransaction(deployFacets.deployTransaction!);
+        const deployFacetsHash = await walletClient.sendTransaction(deployFacets.deployTransaction!);
+        await publicClient.waitForTransactionReceipt({ hash: deployFacetsHash });
 
         const diamondDeployData = getERC721DiamondDeployData({
             admin: walletClient.account.address,

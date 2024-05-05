@@ -15,7 +15,7 @@ import {
     parseEther,
 } from "viem";
 import { localhost } from "viem/chains";
-import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/viem-utils";
+import { DEFAULT_GANACHE_CONFIG, getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { ENTRYPOINT_ADDRESS_V07_TYPE, UserOperation } from "permissionless/types";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
@@ -39,7 +39,7 @@ describe("SimpleAccount.test.ts", function () {
     // let verifyingPaymaster: Address;
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
+        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
         transport = custom(provider);
         //const transport = http(localhost.rpcUrls.default.http[0]);
         publicClient = createPublicClient({
@@ -54,7 +54,6 @@ describe("SimpleAccount.test.ts", function () {
         const contracts = await setupERC4337Contracts({ publicClient, walletClient });
         entryPoint = contracts.entrypoint.address;
         simpleAccountFactory = contracts.simpleAccountFactory.address;
-        // verifyingPaymaster = contracts.verifyingPaymaster.address;
     });
 
     /** Tests involving deploying an account */

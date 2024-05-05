@@ -17,7 +17,7 @@ import {
     parseEther,
 } from "viem";
 import { localhost } from "viem/chains";
-import { ANVIL_MNEMONIC, getRelayerAccount, getUtilityAccount } from "@owlprotocol/viem-utils";
+import { DEFAULT_GANACHE_CONFIG, getRelayerAccount, getUtilityAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { walletClientToSmartAccountSigner } from "permissionless/utils";
@@ -60,7 +60,7 @@ describe("userOp.test.ts", function () {
     };
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
+        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
         transport = custom(provider);
         publicClient = createPublicClient({
             chain: localhost,
@@ -77,30 +77,21 @@ describe("userOp.test.ts", function () {
             chain: localhost,
             transport,
         }) as any;
-        // Check relayer balance
-        const minRelayerBalance = parseEther("0.1");
-        const targetRelayerBalance = parseEther("1");
-
-        const currRelayerBalance = await publicClient.getBalance({ address: relayerWalletClient.account.address });
-
-        if (currRelayerBalance < minRelayerBalance) {
-            const depositAmount = targetRelayerBalance - currRelayerBalance;
-            const hash = await utilityWalletClient.sendTransaction({
-                value: depositAmount,
-                to: relayerWalletClient.account.address,
-            });
-            await publicClient.waitForTransactionReceipt({ hash });
-        }
 
         //Deploy contracts
         const contracts = await setupERC4337Contracts({ publicClient, walletClient: utilityWalletClient });
+        entryPoint = contracts.entrypoint.address;
 
         //Bundler
-        entryPoint = contracts.entrypoint.address;
+        const minRelayerBalance = parseEther("0.1");
+        const targetRelayerBalance = parseEther("1");
         bundlerClient = createLocalBundlerClient({
             chain: localhost,
             transport,
             walletClient: relayerWalletClient,
+            topupWalletClient: utilityWalletClient,
+            minBalance: minRelayerBalance,
+            targetBalance: targetRelayerBalance,
             entryPoint,
         });
 
@@ -108,26 +99,20 @@ describe("userOp.test.ts", function () {
         const verifyingPaymasterInfo = await setupVerifyingPaymaster({
             publicClient,
             walletClient: utilityWalletClient,
+            verifyingSignerAddress: utilityWalletClient.account.address,
         });
         verifyingPaymaster = verifyingPaymasterInfo.address;
         //Fund paymaster
         paymasterClient = createLocalPaymasterClient({
             chain: localhost,
             transport,
-            paymasterOwner: utilityWalletClient.account,
+            paymasterSigner: utilityWalletClient.account,
             paymaster: verifyingPaymaster,
             entryPoint,
+            topupWalletClient: utilityWalletClient,
+            minBalance: 1n,
+            targetBalance: parseEther("1"),
         });
-        const paymasterDeposit = await publicClient.simulateContract({
-            account: utilityWalletClient.account,
-            address: verifyingPaymaster,
-            abi: VerifyingPaymaster.abi,
-            functionName: "deposit",
-            value: parseEther("1"),
-            args: [],
-        });
-        const paymasterDepositHash = await utilityWalletClient.writeContract(paymasterDeposit.request);
-        await publicClient.waitForTransactionReceipt({ hash: paymasterDepositHash });
 
         //Smart Account (get address)
         simpleAccountFactory = contracts.simpleAccountFactory.address;

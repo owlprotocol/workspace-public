@@ -14,6 +14,7 @@ import {
     ClientConfig,
     decodeFunctionData,
     numberToHex,
+    parseEther,
 } from "viem";
 import { bundlerActions } from "permissionless";
 import { PimlicoBundlerClient } from "permissionless/clients/pimlico";
@@ -33,6 +34,7 @@ import {
     handleOps,
 } from "@owlprotocol/contracts-account-abstraction/artifacts/IEntryPoint";
 import { packUserOp, decodeUserOp, unpackUserOp } from "@owlprotocol/contracts-account-abstraction/userOp";
+import { topupAddress } from "@owlprotocol/viem-utils";
 
 export type BundlerRpcMethod = (typeof bundlerRpcMethods)[number];
 
@@ -60,6 +62,11 @@ export function isBundlerRpcMethod(method: string): method is BundlerRpcMethod {
     return bundlerRpcMethods.includes(method as any);
 }
 
+/** Min bundler balance, determines bandwith of bundler but does not get drained */
+export const DEFAULT_MIN_BUNDLER_BALANCE = parseEther("0.05");
+/** Target bundler balance. */
+export const DEFAULT_TARGET_BUNDLER_BALANCE = parseEther("0.1");
+
 /**
  * Local bundler config
  */
@@ -74,7 +81,10 @@ export type LocalBundlerConfig = ClientConfig<Transport, Chain, Account> & {
     walletClient?: WalletClient<Transport, Chain, Account>;
     /** Rpc max block range. Max block range for fetching logs. Used by `eth_getUserOperationByHash` */
     rpcMaxBlockRange?: bigint;
-};
+} & ( //TODO: With dynamic gas estimation, make `minBalance` optional and if defined use Max(minBalance, txCost)
+        | { topupWalletClient: WalletClient<Transport, Chain, Account>; minBalance: bigint; targetBalance: bigint }
+        | { topupWalletClient?: undefined; minBalance?: undefined; targetBalance?: undefined }
+    );
 
 /**
  * Creates a local bundler EIP1193 client that can be used for
@@ -122,7 +132,7 @@ export function createLocalBundlerEIP1193Request(
     }
     const supportedEntryPoints = [parameters.entryPoint];
 
-    const { chain, rpcMaxBlockRange, request } = parameters;
+    const { chain, rpcMaxBlockRange, request, topupWalletClient, minBalance, targetBalance } = parameters;
     //Remove non-standard keys from config, doesn't break anything but more aligned with original
     const clientConfig: ClientConfig<Transport, Chain, Account> = omit(parameters, [
         "walletClient",
@@ -146,6 +156,19 @@ export function createLocalBundlerEIP1193Request(
             ];
             if (!supportedEntryPoints.includes(entryPoint)) {
                 throw new Error(`Unsupported entrypoint ${entryPoint}`);
+            }
+
+            if (topupWalletClient && minBalance && targetBalance) {
+                const bundlerTopup = await topupAddress({
+                    publicClient,
+                    walletClient: topupWalletClient,
+                    address: walletClient.account.address,
+                    minBalance,
+                    targetBalance,
+                });
+                if (bundlerTopup.hash) {
+                    await publicClient.waitForTransactionReceipt({ hash: bundlerTopup.hash });
+                }
             }
 
             const userOpPacked = packUserOp(userOp);

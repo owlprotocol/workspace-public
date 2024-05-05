@@ -20,7 +20,7 @@ import { getOrDeployCreate2Factory } from "./deployCreate2Factory.js";
 import { CREATE2_FACTORY_ADDRESS } from "./constants.js";
 import { getOrDeployContracts } from "./getTransaction.js";
 import { getDeployAddress } from "./getAddress.js";
-import { ANVIL_MNEMONIC, getLocalAccount } from "../utils/index.js";
+import { DEFAULT_GANACHE_CONFIG, getLocalAccount } from "../utils/index.js";
 import { MyContract } from "../artifacts/MyContract.js";
 import { Create2Factory } from "../artifacts/Create2Factory.js";
 
@@ -29,7 +29,7 @@ describe("deployCreate2Factory.test.ts", function () {
     let walletClient: WalletClient<CustomTransport, Chain, Account>;
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
+        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
         publicClient = createPublicClient({
             chain: localhost,
             transport: custom(provider),

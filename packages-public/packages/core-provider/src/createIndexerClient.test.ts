@@ -12,6 +12,7 @@ import {
 } from "viem";
 import { localhost } from "viem/chains";
 import { getAddress } from "viem/utils";
+import { DEFAULT_GANACHE_CONFIG } from "@owlprotocol/viem-utils";
 import { deleteEmulatorData } from "@owlprotocol/crud-firebase/admin";
 import { sleep } from "@owlprotocol/utils";
 import { omit } from "lodash-es";
@@ -83,7 +84,7 @@ describe("createIndexerClient.test.ts", function () {
             erc721: erc721Resource,
             erc1155Balance: erc1155BalanceResource,
         };
-        const provider = ganache.provider({ logging: { quiet: true } });
+        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
         const transport = custom(provider);
         //const transport = http(localhost.rpcUrls.default.http[0]);
         publicClient = createPublicClient({
@@ -104,6 +105,7 @@ describe("createIndexerClient.test.ts", function () {
         const blockSeed = await publicIndexerClient.getBlock({ blockNumber: 0n });
         expect(blockSeed).toStrictEqual(block);
 
+        //Firebase write is done in background, wait a bit for it to complete
         await sleep(200);
 
         const blockFromFirebase = await ethBlockResource.getOrNull({ hash: block.hash, chainId: 1337 });
@@ -126,6 +128,7 @@ describe("createIndexerClient.test.ts", function () {
         const transactionSeed = await publicIndexerClient.getTransaction({ hash });
         expect(transactionSeed).toStrictEqual(transaction);
 
+        //Firebase write is done in background, wait a bit for it to complete
         await sleep(200);
 
         const transactionFromFirebase = await ethTransactionResource.getOrNull({
@@ -146,10 +149,11 @@ describe("createIndexerClient.test.ts", function () {
             value: 1n,
         });
 
-        const transactionReceipt = await publicClient.getTransactionReceipt({ hash });
+        const transactionReceipt = await publicClient.waitForTransactionReceipt({ hash });
         const transactionReceiptSeed = await publicIndexerClient.getTransactionReceipt({ hash });
         expect(transactionReceiptSeed).toStrictEqual(transactionReceipt);
 
+        //Firebase write is done in background, wait a bit for it to complete
         await sleep(200);
 
         const transactionReceiptFromFirebase = await ethTransactionReceiptResource.getOrNull({

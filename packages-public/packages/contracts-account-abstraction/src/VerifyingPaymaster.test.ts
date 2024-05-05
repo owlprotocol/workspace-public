@@ -20,7 +20,7 @@ import {
     HDAccount,
 } from "viem";
 import { localhost } from "viem/chains";
-import { ANVIL_MNEMONIC, getLocalAccount } from "@owlprotocol/viem-utils";
+import { DEFAULT_GANACHE_CONFIG, getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
 import { UserOperation } from "permissionless/types";
@@ -45,7 +45,7 @@ describe("VerifyingPaymaster.test.ts", function () {
     let verifyingPaymaster: Address;
 
     beforeEach(async () => {
-        const provider = ganache.provider({ wallet: { mnemonic: ANVIL_MNEMONIC }, logging: { quiet: true } });
+        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
         transport = custom(provider);
         publicClient = createPublicClient({
             chain: localhost,
@@ -59,7 +59,13 @@ describe("VerifyingPaymaster.test.ts", function () {
         const contracts = await setupERC4337Contracts({ publicClient, walletClient });
         // entryPoint = contracts.entrypoint.address;
         simpleAccountFactory = contracts.simpleAccountFactory.address;
-        verifyingPaymaster = (await setupVerifyingPaymaster({ publicClient, walletClient })).address;
+        verifyingPaymaster = (
+            await setupVerifyingPaymaster({
+                publicClient,
+                walletClient,
+                verifyingSignerAddress: walletClient.account.address,
+            })
+        ).address;
     });
 
     /** Tests involving interacting with an existing paymaster */
