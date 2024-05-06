@@ -17,14 +17,8 @@ import {
     numberToHex,
     walletActions,
 } from "viem";
-import {
-    projectUserWalletDfnsResource,
-    projectUserWalletDfnsGroupQuery,
-    ProjectUserWalletDfns,
-} from "@owlprotocol/core-firebase/admin";
 import { omit } from "lodash-es";
 import { transactionRequestDecodeZod } from "@owlprotocol/zod-sol";
-import { createDfnsWallet, dfnsClient, getDfnsAccount } from "./controllers/dfns.js";
 
 export type WalletRpcMethod = (typeof walletRpcMethods)[number];
 
@@ -50,21 +44,18 @@ export function isWalletRpcMethod(method: string): method is WalletRpcMethod {
     return walletRpcMethods.includes(method as any);
 }
 
-export type DfnsAccountConfig = ClientConfig<Transport, Chain, Account> & {
+export type MultiAccountConfig = ClientConfig<Transport, Chain, Account> & {
     /** Public client override. Use this instead of instantiating a new one */
     publicClient?: PublicClient<Transport, Chain>;
-    /** userId to fetch wallets */
-    userId: string;
-    /** projectId to fetch wallets, if not specified all wallets supported */
-    projectId?: string;
+    localAccounts: LocalAccount[];
 };
 
-export function createDfnsAccountClient(): Account {
-    throw new Error("Unimplemented");
-}
-
-export async function createDfnsWalletClient(parameters: DfnsAccountConfig): Promise<WalletClient> {
+export async function createMultiAccountWalletClient(parameters: MultiAccountConfig): Promise<WalletClient> {
     const { key = "wallet", name = "Wallet Client" } = parameters;
+
+    if (parameters.localAccounts.length == 0) {
+        throw new Error(`At least one local account must be provided`);
+    }
 
     //Remove non-standard keys from config, doesn't break anything but more aligned with original
     const clientConfig: ClientConfig<Transport, Chain, Account> = omit(parameters, ["publicClient"]) as any;
@@ -76,26 +67,27 @@ export async function createDfnsWalletClient(parameters: DfnsAccountConfig): Pro
         name,
         type: "walletClient",
     });
-    client.request = await createDfnsWalletEIP1193Request({ ...parameters, request: client.request });
+    client.request = await createMultiAccountWalletEIP1193Request({ ...parameters, request: client.request });
 
     return client.extend(walletActions) as unknown as WalletClient;
 }
 
-export type DfnsWalletEIP1193Config = {
+export type MultiAccountWalletEIP1193Config = {
     request: EIP1193RequestFn<PublicRpcSchema>;
     chain?: Chain;
     chainId?: number;
-    /** userId to fetch wallets */
-    userId: string;
-    /** projectId to fetch wallets, if not specified all wallets supported */
-    projectId?: string;
+    localAccounts: LocalAccount[];
 };
-//TODO: Add support for developer wallets
+
 //TODO: Add WalletRPCSchema
-export async function createDfnsWalletEIP1193Request(
-    parameters: DfnsWalletEIP1193Config,
+export async function createMultiAccountWalletEIP1193Request(
+    parameters: MultiAccountWalletEIP1193Config,
 ): Promise<EIP1193RequestFn<[...PublicRpcSchema, ...WalletRpcSchema]>> {
-    const { request, userId, projectId } = parameters;
+    const { request, localAccounts } = parameters;
+
+    if (localAccounts.length == 0) {
+        throw new Error(`At least one local account must be provided`);
+    }
 
     let chain: Chain;
     if (parameters.chain) {
@@ -117,52 +109,22 @@ export async function createDfnsWalletEIP1193Request(
     //Get chainId to encode data properly
     const chainId = chain.id;
 
-    //TODO: Optional caching for `eth_accounts` since this is used for other rpc calls as well?
-    async function getAccounts(): Promise<ProjectUserWalletDfns[]> {
-        if (projectId) {
-            //Fetch user wallets in specific project
-            const wallets = await projectUserWalletDfnsResource.getWhere({ projectId, userId });
-
-            //If wallets.length === 0, create a wallet
-            if (wallets.length === 0) {
-                const externalId = `${projectId}-project-${userId}-wallet-${0}`;
-                const walletResponse = await createDfnsWallet(dfnsClient, externalId);
-                const wallet = {
-                    projectId,
-                    walletId: walletResponse.id,
-                    status: walletResponse.status as any,
-                    userId,
-                    address: walletResponse.address as Address,
-                };
-                await projectUserWalletDfnsResource.set(wallet);
-
-                return [wallet];
-            }
-
-            return wallets;
-        } else {
-            //Fetch all user wallets across all projects
-            const wallets = await projectUserWalletDfnsGroupQuery.getWhere({ userId });
-            return wallets;
+    function getAccount(address: Address): LocalAccount {
+        const { localAccounts } = parameters;
+        const account = localAccounts.find((a) => a.address === address);
+        if (!account) {
+            throw new Error(`Account ${address} not found!`);
         }
+        return account;
     }
 
-    async function getAccount(account: Address): Promise<LocalAccount> {
-        const accountInfo = (await getAccounts()).find((a) => a.address === account);
-        if (!accountInfo) {
-            throw new Error(`Account ${account} not found!`);
-        }
-        //TODO: DFNS Wallet as EIP1193?
-        return getDfnsAccount(dfnsClient, accountInfo.walletId);
-    }
-
-    async function getAddresses(): Promise<Address[]> {
-        return (await getAccounts()).map((w) => w.address).filter((a) => !!a) as Address[];
+    function getAddresses(): Address[] {
+        return parameters.localAccounts.map((a) => a.address);
     }
 
     async function signTransaction(transaction: RpcTransactionRequest): Promise<Hex> {
         const { from } = transaction;
-        const account = await getAccount(from);
+        const account = getAccount(from);
         //Decode hex to expected types
         const request = { ...transactionRequestDecodeZod.parse(transaction), chainId } as TransactionSerializable;
         return account.signTransaction(request);
@@ -198,7 +160,7 @@ export async function createDfnsWalletEIP1193Request(
             throw new Error(`Unimplemented method ${args.method}`);
         } else if (args.method === "eth_sign" || args.method === "personal_sign") {
             const [challenge, address] = args.params as [challenge: Hex, address: Address];
-            const account = await getAccount(address);
+            const account = getAccount(address);
             return account.signMessage({ message: { raw: challenge } });
         } else if (args.method === "eth_decrypt") {
             //Not supported by DFNS
@@ -219,8 +181,8 @@ export async function createDfnsWalletEIP1193Request(
             //TODO: Throw 4902 error on unrecognized chainId
             //https://docs.metamask.io/wallet/reference/wallet_switchethereumchain/
             // chainId = BigInt(chainIdHex);
-
-            return null;
+            //
+            // return null;
         } else if (args.method === "wallet_watchAsset") {
             //Watch an asset, updates ERC20Balance, ERC721, ERC1155Balance accordingly
             // const [type, options] = args.params as [type: "ERC20" | "ERC721" | "ERC1155", options: { address: Address, symbol?: string, decimals?: number, image?: string, tokenId?: string}]

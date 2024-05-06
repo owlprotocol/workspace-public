@@ -21,32 +21,8 @@ import {
     numberToHex,
 } from "viem";
 import { BlockEncoded, TransactionEncoded, TransactionTypeInput } from "@owlprotocol/zod-sol";
-import {
-    ERC1155BalanceResource,
-    ERC20AllowanceResource,
-    ERC20BalanceResource,
-    ERC721Resource,
-    EthBlockResource,
-    EthBytecodeResource,
-    EthLogAbiResource,
-    EthLogResource,
-    EthTransactionReceiptResource,
-    EthTransactionResource,
-} from "@owlprotocol/eth-firebase/models";
-import { decodeLogWithAbis, decodeLogWithFirebase } from "./controllers/index.js";
-
-export interface EthResources {
-    block: EthBlockResource;
-    transaction: EthTransactionResource;
-    transactionReceipt: EthTransactionReceiptResource;
-    log: EthLogResource;
-    logAbi: EthLogAbiResource;
-    bytecode: EthBytecodeResource;
-    erc20Balance?: ERC20BalanceResource;
-    erc20Allowance?: ERC20AllowanceResource;
-    erc721?: ERC721Resource;
-    erc1155Balance?: ERC1155BalanceResource;
-}
+import { decodeLogWithAbis, decodeLogWithFirebase } from "./controllers/decodeLog.js";
+import { EthResources } from "./types/EthResources.js";
 
 /**
  * Convert a viem publicClient to support indexing, we do so by overriding `client.request` with `createIndexeEIP1193Request`

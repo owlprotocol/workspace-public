@@ -23,7 +23,7 @@ import { EthLogAbiResource } from "@owlprotocol/eth-firebase/models";
 import { updateERC20Allowance, updateERC20Balance } from "./erc20.js";
 import { updateERC1155Balance } from "./erc1155.js";
 import { updateERC721Owner } from "./erc721.js";
-import { EthResources } from "../createIndexerClient.js";
+import { EthResources } from "../types/EthResources.js";
 
 /**
  * Return whether event conforms to abi by checking

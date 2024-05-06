@@ -67,15 +67,10 @@
     "tsc:watch": "tsc -w"
   },
   "dependencies": {
-    "@dfns/lib-viem": "0.3.3",
-    "@dfns/sdk": "0.3.3",
-    "@dfns/sdk-keysigner": "0.3.3",
     "@owlprotocol/contracts-create2factory": "workspace:*",
     "@owlprotocol/contracts-account-abstraction": "workspace:*",
     "@owlprotocol/contracts-diamond": "workspace:*",
-    "@owlprotocol/core-firebase": "workspace:*",
     "@owlprotocol/crud-firebase": "workspace:*",
-    "@owlprotocol/dfns-sdk-mock": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/eth-firebase": "workspace:*",
     "@owlprotocol/utils": "workspace:*",

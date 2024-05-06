@@ -2,7 +2,7 @@ import { Address } from "abitype";
 import { Chain, PublicClient, Transport } from "viem";
 import { balanceOf } from "@owlprotocol/contracts-diamond/artifacts/IERC1155";
 import { ERC1155Balance } from "@owlprotocol/eth-firebase/models";
-import { EthResources } from "../createIndexerClient.js";
+import { EthResources } from "../types/EthResources.js";
 
 /**
  * Update ERC1155Balance if no cached data or stale
