@@ -39,6 +39,8 @@ describe("setupERC4337Contracts.test.ts", function () {
         expect(await publicClient.getBytecode({ address: result.deterministicDeployer.address })).toBeDefined();
         expect(await publicClient.getBytecode({ address: result.entrypoint.address })).toBeDefined();
         expect(await publicClient.getBytecode({ address: result.simpleAccountFactory.address })).toBeDefined();
+        expect(await publicClient.getBytecode({ address: result.entrypointSimulations.address })).toBeDefined();
+        expect(await publicClient.getBytecode({ address: result.pimlicoEntrypointSimulations.address })).toBeDefined();
 
         const verifyingPaymaster = await setupVerifyingPaymaster({
             publicClient,

@@ -1,4 +1,4 @@
-import { Network } from "@owlprotocol/eth-firebase";
+import type { Network } from "@owlprotocol/eth-firebase";
 import { ANKR_API_KEY, DRPC_API_KEY } from "@owlprotocol/envvars";
 import { getAnkrEndpoints } from "./providers/ankr.js";
 import { getDrpcEndpoints } from "./providers/drpc.js";

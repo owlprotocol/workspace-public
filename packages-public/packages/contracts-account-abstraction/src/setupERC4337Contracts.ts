@@ -5,6 +5,8 @@ import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./constants.js";
 import { EntryPoint } from "./artifacts/EntryPoint.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { VerifyingPaymaster } from "./artifacts/VerifyingPaymaster.js";
+import { EntryPointSimulations } from "./artifacts/EntryPointSimulations.js";
+import { PimlicoEntryPointSimulations } from "./artifacts/PimlicoEntryPointSimulations.js";
 
 /**
  * Deploy public ERC4337 contracts. These have no permissions system whatsoever and are shared contract infrastructure.
@@ -29,7 +31,7 @@ export async function setupERC4337Contracts(clients: Clients) {
         await publicClient.waitForTransactionReceipt({ hash: deterministicDeployer.hash });
     }
 
-    //Step 2 - EntryPoint & SimpleAccountFactory
+    //Step 2 - EntryPoint
     //If no EntryPoint v0.7, wait for deploy (mostly used for local testing)
     const entrypoint = (await getOrDeployDeterministicContract(
         { publicClient, walletClient },
@@ -50,6 +52,7 @@ export async function setupERC4337Contracts(clients: Clients) {
         await publicClient.waitForTransactionReceipt({ hash: entrypoint.hash });
     }
 
+    //Step 3 - SimpleAccountFactory
     //If no SimpleAccountFactory, wait for deploy (mostly used for local testing)
     const simpleAccountFactory = await getOrDeployDeterministicContract(
         { publicClient, walletClient },
@@ -67,7 +70,41 @@ export async function setupERC4337Contracts(clients: Clients) {
         await publicClient.waitForTransactionReceipt({ hash: simpleAccountFactory.hash });
     }
 
-    //EntryPoint & SimpleAccountFactory can be deployed concurrently
+    //Step 4 - EntryPointSimulations
+    const entrypointSimulations = await getOrDeployDeterministicContract(
+        { publicClient, walletClient },
+        {
+            salt: zeroHash,
+            bytecode: encodeDeployData({
+                abi: EntryPointSimulations.abi,
+                bytecode: EntryPointSimulations.bytecode,
+                args: [],
+            }),
+        },
+    );
+    // console.debug(entrypointSimulations);
+    if (entrypointSimulations.hash) {
+        await publicClient.waitForTransactionReceipt({ hash: entrypointSimulations.hash });
+    }
+
+    //Step 5 - EntryPointSimulations
+    const pimlicoEntrypointSimulations = await getOrDeployDeterministicContract(
+        { publicClient, walletClient },
+        {
+            salt: zeroHash,
+            bytecode: encodeDeployData({
+                abi: PimlicoEntryPointSimulations.abi,
+                bytecode: PimlicoEntryPointSimulations.bytecode,
+                args: [entrypointSimulations.address],
+            }),
+        },
+    );
+    // console.debug(entrypointSimulations);
+    if (pimlicoEntrypointSimulations.hash) {
+        await publicClient.waitForTransactionReceipt({ hash: pimlicoEntrypointSimulations.hash });
+    }
+
+    //EntryPoint & SimpleAccountFactory & PimlicoEntryPointSimulations can be deployed concurrently
     //TODO: For when walletClient supports concurrent transactions
     /*
     const transactions: Hash[] = [];
@@ -79,7 +116,13 @@ export async function setupERC4337Contracts(clients: Clients) {
     }
     */
 
-    return { deterministicDeployer, entrypoint, simpleAccountFactory };
+    return {
+        deterministicDeployer,
+        entrypoint,
+        simpleAccountFactory,
+        entrypointSimulations,
+        pimlicoEntrypointSimulations,
+    };
 }
 
 /**
