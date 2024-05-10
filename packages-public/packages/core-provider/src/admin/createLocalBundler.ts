@@ -33,7 +33,11 @@ import {
     UserOperationEvent,
     handleOps,
 } from "@owlprotocol/contracts-account-abstraction/artifacts/IEntryPoint";
-import { packUserOp, decodeUserOp, unpackUserOp } from "@owlprotocol/contracts-account-abstraction/userOp";
+import {
+    toPackedUserOperation,
+    decodeUserOp,
+    toUserOperationEncoded,
+} from "@owlprotocol/contracts-account-abstraction";
 import { topupAddress } from "@owlprotocol/viem-utils";
 
 export type BundlerRpcMethod = (typeof bundlerRpcMethods)[number];
@@ -171,7 +175,7 @@ export function createLocalBundlerEIP1193Request(
                 }
             }
 
-            const userOpPacked = packUserOp(userOp);
+            const userOpPacked = toPackedUserOperation(userOp);
             //types seem to be inferred as [never[], Address]
             const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
 
@@ -288,7 +292,7 @@ export function createLocalBundlerEIP1193Request(
             }
 
             const result = {
-                userOperation: unpackUserOp(op),
+                userOperation: toUserOperationEncoded(op),
                 entryPoint: parameters.entryPoint,
                 transactionHash: txHash,
                 blockHash: tx.blockHash ?? "0x",

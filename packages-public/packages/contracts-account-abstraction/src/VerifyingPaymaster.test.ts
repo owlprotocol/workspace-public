@@ -31,9 +31,10 @@ import { abi as EntryPointAbi } from "./artifacts/EntryPoint.js";
 import { getSimpleAccountAddress } from "./SimpleAccount.js";
 import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
-import { encodeUserOp, packUserOp } from "./userOp.js";
+import { encodeUserOp } from "./UserOperation.js";
 import { decodeViemError } from "./isViemError.js";
 import { setupERC4337Contracts, setupVerifyingPaymaster } from "./setupERC4337Contracts.js";
+import { toPackedUserOperation } from "./PackedUserOperation.js";
 
 describe("VerifyingPaymaster.test.ts", function () {
     let transport: CustomTransport;
@@ -175,8 +176,7 @@ describe("VerifyingPaymaster.test.ts", function () {
                 paymasterVerificationGasLimit: 10_000_000n,
                 paymasterPostOpGasLimit: 10_000_000n,
             };
-            const userOpPaymasterPacked = packUserOp(encodeUserOp(userOp));
-
+            const userOpPaymasterPacked = toPackedUserOperation(encodeUserOp(userOp));
             const userOpPaymasterHash = await publicClient.readContract({
                 address: verifyingPaymaster,
                 abi: VerifyingPaymaster.abi,
@@ -205,7 +205,7 @@ describe("VerifyingPaymaster.test.ts", function () {
             });
             userOp.signature = signature;
 
-            const userOpPacked = packUserOp(encodeUserOp(userOp));
+            const userOpPacked = toPackedUserOperation(encodeUserOp(userOp));
             //types seem to be inferred as [never[], Address]
             const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
 

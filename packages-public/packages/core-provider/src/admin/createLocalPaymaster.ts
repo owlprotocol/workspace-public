@@ -23,7 +23,7 @@ import { getEntryPointVersion } from "permissionless/utils";
 import { PartialBy } from "viem/types/utils";
 import { omit } from "lodash-es";
 import type { UserOperationWithBigIntAsHex } from "@owlprotocol/contracts-account-abstraction";
-import { packUserOp } from "@owlprotocol/contracts-account-abstraction/userOp";
+import { toPackedUserOperation } from "@owlprotocol/contracts-account-abstraction";
 import { VerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction/artifacts/VerifyingPaymaster";
 import { topupPaymaster } from "@owlprotocol/contracts-account-abstraction";
 
@@ -196,7 +196,7 @@ export function createLocalPaymasterEIP1193Request(
                 paymasterVerificationGasLimit,
                 paymasterPostOpGasLimit,
             };
-            const userOpPaymasterPacked = packUserOp(userOp);
+            const userOpPaymasterPacked = toPackedUserOperation(userOp);
 
             const userOpPaymasterHash = await publicClient.readContract({
                 address: paymaster,
