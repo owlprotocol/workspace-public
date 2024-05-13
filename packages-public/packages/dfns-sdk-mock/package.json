@@ -56,7 +56,7 @@
   },
   "peerDependencies": {
     "ethers": "5.7.2",
-    "viem": "2.8.6"
+    "viem": "2.9.20"
   },
   "devDependencies": {
     "@dfns/lib-ethersjs5": "0.3.3",
@@ -75,7 +75,7 @@
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
     "typescript": "5.4.2",
-    "viem": "2.8.6",
+    "viem": "2.9.20",
     "vite": "^5.1.6",
     "vitest": "^1.4.0",
     "@typescript/analyze-trace": "^0.10.1",

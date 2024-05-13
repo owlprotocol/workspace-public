@@ -290,7 +290,12 @@ export async function createIndexeEIP1193RequestForSdk(
                 return transactionReceiptRpc;
             }
 
-            sdk.transactionReceipt.upsert({ ...transactionReceiptRpc, chainId });
+            if (!transactionReceiptRpc.contractAddress) {
+                transactionReceiptRpc.contractAddress = null;
+            }
+
+            // contractAddress constrained to `Address | null`
+            sdk.transactionReceipt.upsert({ ...(transactionReceiptRpc as any), chainId });
 
             //Decode logs
             const logsDecoded = await Promise.all(

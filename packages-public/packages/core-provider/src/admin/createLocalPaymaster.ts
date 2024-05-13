@@ -20,7 +20,7 @@ import { PimlicoPaymasterClient } from "permissionless/clients/pimlico";
 import { pimlicoPaymasterActions } from "permissionless/actions/pimlico";
 import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { getEntryPointVersion } from "permissionless/utils";
-import { PartialBy } from "viem/types/utils";
+import { type PartialBy } from "viem/chains";
 import { omit } from "lodash-es";
 import type { UserOperationWithBigIntAsHex } from "@owlprotocol/contracts-account-abstraction";
 import { toPackedUserOperation } from "@owlprotocol/contracts-account-abstraction";

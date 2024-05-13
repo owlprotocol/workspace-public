@@ -3,7 +3,7 @@ import ganache from "ganache";
 import {
     Account,
     Chain,
-    CustomTransport,
+    Transport,
     PublicClient,
     WalletClient,
     createPublicClient,
@@ -22,8 +22,8 @@ import { getLocalAccount } from "../accounts.js";
 import { MyContract } from "../artifacts/MyContract.js";
 
 describe("DeterministicDeployer.test.ts", function () {
-    let publicClient: PublicClient<CustomTransport, Chain>;
-    let walletClient: WalletClient<CustomTransport, Chain, Account>;
+    let publicClient: PublicClient<Transport, Chain>;
+    let walletClient: WalletClient<Transport, Chain, Account>;
 
     beforeEach(async () => {
         const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
@@ -32,12 +32,13 @@ describe("DeterministicDeployer.test.ts", function () {
         publicClient = createPublicClient({
             chain: localhost,
             transport,
-        });
+        }) as unknown as PublicClient<Transport, Chain>;
+
         walletClient = createWalletClient({
             account: getLocalAccount(0),
             chain: localhost,
             transport,
-        });
+        }) as unknown as WalletClient<Transport, Chain, Account>;
     });
 
     test("getOrDeployDeterministicDeployer", async () => {

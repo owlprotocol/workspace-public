@@ -101,7 +101,7 @@
     "@account-abstraction/contracts": "0.7.0",
     "abitype": "1.0.0",
     "permissionless": "^0.1.10",
-    "viem": "2.8.6",
+    "viem": "2.9.20",
     "zod": "3.21.4"
   },
   "devDependencies": {

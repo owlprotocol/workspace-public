@@ -72,7 +72,7 @@
   "dependencies": {
     "@owlprotocol/utils": "workspace:*",
     "abitype": "1.0.0",
-    "viem": "2.8.6",
+    "viem": "2.9.20",
     "ethers": "5.7.2",
     "lodash": "4.17.21",
     "zod": "3.21.4"

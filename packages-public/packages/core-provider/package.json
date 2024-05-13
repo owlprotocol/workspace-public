@@ -79,7 +79,7 @@
     "abitype": "1.0.0",
     "lodash-es": "4.17.21",
     "permissionless": "^0.1.10",
-    "viem": "2.8.6"
+    "viem": "2.9.20"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",

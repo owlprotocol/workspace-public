@@ -68,18 +68,20 @@
     "lint:fix": "eslint --fix 'src/**/*.ts'",
     "lint:staged": "lint-staged",
     "madge": "madge src/index.ts -c",
+    "scripts:uploadNetworks": "tsx src/scripts/runUploadNetworks.ts",
     "test": "pnpm run test:ci",
     "test:ci": "vitest --run",
     "test:watch": "vitest",
     "tsc": "tsc",
     "tsc:trace": "tsc --generateTrace lib/trace && analyze-trace lib/trace",
-    "tsc:watch": "tsc -w",
-    "scripts:uploadNetworks": "tsx src/scripts/runUploadNetworks.ts"
+    "tsc:watch": "tsc -w"
   },
   "dependencies": {
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/eth-firebase": "workspace:*",
-    "viem": "2.8.6"
+    "@owlprotocol/zod-sol": "workspace:*",
+    "viem": "2.9.20",
+    "zod": "3.21.4"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",

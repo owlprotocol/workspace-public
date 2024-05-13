@@ -31,6 +31,7 @@ export const DEFAULT_GANACHE_CONFIG = {
     //This mining mode forces us to account for the fact that once a hash is returned, this does NOT mean the transaction is confirmed
     //Transaction is only mined once we request the receipt. This is better then just setting a block time as that would be non-deterministic
     //Also see https://github.com/trufflesuite/ganache/discussions/2111
+    // WARNING: do not change this
     miner: { instamine: "strict" },
     logging: { quiet: true },
 } as const;

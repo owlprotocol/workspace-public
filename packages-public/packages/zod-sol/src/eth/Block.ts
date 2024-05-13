@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Block as BlockViem } from "viem";
-import { PartialBy, Prettify } from "viem/types/utils";
+import { type PartialBy, type Prettify } from "viem/chains";
 import { quantityEncodeZod, quantityDecodeZod } from "./math.js";
 import { bytes32Zod, bytesZod } from "../solidity/bytes.js";
 import { addressZod } from "../solidity/address.js";

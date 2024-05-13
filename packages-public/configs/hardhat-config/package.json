@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@owlprotocol/envvars": "workspace:*",
-    "viem": "2.8.6"
+    "viem": "2.9.20"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",

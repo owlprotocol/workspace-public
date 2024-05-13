@@ -59,7 +59,7 @@ export type UserOperationReceiptWithBigIntAsHex = {
         cumulativeGasUsed: Hex;
         status: "0x0" | "0x1";
         gasUsed: Hex;
-        contractAddress: Address | null;
+        contractAddress: Address | null | undefined;
         logsBloom: Hex;
         effectiveGasPrice: Hex;
     };

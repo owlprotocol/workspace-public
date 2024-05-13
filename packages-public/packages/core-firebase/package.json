@@ -107,7 +107,7 @@
     "@owlprotocol/zod-sol": "workspace:*",
     "lodash-es": "4.17.21",
     "uuid": "^9.0.1",
-    "viem": "2.8.6",
+    "viem": "2.9.20",
     "zod": "3.21.4"
   },
   "peerDependencies": {

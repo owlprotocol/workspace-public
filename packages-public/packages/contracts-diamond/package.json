@@ -94,7 +94,7 @@
     "@owlprotocol/zod-sol": "workspace:*",
     "@openzeppelin/contracts": "5.0.2",
     "abitype": "1.0.0",
-    "viem": "2.8.6",
+    "viem": "2.9.20",
     "zod": "3.21.4"
   },
   "devDependencies": {

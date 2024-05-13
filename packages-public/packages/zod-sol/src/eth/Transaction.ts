@@ -8,7 +8,7 @@ import {
     UnionPartialBy,
 } from "viem";
 import { z } from "zod";
-import { Prettify } from "viem/types/utils";
+import { type Prettify } from "viem/chains";
 import { acessListZod } from "./AccessList.js";
 import { indexDecodeZod, indexEncodeZod, quantityDecodeZod, quantityEncodeZod } from "./math.js";
 import { addressZod } from "../solidity/address.js";
