@@ -20,12 +20,19 @@ import { PimlicoPaymasterClient } from "permissionless/clients/pimlico";
 import { pimlicoPaymasterActions } from "permissionless/actions/pimlico";
 import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { getEntryPointVersion } from "permissionless/utils";
-import { type PartialBy } from "viem/chains";
 import { omit } from "lodash-es";
-import type { UserOperationWithBigIntAsHex } from "@owlprotocol/contracts-account-abstraction";
-import { toPackedUserOperation } from "@owlprotocol/contracts-account-abstraction";
 import { VerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction/artifacts/VerifyingPaymaster";
-import { topupPaymaster } from "@owlprotocol/contracts-account-abstraction";
+import {
+    UserOperationWithBigIntAsHexPartialGas,
+    toPackedUserOperation,
+    decodeUserOpPartialGas,
+    PimlicoPaymasterRpcSchema,
+    estimateUserOperationGas,
+    topupPaymaster,
+    dummySignature,
+    encodeUserOp,
+    EstimateUserOperationGasResponseResult,
+} from "@owlprotocol/contracts-account-abstraction";
 
 export type PaymasterRpcMethod = (typeof paymasterRpcMethods)[number];
 
@@ -48,17 +55,24 @@ export const DEFAULT_TARGET_PAYMASTER_BALANCE = parseEther("0.1");
 /**
  * Paymaster configuration, extends `ClientConfig` with defined Transport, Chain, but no account
  * @field entryPoint contract address
+ * @field entryPointSimulations EntryPoint simulations address (only v0.7 supported)
  * @field paymaster contract address
  * @field paymaster signer that signs UserOps
- * @field publicClient (optional) to read blockchain (defaults to `createPublicClient` using client config)
+ * @field publicClient (optional) Public client override. Use this instead of instantiating a new one
  * @field topupWalletClient (optional) topup wallet
  * @field minBalance for topup trigger
  * @field targetBalance for topup
  */
 export type LocalPaymasterConfig = ClientConfig<Transport, Chain, undefined> & {
+    /** EntryPoint address (only v0.7 supported) */
     entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
+    /** EntryPoint simulations addres (only v0.7 supported) */
+    entryPointSimulations: Address;
+    /** paymaster contract address */
     paymaster: Address;
+    /** paymaster signer that signs UserOps */
     paymasterSigner: LocalAccount;
+    /** publicClient (optional) Public client override. Use this instead of instantiating a new one */
     publicClient?: PublicClient<Transport, Chain>;
 } & ( //TODO: With dynamic gas estimation, make `minBalance` optional and if defined use Max(minBalance, txCost)
         | { topupWalletClient: WalletClient<Transport, Chain, Account>; minBalance: bigint; targetBalance: bigint }
@@ -110,7 +124,14 @@ export function createLocalPaymasterEIP1193Request(
     const supportedEntryPoints = [parameters.entryPoint];
     const paymaster = parameters.paymaster;
 
-    const { paymasterSigner, request, topupWalletClient, minBalance, targetBalance } = parameters;
+    const {
+        entryPointSimulations: entryPointSimulationsAddress,
+        paymasterSigner,
+        request,
+        topupWalletClient,
+        minBalance,
+        targetBalance,
+    } = parameters;
     //Remove non-standard keys from config, doesn't break anything but more aligned with original
     const clientConfig: ClientConfig<Transport, Chain, Account> = omit(parameters, [
         "walletClient",
@@ -121,122 +142,112 @@ export function createLocalPaymasterEIP1193Request(
         (parameters as { publicClient: PublicClient<Transport, Chain> }).publicClient ??
         createPublicClient(clientConfig);
 
-    //@ts-expect-error
-    const requestOverride: EIP1193RequestFn = async function requestOverride(args, options) {
-        if (args.method === "pm_sponsorUserOperation") {
-            if (topupWalletClient && minBalance && targetBalance) {
-                const paymasterTopup = await topupPaymaster({
-                    publicClient,
-                    walletClient: topupWalletClient,
-                    paymaster,
-                    minBalance,
-                    targetBalance,
-                });
-                if (paymasterTopup.hash) {
-                    await publicClient.waitForTransactionReceipt({ hash: paymasterTopup.hash });
+    const requestOverride: EIP1193RequestFn<PimlicoPaymasterRpcSchema<ENTRYPOINT_ADDRESS_V07_TYPE>> =
+        async function requestOverride(args, options) {
+            if (args.method === "pm_sponsorUserOperation") {
+                const [userOpPartialGasHex, entryPoint] = args.params as [
+                    //TODO: We hardcode this for now, only support v0.7
+                    userOp: UserOperationWithBigIntAsHexPartialGas<"v0.7">,
+                    entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE,
+                    //For later compatibility with Pimlico sponsorship policies
+                    metadata?: {
+                        sponsorshipPolicyId?: string;
+                    },
+                ];
+                if (!supportedEntryPoints.includes(entryPoint)) {
+                    throw new Error(`Unsupported entrypoint ${entryPoint}`);
                 }
+
+                if (topupWalletClient && minBalance && targetBalance) {
+                    const paymasterTopup = await topupPaymaster({
+                        publicClient,
+                        walletClient: topupWalletClient,
+                        paymaster,
+                        minBalance,
+                        targetBalance,
+                    });
+                    if (paymasterTopup.hash) {
+                        await publicClient.waitForTransactionReceipt({ hash: paymasterTopup.hash });
+                    }
+                }
+
+                //TODO: Add dummmy signature like in unit test
+                const userOpPartialGas = decodeUserOpPartialGas(userOpPartialGasHex);
+                //Paymaster data
+                const validUntil = Date.now() + 3600;
+                const validAfter = 0;
+                const paymasterDataUnsigned = encodeAbiParameters(
+                    [
+                        { name: "validUntil", type: "uint48" },
+                        { name: "validAfter", type: "uint48" },
+                    ],
+                    [validUntil, validAfter],
+                );
+                const userOpPartialGasWithPaymaster = {
+                    ...userOpPartialGas,
+                    paymaster,
+                    paymasterData: concatHex([paymasterDataUnsigned, dummySignature]),
+                };
+                //Estimate gas
+                const userOpGas = (await estimateUserOperationGas(
+                    userOpPartialGasWithPaymaster,
+                    entryPoint,
+                    publicClient,
+                    entryPointSimulationsAddress,
+                )) as EstimateUserOperationGasResponseResult & {
+                    paymasterVerificationGasLimit: bigint;
+                    paymasterPostOpGasLimit: bigint;
+                };
+                //Merge UserOp data and UserOp gas. paymasterData should not have signature to compute the hash
+                const userOp = {
+                    ...userOpGas,
+                    ...userOpPartialGasWithPaymaster,
+                    paymasterData: paymasterDataUnsigned,
+                };
+
+                //Sign
+                const userOpPaymasterPacked = toPackedUserOperation(encodeUserOp(userOp));
+                //TODO: Is this needed? Can be computed off-chain
+                const userOpPaymasterHash = await publicClient.readContract({
+                    address: paymaster,
+                    abi: VerifyingPaymaster.abi,
+                    functionName: "getHash",
+                    args: [userOpPaymasterPacked as any, validUntil, validAfter],
+                });
+                const paymasterSignature = await paymasterSigner.signMessage({
+                    message: {
+                        raw: userOpPaymasterHash,
+                    },
+                });
+                const paymasterDataSigned = concatHex([paymasterDataUnsigned, paymasterSignature]);
+
+                //TODO: For now default
+                const result = {
+                    preVerificationGas: numberToHex(userOp.preVerificationGas),
+                    verificationGasLimit: numberToHex(userOp.verificationGasLimit),
+                    callGasLimit: numberToHex(userOp.callGasLimit),
+                    paymaster: userOp.paymaster,
+                    paymasterVerificationGasLimit: numberToHex(userOp.paymasterVerificationGasLimit),
+                    paymasterPostOpGasLimit: numberToHex(userOp.paymasterPostOpGasLimit),
+                    paymasterData: paymasterDataSigned,
+                } as {
+                    preVerificationGas: Hex;
+                    verificationGasLimit: Hex;
+                    callGasLimit: Hex;
+                    paymaster: Address;
+                    paymasterVerificationGasLimit: Hex;
+                    paymasterPostOpGasLimit: Hex;
+                    paymasterData: Hex;
+                    paymasterAndData?: never;
+                };
+                return result;
+            } else if (args.method === "pm_validateSponsorshipPolicies") {
+                //TODO: For now default
+                return request(args as any, options);
             }
 
-            const [userOperation, entryPoint] = args.params as [
-                PartialBy<
-                    UserOperationWithBigIntAsHex<"v0.7">,
-                    | "callGasLimit"
-                    | "preVerificationGas"
-                    | "verificationGasLimit"
-                    | "paymasterVerificationGasLimit"
-                    | "paymasterPostOpGasLimit"
-                >,
-                ENTRYPOINT_ADDRESS_V07_TYPE,
-            ];
-            if (!supportedEntryPoints.includes(entryPoint)) {
-                throw new Error(`Unsupported entrypoint ${entryPoint}`);
-            }
-
-            //TODO: Proper gas estimation, remove hardcoded
-            //Default values, if defined & not 0x, we set value
-            let callGasLimit = numberToHex(10_000_000n);
-            if (userOperation.callGasLimit && userOperation.callGasLimit != "0x") {
-                callGasLimit = userOperation.callGasLimit;
-            }
-            let verificationGasLimit = numberToHex(1_000_000n);
-            if (userOperation.verificationGasLimit && userOperation.verificationGasLimit != "0x") {
-                verificationGasLimit = userOperation.verificationGasLimit;
-            }
-            let preVerificationGas = numberToHex(1_000_000n);
-            if (userOperation.preVerificationGas && userOperation.preVerificationGas != "0x") {
-                preVerificationGas = userOperation.preVerificationGas;
-            }
-            let paymasterVerificationGasLimit = numberToHex(1_000_000n);
-            if (userOperation.paymasterVerificationGasLimit && userOperation.paymasterVerificationGasLimit != "0x") {
-                paymasterVerificationGasLimit = userOperation.paymasterVerificationGasLimit;
-            }
-            let paymasterPostOpGasLimit = numberToHex(1_000_000n);
-            if (userOperation.paymasterPostOpGasLimit && userOperation.paymasterPostOpGasLimit != "0x") {
-                paymasterPostOpGasLimit = userOperation.paymasterPostOpGasLimit;
-            }
-
-            //Sign
-            const validUntil = Date.now() + 3600;
-            const validAfter = 0;
-            const paymasterDataUnsigned = encodeAbiParameters(
-                [
-                    { name: "validUntil", type: "uint48" },
-                    { name: "validAfter", type: "uint48" },
-                ],
-                [validUntil, validAfter],
-            );
-            const userOp: UserOperationWithBigIntAsHex<"v0.7"> = {
-                ...userOperation,
-                callGasLimit,
-                verificationGasLimit,
-                preVerificationGas,
-                paymaster,
-                //Empty, will be replaced with signature
-                paymasterData: paymasterDataUnsigned,
-                paymasterVerificationGasLimit,
-                paymasterPostOpGasLimit,
-            };
-            const userOpPaymasterPacked = toPackedUserOperation(userOp);
-
-            const userOpPaymasterHash = await publicClient.readContract({
-                address: paymaster,
-                abi: VerifyingPaymaster.abi,
-                functionName: "getHash",
-                args: [userOpPaymasterPacked as any, validUntil, validAfter],
-            });
-            const paymasterSignature = await paymasterSigner.signMessage({
-                message: {
-                    raw: userOpPaymasterHash,
-                },
-            });
-            const paymasterDataSigned = concatHex([paymasterDataUnsigned, paymasterSignature]);
-
-            //TODO: For now default
-            const result = {
-                callGasLimit,
-                verificationGasLimit,
-                preVerificationGas,
-                paymaster,
-                paymasterVerificationGasLimit,
-                paymasterPostOpGasLimit,
-                paymasterData: paymasterDataSigned,
-            } as {
-                preVerificationGas: Hex;
-                verificationGasLimit: Hex;
-                callGasLimit: Hex;
-                paymaster: Address;
-                paymasterVerificationGasLimit: Hex;
-                paymasterPostOpGasLimit: Hex;
-                paymasterData: Hex;
-            };
-            return result;
-        } else if (args.method === "pm_validateSponsorshipPolicies") {
-            //TODO: For now default
             return request(args as any, options);
-        }
-
-        return request(args as any, options);
-    };
+        } as EIP1193RequestFn<PimlicoPaymasterRpcSchema<ENTRYPOINT_ADDRESS_V07_TYPE>>;
 
     return requestOverride;
 }

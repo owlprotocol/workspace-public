@@ -37,8 +37,8 @@ import { SimpleAccountFactory } from "../artifacts/SimpleAccountFactory.js";
 import { IEntryPoint } from "../artifacts/IEntryPoint.js";
 import { MyContract } from "../artifacts/MyContract.js";
 import { setupERC4337Contracts, setupVerifyingPaymaster } from "../setupERC4337Contracts.js";
-import { toPackedUserOperation } from "../PackedUserOperation.js";
-import { encodeUserOp } from "../UserOperation.js";
+import { toPackedUserOperation } from "../models/PackedUserOperation.js";
+import { encodeUserOp, dummySignature } from "../models/UserOperation.js";
 
 describe("estimateUserOperationGas.test.ts", function () {
     let transport: CustomTransport;
@@ -287,8 +287,6 @@ describe("estimateUserOperationGas.test.ts", function () {
                 ],
                 [validUntil, validAfter],
             );
-            const dummySignature =
-                "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
             const dummySignatureBytes = hexToBytes(dummySignature);
             expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
             expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);

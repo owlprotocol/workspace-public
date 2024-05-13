@@ -26,6 +26,7 @@ export interface UserOpClients {
     paymasterClient: PimlicoPaymasterClient<ENTRYPOINT_ADDRESS_V07_TYPE>;
 }
 
+//TODO: Remove this and use abstractions from permissionless
 /**
  * Create userOp for smart account address
  *  - if account does not exist, add initialization data to userOp

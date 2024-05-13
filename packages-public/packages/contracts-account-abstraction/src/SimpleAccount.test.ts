@@ -24,11 +24,11 @@ import { getSimpleAccountAddress } from "./SimpleAccount.js";
 import { SIMPLE_ACCOUNT_IMPLEMENTATION_ADDRESS } from "./constants.js";
 import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";
 import { SimpleAccount } from "./artifacts/SimpleAccount.js";
-import { encodeUserOp } from "./UserOperation.js";
+import { encodeUserOp } from "./models/UserOperation.js";
 import { IEntryPoint } from "./artifacts/IEntryPoint.js";
 import { setupERC4337Contracts } from "./setupERC4337Contracts.js";
 import { getSenderAddress } from "./getSenderAddress.js";
-import { toPackedUserOperation } from "./PackedUserOperation.js";
+import { toPackedUserOperation } from "./models/PackedUserOperation.js";
 
 describe("SimpleAccount.test.ts", function () {
     let transport: CustomTransport;

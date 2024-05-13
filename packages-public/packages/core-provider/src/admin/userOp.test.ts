@@ -17,7 +17,7 @@ import {
     parseEther,
 } from "viem";
 import { localhost } from "viem/chains";
-import { DEFAULT_GANACHE_CONFIG, getRelayerAccount, getUtilityAccount } from "@owlprotocol/viem-utils";
+import { DEFAULT_GANACHE_CONFIG, getLocalAccount, getRelayerAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { walletClientToSmartAccountSigner } from "permissionless/utils";
@@ -48,6 +48,7 @@ describe("userOp.test.ts", function () {
 
     //Core contracts
     let entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
+    let entryPointSimulations: Address;
     let simpleAccountFactory: Address;
     let verifyingPaymaster: Address;
 
@@ -68,7 +69,7 @@ describe("userOp.test.ts", function () {
         });
 
         utilityWalletClient = createWalletClient({
-            account: getUtilityAccount(),
+            account: getLocalAccount(0),
             chain: localhost,
             transport,
         }) as any;
@@ -81,6 +82,7 @@ describe("userOp.test.ts", function () {
         //Deploy contracts
         const contracts = await setupERC4337Contracts({ publicClient, walletClient: utilityWalletClient });
         entryPoint = contracts.entrypoint.address;
+        entryPointSimulations = contracts.pimlicoEntrypointSimulations.address;
 
         //Bundler
         const minRelayerBalance = parseEther("0.1");
@@ -93,6 +95,7 @@ describe("userOp.test.ts", function () {
             minBalance: minRelayerBalance,
             targetBalance: targetRelayerBalance,
             entryPoint,
+            entryPointSimulations,
         });
 
         //Paymaster
@@ -109,6 +112,7 @@ describe("userOp.test.ts", function () {
             paymasterSigner: utilityWalletClient.account,
             paymaster: verifyingPaymaster,
             entryPoint,
+            entryPointSimulations,
             topupWalletClient: utilityWalletClient,
             minBalance: 1n,
             targetBalance: parseEther("1"),
@@ -218,7 +222,7 @@ describe("userOp.test.ts", function () {
     /**
      * Create a UserOp with local bundler
      **/
-    test.skip("local bundler/paymaster - executeBatchUserOp", async () => {
+    test("local bundler/paymaster - executeBatchUserOp", async () => {
         //TODO: EntryPoint.handleOps does not revert if exec call invalid
         //Encode callData
         const to = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"; // vitalik

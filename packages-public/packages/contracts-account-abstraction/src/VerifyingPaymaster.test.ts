@@ -31,10 +31,10 @@ import { abi as EntryPointAbi } from "./artifacts/EntryPoint.js";
 import { getSimpleAccountAddress } from "./SimpleAccount.js";
 import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
-import { encodeUserOp } from "./UserOperation.js";
+import { encodeUserOp } from "./models/UserOperation.js";
 import { decodeViemError } from "./isViemError.js";
 import { setupERC4337Contracts, setupVerifyingPaymaster } from "./setupERC4337Contracts.js";
-import { toPackedUserOperation } from "./PackedUserOperation.js";
+import { toPackedUserOperation } from "./models/PackedUserOperation.js";
 
 describe("VerifyingPaymaster.test.ts", function () {
     let transport: CustomTransport;

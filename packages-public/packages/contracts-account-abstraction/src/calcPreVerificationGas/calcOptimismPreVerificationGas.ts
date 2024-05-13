@@ -11,9 +11,9 @@ import {
     serializeTransaction,
     toFunctionSelector,
 } from "viem";
-import { packedUserOperationToRandomDataUserOp } from "../PackedUserOperation.js";
+import { packedUserOperationToRandomDataUserOp } from "../models/PackedUserOperation.js";
 import { abi as EntryPointV07Abi } from "../artifacts/EntryPoint.js";
-import { PackedUserOperation, unpackGasLimits } from "../PackedUserOperation.js";
+import { PackedUserOperation, unpackGasLimits } from "../models/PackedUserOperation.js";
 
 const getL1FeeAbi = [
     {

@@ -12,9 +12,15 @@ import { parseFailedOpWithRevert } from "./parseFailedOpWithRevert.js";
 import { abi as PimlicoEntryPointSimulationsAbi } from "../artifacts/PimlicoEntryPointSimulations.js";
 import { abi as EntryPointV07Abi } from "../artifacts/EntryPoint.js";
 import { abi as EntryPointV07SimulationsAbi } from "../artifacts/EntryPointSimulations.js";
-import { PackedUserOperation } from "../PackedUserOperation.js";
-import { ExecutionResult, TargetCallResult, targetCallResultSchema } from "../types/validation.js";
-import { ExecutionError, ExecutionErrors, ValidationErrors } from "../types/errors.js";
+import {
+    PackedUserOperation,
+    ExecutionResult,
+    TargetCallResult,
+    targetCallResultSchema,
+    ExecutionError,
+    ExecutionErrors,
+    ValidationErrors,
+} from "../models/index.js";
 
 export type SimulateHandleOpResult<TypeResult extends "failed" | "execution" = "failed" | "execution"> = {
     result: TypeResult;

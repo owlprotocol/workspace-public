@@ -1,7 +1,7 @@
 import { hexToBytes, toHex } from "viem";
 import { DefaultGasOverheads, GasOverheads } from "./GasOverheads.js";
-import { PackedUserOperation } from "../PackedUserOperation.js";
-import { packUserOperation } from "../PackedUserOperation.js";
+import { PackedUserOperation } from "../models/PackedUserOperation.js";
+import { packUserOperation } from "../models/PackedUserOperation.js";
 
 /**
  * calculate the preVerificationGas of the given UserOperation

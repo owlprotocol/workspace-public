@@ -2,9 +2,9 @@
 //export * as ZodValidators from "./zsol/index.js";
 export * from "./calcPreVerificationGas/index.js";
 export * from "./gasestimation/index.js";
-
-export * from "./PackedUserOperation.js";
-export * from "./UserOperation.js";
+export * from "./models/index.js";
+//Export RPC Schema (not exported from permissionless)
+export * from "./types/permissionless.js";
 
 export * from "./constants.js";
 export * from "./isViemError.js";

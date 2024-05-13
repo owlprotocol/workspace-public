@@ -31,14 +31,3 @@ export const executionResultSchemaV07 = z
 export const executionResultSchema = executionResultSchemaV07;
 
 export type ExecutionResult = z.infer<typeof executionResultSchema>;
-
-export const targetCallResultSchema = z.object({
-    gasUsed: z.bigint(),
-    success: z.boolean(),
-    returnData: z
-        .string()
-        .regex(hexPattern)
-        .transform((val) => val as Hex),
-});
-
-export type TargetCallResult = z.infer<typeof targetCallResultSchema>;

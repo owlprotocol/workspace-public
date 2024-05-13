@@ -1,7 +1,7 @@
 import { EntryPoint, GetEntryPointVersion } from "permissionless/types";
 import { Address, Hash, Hex } from "viem";
 import { PartialBy } from "viem/chains";
-import { UserOperationReceiptWithBigIntAsHex, UserOperationWithBigIntAsHex } from "../UserOperation.js";
+import { UserOperationReceiptWithBigIntAsHex, UserOperationWithBigIntAsHex } from "../models/UserOperation.js";
 
 export type BundlerRpcSchema<entryPoint extends EntryPoint> = [
     {

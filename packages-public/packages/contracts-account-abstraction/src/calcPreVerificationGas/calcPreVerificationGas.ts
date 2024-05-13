@@ -4,7 +4,7 @@ import { calcDefaultPreVerificationGas } from "./calcDefaultPreVerificationGas.j
 import { GasOverheads } from "./GasOverheads.js";
 import { calcArbitrumPreVerificationGas } from "./calcArbitrumPreVerificationGas.js";
 import { calcOptimismPreVerificationGas } from "./calcOptimismPreVerificationGas.js";
-import { PackedUserOperation } from "../PackedUserOperation.js";
+import { PackedUserOperation } from "../models/PackedUserOperation.js";
 
 /**
  * Calculates `preVerificationGas` using the following

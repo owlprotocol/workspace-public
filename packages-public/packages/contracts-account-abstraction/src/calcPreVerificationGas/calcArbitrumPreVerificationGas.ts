@@ -12,7 +12,7 @@ import {
     toFunctionSelector,
 } from "viem";
 import { abi as EntryPointV07Abi } from "../artifacts/EntryPoint.js";
-import { PackedUserOperation, packedUserOperationToRandomDataUserOp } from "../PackedUserOperation.js";
+import { PackedUserOperation, packedUserOperationToRandomDataUserOp } from "../models/PackedUserOperation.js";
 
 const getArbitrumL1FeeAbi = [
     {

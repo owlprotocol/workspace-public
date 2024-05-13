@@ -1,11 +1,11 @@
-import { Address, PublicClient, StateOverride, Chain, Transport } from "viem";
+import { Address, PublicClient, StateOverride, Chain, Transport, zeroAddress } from "viem";
 import * as chains from "viem/chains";
 import { UserOperation } from "permissionless/types";
 import { getExecutionResult } from "./simulateHandleOp.js";
 import { calcVerificationGasAndCallGasLimit } from "./calcVerificationGasAndCallLimit.js";
 import { calcPreVerificationGas } from "../calcPreVerificationGas/calcPreVerificationGas.js";
-import { encodeUserOp } from "../UserOperation.js";
-import { toPackedUserOperation } from "../PackedUserOperation.js";
+import { encodeUserOp } from "../models/UserOperation.js";
+import { toPackedUserOperation } from "../models/PackedUserOperation.js";
 import { maxBigInt } from "../utils/bigint.js";
 
 export interface EstimateUserOperationGasResponseResult {
@@ -22,6 +22,49 @@ export type UserOperationGasFields =
     | "callGasLimit"
     | "paymasterPostOpGasLimit"
     | "paymasterVerificationGasLimit";
+
+//TODO: Rename. This is mock implementation with hard-coded values.
+/**
+ * Estimate UserOperation gas. Unlike Alto implementation, this does NOT mutate any parameters.
+ * @param userOperationData `UserOperation` without any EXCLUDING gas fields
+ * @param _entryPoint
+ * @param _publicClient
+ * @param _entryPointSimulationsAddress
+ * @param _stateOverride
+ * @returns gas parameters of UserOperation
+ */
+export async function estimateUserOperationGasMock(
+    userOperationData: Omit<UserOperation<"v0.7">, UserOperationGasFields>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _entryPoint: Address,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _publicClient: PublicClient<Transport, Chain>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _entryPointSimulationsAddress: Address,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _stateOverride: StateOverride[number] | undefined = undefined,
+): Promise<EstimateUserOperationGasResponseResult> {
+    //Default values - 1 (so that tests pass)
+    const userOpGas: EstimateUserOperationGasResponseResult = {
+        preVerificationGas: 999_999n,
+        verificationGasLimit: 9_999_999n,
+        callGasLimit: 9_999_999n,
+    };
+    if (userOperationData.paymaster && userOperationData.paymaster != zeroAddress) {
+        //This breaks why is it too high? Does this have to be added to `callGasLimit`?
+        // userOpGas.paymasterVerificationGasLimit = 4_999_999n;
+        // userOpGas.paymasterPostOpGasLimit = 1_999_999n;
+
+        //This breaks when using core-trpc
+        // userOpGas.paymasterVerificationGasLimit = 20_000n;
+        // userOpGas.paymasterPostOpGasLimit = 20_000n;
+
+        //This works when using core-trpc
+        userOpGas.paymasterVerificationGasLimit = 100_000n;
+        userOpGas.paymasterPostOpGasLimit = 100_000n;
+    }
+    return userOpGas;
+}
 
 /**
  * Estimate UserOperation gas. Unlike Alto implementation, this does NOT mutate any parameters.
@@ -120,17 +163,23 @@ export async function estimateUserOperationGas(
         // Paymaster enabled, default to UserOp gas limits
         // VerifyingPaymaster has constant verification cost so lower is better
         // VerifyingPaymaster does NOT have a postOp call so lower is better
-        //TODO: Hard-coded to 100k.
+        //TODO: Hard-coded to 20k.
         // Does this scale with tx data? => No. All contract does is verify signature.
-        userOperation.paymasterVerificationGasLimit = 20_000n;
-        userOperation.paymasterPostOpGasLimit = 20_000n;
+        userOperation.paymasterVerificationGasLimit = 100_000n;
+        userOperation.paymasterPostOpGasLimit = 100_000n;
     }
 
-    return {
+    const userOpGas: EstimateUserOperationGasResponseResult = {
         preVerificationGas: userOperation.preVerificationGas,
         verificationGasLimit: userOperation.verificationGasLimit,
         callGasLimit: userOperation.callGasLimit,
-        paymasterVerificationGasLimit: userOperation.paymasterVerificationGasLimit,
-        paymasterPostOpGasLimit: userOperation.paymasterPostOpGasLimit,
     };
+    if (userOperation.paymasterVerificationGasLimit) {
+        userOpGas.paymasterVerificationGasLimit = userOperation.paymasterVerificationGasLimit;
+    }
+    if (userOperation.paymasterPostOpGasLimit) {
+        userOpGas.paymasterPostOpGasLimit = userOperation.paymasterPostOpGasLimit;
+    }
+
+    return userOpGas;
 }
