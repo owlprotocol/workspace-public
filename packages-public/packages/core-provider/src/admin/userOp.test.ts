@@ -17,7 +17,12 @@ import {
     parseEther,
 } from "viem";
 import { localhost } from "viem/chains";
-import { DEFAULT_GANACHE_CONFIG, getLocalAccount, getRelayerAccount } from "@owlprotocol/viem-utils";
+import {
+    DEFAULT_GANACHE_CONFIG,
+    getLocalAccount,
+    getRelayerAccount,
+    getPaymasterSignerAccount,
+} from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { walletClientToSmartAccountSigner } from "permissionless/utils";
@@ -102,14 +107,14 @@ describe("userOp.test.ts", function () {
         const verifyingPaymasterInfo = await setupVerifyingPaymaster({
             publicClient,
             walletClient: utilityWalletClient,
-            verifyingSignerAddress: utilityWalletClient.account.address,
+            verifyingSignerAddress: getPaymasterSignerAccount().address,
         });
         verifyingPaymaster = verifyingPaymasterInfo.address;
         //Fund paymaster
         paymasterClient = createLocalPaymasterClient({
             chain: localhost,
             transport,
-            paymasterSigner: utilityWalletClient.account,
+            paymasterSigner: getPaymasterSignerAccount(),
             paymaster: verifyingPaymaster,
             entryPoint,
             entryPointSimulations,

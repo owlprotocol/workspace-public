@@ -71,7 +71,7 @@ export type LocalPaymasterConfig = ClientConfig<Transport, Chain, undefined> & {
     /** paymaster contract address */
     paymaster: Address;
     /** paymaster signer that signs UserOps */
-    paymasterSigner: LocalAccount;
+    paymasterSigner: LocalAccount<string>;
     /** publicClient (optional) Public client override. Use this instead of instantiating a new one */
     publicClient?: PublicClient<Transport, Chain>;
 } & ( //TODO: With dynamic gas estimation, make `minBalance` optional and if defined use Max(minBalance, txCost)

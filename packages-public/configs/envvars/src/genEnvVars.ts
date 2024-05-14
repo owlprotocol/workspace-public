@@ -114,6 +114,7 @@ const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
     { name: "INFURA_IPFS_PROJECT_ID", platform: "node", defaultValue: "2OAhenU1T1fxTGyQMTTFDwdyW5p" },
     { name: "INFURA_IPFS_PROJECT_SECRET", platform: "node", defaultValue: "8ffddfdc95f32ea7aa43ee3ba9d2d603" },
     //wallets
+    { name: "PRIVATE_KEY_PAYMASTER_SIGNER", platform: "node" },
     { name: "PRIVATE_KEY_UTILITY", platform: "node" },
     { name: "PUBLIC_ADDRESS_UTILITY", platform: "neutral", defaultValue: "0x2B5AD5c4795c026514f8317c7a215E218DcCD6cF" },
     { name: "PRIVATE_KEY_RELAYER", platform: "node" },
