@@ -162,8 +162,8 @@ export async function estimateUserOperationGas(
     } else if (userOperation.paymaster) {
         // Paymaster enabled, default to UserOp gas limits
         // VerifyingPaymaster has constant verification cost so lower is better
-        // VerifyingPaymaster does NOT have a postOp call so lower is better
-        //TODO: Hard-coded to 20k.
+        // VerifyingPaymaster does NOT have a postOp call (unlike ERC20Paymaster) so lower is better
+        //TODO: Hard-coded to 100k for now as that's what got tests passing
         // Does this scale with tx data? => No. All contract does is verify signature.
         userOperation.paymasterVerificationGasLimit = 100_000n;
         userOperation.paymasterPostOpGasLimit = 100_000n;
