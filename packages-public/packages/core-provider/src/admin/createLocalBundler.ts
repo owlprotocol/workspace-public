@@ -500,13 +500,13 @@ export function createLocalBundlerEIP1193Request(
                 args.method === "eth_getUserOperationStatus" ||
                 args.method === "pimlico_getUserOperationStatus"
             ) {
-                //TODO: For now default
+                //TODO: Add support for getting UserOp status. For now pass down the request (will likely error)
                 return request(args as any, options);
             } else if (
                 args.method === "eth_sendCompressedUserOperation" ||
                 args.method === "pimlico_sendCompressedUserOperation"
             ) {
-                //TODO: For now default
+                //TODO: Add support for sending compressed UserOps. For now pass down the request (will likely error)
                 return request(args as any, options);
             }
 

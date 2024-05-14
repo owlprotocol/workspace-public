@@ -221,7 +221,6 @@ export function createLocalPaymasterEIP1193Request(
                 });
                 const paymasterDataSigned = concatHex([paymasterDataUnsigned, paymasterSignature]);
 
-                //TODO: For now default
                 const result = {
                     preVerificationGas: numberToHex(userOp.preVerificationGas),
                     verificationGasLimit: numberToHex(userOp.verificationGasLimit),
@@ -242,7 +241,7 @@ export function createLocalPaymasterEIP1193Request(
                 };
                 return result;
             } else if (args.method === "pm_validateSponsorshipPolicies") {
-                //TODO: For now default
+                //TODO: Add support for sponsorship policies. For now pass down the request (will likely error)
                 return request(args as any, options);
             }
 
