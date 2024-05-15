@@ -3,7 +3,7 @@ import { defineNetwork } from "../defineChain.js";
 import { btc } from "../currencies/index.js";
 
 export const bitlayer = /*#__PURE__*/ defineNetwork({
-    chainId: 200910,
+    chainId: 200901,
     slug: "bitlayer",
     slugAnkr: "bitlayer",
     name: "Bitlayer",
@@ -43,7 +43,7 @@ export const bitlayer = /*#__PURE__*/ defineNetwork({
             url: "https://www.bitlayer.org/bridge",
         },
     },
-    enabled: false,
+    enabled: true,
     rank: 9999,
     minUtilityBalance: parseEther("0.001"),
     //TODO: Topup code what if utility < target?

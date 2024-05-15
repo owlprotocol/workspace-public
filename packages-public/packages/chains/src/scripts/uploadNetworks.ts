@@ -29,7 +29,7 @@ export function uploadNetworks(networks: Network[]) {
             return {
                 ...chain,
                 //Use public rpc
-                rpcDefault: chain.rpcUrls.default.http[0],
+                rpcDefault: rpcUrls.default.http[0],
                 rpcUrls,
             };
         });
@@ -44,7 +44,7 @@ export function uploadNetworks(networks: Network[]) {
         return {
             ...chain,
             //Use public rpc
-            rpcDefault: chain.rpcUrls.default.http[0],
+            rpcDefault: rpcUrls.default.http[0],
             rpcUrls,
         };
     });

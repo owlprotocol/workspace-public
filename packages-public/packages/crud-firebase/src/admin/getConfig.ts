@@ -1,10 +1,12 @@
 import {
+    FIREBASE_AUTH_DOMAIN,
     FIREBASE_DATABASE_URL,
     FIREBASE_MOCK,
     FIREBASE_PRIVATE_KEY,
     FIREBASE_PROJECT_ID,
     FIREBASE_SERVICE_EMAIL,
     FIREBASE_STORAGE_BUCKET,
+    NODE_ENV,
 } from "@owlprotocol/envvars";
 import { initializeApp, getApp, getApps, App } from "firebase-admin/app";
 import { Firestore, FirestoreSettings, getFirestore, initializeFirestore } from "firebase-admin/firestore";
@@ -17,7 +19,7 @@ import { FIRESTORE_EMULATOR_HOST, FIREBASE_STORAGE_EMULATOR_HOST, FIREBASE_AUTH_
 export function getFirebaseConfig() {
     let firebaseConfig: AppOptions = {};
     if (FIREBASE_MOCK === "false") {
-        console.debug("Running production Firebase with API Keys");
+        console.debug(`Connecting to remote Firebase ${FIREBASE_AUTH_DOMAIN} with ${NODE_ENV} credentials`);
         //Live Firebase Config
         if (
             !FIREBASE_PROJECT_ID ||
@@ -42,7 +44,7 @@ export function getFirebaseConfig() {
             storageBucket: FIREBASE_STORAGE_BUCKET,
         };
     } else {
-        console.debug("Running development Firebase with emulator");
+        console.debug("Connecting to local Firebase emulator");
         //Emulator Firebase Config
         firebaseConfig = {
             //https://firebase.google.com/docs/emulator-suite/connect_firestore#admin_sdks

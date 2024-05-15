@@ -27,7 +27,7 @@ import { getStorage, connectStorageEmulator, FirebaseStorage } from "firebase/st
 export function getFirebaseConfig() {
     let firebaseConfig: FirebaseOptions = {};
     if (FIREBASE_MOCK === "false") {
-        console.debug("Running production Firebase with API Keys");
+        console.debug(`Connecting to remote Firebase ${FIREBASE_AUTH_DOMAIN} with ${NODE_ENV} credentials`);
         //Live Firebase Config
         firebaseConfig = {
             apiKey: FIREBASE_API_KEY,
@@ -38,7 +38,7 @@ export function getFirebaseConfig() {
             appId: FIREBASE_APP_ID,
         };
     } else {
-        console.debug("Running development Firebase with emulator");
+        console.debug("Connecting to local Firebase emulator");
         //Emulator Firebase Config
         firebaseConfig = {
             apiKey: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
