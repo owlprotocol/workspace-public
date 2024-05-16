@@ -1,0 +1,40 @@
+{
+  "index": "Introduction",
+  "quick-start":  "Quick Start",
+  "guide": "",
+
+  "-- Use Cases": {
+    "type": "separator",
+    "title": "Use Cases"
+  },
+  "mintingAssetPerUser": {
+    "title": "Minting an Asset Per User"
+  },
+  "useCase1": {
+    "title": "Use Case 1"
+  },
+  "-- TRPC Reference": {
+    "type": "separator",
+    "title": "TRPC Reference"
+  },
+  "collection": {
+    "title": "Collection",
+    "href": "/collection"
+  },
+  "projectUser": {
+    "title": "Project User",
+    "href": "/projectUser"
+  },
+  "projectToken": {
+    "title": "Project Token",
+    "href": "/projectToken"
+  },
+  "projectTokenTemplate": {
+    "title": "Project Token Template",
+    "href": "/projectTokenTemplate"
+  },
+  "contractMetadata": {
+    "title": "Contract Metadata",
+    "href": "/contractMetadata"
+  }
+}

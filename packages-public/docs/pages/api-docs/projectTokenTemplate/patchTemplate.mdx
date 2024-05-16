@@ -1,0 +1,19 @@
+# Patch Token Template
+
+Modifying certain fields for a Token Template, while keeping the other previously defined fields intact.
+
+```typescript
+client.projectTokenTemplate.patch.mutate({
+    id: "6c3d3ffc-1580-47bd-88c6-4c64642c9319",
+    metadata: {
+        description: "New Token Description", // Replace description with this one
+    },
+});
+```
+
+** Required fields**:
+
+-   `id`: Id of the Token Template.
+-   At least one of the metadata fields (`name`,`description`, etc...).
+
+**Optional fields**: See [Patch project token template](ref:projecttokentemplate-patch)

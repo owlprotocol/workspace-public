@@ -1,0 +1,25 @@
+# Create Token Template
+
+Create a Token Template.
+
+```typescript
+client.projectTokenTemplate.createOrSet.mutate({
+    address: "0xD7bA09F9787Aa6FF2c41B16c557Ff20d0D2901cB", // Optional, but recommended
+    metadata: {
+        name: "Template Name",
+        description: "Template Description",
+        image: "https://picsum.photos/200",
+        // Other metadata fields
+    },
+});
+```
+
+**Required fields**:
+
+-   At least one metadata field (`name`, `description`, `image`, `attributes`, etc...)
+
+**Optional fields**:
+
+-   `address`: We highly recommend passing the address of a collection. This would associate the template to a specific collection.
+
+See [Create or set project token template](ref:projecttokentemplate-createorset)

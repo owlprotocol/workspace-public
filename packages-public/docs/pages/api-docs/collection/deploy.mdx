@@ -1,0 +1,20 @@
+# Deploy a collection
+
+Deploy digital asset collection with single unique items.
+
+```typescript
+const collection = client.collection.deploy.mutate({
+	chainId: 130130,
+  name; "My Collection",
+  symbol: "MYC"
+})
+
+```
+
+**Required fields**:
+
+-   `chainId`: Id of the chain you selected when creating your project.
+-   `name`: Custom name for your collection.
+-   `symbol`: Custom symbol, should be 3-4 characters long.
+
+**Optional fields**: See [Deploy collection](ref:collection-deploy)

@@ -1,0 +1,105 @@
+import { Screenshot } from "components/screenshot";
+import { Callout, Steps } from "nextra/components";
+
+# Getting Started
+
+<Steps>
+### Creating an account
+
+To create an account, sign up on our [Dashboard](https://dashboard.owlprotocol.xyz/).
+
+Once signed in, if you are a new user, you will be presented with the option to create a team. Choose a name for your team and a slug, then click `Create`.
+
+import createTeam from "../../public/assets/createTeam.png";
+
+<Screenshot src={createTeam} alt="createTeam" />
+
+### Team Page
+
+Next, you'll be directed to the Team page, starting with the overview.
+
+import projects from "../../public/assets/projects.png";
+
+<Screenshot src={projects} alt="projects" />
+
+This page is separated into four sections: Overview, Members, Networks and Settings.
+
+#### Overview
+
+The overview displays all the team's projects. Note that these are accessible to all team members. If no projects exist, click the `Create Project` button to navigate to the project creation page.
+
+On the project creation page, choose a name, slug, and network for your project. You can optionally add a description.
+
+Note: you cannot change the project network after creation.
+
+#### Members
+
+_Under Development: Invite Team Members_
+
+#### Networks
+
+View a list of all the networks added by the team. These networks will determine on which chain your projects will be launched.
+
+Add a custom network by clicking the `Add Custom Network` button. Ensure that the RPC URL and the chain ID.
+
+#### Settings
+
+Update your team name. The slug cannot be modified after creating your team.
+
+import renameTeam from "../../public/assets/renameTeam.png";
+
+<Screenshot src={renameTeam} alt="renameTeam" />
+
+### Project Page
+
+In the project page, you and your team can manage all aspects related to the project. This includes adding users, creating collections, minting collectibles and obtaining your project API key.
+
+import projectView from "../../public/assets/projectView.png";
+
+<Screenshot src={projectView} alt="projectView" />
+
+This page is divided into four main sections: Overview, Users, Collections and Settings.
+
+#### Overview
+
+This contains information related to the project such as the name, network information, and the project API key.
+
+You will also find a table that lists the users associated with the project, as well as the collections deployed through the project.
+
+If you haven't deployed users or collections yet, you can do so here by clicking on `Add Users` or `Create Collection`.
+
+#### Users
+
+View all users associated with the project. Click on any row to access more information about a specific user.
+
+import usersView from "../../public/assets/usersView.png";
+
+<Screenshot src={usersView} alt="usersView" />
+
+#### Collections
+
+Discover all the collections created within this project.. Click **`View Details`** for a closer look at a specific collection, or use the **`Show Item Type`** button to reveal a table listing the pre-defined item types for that collection.
+
+import collectionsView from "../../public/assets/collectionsView.png";
+
+<Screenshot src={collectionsView} alt="collectionsView" />
+
+<Callout type="info">
+  📘 **Item Types**
+
+An item type is metadata that can include an image, a name, and attributes.
+These adhere to the
+[OpenSea Metadata Standards](https://docs.opensea.io/docs/metadata-standards).
+This feature streamlines the minting process, allowing you to mint multiple
+items using the same pre-defined metadata.
+
+</Callout>
+#### Settings
+
+Update the project’s general information, such as name or description. Note, the slug is set cannot be modified after creating the project.
+
+import settingsView from "../../public/assets/settingsView.png";
+
+<Screenshot src={settingsView} alt="settingsView" />
+
+</Steps>

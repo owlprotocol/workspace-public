@@ -1,0 +1,6 @@
+{
+  "createTemplate": "Create Token Template",
+  "getTemplate": "Get Token Template",
+  "listTemplates": "List Token Templates",
+  "patchTemplate": "Patch Token Template"
+}

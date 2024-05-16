@@ -1,35 +1,35 @@
 {
-  "twitter": {
-    "title": "Twitter ↗",
+  "index": {
     "type": "page",
-    "href": "https://twitter.com/owlprotocol_xyz",
-    "newWindow": true
+    "title": "Nextra",
+    "display": "hidden",
+    "theme": {
+      "layout": "raw"
+    }
   },
-  "introduction": {
-    "title": "Introduction"
+  "dashboard-docs": {
+    "type": "page",
+    "title": "Docs"
   },
-  "quickstart": {
-    "title": "Quickstart"
+  "api-docs": {
+    "type": "page",
+    "title": "API"
   },
-  "guides": {
-    "title": "Guides"
+  "about": {
+    "type": "page",
+    "title": "About",
+    "theme": {
+      "typesetting": "article"
+    }
   },
-  "sdks": {
-    "title": "SDKs"
-  },
-  "integrations": {
-    "title": "Integrations"
-  },
-  "use-cases": {
-    "title": "Use Cases",
+  "other": {
     "display": "hidden"
   },
-  "contracts": {
-    "title": "Contracts",
-    "display": "hidden"
-  },
-  "mission": {
-    "title": "Our Mission",
-    "display": "hidden"
+  "404": {
+    "type": "page",
+    "theme": {
+      "timestamp": false,
+      "typesetting": "article"
+    }
   }
 }

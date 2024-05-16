@@ -1,0 +1,46 @@
+import {
+    BoxIcon,
+    BrushIcon,
+    DropperIcon,
+    FilesIcon,
+    GlobeIcon,
+    LightningIcon,
+    LinkIcon,
+    MarkdownIcon,
+    PictureIcon,
+    StarsIcon,
+} from "@components/icons";
+import { Card, Cards } from "nextra/components";
+
+# Guide
+
+### Dashboard Docs
+
+<Cards>
+    <Card
+        icon={<FilesIcon />}
+        title="Get Started"
+        href="/dashboard-docs/get-started"
+    />
+    <Card
+        icon={<MarkdownIcon />}
+        title="Deploy ERC721 Collection"
+        href="/dashboard-docs/deployERC721Collection"
+    />
+    <Card
+        icon={<StarsIcon />}
+        title="Add Project Users"
+        href="/dashboard-docs/addProjectUsers"
+    />
+    <Card
+        icon={<LinkIcon />}
+        title="Create a Template and Mint to Users"
+        href="/dashboard-docs/createItemTypeAndMint"
+    />
+</Cards>
+
+### API Docs
+
+<Cards>
+    <Card icon={<FilesIcon />} title="API Docs" href="/api-docs" />
+</Cards>

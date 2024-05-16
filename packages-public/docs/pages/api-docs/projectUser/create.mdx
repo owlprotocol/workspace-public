@@ -1,0 +1,17 @@
+# Create Project User
+
+Create a new user for a project.
+
+```typescript
+const user = client.projectUser.createOrSet.mutate({
+    email: "user2@gmail.com",
+    fullName: "User 2",
+    externalId: "123456789",
+});
+```
+
+**Required fields**:
+
+-   `email`: User's email address
+
+**Optional fields**: See [Create or set project user](ref:projectuser-createorset)

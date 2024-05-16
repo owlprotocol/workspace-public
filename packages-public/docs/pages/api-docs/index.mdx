@@ -1,0 +1,42 @@
+# Owl Protocol API
+
+We offer two APIs: a general Typescript API, and one specifically for React. You can use this Typescript API in any Node.js app, and the React API supports both queries, [suspense queries](https://tanstack.com/query/v4/docs/framework/react/guides/suspense), and [mutations](https://tanstack.com/query/latest/docs/framework/react/guides/mutations)
+
+## Installation
+
+```shell
+pnpm install @owlprotocol/core-trpc
+```
+
+Note: we recommend using `pnpm` instead of `npm`, but you can also use `npm` to install our package ([pnpm](https://pnpm.io/))
+
+## Typescript API
+
+Import and initialize the client:
+
+```typescript
+import { createClient } from "@owlprotocol/core-trpc";
+const client = createClient({ apiKey: "API_KEY" });
+
+// Example query
+const contract = await client.collection.deploy.mutate({
+    chainId,
+    name: "My Collection",
+    symbol: "MY",
+});
+```
+
+Using the Typescript API requires having a Project API key. To do so, you need to log into the [dashboard](https://dashboard.owlprotocol.xyz/), create a project if you haven’t done so yet, and copy your project API key.
+
+### Sample API functions
+
+| Endpoints (`client.`)                              | Information                                                                                 |
+| :------------------------------------------------- | :------------------------------------------------------------------------------------------ |
+| `collection.deploy.mutate`                         | [Deploy collection](/api-docs/collection/deploy)                                            |
+| `collection.erc721AutoId.templateMintBatch.mutate` | [Mint collection assets from template (ERC721AutoId)](/api-docs/collection/batchMintERC721) |
+| `projectTokenTemplate.createOrSet.mutate`          | [Create or set project token template](/api-docs/projectTokenTemplate/createTemplate)       |
+| `projectUser.get.query`                            | [Get project user](/api-docs/projectUser/getUser)                                           |
+
+## React API
+
+_Under development_

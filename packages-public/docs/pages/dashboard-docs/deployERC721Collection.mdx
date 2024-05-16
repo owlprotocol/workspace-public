@@ -1,0 +1,49 @@
+import { Screenshot } from "components/screenshot";
+import { Callout, Steps } from "nextra/components";
+
+# Deploy an Owl ERC721 Collection
+
+Deploy an EC721 Collection with custom metadata in just a few clicks.
+
+<Steps>
+## Project Overview
+### Create Collection
+
+In the Overview section of your project page ([Owl Dashboard](https://dashboard.owlprotocol.xyz/)), you can see your project users and your collections. Click on `Create Collection`.
+
+import createCollectionButton from "../../public/assets/createCollectionButton.png";
+
+<Screenshot src={createCollectionButton} alt="createCollectionButton" />
+
+### Collection Modal
+
+When the modal appears, input a name and a symbol, and upload an image. Once you've checked your entries, click on `Create Collection`.
+
+import collectionModal from "../../public/assets/collectionModal.png";
+
+<Screenshot src={collectionModal} alt="collectionModal" />
+
+### Collection Details
+
+Creating the collection may take a few seconds. Once the deployment is complete, it will appear in the "Collections" section. By clicking on `View Details`, you will be directed to the collection's page with more information about the collection you just deployed.
+
+import ViewDetailsButton from "../../public/assets/ViewDetailsButton.png";
+
+<Screenshot src={ViewDetailsButton} alt="ViewDetailsButton" />
+
+## Collection Page
+
+On the "Collection" page, you'll find your collection name, image, and contract address.
+
+The collectibles that you mint will appear under "Digital Items". Any item types that you define will be listed under "Item Types". (See [➕ Create an Item Type & Mint to Users](doc:mint-from-item-type))
+
+import CollectionViewEmpty from "../../public/assets/CollectionViewEmpty.png";
+
+<Screenshot src={CollectionViewEmpty} alt="CollectionViewEmpty" />
+
+</Steps>
+
+### Further Steps
+
+-   [Add Project Users](/dashboard-docs/addProjectUsers)
+-   [Create an Item Type & Mint to Users](/dashboard-docs/createItemTypeAndMint)

@@ -1,0 +1,112 @@
+import { Screenshot } from "components/screenshot";
+import { Callout, Steps } from "nextra/components";
+
+# Quick Start Guide
+
+This quick start guide is designed to help you set up a new project with Owl Protocol efficiently. You'll learn how to create a project, deploy a collection, add users, create a template, and mint items—all within five minutes. Each step is crucial for the seamless integration and deployment of digital assets using Owl Protocol.
+
+<Steps>
+
+### Step 1: Create a Project
+
+1. Visit the [Owl Dashboard](https://dashboard.owlprotocol.xyz/).
+2. Create a new project and navigate to the "Project Overview" page.
+3. Locate your API key, copy it, and save it in your `.env` file as `PROJECT_API_KEY`.
+
+_Resource: [How to Create a Project](/dashboard-docs/get-started)_
+
+### Step 2: Set Up Your Development Environment
+
+1. Install the Owl Protocol client library:
+
+    ```bash
+    pnpm install @owlprotocol/core-trpc
+    ```
+
+2. Load your environment variables and initialize the client:
+
+```typescript
+// Initialize Owl Protocol client
+import { createClient } from "@owlprotocol/core-trpc";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
+const { PROJECT_API_KEY } = process.env;
+if (!PROJECT_API_KEY) {
+    throw new Error(
+        "PROJECT_API_KEY not found! Ensure it's added to your environment."
+    );
+}
+
+// Create client with API credentials
+const client = createClient({ apiKey: PROJECT_API_KEY });
+```
+
+### Step 3: Deploy a Collection
+
+Deploy an ERC721 collection using the client. Set the name and symbol of your collection, and any other optional parameters.
+
+```typescript
+// Deploy ERC721 collection
+const contract = await client.collection.deploy.mutate({
+    name: "My Collection",
+    symbol: "MYC",
+});
+```
+
+This command sets up your collection and provides you with contract details necessary for the following steps.
+
+### Step 4: Add Users
+
+To mint an asset for a user, you must first add the user to your project. This can be accomplished by using the `createOrSet` method:
+
+```typescript
+const user = await client.projectUser.createOrSet.mutate({
+		email: "johndoe@mail.com";
+		// Optional fields below
+		fullName: "John Doe",
+		externalId: "0035e2c4-7e35-4c7b-8332-58e59e4272e2"
+});
+```
+
+This step is essential for associating digital assets with specific users.
+
+### Step 5: Create a Template
+
+Templates are useful for defining metadata for tokens, particularly when you anticipate minting multiple items with the same attributes, such as name and image. Creating a template allows you to simplify the minting process by utilizing a predefined template, thereby avoiding the need to manually input metadata for each individual item.
+
+```typescript
+const imageUrl = "https://example.com/image.png"; // Replace this with your preferred image URL.
+
+const template = await client.projectTokenTemplate.createOrSet.mutate({
+    address: contract.address, // Optionally, include the address of your collection to ensure the template is specific to a collection, not just the project.
+    metadata: {
+        name: "Example",
+        description: "Your description here",
+        image: imageUrl,
+    },
+});
+```
+
+### Step 6: Mint an Item Using a Template
+
+When minting an item, you can either manually specify the item's metadata or use a template you created earlier. This example shows how to mint items using the `mintBatch` method and a pre-existing template.
+
+```typescript
+await client.collection.erc721AutoId.mintBatch.mutate({
+    address: contract.address, // Use the address of the collection specified in the previous steps.
+    projectTokenTemplateId: template.id, // Use the ID of the template created earlier.
+    to: [user.email], // The `to` parameter expects an array of emails, user IDs, and/or addresses.
+});
+```
+
+This method efficiently mints items to specified users using the established template.
+
+</Steps>
+
+### Advanced Use Cases
+
+-   [Add Project Users](/dashboard-docs/addProjectUsers)
+-   [Create an Item Type & Mint to Users](/dashboard-docs/createItemTypeAndMint)
