@@ -11,7 +11,8 @@
     "title": "Minting an Asset Per User"
   },
   "useCase1": {
-    "title": "Use Case 1"
+    "title": "Use Case 1",
+    "display":"hidden"
   },
   "-- TRPC Reference": {
     "type": "separator",

@@ -12,11 +12,12 @@ const config: DocsThemeConfig = {
     },
     //https://nextra.site/docs/docs-theme/theme-configuration#chat-link
     chat: {
-        link: 'https://discord.owl.build',
+        link: "https://discord.owl.build",
     },
     //https://nextra.site/docs/docs-theme/theme-configuration#docs-repository
     //TODO: Replace with public repo link
-    docsRepositoryBase: 'https://github.com/owlprotocol/workspace/tree/main/packages-public/docs',
+    docsRepositoryBase:
+        "https://github.com/owlprotocol/workspace/tree/main/packages-public/docs",
     //https://nextra.site/docs/docs-theme/theme-configuration#seo-options
     useNextSeoProps() {
         const { asPath } = useRouter();

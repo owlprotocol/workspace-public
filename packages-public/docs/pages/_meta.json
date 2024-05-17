@@ -20,7 +20,8 @@
     "title": "About",
     "theme": {
       "typesetting": "article"
-    }
+    },
+    "display":"hidden"
   },
   "other": {
     "display": "hidden"

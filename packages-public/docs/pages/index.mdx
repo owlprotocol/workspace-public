@@ -3,10 +3,6 @@ title: Owl Protocol Docs
 ---
 
 import { Feature, Features } from "@components/features";
-import { ArrowRightIcon } from "@components/icons";
-import cn from "clsx";
-import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import docsCard from "../public/assets/card1.png";
@@ -64,11 +60,7 @@ import styles from "./index.module.css";
       font-feature-settings: initial;
       line-height: 1.6;
     }
-    :global(#docs-card) {
-      color: #fff;
-      text-shadow: 0 0 1rem rgba(0,0,0,0.1);
-    }
-    :global(#docs-card img) {
+    :global(#api-card img) {
       object-fit: cover;
       object-position: left;
       position: absolute;
@@ -90,42 +82,17 @@ import styles from "./index.module.css";
     :global(.dark #docs-card img:nth-child(1)) {
       display: none;
     }
-    :global(#highlighting-card) {
-      min-height: 300px;
-      background-image: linear-gradient(to top, transparent, #fff 50%), url(/assets/syntax-highlighting.svg);
-      background-size: 634px;
-      background-position: -6px calc(100% + 4px);
-      background-repeat: no-repeat;
-    }
-    :global(.dark #highlighting-card) {
-      background-image: linear-gradient(to top, transparent, #202020 50%), url(/assets/syntax-highlighting.svg);
-    }
     @media screen and (max-width: 1200px) {
-      :global(#highlighting-card) {
-        aspect-ratio: auto;
-      }
       .headline {
         letter-spacing: -.08rem;
       }
     }
     @media screen and (max-width: 1024px) {
-      :global(#docs-card) {
+      :global(#api-card) {
         aspect-ratio: 135/86;
       }
       :global(#highlighting-card) {
         background-size: 136%;
-      }
-    }
-    @media screen and (max-width: 768px) {
-      :global(#docs-card) {
-        min-height: 348px;
-        width: 100%;
-        aspect-ratio: auto;
-      }
-      :global(#docs-card img) {
-        object-position: -26px 0;
-        width: 250%;
-        max-width: initial;
       }
     }
   `}</style>
@@ -133,41 +100,15 @@ import styles from "./index.module.css";
   <div className="features-container">
     <div className="content-container">
       <Features>
-        <Feature index={0} large centered id="docs-card" href="/docs/docs-theme/start">
-          <Image src={docsCard} alt="Background" loading="eager" />
-          <Image src={docsCard} alt="Background (Dark)" loading="eager" />
-          <h3>Detailed API documentation</h3>
+        <Feature index={0} centered id="api-card" href="/api-docs">
+          <h3>Explore our Web3 API Documentation</h3>
+          <p className='mr-6'>Begin your blockchain journey with our [Quick Start Guide](api-docs/quick-start).</p>
+
         </Feature>
-        <Feature index={1} centered className="card-with-border" href="/docs/guide/image">
-          <div className="h-full flex flex-col justify-between">
-            <h3>Links and images are <br className="show-on-mobile"/>always <span className="font-light">optimized</span></h3>
-            <p className='text-left mb-8'>Nextra automatically converts Markdown links and images to use [Next.js Link](https://nextjs.org/docs/routing/introduction#linking-between-pages) and [Next.js Image](https://nextjs.org/docs/basic-features/image-optimization#local-images) when possible. No slow navigation or layout shift.</p>
-            <div>
-              <div className={styles.optimization}>
-                <div style={{ fontSize: '.9rem' }} className="leading-8">
-                  <code>{`[Learn more](/more)`}</code>
-                  <br/>
-                  <code>{`![Hero](/hero.png)`}</code>
-                </div>
-              </div>
-              <ArrowRightIcon width="1.2em" className="text-neutral-400 rotate-90 my-6 mx-auto" />
-              <div className={styles.optimization}>
-                <div style={{ fontSize: '.9rem' }} className="leading-8">
-                  <code>{`<Link .../>`}</code>
-                  <br/>
-                  <code>{`<Image .../>`}</code>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Feature>
-        <Feature index={2} id="highlighting-card" href="/docs/guide/syntax-highlighting">
-          <h3>Advanced syntax <br className="show-on-mobile"/>highlighting solution</h3>
-          <p>Performant and reliable build-time syntax highlighting powered by [Shiki](https://shiki.matsu.io).</p>
-        </Feature>
-        <Feature index={9} href="/docs/guide/ssg">
-          <h3>Deploy a project on our Dashboard</h3>
-          <p className='mr-6'>Deploy a collection through the [Dashboard](https://nextjs.org/docs/basic-features/pages#static-generation-recommended), or using our [API](https://nextjs.org/docs/basic-features/pages#server-side-rendering).</p>
+        <Feature index={1} centered id="dashboard-card" href="/dashboard-docs">
+          <h3>Deploy a Collection with Our Dashboard</h3>
+          <p className='mr-6'>Easily deploy a collection using our [Dashboard](dashboard-docs/get-started)
+    or through our [API](api-docs/quick-start).</p>
         </Feature>
       </Features>
     </div>

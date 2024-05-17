@@ -1,14 +1,23 @@
 {
   "index": "Introduction",
-  "features": "Features",
-  "use-cases":"Use Cases",
+  "features": {
+    "title":"Features",
+    "display":"hidden"
+  },
+  "use-cases":{
+    "title":"Use Cases",
+    "display":"hidden"
+  },
+  "get-started":{
+    "title": "Get Started"
+  },
+  "owlFAQ":{
+  "display":"hidden"
+  },
   "guide": "",
   "-- Dashboard": {
     "type": "separator",
     "title": "Dashboard"
-  },
-  "get-started":{
-    "title": "Get Started"
   },
   "deployERC721Collection": {
     "title": "Deploy ERC721 Collection"
@@ -25,12 +34,13 @@
     "title": "More"
   },
   "about-link": {
-    "title": "About Nextra",
-    "href": "/about"
+    "title": "About Owl",
+    "href": "/about",
+    "display":"hidden"
   },
-  "next.js-link": {
-    "title": "Next.js Docs ↗",
-    "href": "https://nextjs.org?utm_source=nextra.site&utm_medium=referral&utm_campaign=sidebar",
+  "owl.build-link": {
+    "title": "Owl Build ↗",
+    "href": "https://dashboard.owlprotocol.xyz",
     "newWindow": true
   }
 }
