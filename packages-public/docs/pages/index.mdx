@@ -11,10 +11,13 @@ import styles from "./index.module.css";
 <div className="home-content">
   <div className="content-container">
     <h1 className="headline">Easily deploy and manage <br className='sm:block hidden'/>ERC721s with Owl Protocol</h1>
-    <p className="subtitle">Simple, powerful and flexible site generation framework <br className='sm:block hidden'/>with everything you love from <a className="nextjs-link" href="https://owlprotocol.xyz/" target="_blank">Owl Protocol</a></p>
+    <h1 className="headline">Owl Protocol: Streamline Your Web3 Development</h1>
+
+    <p className="subtitle">Simple, powerful and flexible Web3 API <br className='sm:block hidden'/>from <a href="https://owlprotocol.xyz/" target="_blank">Owl Protocol</a></p>
     <p className="subtitle">
       <Link className={styles.cta} href="/dashboard-docs">Get started <span>→</span></Link>
     </p>
+
   </div>
   <style jsx>{`
     .content-container {
@@ -100,15 +103,14 @@ import styles from "./index.module.css";
   <div className="features-container">
     <div className="content-container">
       <Features>
-        <Feature index={0} centered id="api-card" href="/api-docs">
-          <h3>Explore our Web3 API Documentation</h3>
+        <Feature index={0} centered id="api-card" href="/api-docs/quick-start">
+          <h3>API Docs</h3>
           <p className='mr-6'>Begin your blockchain journey with our [Quick Start Guide](api-docs/quick-start).</p>
 
         </Feature>
-        <Feature index={1} centered id="dashboard-card" href="/dashboard-docs">
-          <h3>Deploy a Collection with Our Dashboard</h3>
-          <p className='mr-6'>Easily deploy a collection using our [Dashboard](dashboard-docs/get-started)
-    or through our [API](api-docs/quick-start).</p>
+        <Feature index={1} centered id="dashboard-card" href="/dashboard-docs/get-started">
+          <h3>Dashboard Docs</h3>
+          <p className='mr-6'>Learn how to use the [Owl Dashboard](dashboard-docs/get-started).</p>
         </Feature>
       </Features>
     </div>

@@ -3,9 +3,9 @@
   "quick-start":  "Quick Start",
   "guide": "",
 
-  "-- Use Cases": {
+  "-- Tutorials": {
     "type": "separator",
-    "title": "Use Cases"
+    "title": "Tutorials"
   },
   "mintingAssetPerUser": {
     "title": "Minting an Asset Per User"
