@@ -1,7 +1,7 @@
 import { FirebaseQueryResource, FirebaseResource, FirestoreSDK } from "@owlprotocol/crud-firebase";
 import { TypeOf, expectType } from "ts-expect";
 import { z } from "zod";
-import { slugZod } from "../common.js";
+import { projectSlugZod } from "../common.js";
 
 export interface ProjectId {
     readonly projectId: string;
@@ -32,7 +32,7 @@ export const projectDataZod = z
         teamId: z.string().describe("teamId"),
         name: z.string().describe("name"),
         description: z.string().describe("description").optional(),
-        slug: slugZod.max(100),
+        slug: projectSlugZod,
         authorizedDomains: z.array(z.string()).describe("authorized domains").optional(),
         defaultChainId: z.number().describe("defaultChainId"),
         coverImage: z.string().describe("URL for cover image").optional(),

@@ -7,3 +7,11 @@ export const slugZod = z
     .toLowerCase()
     .regex(/[a-z0-9-]+/)
     .describe("slug");
+
+export const projectSlugZod = z
+    .string()
+    .min(4)
+    .max(100)
+    .toLowerCase()
+    .regex(/[a-z0-9-]+/)
+    .describe("slug");
