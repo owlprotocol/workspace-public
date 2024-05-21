@@ -39,7 +39,7 @@ export async function getProjectDemo({ teamId, demoType }: { teamId: string; dem
     const team = await teamResource.get({ teamId });
     const teamSlug = team.slug;
 
-    const numTeamProjects = await projectResource.getWhereCount({ projectType: ProjectType.DEMO });
+    const numTeamProjects = await projectResource.getWhereCount({ teamId });
 
     const demoNum = numTeamProjects + 1;
 
