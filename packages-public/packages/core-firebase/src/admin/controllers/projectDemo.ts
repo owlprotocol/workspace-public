@@ -1,6 +1,6 @@
 // import { createProject } from "./project.js";
 import { OWL_TESTNET_NETWORK_ID } from "@owlprotocol/envvars";
-import { projectResource } from "../resources.js";
+import { projectResource, teamResource } from "../resources.js";
 
 // import { Address, Hash } from "viem";
 
@@ -36,16 +36,19 @@ export async function getProjectDemo({ teamId, demoType }: { teamId: string; dem
 
     const { project } = demoStaticData;
 
-    const teamProjects = await projectResource.getWhere({ teamId });
+    const team = await teamResource.get({ teamId });
+    const teamSlug = team.slug;
 
-    const demoNum = teamProjects.length + 1;
+    const numTeamProjects = await projectResource.getWhereCount({ projectType: ProjectType.DEMO });
+
+    const demoNum = numTeamProjects + 1;
 
     const projectDemo: Omit<Project, "projectId"> = {
         teamId,
         name: `${project.name} ${demoNum}`,
         description: project.description,
         coverImage: project.coverImage,
-        slug: `project-demo-${demoType}-${demoNum}`,
+        slug: `project-demo-${teamSlug}-${demoType}-${demoNum}`,
         defaultChainId: parseInt(OWL_TESTNET_NETWORK_ID),
         projectType: ProjectType.DEMO,
     };
