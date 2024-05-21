@@ -32,7 +32,7 @@ export const projectDataZod = z
         teamId: z.string().describe("teamId"),
         name: z.string().describe("name"),
         description: z.string().describe("description").optional(),
-        slug: slugZod,
+        slug: slugZod.max(100),
         authorizedDomains: z.array(z.string()).describe("authorized domains").optional(),
         defaultChainId: z.number().describe("defaultChainId"),
         coverImage: z.string().describe("URL for cover image").optional(),
