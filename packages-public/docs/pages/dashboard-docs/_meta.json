@@ -23,6 +23,9 @@
   "deploy-demo-project":{
     "title":"Deploy Demo Project"
   },
+  "get-api-key":{
+    "title":"Get Your Project API Key"
+  },
   "mint-asset-per-user":{
     "title":"Mint Asset Per User"
   },
