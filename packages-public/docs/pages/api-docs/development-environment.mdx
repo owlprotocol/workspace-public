@@ -1,0 +1,77 @@
+import { Steps, Callout } from "nextra/components";
+
+# Set Up Your Development Environment
+
+Get started with Owl Protocol by setting up your development environment with this tutorial.
+
+**Prerequisite**: Obtain your Project API Key by creating a project in [the Owl Protocol Dashboard](https://dashboard.owlprotocol.xyz/).
+
+For guidance on retrieving your API Key, refer to [Get your Project API Key](/dashboard-docs/get-api-key).
+
+<Callout type="warning">
+  **API Key**
+
+The API Key is crucial for authenticating your requests to Owl Protocol. <span style={{ color: "red" }}>**Never expose your API Key in the frontend or client-side code**</span>. Always keep it secure and use it only in **server-side** code to prevent unauthorized access and ensure the security of your project.
+
+</Callout>
+
+<Steps>
+### Install Client Library
+
+**Install the SDK**.
+Use the following command to install the necessary library:
+
+```bash
+pnpm install @owlprotocol/core-trpc
+```
+
+### Configute Environment Variables
+
+**Configure Your Environment**:
+Set up and load your environment variables to initialize the Owl Protocol client. This involves creating a `.env` file in your project directory and adding your Project API key.
+
+    - Create a `.env` file and include the following line:
+
+```
+API_KEY_SECRET=your_project_api_key_here
+```
+
+    - Use the code snippet below to load the `.env` file:
+
+```typescript
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config();
+
+const { API_KEY_SECRET } = process.env;
+
+// Validate the presence of the API key
+if (!API_KEY_SECRET) {
+    throw new Error(
+        "API_KEY_SECRET not found! Ensure it's correctly set in your .env file."
+    );
+}
+```
+
+### Create client
+
+Create the client with your API key using the following command:
+
+```typescript
+import { createClient } from "@owlprotocol/core-trpc";
+
+// Initialize the Owl Protocol client with your API key
+const client = createClient({ apiKey: API_KEY_SECRET });
+```
+
+</Steps>
+
+Congratulations on setting up your development environment for Owl Protocol! Remember, you'll need to follow these steps to configure the environment for any new project where you use Owl Protocol.
+
+You are now ready to start building and experimenting with Web3 applications. Happy coding!
+
+**Next Steps**
+
+-   **[Minting an Asset to a User](/api-docs/mint-asset-to-user)**
+-   **[Create a template](/api-docs/create-template)**

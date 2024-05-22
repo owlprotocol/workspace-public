@@ -15,6 +15,12 @@
     "type": "page",
     "title": "API"
   },
+  "api-reference": {
+    "type": "page",
+    "title": "Playground ↗",
+    "href": "https://docs-api.owlprotocol.xyz/reference/collection-deploy",
+    "newWindow": true
+  },
   "about": {
     "type": "page",
     "title": "About",

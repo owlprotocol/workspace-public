@@ -1,0 +1,76 @@
+import { Screenshot } from "components/screenshot";
+import { Callout, Steps } from "nextra/components";
+
+# Mint an Asset to a User
+
+In this tutorial, you'll learn how to seamlessly mint an asset to a user using Owl Protocol. Along the way, we'll also cover how to deploy collections and add users to your project.
+
+**Minting assets is particularly useful for airdrops, giveaways, or any promotional campaign designed to deliver unique assets directly to your users.**
+
+To begin minting an asset, obtain a Project API key from our [Dashboard](https://dashboard.owlprotocol.xyz/).
+
+Visit [Get your Project API Key](/dashboard-docs/get-api-key) for instructions on obtaining your API Key.
+
+<Steps>
+### Set Up Your Development Environment
+
+If you haven't already, set up your development environment by following our [Set Up Your Development Environment](/api-docs/development-environment) tutorial. This tutorial guides you through installing the Owl Protocol client library and initializing a client with your Project API key.
+
+### Add users to your project
+
+To mint an asset for a user, first add the user to your project using the `createOrSet` method:
+
+```typescript
+const user = await client.projectUser.createOrSet({
+    email: "johndoe@mail.com",
+});
+```
+
+To retrieve an existing user by email, you can use `get` method:
+
+```typescript
+const user = await client.projectUser.get({
+    email: "existingUser@example.com",
+});
+```
+
+### Launch a collection
+
+Deploy a new ERC721 collection using the client, or use one of your existing collections.
+
+Set the name and symbol of your collection, and any other optional parameters.
+
+```typescript
+const contract = await client.collection.deploy.mutate({
+    name: "My Collection",
+    symbol: "MYC",
+    // Add other optional parameters
+});
+```
+
+### Mint an asset to user
+
+Call `collection.erc721AutoId.mint` to mint an asset to the user. Provide the collection address, recipient's email, and optional asset metadata (such as name, description, and image).
+
+```typescript
+let image = "https://picsum.photos/200"; // Replace with your image. Make sure the image is properly hosted online.
+
+await client.collection.erc721AutoId.mintBatch.mutate({
+    address: contract.address,
+    to: user.email,
+    metadata: {
+        name: "My NFT",
+        description: "My NFT description",
+        image,
+    },
+});
+```
+
+</Steps>
+
+Congratulations on completing this tutorial! You've successfully learned how to mint assets to users, deploy collections, and manage users using Owl Protocol. These skills are vital for improving user engagement and streamlining your Web3 projects.
+
+**Next steps**
+
+-   **[Create a Template](api-docs/create-template)**
+-   **Start Building:** Consider delving into our advanced features or applying these tools in your projects to harness the full potential of blockchain technology. Continue to explore and innovate with Owl Protocol.

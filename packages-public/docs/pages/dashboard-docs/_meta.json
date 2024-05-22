@@ -15,7 +15,9 @@
   "owlFAQ":{
   "display":"hidden"
   },
-  "guide": "",
+  "guide": {
+    "display":"hidden"
+  },
   "-- Tutorials": {
     "type": "separator",
     "title": "Tutorials"
@@ -32,7 +34,9 @@
   "deploy-custom-project":{
     "title":"Deploy Your Custom Project"
   },
-
+  "create-custom-project":{
+    "display":"hidden"
+  },
   "deployERC721Collection": {
     "title": "Deploy ERC721 Collection",
     "display":"hidden"

@@ -19,9 +19,9 @@ _Resource: [How to Create a Project](/dashboard-docs/get-started)_
 
 1. Install the Owl Protocol client library:
 
-    ```bash
-    pnpm install @owlprotocol/core-trpc
-    ```
+```bash
+pnpm install @owlprotocol/core-trpc
+```
 
 2. Load your environment variables and initialize the client:
 
@@ -65,9 +65,6 @@ To mint an asset for a user, you must first add the user to your project. This c
 ```typescript
 const user = await client.projectUser.createOrSet.mutate({
 		email: "johndoe@mail.com";
-		// Optional fields below
-		fullName: "John Doe",
-		externalId: "0035e2c4-7e35-4c7b-8332-58e59e4272e2"
 });
 ```
 
@@ -78,14 +75,14 @@ This step is essential for associating digital assets with specific users.
 Templates are useful for defining metadata for tokens, particularly when you anticipate minting multiple items with the same attributes, such as name and image. Creating a template allows you to simplify the minting process by utilizing a predefined template, thereby avoiding the need to manually input metadata for each individual item.
 
 ```typescript
-const imageUrl = "https://example.com/image.png"; // Replace this with your preferred image URL.
+let image = "https://picsum.photos/200"; // Replace this with your image.
 
 const template = await client.projectTokenTemplate.createOrSet.mutate({
     address: contract.address, // Optionally, include the address of your collection to ensure the template is specific to a collection, not just the project.
     metadata: {
         name: "Example",
         description: "Your description here",
-        image: imageUrl,
+        image,
     },
 });
 ```
@@ -106,7 +103,12 @@ This method efficiently mints items to specified users using the established tem
 
 </Steps>
 
-### Advanced Use Cases
+### Workflow
 
--   [Add Project Users](/dashboard-docs/addProjectUsers)
--   [Create an Item Type & Mint to Users](/dashboard-docs/createItemTypeAndMint)
+By following this guide, you have successfully set up a new project with Owl Protocol, deployed a collection, added users, created a template, and minted items. This workflow enables you to efficiently manage and deploy digital assets.
+
+**Next Steps**
+
+-   **Build Your Project:** Start building your project using Owl Protocol's powerful API. Refer to our API Documentation for more advanced features and functionalities.
+-   **Explore Integrations:** Explore various integrations with other tools and platforms to enhance your project's capabilities.
+-   **Join the Community:** Connect with other developers and share your experiences in our community channels.

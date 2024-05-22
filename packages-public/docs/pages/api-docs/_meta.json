@@ -1,14 +1,21 @@
 {
   "index": "Introduction",
   "quick-start":  "Quick Start",
-  "guide": "",
-
+  "guide": {
+    "display":"hidden"
+  },
   "-- Tutorials": {
     "type": "separator",
     "title": "Tutorials"
   },
-  "mintingAssetPerUser": {
-    "title": "Minting an Asset Per User"
+  "development-environment":{
+    "title": "Set up your development environment"
+  },
+  "mint-asset-to-user": {
+    "title": "Minting an Asset to a User"
+  },
+  "create-template":{
+    "title": "Create a Template"
   },
   "useCase1": {
     "title": "Use Case 1",
