@@ -26,8 +26,8 @@
   "get-api-key":{
     "title":"Get Your Project API Key"
   },
-  "mint-asset-per-user":{
-    "title":"Mint Asset Per User"
+  "mint-collectible-per-user":{
+    "title":"Mint A Collectible Per User"
   },
   "create-custom-project":{
     "title":"Create a Custom Project"
