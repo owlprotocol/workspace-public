@@ -23,11 +23,11 @@
   "deploy-demo-project":{
     "title":"Deploy Demo Project"
   },
-  "get-api-key":{
-    "title":"Get Your Project API Key"
-  },
   "mint-collectible-per-user":{
     "title":"Mint A Collectible Per User"
+  },
+  "get-api-key":{
+    "title":"Get Your Project API Key"
   },
   "deploy-custom-project":{
     "title":"Deploy Your Custom Project"
