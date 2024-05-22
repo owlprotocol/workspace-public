@@ -29,8 +29,8 @@
   "mint-collectible-per-user":{
     "title":"Mint A Collectible Per User"
   },
-  "create-custom-project":{
-    "title":"Create a Custom Project"
+  "deploy-custom-project":{
+    "title":"Deploy Your Custom Project"
   },
 
   "deployERC721Collection": {
