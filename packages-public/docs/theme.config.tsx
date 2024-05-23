@@ -43,10 +43,7 @@ const config: DocsThemeConfig = {
                     content="width=device-width, initial-scale=1.0"
                 />
                 <meta httpEquiv="Content-Language" content="en" />
-                <meta
-                    name="description"
-                    content="Make beautiful websites with Next.js & MDX."
-                />
+                <meta name="description" content="Owl Protocol Docs." />
                 <meta
                     name="apple-mobile-web-app-title"
                     content="Owl Protocol"
