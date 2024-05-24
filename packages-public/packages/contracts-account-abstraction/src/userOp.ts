@@ -1,13 +1,28 @@
 //viem
-import { Address, Hex, PublicClient, Transport, Chain, encodeFunctionData, Hash, Account } from "viem";
-//permissionles
-import { GetUserOperationReceiptReturnType, UserOperation, getAccountNonce } from "permissionless";
+import {
+    Address,
+    Hex,
+    PublicClient,
+    Transport,
+    Chain,
+    encodeFunctionData,
+    Hash,
+    Account,
+    concat,
+    numberToHex,
+    hexToBigInt,
+} from "viem";
+//permissionless
+import { GetUserOperationReceiptReturnType, UserOperation } from "permissionless";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
 import { PimlicoBundlerClient, PimlicoPaymasterClient } from "permissionless/clients/pimlico";
 import { SponsorUserOperationReturnType } from "permissionless/actions/pimlico";
 import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
+import { randomBytes } from "crypto";
 import { abi as SimpleAccountAbi } from "./artifacts/SimpleAccount.js";
 import { ENTRYPOINT_ADDRESS_V07 } from "./constants.js";
+
+const zeroSequence = numberToHex(0, { size: 8 });
 
 /**
  * Generic interface for smart account, includes address & factory data in case it does not exist
@@ -67,13 +82,12 @@ export async function createUserOp(
 
     // Smart account already deployed if nonce === undefined
     if (userOpPartial.nonce === undefined) {
-        // Get nonce
-        // TODO: Use a key? to avoid non-conflicts in case user also sending separate userOp
-        // See https://docs.pimlico.io/permissionless/reference/public-actions/getAccountNonce#key-optional
-        const nonce = await getAccountNonce(publicClient, {
-            sender: smartAccount.address,
-            entryPoint: ENTRYPOINT_ADDRESS_V07,
-        });
+        // Get nonce with a random key, and zero sequence
+
+        // 192 bits
+        const randomKey = ("0x" + randomBytes(24).toString()) as Hex;
+        const nonce = hexToBigInt(concat([randomKey, zeroSequence]));
+
         userOpPartial.nonce = nonce;
     }
 
