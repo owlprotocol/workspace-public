@@ -17,7 +17,7 @@ export function OwlTrpcProvider({
 }: PropsWithChildren<{ apiTrpcBaseUrl?: string }>) {
     //Clerk Auth
     //TODO: Can this just be imported from js sdk?
-    const { getToken, isSignedIn, isLoaded } = useClerkAuth();
+    const { getToken, isSignedIn } = useClerkAuth();
 
     //TRPC Client
     const getHeaders = useCallback(async () => {
@@ -38,9 +38,6 @@ export function OwlTrpcProvider({
         getHeaders,
         apiTrpcBaseUrl ?? API_TRPC_BASE_URL
     );
-
-    //TODO: Should we remove this OR replace with Suspense API compatible
-    if (!isLoaded) <>Loading Clerk...</>;
 
     return (
         <trpc.Provider client={trpcClientReact} queryClient={queryClient}>

@@ -1,9 +1,10 @@
-import { ClerkProvider } from "@clerk/clerk-react";
+import { ClerkLoaded, ClerkLoading, ClerkProvider } from "@clerk/clerk-react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 import { OwlFirebaseProvider } from "./OwlFirebaseProvider.js";
 import { OwlTrpcProvider } from "./OwlTrpcProvider.js";
 import { OwlFirebaseClerkAuth } from "./OwlFirebaseClerkAuth.js";
+import { LoadingDialog } from "./LoadingDialog.js";
 import { queryClient } from "../clients.js";
 
 /**
@@ -23,17 +24,23 @@ export function OwlProvider({
     clerkPublishableKey?: string;
     apiTrpcBaseUrl?: string;
 }>) {
+    //TODO: Remove this in future for public views
     return (
         <ClerkProvider publishableKey={clerkPublishableKey!}>
-            <OwlFirebaseProvider>
-                <OwlFirebaseClerkAuth>
-                    <OwlTrpcProvider apiTrpcBaseUrl={apiTrpcBaseUrl}>
-                        <QueryClientProvider client={queryClient}>
-                            {children}
-                        </QueryClientProvider>
-                    </OwlTrpcProvider>
-                </OwlFirebaseClerkAuth>
-            </OwlFirebaseProvider>
+            <ClerkLoading>
+                <LoadingDialog isOpen={true}>Loading...</LoadingDialog>
+            </ClerkLoading>
+            <ClerkLoaded>
+                <OwlFirebaseProvider>
+                    <OwlFirebaseClerkAuth>
+                        <OwlTrpcProvider apiTrpcBaseUrl={apiTrpcBaseUrl}>
+                            <QueryClientProvider client={queryClient}>
+                                {children}
+                            </QueryClientProvider>
+                        </OwlTrpcProvider>
+                    </OwlFirebaseClerkAuth>
+                </OwlFirebaseProvider>
+            </ClerkLoaded>
         </ClerkProvider>
     );
 }

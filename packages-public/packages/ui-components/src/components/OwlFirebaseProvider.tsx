@@ -38,7 +38,7 @@ export function OwlFirebaseProvider({ children }: PropsWithChildren) {
     }, []);
 
     return (
-        <FirebaseAppProvider firebaseApp={firebaseApp}>
+        <FirebaseAppProvider firebaseApp={firebaseApp} suspense={true}>
             <AuthProvider sdk={auth}>
                 <FirestoreProvider sdk={firestore}>
                     {children}

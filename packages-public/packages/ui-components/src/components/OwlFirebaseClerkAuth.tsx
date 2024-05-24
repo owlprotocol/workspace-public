@@ -13,7 +13,7 @@ import { useAuth as useFirebaseAuth } from "reactfire";
  */
 export function OwlFirebaseClerkAuth({ children }: PropsWithChildren) {
     //Clerk User
-    const { getToken, isSignedIn, isLoaded } = useClerkAuth();
+    const { getToken, isSignedIn } = useClerkAuth();
 
     //Firebase Signin
     //Only reason we need this is because intializing the auth/firestore with custom persistence
@@ -36,11 +36,8 @@ export function OwlFirebaseClerkAuth({ children }: PropsWithChildren) {
             signOut(auth);
             console.debug("Signed-out of Firebase");
         }
-        //undefined means loading so skip
+        //isSignedIn === undefined means loading so skip
     }, [getToken, auth, isSignedIn]);
-
-    //TODO: Should we remove this OR replace with Suspense API compatible
-    if (!isLoaded) <>Loading Clerk...</>;
 
     return <>{children}</>;
 }

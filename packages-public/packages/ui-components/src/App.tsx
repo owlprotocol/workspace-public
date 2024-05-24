@@ -21,6 +21,7 @@ declare module "@tanstack/react-router" {
     }
 }
 
+//TODO: Deprecate this as no longer using this pattern
 const InnerApp = () => {
     const clerkUserStatus = useClerkUser();
     const {
@@ -38,10 +39,10 @@ const InnerApp = () => {
             <p>{userId}</p>
             {clerkIsLoaded && !clerkSignedIn && (
                 <>
-                    <SignInButton mode="modal" redirectUrl={currentUrl}>
+                    <SignInButton mode="modal" fallbackRedirectUrl={currentUrl}>
                         <Button className="w-full text-xl py-6">Sign in</Button>
                     </SignInButton>
-                    <SignUpButton mode="modal" redirectUrl={currentUrl}>
+                    <SignUpButton mode="modal" fallbackRedirectUrl={currentUrl}>
                         <Button className="w-full text-xl py-6">Sign up</Button>
                     </SignUpButton>
                 </>
