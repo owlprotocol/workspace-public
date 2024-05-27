@@ -11,6 +11,7 @@ import {
     concat,
     numberToHex,
     hexToBigInt,
+    bytesToHex,
 } from "viem";
 //permissionless
 import { GetUserOperationReceiptReturnType, UserOperation } from "permissionless";
@@ -85,7 +86,7 @@ export async function createUserOp(
         // Get nonce with a random key, and zero sequence
 
         // 192 bits
-        const randomKey = ("0x" + randomBytes(24).toString()) as Hex;
+        const randomKey = bytesToHex(randomBytes(24));
         const nonce = hexToBigInt(concat([randomKey, zeroSequence]));
 
         userOpPartial.nonce = nonce;
