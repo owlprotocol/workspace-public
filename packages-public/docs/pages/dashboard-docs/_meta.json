@@ -56,6 +56,16 @@
   "zapier":{
     "title":"Zapier Integration"
   },
+  "caldera":{
+    "title":"Caldera Rollup Integration"
+  },
+  "-- Explanations": {
+    "type": "separator",
+    "title": "Explanations"
+  },
+  "rollups":{
+    "title":"Rollups"
+  },
   "-- Links": {
     "type": "separator",
     "title": "More"

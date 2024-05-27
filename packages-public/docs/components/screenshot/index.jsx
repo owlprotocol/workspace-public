@@ -1,7 +1,7 @@
 import cn from "clsx";
 import Image from "next/image";
 
-export function Screenshot({ src, alt, full }) {
+export function Screenshot({ src, alt, full, width }) {
     return (
         <div
             className={cn(
@@ -13,9 +13,11 @@ export function Screenshot({ src, alt, full }) {
                 src={src}
                 alt={alt}
                 className={cn(
-                    "w-auto select-none bg-white",
+                    "select-none bg-white",
+                    width ? "" : "w-auto",
                     full ? "" : "ring-1 ring-gray-200"
                 )}
+                width={width}
             />
         </div>
     );
