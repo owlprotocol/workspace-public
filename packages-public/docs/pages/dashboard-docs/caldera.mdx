@@ -1,1 +1,72 @@
-../other/integrations/rollups/caldera.mdx
+import { Steps } from "nextra/components";
+import { Screenshot } from "components/screenshot";
+
+# Caldera Rollup Integration
+
+Caldera is a leading provider of rollup infrastructure, allowing developers to easily deploy and manage their own rollups. With Caldera, you can create fast and efficient Layer 2+ app chains, leveraging Celestia as the data availability layer.
+
+## With Caldera and Owl, You Can
+
+- Deploy your own app chain with just a few clicks
+- Scale your app chain as your project grows
+- Benefit from Caldera's robust and reliable infrastructure
+- Seamlessly integrate Owl Protocol's features into your app chain
+
+Owl Protocol's API can be deployed with any EVM chain. With Caldera and Celestia, you can rapidly create extremely fast and efficient L2+ app chains, enabling you to build faster than ever before with our simple API.
+
+## Steps
+
+<Steps>
+
+### Creating A Chain On Caldera
+
+import calderaRollups from "../../../../public/assets/caldera/calderaRollups.png";
+
+<Screenshot src={calderaRollups} alt="calderaRollups" />
+
+1. Click the "New Rollup" button in the top right corner of the Caldera dashboard.
+2. Set the Chain ID for your custom app chain, we recommend a number over 1,000,000 to avoid collisions with other chains, see: [ChainList](https://chainlist.org) for a list of official chain IDs.
+3. Select ETH as the native token and Celestia as the data availability layer, as shown below:
+
+### Creating A New Project On Owl Protocol
+
+1. Go to the [Owl Dashboard](https://dashboard.owlprotocol.xyz) and create a project that uses your Caldera app chain.
+
+import createProjectCustomNetwork from "../../../../public/assets/caldera/createProjectCustomNetwork.png";
+
+<Screenshot src={createProjectCustomNetwork} alt="createProjectCustomNetwork" />
+
+2. Click "Add Custom Network" to open a window to add your deployed chain.
+3. Name the network (typically the same as the "Rollup Name" in Caldera).
+4. Copy the RPC URL and Chain ID from your Caldera dashboard.
+
+import addCustomNetwork from "../../../../public/assets/caldera/addCustomNetwork.png";
+
+<Screenshot src={addCustomNetwork} alt="addCustomNetwork" />
+
+You can find the RPC URL as the Leader RPC in the "Nodes" section
+
+import leaderRPC from "../../../../public/assets/caldera/leaderRPC.png";
+
+<Screenshot src={leaderRPC} alt="leaderRPC" />
+
+5. Set the symbol to "ETH" since we used "ETH" for the native token.
+6. Click "Create Network".
+7. Fill in the rest of the project information, such as the name and description
+8. Check the box next to the newly added network from Caldera
+
+### Funding The Gas Tank
+
+The Owl Protocol API uses a transaction bundler, paymaster smart contract, relayer, and a gas tank (utility) address to pay and broadcast the transactions generated from the API. On public networks, Owl Protocol funds these and bills developers monthly for their gas usage. However, since this is your own app chain, you will need to fund the gas tank address yourself using ETH or testnet Sepolia ETH.
+
+1. Check the current gas tank address balance in the "Blockchain" section of the Owl Protocol dashboard.
+2. If the balance is 0, click the warning box or "More Info" button to show the blockchain information, which will display the gas tank address.
+3. Send ETH or testnet Sepolia ETH to the gas tank address from a faucet or a friend. If you need assistance, reach out to our [support team on Discord](https://discord.gg/7sANzfGUfe).
+
+</Steps>
+
+## Next Steps
+
+- Explore the Owl Protocol API reference to familiarize yourself with the available endpoints and actions
+- Read the docs to get ideas and inspiration for building your app chain with Caldera and Owl Protocol
+- Join the Owl Protocol community on [Discord](https://discord.gg/7sANzfGUfe) for support and to connect with other developers building on app chains
