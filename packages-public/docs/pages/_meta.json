@@ -1,25 +1,93 @@
 {
   "index": {
-    "type": "page",
-    "title": "Nextra",
-    "display": "hidden",
-    "theme": {
-      "layout": "raw"
-    }
+    "title": "Overview"
+  },
+  "quick-start":  {
+    "title": "Quick Start",
+    "display":"hidden"
+  },
+  "guide": {
+    "display":"hidden"
+  },
+  "getting-started": {
+    "title": "Getting Started"
+  },
+  "-- Learn": {
+    "type": "separator",
+    "title": "Learn"
+  },
+  "products": {
+    "title": "Products"
+  },
+  "-- Tutorials": {
+    "type": "separator",
+    "title": "Tutorials"
+  },
+  "tutorials-dashboard": {
+    "title": "No-Code Dashboard",
+    "display": "normal"
+  },
+  "tutorials-contracts-api": {
+    "title": "Contracts API",
+    "display": "normal"
+  },
+  "tutorials-account-abstraction": {
+    "title": "Account Abstraction API"
+  },
+  "tutorials-zapier":{
+    "title": "Zapier Web2 Plugins"
+  },
+  "tutorials-custom-chains":{
+    "title": "Custom EVM Chains"
+  },
+  "useCase1": {
+    "title": "Use Case 1",
+    "display":"hidden"
+  },
+  "-- API Reference": {
+    "type": "separator",
+    "title": "API Reference"
+  },
+  "reference-collection": {
+    "title": "Collection"
+  },
+  "reference-projectUser": {
+    "title": "Project User"
+  },
+  "reference-projectToken": {
+    "title": "Project Token"
+  },
+  "reference-projectTokenTemplate": {
+    "title": "Project Token Template"
+  },
+  "reference-contractMetadata": {
+    "title": "Contract Metadata"
+  },
+  "-- Connect": {
+    "type": "separator",
+    "title": "Connect"
+  },
+  "contribute": {
+    "title": "Contribute",
+    "display": "normal"
+  },
+  "github": {
+    "title": "Github ↗",
+    "href": "https://github.com/owlprotocol/owlprotocol",
+    "newWindow": true
+  },
+  "support": {
+    "title": "Support ↗",
+    "href": "https://discord.owl.build",
+    "newWindow": true
+  },
+  "index.old": {
+    "display":"hidden"
   },
   "dashboard-docs": {
     "type": "page",
-    "title": "Docs"
-  },
-  "api-docs": {
-    "type": "page",
-    "title": "API"
-  },
-  "api-reference": {
-    "type": "page",
-    "title": "Playground ↗",
-    "href": "https://docs-api.owlprotocol.xyz/reference/collection-deploy",
-    "newWindow": true
+    "title": "Docs",
+    "display":"hidden"
   },
   "about": {
     "type": "page",

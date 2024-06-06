@@ -1,0 +1,22 @@
+{
+  "eventbrite": {
+    "title": "Eventbrite Attendees",
+    "display": "normal"
+  },
+  "github": {
+    "title": "Github Commits",
+    "display": "normal"
+  },
+  "shopify": {
+    "title": "Shopify Orders",
+    "display": "normal"
+  },
+  "stripe": {
+    "title": "Stripe Payments",
+    "display": "normal"
+  },
+  "google-form": {
+    "title": "Google Form Submissions",
+    "display": "normal"
+  }
+}

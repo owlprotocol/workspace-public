@@ -1,12 +1,11 @@
 import { Steps, Callout } from "nextra/components";
+import { Screenshot } from "components/screenshot";
 
-# Set Up Your Development Environment
+# Getting Started
 
 Get started with Owl Protocol by setting up your development environment with this tutorial.
 
-**Prerequisite**: Obtain your Project API Key by creating a project in [the Owl Protocol Dashboard](https://dashboard.owlprotocol.xyz/).
-
-For guidance on retrieving your API Key, refer to [Get your Project API Key](/dashboard-docs/get-api-key).
+**Prerequisite**: Create a team and project in [the Owl Protocol Dashboard](https://dashboard.owlprotocol.xyz/).
 
 <Callout type="warning">
   **API Key**
@@ -16,6 +15,18 @@ The API Key is crucial for authenticating your requests to Owl Protocol. <span s
 </Callout>
 
 <Steps>
+### Get Your Project API Key
+Go to our [Dashboard](https://dashboard.owlprotocol.xyz/), select a team and a project.
+
+On the project overview, you will see the API key under the project name and description.
+
+You can click the copy button to copy the API key to your clipboard, or display the full key by clicking on the eye icon.
+
+import projectApiKey from "../public/assets/projectApiKey.png";
+
+<Screenshot src={projectApiKey} alt="projectApiKey" />
+
+
 ### Install Client Library
 
 **Install the SDK**.

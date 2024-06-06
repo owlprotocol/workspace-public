@@ -34,6 +34,8 @@ export function uploadNetworks(networks: Network[]) {
             };
         });
 
+    //Do NOT filter by enabled as certain networks (eg. L2 parent chains)
+    //might still be needed by API
     const networksPrivate: Network[] = networks.map((chain) => {
         //Include all rpc configs, set default as private rpc
         const rpcUrls: Network["rpcUrls"] = {
