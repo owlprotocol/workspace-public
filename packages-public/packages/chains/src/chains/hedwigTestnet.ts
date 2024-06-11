@@ -39,6 +39,7 @@ export const hedwigTestnet = /*#__PURE__*/ defineNetwork({
     },
     sourceId,
     enabled: true,
+    stack: "opstack-bedrock",
     rank: 0,
     minUtilityBalance: parseEther("1"),
     //TODO: Topup code what if utility < target?

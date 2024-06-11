@@ -22,4 +22,6 @@ export const mode = /*#__PURE__*/ defineNetwork({
     },
     slug: "mode",
     slugDrpc: "mode",
+    enabled: true,
+    stack: "opstack-bedrock",
 });

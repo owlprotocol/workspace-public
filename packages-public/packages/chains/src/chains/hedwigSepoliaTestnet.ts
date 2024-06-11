@@ -27,5 +27,6 @@ export const hedwigSepoliaTestnet = /*#__PURE__*/ defineNetwork({
         },
     },
     enabled: true,
+    stack: "opstack-bedrock",
     rank: 0,
 });

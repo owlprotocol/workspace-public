@@ -8,5 +8,6 @@ export const zoraSepolia = /*#__PURE__*/ defineNetwork({
         public: zoraSepoliaViem.rpcUrls.default,
     },
     slug: "zora-sepolia",
-    slugDrpc: "zora-sepolia",
+    enabled: true,
+    stack: "opstack-bedrock",
 });

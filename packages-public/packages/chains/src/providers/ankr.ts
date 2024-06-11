@@ -1,4 +1,4 @@
-import { ChainRpcUrls } from "../defineChain.js";
+import type { ChainRpcUrls } from "@owlprotocol/eth-firebase";
 
 /**
  * Get rpc endpoints for Ankr

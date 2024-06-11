@@ -29,7 +29,6 @@ export const bitfinityTestnet = /*#__PURE__*/ defineNetwork({
     enabled: false,
     rank: 9999,
     minUtilityBalance: parseEther("1"),
-    //TODO: Topup code what if utility < target?
     targetUtilityBalance: parseEther("8"),
     minPaymasterBalance: parseEther("0.1"),
     targetPaymasterBalance: parseEther("2"),

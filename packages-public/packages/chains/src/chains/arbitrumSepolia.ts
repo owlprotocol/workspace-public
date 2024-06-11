@@ -10,4 +10,5 @@ export const arbitrumSepolia = /*#__PURE__*/ defineNetwork({
     slug: "arbitrum-sepolia",
     slugAnkr: "arbitrum_sepolia",
     slugDrpc: "arbitrum-sepolia",
+    enabled: true,
 });

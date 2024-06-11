@@ -19,6 +19,38 @@ export const decodeNetworkId: (id: string) => NetworkId = (id) => {
     return { chainId: parseInt(id) };
 };
 
+/* Balance management config */
+export type NetworkBalanceConfig<TQuantity> = {
+    /**
+     * Minimum utility balance, used for deploying contracts and topups.
+     * Can be funded by an L1 topup (if possible) or triggers error if under-funded.
+     */
+    minUtilityBalance?: TQuantity;
+    /**
+     * Target utility balance (for L1 topup).
+     * L1 should have sufficient balance at same address.
+     * See this viem guide for more info https://viem.sh/op-stack/guides/deposits
+     */
+    targetUtilityBalance?: TQuantity;
+    /**
+     * Minimum paymaster balance, triggers a topup from utility account if below.
+     * Determines total sponsorable ERC4337 gas
+     */
+    minPaymasterBalance?: TQuantity;
+    /** Target paymaster balance, topup from utility account will fill up to this amount (target - currentBalance) */
+    targetPaymasterBalance?: TQuantity;
+    /**
+     * Minimum relayer balance (aka bundler), triggers a topup if below
+     * Determines total in-flight ERC4337 gas sent by bundler (~ bandwith)
+     * Account does not get drained as UserOps refund their own gas
+     */
+    minRelayerBalance?: TQuantity;
+    /**
+     * Target relayer balance (aka bundler), topup will fill up to this amount (target - currentBalance)
+     */
+    targetRelayerBalance?: TQuantity;
+};
+
 /**
  * Network Data shared across all collections
  * - Network
@@ -26,8 +58,13 @@ export const decodeNetworkId: (id: string) => NetworkId = (id) => {
  * - TeamNetwork
  */
 export type NetworkData<TQuantity> = NetworkId &
+    NetworkBalanceConfig<TQuantity> &
     Omit<Chain, "id" | "rpcUrls"> & {
         //TODO: Add provider specific slugs
+        /** Network description */
+        description?: string;
+        /** Network stack */
+        stack?: "opstack-bedrock" | "opstack-ovm" | "arbitrum-rollup" | "arbitrum-anytrust";
         /** Network slug / short name */
         slug?: string;
         slugAlchemy?: string;
@@ -71,35 +108,6 @@ export type NetworkData<TQuantity> = NetworkId &
         rank?: number;
         /** Does network support Pimlico or use local bundler */
         pimlicoEnabled?: boolean;
-        /***** Balance management *****/
-        /**
-         * Minimum utility balance, used for deploying contracts and topups.
-         * Can be funded by an L1 topup (if possible) or triggers error if under-funded.
-         */
-        minUtilityBalance?: TQuantity;
-        /**
-         * Target utility balance (for L1 topup).
-         * L1 should have sufficient balance at same address.
-         * See this viem guide for more info https://viem.sh/op-stack/guides/deposits
-         */
-        targetUtilityBalance?: TQuantity;
-        /**
-         * Minimum paymaster balance, triggers a topup from utility account if below.
-         * Determines total sponsorable ERC4337 gas
-         */
-        minPaymasterBalance?: TQuantity;
-        /** Target paymaster balance, topup from utility account will fill up to this amount (target - currentBalance) */
-        targetPaymasterBalance?: TQuantity;
-        /**
-         * Minimum relayer balance (aka bundler), triggers a topup if below
-         * Determines total in-flight ERC4337 gas sent by bundler (~ bandwith)
-         * Account does not get drained as UserOps refund their own gas
-         */
-        minRelayerBalance?: TQuantity;
-        /**
-         * Target relayer balance (aka bundler), topup will fill up to this amount (target - currentBalance)
-         */
-        targetRelayerBalance?: TQuantity;
     };
 
 /**
@@ -122,7 +130,14 @@ export type NetworkDataDecoded = NetworkData<bigint>;
  */
 const networkDataEncodeZodInternal = chainZod.extend({
     chainId: z.number(),
+    description: z.string().optional(),
+    stack: z.string().optional(),
     slug: z.string().optional(),
+    slugAlchemy: z.string().optional(),
+    slugAnkr: z.string().optional(),
+    slugDrpc: z.string().optional(),
+    slugFlare: z.string().optional(),
+    slugInfura: z.string().optional(),
     enabled: z.boolean().optional(),
     rpcDefault: z.string().optional(),
     bridges: z.record(z.string(), chainBridgeZod).optional().describe("Collection of bridges"),
@@ -150,7 +165,13 @@ export const networkDataEncodeZod = networkDataEncodeZodInternal as unknown as O
  */
 const networkDataDecodeZodInternal = chainZod.extend({
     chainId: z.number(),
+    description: z.string().optional(),
     slug: z.string().optional(),
+    slugAlchemy: z.string().optional(),
+    slugAnkr: z.string().optional(),
+    slugDrpc: z.string().optional(),
+    slugFlare: z.string().optional(),
+    slugInfura: z.string().optional(),
     enabled: z.boolean().optional(),
     rpcDefault: z.string().optional(),
     bridges: z.record(z.string(), chainBridgeZod).optional().describe("Collection of bridges"),

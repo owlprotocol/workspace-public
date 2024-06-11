@@ -24,6 +24,7 @@ export const modeTestnet = /*#__PURE__*/ defineNetwork({
     slug: "mode-testnet",
     slugDrpc: "mode-testnet",
     enabled: true,
+    stack: "opstack-bedrock",
     rank: 1,
     minUtilityBalance: parseEther("1"),
     //TODO: Topup code what if utility < target?

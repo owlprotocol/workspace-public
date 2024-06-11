@@ -1,4 +1,3 @@
-import { parseEther } from "viem/utils";
 import { ether } from "../currencies/ether.js";
 import { defineNetwork } from "../defineChain.js";
 
@@ -28,22 +27,15 @@ export const redstone = /*#__PURE__*/ defineNetwork({
         },
     },
     contracts: {
-        //TODO: Add additional contracts
         portal: {
             [sourceId]: {
                 address: "0xC7bCb0e8839a28A1cFadd1CF716de9016CdA51ae",
-                blockCreated: 1,
+                blockCreated: 19578329,
             },
         },
     },
     sourceId,
-    enabled: false,
+    enabled: true,
+    stack: "opstack-bedrock",
     rank: 9999,
-    minUtilityBalance: parseEther("1"),
-    //TODO: Topup code what if utility < target?
-    targetUtilityBalance: parseEther("8"),
-    minPaymasterBalance: parseEther("0.1"),
-    targetPaymasterBalance: parseEther("2"),
-    minRelayerBalance: parseEther("0.1"),
-    targetRelayerBalance: parseEther("1"),
 });

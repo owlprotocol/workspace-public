@@ -10,4 +10,6 @@ export const optimismSepolia = /*#__PURE__*/ defineNetwork({
     slug: "optimism-sepolia",
     slugAnkr: "optimism_sepolia",
     slugDrpc: "optimism-sepolia",
+    enabled: true,
+    stack: "opstack-bedrock",
 });

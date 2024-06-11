@@ -10,4 +10,6 @@ export const baseSepolia = /*#__PURE__*/ defineNetwork({
     slug: "base-sepolia",
     slugAnkr: "base_sepolia",
     slugDrpc: "base-sepolia",
+    enabled: true,
+    stack: "opstack-bedrock",
 });
