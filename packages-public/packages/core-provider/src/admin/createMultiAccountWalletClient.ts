@@ -6,6 +6,7 @@ import {
     EIP1193RequestFn,
     Hex,
     LocalAccount,
+    PrepareTransactionRequestRequest,
     PublicClient,
     PublicRpcSchema,
     RpcTransactionRequest,
@@ -14,6 +15,8 @@ import {
     WalletClient,
     WalletRpcSchema,
     createClient,
+    createWalletClient,
+    custom,
     numberToHex,
     walletActions,
 } from "viem";
@@ -25,6 +28,7 @@ export type WalletRpcMethod = (typeof walletRpcMethods)[number];
 export const walletRpcMethods = [
     "eth_accounts",
     "eth_requestAccounts",
+    "eth_sendTransaction",
     "eth_sign",
     "eth_signTransaction",
     "eth_signTypedData_v4",
@@ -148,7 +152,19 @@ export async function createMultiAccountWalletEIP1193Request(
             return getAddresses();
         } else if (args.method === "eth_sendTransaction") {
             const [transaction] = args.params as [transaction: RpcTransactionRequest];
-            const signedTx = await signTransaction(transaction);
+
+            const walletClient = createWalletClient({
+                chain,
+                transport: custom({ request }),
+                account: transaction.from ? getAccount(transaction.from) : localAccounts[0],
+            });
+
+            const transactionDecoded = transactionRequestDecodeZod.parse(
+                transaction,
+            ) as PrepareTransactionRequestRequest;
+
+            const preparedTransaction = await walletClient.prepareTransactionRequest(transactionDecoded);
+            const signedTx = await walletClient.account.signTransaction(preparedTransaction);
 
             return request({ method: "eth_sendRawTransaction", params: [signedTx] }, options);
         } else if (args.method === "eth_signTransaction") {

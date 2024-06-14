@@ -151,6 +151,7 @@ const networkDataEncodeZodInternal = chainZod.extend({
     minRelayerBalance: quantityEncodeZod.optional(),
     targetRelayerBalance: quantityEncodeZod.optional(),
 });
+
 //Fix Zod vs TS types
 export const networkDataEncodeZod = networkDataEncodeZodInternal as unknown as Omit<
     typeof networkDataEncodeZodInternal,
@@ -158,6 +159,33 @@ export const networkDataEncodeZod = networkDataEncodeZodInternal as unknown as O
 > & {
     _input: NetworkDataInput;
     _output: NetworkDataEncoded;
+};
+
+const networkDataEncodeWithIdZodInternal = chainZod.extend({
+    chainId: z.number(),
+    id: z.number(),
+    slug: z.string().optional(),
+    enabled: z.boolean().optional(),
+    rpcDefault: z.string().optional(),
+    bridges: z.record(z.string(), chainBridgeZod).optional().describe("Collection of bridges"),
+    faucets: z.record(z.string(), chainFaucetZod).optional().describe("Collection of faucets"),
+    rank: z.number().optional(),
+    pimlicoEnabled: z.boolean().optional(),
+    minUtilityBalance: quantityEncodeZod.optional(),
+    targetUtilityBalance: quantityEncodeZod.optional(),
+    minPaymasterBalance: quantityEncodeZod.optional(),
+    targetPaymasterBalance: quantityEncodeZod.optional(),
+    minRelayerBalance: quantityEncodeZod.optional(),
+    targetRelayerBalance: quantityEncodeZod.optional(),
+});
+
+// TODO: update NetworkDataDecoded to have NetworkData<bigint> & { id: number }  and update networkDataDecodeZodInternal with .transform and copy over the chainId value as id
+export const networkDataEncodeWithIdZod = networkDataEncodeWithIdZodInternal as unknown as Omit<
+    typeof networkDataEncodeWithIdZodInternal,
+    "_output" | "_input"
+> & {
+    _input: NetworkDataInput & { id: number };
+    _output: NetworkDataEncoded & { id: number };
 };
 
 /**
