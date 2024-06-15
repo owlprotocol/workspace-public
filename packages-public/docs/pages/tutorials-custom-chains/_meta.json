@@ -2,5 +2,13 @@
   "add-custom-chain": {
     "title": "Add Custom Chain",
     "display": "normal"
+  },
+  "launch-custom-chain": {
+    "title": "Launch Custom Chain",
+    "display": "normal"
+  },
+  "rollups": {
+    "title": "EVM Rollups",
+    "display": "normal"
   }
 }

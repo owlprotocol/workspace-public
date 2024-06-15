@@ -1,1 +1,181 @@
+import { Steps, Callout } from "nextra/components";
+
 # Gasless Transactions
+In this tutorial, you will submit your first fully-gasless transaction from a smart account using the Owl Protocol [ERC4337](https://www.erc4337.io/docs) Account Abstraction API & [permissionless.js](https://docs.pimlico.io/permissionless)
+
+You will set up the necessary permissionless.js clients, create a [user operation](https://www.erc4337.io/docs/understanding-ERC-4337/user-operation) (aka ERC4337 transaction), ask the Owl Protocol verifying paymaster to sponsor it, and then submit it on-chain with the Owl Protocol bundler.
+
+## Prerequisites
+Before you begin you should have the following
+* Create an Owl Protocol project at [owl.build](https://owl.build) and get an API Key
+
+
+## Steps
+<Steps>
+
+### Clone the Owl Protocol tutorial template repository
+
+We have created a Owl Protocol [tutorial template repository](https://github.com/owlprotocol/tutorial-template) that you can use to get started. It comes set up with Typescript, viem, and permissionless.js.
+
+```bash
+git clone https://github.com/owlprotocol/tutorial-template.git owlprotocol-tutorial-gasless-tx
+cd owlprotocol-tutorial-gasless-tx
+```
+
+Now, let's install the dependencies:
+
+```bash
+pnpm install
+```
+
+The main file we will be working with is `index.ts`. Let's run it to make sure everything is working:
+
+```bash
+pnpm start
+```
+
+If everything has been set up correctly, you should see `Hello world!` printed to the console.
+
+### Create the public, paymaster, bundler clients
+To send gasless transactions using ERC4337 Account Abstraction, we will need 3 important clients:
+*  The [public client](https://viem.sh/docs/clients/public) will be responsible for **querying the blockchain**
+*  The [paymaster client](https://docs.pimlico.io/permissionless/reference/clients/pimlicoPaymasterClient) will be responsible for interacting with the Owl Protocol verifying paymaster endpoint to **request sponsorship** of user operations
+* The [bundler client](https://docs.pimlico.io/permissionless/reference/clients/bundlerClient) will be responsible for the last step of finally **submitting user operations**
+
+Make sure to replace `YOUR_API_KEY` in the code below with your actual Owl Protocol API key.
+
+Let's open up `index.ts`, and add the following to the bottom
+
+```ts copy showLineNumbers
+// Warning: Do not publish this code until you replace this with some environment variable
+const apiKey = "YOUR_API_KEY"
+
+// Create public viem client to read data from blockchain
+// Learn more at https://viem.sh/docs/clients/public
+export const publicClient = createPublicClient({
+	transport: http(`https://api.owl.build/sepolia/rpc?apikey=${apiKey}`),
+})
+
+// Create paymaster viem client to sponsor UserOp
+// Learn more at https://docs.pimlico.io/permissionless/reference/clients/pimlicoPaymasterClient
+const paymasterUrl = `https://api.owl.build/sepolia/rpc?apikey=${apiKey}`
+export const paymasterClient = createPaymasterClient({
+	transport: http(paymasterUrl),
+	entryPoint: ENTRYPOINT_ADDRESS_V07,
+})
+
+// Create bundler viem client to submit UserOp
+// Learn more at https://docs.pimlico.io/permissionless/reference/clients/bundlerClient
+const bundlerUrl = `https://api.owl.build/sepolia/rpc?apikey=${apiKey}`
+export const bundlerClient = createBundlerClient({
+	transport: http(bundlerUrl),
+	entryPoint: ENTRYPOINT_ADDRESS_V07,
+})
+```
+
+### Create the `SmartAccount` instance
+
+For the purposes of this guide, we will be using [Simple Account](https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/SimpleAccount.sol) smart accounts. This account is an ERC-4337 wallet controlled by a single EOA signer.
+
+To create the Simple Account, we will use the [signerToSimpleSmartAccount](https://docs.pimlico.io/permissionless/reference/accounts/signerToSimpleSmartAccount) utility function from permissionless.js. We need to specify the `factoryAddress` we are using as well as the global ERC-4337 `entryPoint` address. For the `signer`, we will be using a generated private key.
+
+Add the following to the bottom of `index.ts`
+
+```ts copy showLineNumbers
+// Load private key from .env or generate a new one (and save it)
+// Warning: Do NOT use such logic in production, for tutorial purposes ONLY
+const privateKey =
+	(process.env.PRIVATE_KEY as Hex) ??
+	(() => {
+		const pk = generatePrivateKey()
+		writeFileSync(".env", `PRIVATE_KEY=${pk}`)
+		return pk
+	})()
+
+// Owner of the smart account
+const signer = privateKeyToAccount(privateKey)
+// Simple smart account owned by signer
+const simpleAccount = await signerToSimpleSmartAccount(publicClient, {
+	signer,
+	factoryAddress: 0xe7A78BA9be87103C317a66EF78e6085BD74Dd538, //Simple Smart Account factory
+	entryPoint: ENTRYPOINT_ADDRESS_V07,
+})
+
+console.log(`Smart account address: https://sepolia.etherscan.io/address/${account.address}`)
+```
+
+Let's run this code with `npm start`. You should see the smart account address printed to the console.
+
+```txt
+Smart account address: https://sepolia.etherscan.io/address/0x374b42bCFAcf85FDCaAB84774EA15ff36D42cdA7
+```
+
+<Callout>
+If you visit the address on Etherscan, you might notice that no contract is actually deployed to this address yet. This is because smart accounts are counterfactual, meaning that they are only deployed on-chain the first time you send a transaction through the account.
+</Callout>
+
+### Create the smart account client
+
+Now that we have a `SmartAccount` instance, we need to create a `SmartAccountClient` instance to be able to transact from it. [SmartAccountClient](https://docs.pimlico.io/permissionless/reference/clients/smartAccountClient) is an almost drop-in replacement for a viem [WalletClient](https://viem.sh/docs/clients/wallet), but it also includes some additional functionality for interacting with smart accounts.
+
+We then specify the optional `sponsorUserOperation` middleware function, calling the [sponsorUserOperation](https://docs.pimlico.io/permissionless/reference/pimlico-paymaster-actions/sponsorUserOperation) function from the paymaster client. This will make sure that the user operation is sponsored by the Owl Protocol verifying paymaster.
+
+Finally, we specify the `gasPrice` middleware function to fetch the gas price using the [getUserOperationGasPrice](https://docs.pimlico.io/permissionless/reference/pimlico-bundler-actions/getUserOperationGasPrice) function from the bundler client that we will use to submit the user operation in the next step.
+
+Add the following to the bottom of `index.ts`
+
+```ts copy showLineNumbers
+const smartAccountClient = createSmartAccountClient({
+	account: simpleAccount,
+	entryPoint: ENTRYPOINT_ADDRESS_V07,
+	chain: sepolia,
+	bundlerTransport: http(bundlerUrl),
+	middleware: {
+		gasPrice: async () => {
+			return (await bundlerClient.getUserOperationGasPrice()).fast
+		},
+		sponsorUserOperation: paymasterClient.sponsorUserOperation,
+	},
+})
+```
+
+### Submit a transaction from the smart account
+
+Finally, let's submit a transaction from the smart account. We will send a transaction to the `0xd8da6bf26964af9d7eed9e03e53415d37aa96045` (vitalik.eth) address with `0x1234` as example `callData`
+
+Underneath the hood, the `SmartAccountClient` will build a user operation, request  paymaster sponsorship, sign it with the smart account's private key, and then submit it to the bundler. The bundler will then query for receipts until it sees the user operation included on-chain.
+
+Add the following to the bottom of `index.ts`
+
+```ts copy showLineNumbers
+const txHash = await smartAccountClient.sendTransaction({
+	to: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045", //vitalik.eth
+	value: 0n,
+	data: "0x1234",
+})
+
+console.log(`User operation included: https://sepolia.etherscan.io/tx/${txHash}`)
+```
+
+Let's run this code again with `npm start`. You should see the transaction hash bundling the user operation on-chain printed to the console.
+
+```txt
+User operation included: https://sepolia.etherscan.io/tx/0x7a2b61b4b7b6e9e66c459e3c9c24c7a292fc6c740533ce35dbf58710960cc0e5
+```
+
+You can now view the transaction on the Sepolia testnet explorer. By sending this user operation, you have:
+- Deployed the counterfactual smart account contract
+- Had this newly-deployed smart account verify the private key's signature
+- Made the Owl Protocol verifying paymaster sponsor the user operation's gas fees
+- Executed a simple transaction to `vitalik.eth`'s address
+
+All in a couple lines of code.
+
+Congratulations, you are now a pioneer of Account Abstraction! 🎉
+
+Please [get in touch](https://contact.owl.build) if you have any questions or if you'd like to share what you're building!
+</Steps>
+
+## Combined code
+
+If you want to see the complete code that combines all of the previous steps, we uploaded it to a separate [tutorials repository](https://github.com/owlprotocol/tutorials). If you're looking to run it, remember to replace the API key with your own!

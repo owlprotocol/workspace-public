@@ -1,0 +1,53 @@
+import { ChevronRightIcon } from "@components/icons";
+import { Callout, Cards } from "nextra/components";
+
+# Wallets
+
+Owl Protocol lets you create and manage wallets for simplified development and user onboarding. We offer 3 key solutions:
+* **Developer Wallets**: Programmatic wallets for your server or automations
+* **User Wallets**: Social Login wallets for your users
+* **Smart Wallets**: Transaction batching and gasless blockchain experiences. Compatible with **both** Developer and User wallets.
+
+## Types of Wallets
+Wallets are a generic term that refer to a mechanism to store crypto, authenticate, and execute transactions on blockchains. Traditionally, wallets have simply been implemented as a **private key** which can cryptographically [sign messages](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) to approve transactions. New research however, has introduced the concept of "Smart Wallets", which unlike their "dumb" counterparts, can have more **complex logic for approving transactions** (eg. Multiple Owners, Timelock) and optimizations to **batch transactions.**
+
+### Externally Owned Accounts (EOA)
+Externally Owned Accounts are regular crypto wallets that have existed since the early days of blockchain. A popular example is Metamask. EOAs have a **private key**, controlled and kept secret by the user, and an **address** which is public and can be used to receive funds. The address of an EOA does **not contain code** and as such **cannot** implement programmable wallet logic.
+
+### Smart Wallets (ERC4337)
+Smart Wallets are **smart contracts** (code on the blockchain) that implement advanced customizable wallet logic. Smart wallets often work **alongside EOAs**, where a user will use their existing wallet (eg. Social Login, Metamask), to deploy a smart wallet **owned** by that EOA. This can enable significant UX improvements such as batching transactions or sponsoring transaction fees.
+
+## Owl Protocol Wallets
+Owl Protocol provides EOA wallet solutions for developers and users. Both developers and users can have smart wallets. As such, it's common practice that every developer and every user will automatically get issued an EOA and a Smart Wallet.
+
+### Developer Wallets (EOA)
+<Callout>
+Developer wallets (and smart wallets) are also used by the **high-level** [Contracts API](./learn-api.mdx) for managing smart contracts (eg. `/mint`). Developer wallet APIs are meant for more **granular operations** such as interacting with **custom contracts** and **account abstraction**
+</Callout>
+
+Controlled by your **API Secret**, developer wallets are useful for _server side_ management such as **integrating with your own backend** (eg. web2 database) or no code automations (eg. Zapier). Owl Protocol Developer Wallets are implemented as Multi Party Compute ([MPC](https://en.wikipedia.org/wiki/Secure_multi-party_computation)) wallets secured by [dfns.co](https://www.dfns.co/)
+
+### User Wallets (EOA)
+<Callout>
+Owl Protocol Social Login wallets user wallets are _recommended_ for onboarding users, but **not required**. You can still use **Smart Wallets** with other wallet solutions (eg. Metamask) to provide a **vastly improved gasless experience**.
+</Callout>
+
+User wallets are controlled by **Social Login** (eg. Google OAuth) authentification. These wallets are integrated _client side_ (eg. React App) to onboard users quickly **without the need to handle crypto or private keys.** Owl Protocol User Wallets are implemented as Multi Party Compute ([MPC](https://en.wikipedia.org/wiki/Secure_multi-party_computation)) wallets secured by [dfns.co](https://www.dfns.co/)
+
+Using Owl Protocol, user wallets can quickly be integrated with **Smart Wallets** and it is _highly recommended_ that you do so to offer a seamless traditional web experience to users of your Decentralized Application.
+
+### Smart Wallets (ERC4337)
+<Callout>
+Smart wallets are **modular** and can be controlled by **any EOA** including 3rd party wallets such as Metamask.
+</Callout>
+
+**Both** Developer Wallets & User Wallets are integrated with smart wallets. Owl Protocol smart wallets are [ERC4337](https://www.erc4337.io/docs) compatible and can be integrated with our [Account Abstraction](./learn-api/account-abstraction-api.mdx) bundler & paymaster endpoints. Owl Protocol smart wallets are implemented using [SimpleAccount.sol](https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/SimpleAccount.sol) but you can also use **custom smart wallet implementations** with our ERC4337 bundler and paymaster endpoints.
+
+Smart wallets can greaty improve your Decentralized Application's experience with the following features
+* Offer a gas-free experience to users with sponsored transactions via our paymaster.
+* Execute single and batched transactions, enabling actions like approvals and swaps to be executed in a single click.
+* Support multiple owners on a single wallet and grant access to scoped session keys with custom restrictions.
+* Send and receive native tokens, ERC-721, and ERC-1155 NFTs.
+* Store contract metadata.
+* Assign roles and permissions, such as signers and admins.
+

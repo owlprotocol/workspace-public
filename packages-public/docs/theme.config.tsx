@@ -4,7 +4,7 @@ import { useConfig } from "nextra-theme-docs";
 
 const config: DocsThemeConfig = {
     //https://nextra.site/docs/docs-theme/theme-configuration#logo
-    logo: <span>owl.build</span>,
+    logo: <span>docs.owl.build</span>,
     //https://nextra.site/docs/docs-theme/theme-configuration#project-link
     project: {
         //TODO: Replace with public repo link

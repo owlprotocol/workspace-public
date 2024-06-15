@@ -1,0 +1,48 @@
+import { ChevronRightIcon } from "@components/icons";
+import { Callout, Cards } from "nextra/components";
+
+# Smart Contracts
+Easily deploy and manage smart contracts utilizing our intuitive REST API endpoints and **without** the need for **private keys or crypto.**
+
+## Digital Assets
+<Callout>
+All digital asset smart contracts are deployed using EIP2535 [Diamond Standard](#diamond-standard-eip2535) to support **modular upgradeability**
+</Callout>
+Mint, burn, and transfer tokens for a seamless token management experience.
+
+### Fungible Tokens ERC20  (coming soon)
+Launch and interact with **fungible** [ERC20](https://eips.ethereum.org/EIPS/eip-20) tokens that can be used as gaming currencies, loyalty points, or other incentive mechanism. ERC20 tokens are well designed for compatibility with DeFi protocols.
+
+### Non-Fungible Tokens ERC721
+Launch and interact with **non-fungible** [ERC721](https://eips.ethereum.org/EIPS/eip-721) tokens that can represent digital certificates, memberships, gaming collectibles or any unique piece of data that can only have **a single owner.**
+
+### Semi-Fungible Tokens ERC1155 (coming soon)
+Launch and interact with **semi-fungible** [ERC1155](https://eips.ethereum.org/EIPS/eip-1155) tokens that can represent tickets, gaming collectibles or any unique piece of data that can have **multiple owners.**
+
+## Modular Upgradeable Contracts
+### Diamond Standard EIP2535
+
+<Callout type="info">
+Learn more about EIP2535 from its creator Nick Mudge [Introduction to Diamond Standard](https://eip2535diamonds.substack.com/p/introduction-to-the-diamond-standard)
+</Callout>
+Diamond Standard [EIP2535](https://eips.ethereum.org/EIPS/eip-2535) smart contracts support **modular upgradeability.** In other words, smart contracts deployed through Owl Protocol are built as a combination of _Lego Blocks_ that implement specific features (eg. NFT, minting rules, custom logic). As such, these can be **incrementally upgraded** and swapped out.
+
+### Using Diamond Contracts
+Using Diamond Standard allows for **greater flexibility** as your project evolves. Assume for example that you launch a simple ERC721 NFT. Later on you decide you wish to **add a new feature** to your smart contract such as the [EIP4907](https://eips.ethereum.org/EIPS/eip-4907) Rental extension. Let's compare what would happen depending on whether you're using a regular ERC721 contract or an ERC721 implemented using Diamond Standard.
+
+**Static Smart Contract**
+
+Static smart contracts **cannot be upgraded** once deployed. As such, it's **impossible** to add the Rental Extension to your existing smart contract. The only solution is to have your users **migrate to a new smart contract** which can cause significant friction.
+
+**Diamond Standard Smart Contract**
+
+Diamond smart contracts can **upgrade facets** (aka implementation code) to enable/disable features for certain functions. To support the Rental Extension, you can add a facet with the necessary functions (eg. `userOf`) and upgrade your diamond contract. As such, the Diamond Standard smart contract can support the Rental extension **without** any user migration or change to your smart contract's address.
+
+## Smart Wallets ERC4337
+<Callout>
+To use smart wallets, checkout our guide on sending [Gasless Transactions](../tutorials-account-abstraction/gasless-transactions.mdx)
+</Callout>
+Deploy [EIP4337](https://eips.ethereum.org/EIPS/eip-4337) Smart Wallet contracts for your users to batch transactions and sponsor transaction fees using Account Abstraction.
+
+## Optimism Stack Contracts (coming soon)
+Interact with Optimism [Rollup Contracts](https://docs.optimism.io/stack/protocol/rollup/smart-contracts) to quickly **bridge** native tokens, ERC20 tokens, and ERC721 tokens across [Superchain Ecosystem](https://www.superchain.eco/chains) chains.

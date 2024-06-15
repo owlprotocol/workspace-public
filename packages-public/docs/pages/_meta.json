@@ -1,67 +1,87 @@
 {
   "index": {
-    "title": "Overview"
+    "title": "Overview",
+    "display": "normal"
   },
-  "quick-start":  {
-    "title": "Quick Start",
-    "display":"hidden"
-  },
-  "guide": {
-    "display":"hidden"
-  },
-  "getting-started": {
-    "title": "Getting Started"
+  "quickstart": {
+    "title": "Quickstart",
+    "display": "normal"
   },
   "-- Learn": {
     "type": "separator",
     "title": "Learn"
   },
-  "products": {
-    "title": "Products"
+  "learn-api": {
+    "title": "Contracts API",
+    "display": "normal"
+  },
+  "learn-wallets": {
+    "title": "Wallets",
+    "display": "normal"
+  },
+  "learn-no-code": {
+    "title": "No Code Dashboard",
+    "display": "normal"
+  },
+  "learn-zapier": {
+    "title": "Web2 Plugins (Zapier)",
+    "display": "normal"
   },
   "-- Tutorials": {
     "type": "separator",
     "title": "Tutorials"
   },
-  "tutorials-dashboard": {
-    "title": "No-Code Dashboard",
-    "display": "normal"
-  },
   "tutorials-contracts-api": {
     "title": "Contracts API",
-    "display": "normal"
+    "display": "hidden"
   },
   "tutorials-account-abstraction": {
-    "title": "Account Abstraction API"
+    "title": "Account Abstraction API",
+    "display": "normal"
+  },
+  "tutorials-dashboard": {
+    "title": "No Code Dashboard",
+    "display": "hidden"
   },
   "tutorials-zapier":{
-    "title": "Zapier Web2 Plugins"
+    "title": "Web2 Plugins (Zapier)",
+    "display": "normal"
+  },
+  "-- How-to Guides": {
+    "type": "separator",
+    "title": "How-to Guides"
   },
   "tutorials-custom-chains":{
-    "title": "Custom EVM Chains"
+    "title": "Custom EVM Chains",
+    "display": "normal"
   },
-  "useCase1": {
-    "title": "Use Case 1",
-    "display":"hidden"
+  "faq":{
+    "title": "FAQ",
+    "display": "hidden"
   },
   "-- API Reference": {
     "type": "separator",
     "title": "API Reference"
   },
   "reference-collection": {
-    "title": "Collection"
+    "title": "Collection",
+    "display": "normal"
   },
   "reference-projectUser": {
-    "title": "Project User"
+    "title": "Project User",
+    "display": "normal"
   },
   "reference-projectToken": {
-    "title": "Project Token"
+    "title": "Project Token",
+    "display": "normal"
   },
   "reference-projectTokenTemplate": {
-    "title": "Project Token Template"
+    "title": "Project Token Template",
+    "display": "normal"
   },
   "reference-contractMetadata": {
-    "title": "Contract Metadata"
+    "title": "Contract Metadata",
+    "display": "normal"
   },
   "-- Connect": {
     "type": "separator",
@@ -69,10 +89,10 @@
   },
   "contribute": {
     "title": "Contribute",
-    "display": "normal"
+    "display": "hidden"
   },
   "github": {
-    "title": "Github ↗",
+    "title": "GitHub ↗",
     "href": "https://github.com/owlprotocol/owlprotocol",
     "newWindow": true
   },
@@ -81,24 +101,19 @@
     "href": "https://discord.owl.build",
     "newWindow": true
   },
-  "index.old": {
-    "display":"hidden"
-  },
   "dashboard-docs": {
     "type": "page",
-    "title": "Docs",
-    "display":"hidden"
-  },
-  "about": {
-    "type": "page",
-    "title": "About",
-    "theme": {
-      "typesetting": "article"
-    },
     "display":"hidden"
   },
   "other": {
+    "type": "page",
     "display": "hidden"
+  },
+  "api-reference": {
+    "type": "page",
+    "title": "API Playground ↗",
+    "href": "https://docs-api.owlprotocol.xyz/reference/collection-deploy",
+    "newWindow": true
   },
   "404": {
     "type": "page",

@@ -1,0 +1,47 @@
+import { ChevronRightIcon } from "@components/icons";
+import { Callout, Cards } from "nextra/components";
+
+# Contracts API
+Owl Protocol Web3 API make it easy to build Decentralized Applications using **existing development tooling.** Our Web3 API is designed to **read** and **write** data on blockchains.
+
+## Features
+### Smart Contracts
+Easily deploy and manage smart contracts utilizing our intuitive REST API endpoints and **without** the need for **private keys or crypto.**
+
+<Cards>
+    <Cards.Card
+        icon={<ChevronRightIcon />}
+        title="Smart Contracts"
+        href="/learn-api/smart-contracts"
+    />
+</Cards>
+
+### Metadata
+Update smart contract metadata, such as NFT images and attributes.
+
+### Wallets
+Owl Protocol API manages various types of wallets **without** the need for **private keys or crypto.**
+* **Developer Wallets**: Programmatic wallets for your server or automations
+* **User Wallets**: Social Login wallets for your users
+* **Smart Wallets**: Transaction batching and gasless blockchain experiences. Compatible with **both** Developer and User wallets.
+
+<Cards>
+    <Cards.Card
+        icon={<ChevronRightIcon />}
+        title="Wallets"
+        href="/learn-wallets"
+    />
+</Cards>
+
+### tRPC (Typescript RPC)
+Owl Protcol API is built using [tRPC](https://trpc.io/docs/client) (Typescript RPC). If you are using Typescript, you can use our **type-safe** SDK to quickly iterate.
+
+### OpenAPI REST
+<Callout type="warning">
+If you are using **Typescript** we _strongly recommend_ using our [tRPC SDK](#trpc-typescript-rpc) for a robust **type-safe** developer experience
+</Callout>
+
+Owl Protocol API is an [OpenAPI](https://swagger.io/specification/) compliant REST API. **Any programming language** can be used to call the Owl Protocol API with an http client. For a more reliable **type-safe** developer experience, consider using [openapi-generator.tech/docs/generators](https://openapi-generator.tech/docs/generators) to generate a typed SDK. Feel free to [contact us](contact.owl.build) if you need support generating a language SDK.
+
+
+
