@@ -8,6 +8,7 @@ import {
     http,
     getAddress,
 } from "viem";
+import { API_REST_BASE_URL } from "@owlprotocol/envvars";
 
 export interface ProviderWithChainId {
     request: EIP1193RequestFn;
@@ -23,14 +24,14 @@ export interface OwlConnectorParameters {
 export const getOwlUserRpcUrl = (
     projectId: string,
     chainId: number,
-    owlApiRestBaseUrl = "https://contracts-api.owlprotocol.xyz/api"
+    owlApiRestBaseUrl = API_REST_BASE_URL
 ) => `${owlApiRestBaseUrl}/project/${projectId}/network/${chainId}/userRpc`;
 
 export const getOwlTransport = (
     jwt: string,
     projectId: string,
     chainId: number,
-    owlApiRestBaseUrl = "https://contracts-api.owlprotocol.xyz/api"
+    owlApiRestBaseUrl = API_REST_BASE_URL
 ) =>
     http(getOwlUserRpcUrl(projectId, chainId, owlApiRestBaseUrl), {
         fetchOptions: { headers: { authorization: `Bearer ${jwt}` } },
