@@ -33,11 +33,6 @@
       "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs",
       "import": "./dist/index.mjs"
-    },
-    "./wagmi": {
-      "types": "./lib/types/wamgi/index.d.ts",
-      "require": "./lib/cjs/wagmi/index.js",
-      "import": "./lib/esm/wagmi/index.js"
     }
   },
   "scripts": {
@@ -62,6 +57,7 @@
     "@clerk/clerk-react": "^5.2.0",
     "@clerk/types": "^4.5.0",
     "@owlprotocol/core-firebase": "workspace:*",
+    "@owlprotocol/core-provider": "workspace:*",
     "@owlprotocol/core-trpc": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -96,6 +92,7 @@
     "lodash-es": "4.17.21",
     "lucide-react": "^0.319.0",
     "next-themes": "^0.2.1",
+    "permissionless": "^0.1.10",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.0",
     "react-dom": "^18.2.0",

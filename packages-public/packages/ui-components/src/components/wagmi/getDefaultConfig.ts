@@ -1,6 +1,5 @@
-import { createConfig } from "@wagmi/core";
+import { Config, createConfig } from "@wagmi/core";
 import { Chain, http } from "viem";
-import { fromPairs } from "lodash-es";
 import { OwlConnectorParameters, getConnector } from "./getConnector.js";
 
 export type DefaultConfigParameters = {
@@ -11,9 +10,9 @@ export async function getDefaultConfig({
     chains,
     owlClerk,
     projectId,
-}: DefaultConfigParameters) {
+}: DefaultConfigParameters): Promise<Config> {
     const owlConnector = getConnector({ owlClerk, projectId });
-    const transports = fromPairs(
+    const transports = Object.fromEntries(
         chains.map((c) => [c.id, http(c.rpcUrls.default.http[0])])
     );
 

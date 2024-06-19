@@ -1,8 +1,6 @@
 import {
     WagmiProvider,
     createConfig,
-    useBalance,
-    useBlock,
     useDisconnect,
     useSendTransaction,
     useSignMessage,
@@ -28,6 +26,8 @@ import { Toaster } from "./components/ui/sonner";
 import { OwlProvider } from "./components";
 import { getConnector } from "./components/wagmi";
 
+const projectId = "7ac177bc-d38f-4c95-a62d-ed6a35adee20";
+
 const router = createRouter({
     routeTree,
 });
@@ -41,6 +41,51 @@ const WagmiTest = () => {
     const { signMessage, data } = useSignMessage();
     const { sendTransaction, data: txHash } = useSendTransaction();
     const { disconnect } = useDisconnect();
+
+    // TODO:test user op
+    // const [userOpHash, setUserOpHash] = useState<string | undefined>();
+    //
+    // const sendUserOp = async () => {
+    //     const jwt = await session.getToken({ template: "email" });
+    //
+    //     const smartAccountClient = await getSimpleSmartAccountClient(
+    //         jwt,
+    //         projectId,
+    //         chain as Chain,
+    //         API_REST_BASE_URL
+    //     );
+    //
+    //     const callData = await smartAccountClient.account!.encodeCallData({
+    //         to: zeroAddress,
+    //         value: 0n,
+    //         data: "0x",
+    //     });
+    //
+    //     const gasPrices = await bundlerClient.getUserOperationGasPrice();
+    //
+    //     const userOperation =
+    //         await smartAccountClient.prepareUserOperationRequest({
+    //             userOperation: {
+    //                 callData, // callData is the only required field in the partial user operation
+    //                 maxFeePerGas: gasPrices.fast.maxFeePerGas,
+    //                 maxPriorityFeePerGas: gasPrices.fast.maxPriorityFeePerGas,
+    //             },
+    //         });
+    //
+    //     const userOpHash = await bundlerClient.sendUserOperation({
+    //         userOperation,
+    //     });
+    //     setUserOpHash(userOpHash);
+    // };
+    //
+    // const { session } = useSession();
+    //
+    // const [chain] = trpc.network.get.useSuspenseQuery({ chainId: 1337 });
+    //
+    // const bundlerClient = createPimlicoBundlerClient({
+    //     transport: getOwlRpcTransport(chain.id, API_REST_BASE_URL),
+    //     entryPoint: ENTRYPOINT_ADDRESS_V07,
+    // });
 
     return (
         <>
@@ -67,6 +112,14 @@ const WagmiTest = () => {
             <p>{!!txHash && `Transaction Hash: ${txHash}`}</p>
 
             <br />
+
+            {/* TODO: test user op
+            <Button onClick={() => sendUserOp()}>Send User Op</Button>
+
+            <p>{!!userOpHash && `User Op Hash: ${userOpHash}`}</p>
+
+            <br />*/}
+
             <Button onClick={() => disconnect()}>Disconnect</Button>
         </>
     );
@@ -88,7 +141,7 @@ const InnerApp = () => {
 
     const owlConnector = getConnector({
         owlClerk: useClerk(),
-        projectId: "bc2c2be4-cb31-42b3-81d2-c4f10b8c09e8",
+        projectId,
         owlApiRestBaseUrl: API_REST_BASE_URL,
     });
     // const owlConfig = getDefaultConfig({chainIds: [1337], owlClerk: useClerk(), projectId: "67cecef1-5b79-42c2-aa30-36e261a263d4"})

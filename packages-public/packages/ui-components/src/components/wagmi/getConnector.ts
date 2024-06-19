@@ -5,11 +5,9 @@ import {
     type WalletClient,
     type Transport,
     createWalletClient,
-    http,
     getAddress,
 } from "viem";
-import { API_REST_BASE_URL } from "@owlprotocol/envvars";
-
+import { getOwlUserRpcTransport } from "@owlprotocol/core-provider";
 export interface ProviderWithChainId {
     request: EIP1193RequestFn;
     chainId: number;
@@ -20,22 +18,6 @@ export interface OwlConnectorParameters {
     projectId: string;
     owlApiRestBaseUrl?: string;
 }
-
-export const getOwlUserRpcUrl = (
-    projectId: string,
-    chainId: number,
-    owlApiRestBaseUrl = API_REST_BASE_URL
-) => `${owlApiRestBaseUrl}/project/${projectId}/network/${chainId}/userRpc`;
-
-export const getOwlTransport = (
-    jwt: string,
-    projectId: string,
-    chainId: number,
-    owlApiRestBaseUrl = API_REST_BASE_URL
-) =>
-    http(getOwlUserRpcUrl(projectId, chainId, owlApiRestBaseUrl), {
-        fetchOptions: { headers: { authorization: `Bearer ${jwt}` } },
-    });
 
 export async function getOwlJwt(owlClerk: LoadedClerk): Promise<string> {
     if (!owlClerk.session) {
@@ -83,8 +65,7 @@ export function getConnector({
                     throw Error(`Chain id ${chainId} not found in connector`);
                 }
 
-                // TODO: create getOwlTransport function
-                transport = getOwlTransport(
+                transport = getOwlUserRpcTransport(
                     jwt,
                     projectId,
                     chainId,
@@ -100,7 +81,7 @@ export function getConnector({
 
                 const firstConfigChain = config.chains[0];
                 const chainId = firstConfigChain.id;
-                transport = getOwlTransport(
+                transport = getOwlUserRpcTransport(
                     jwt,
                     projectId,
                     chainId,
