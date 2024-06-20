@@ -1,7 +1,7 @@
 import { defineChain } from "viem";
 import { sepolia } from "viem/chains";
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
-import { getAdminSimpleSmartAccountClient } from "../components/wagmi/simpleSmartAccountClients.js";
+import { getAdminSimpleSmartAccountClient } from "@owlprotocol/core-provider";
 
 const { API_KEY, PROJECT_ID, CHAIN_ID } = process.env;
 
@@ -47,4 +47,4 @@ const txHash = await smartAccountClient.sendTransaction({
     data: "0x1234",
 });
 
-console.log(`User operation included: ${txHash}`);
+console.log(`Transaction included: ${txHash}`);

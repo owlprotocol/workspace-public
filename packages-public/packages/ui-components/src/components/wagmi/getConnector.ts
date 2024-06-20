@@ -1,11 +1,13 @@
-import { createConnector } from "@wagmi/core";
-import { LoadedClerk } from "@clerk/types";
+import { ProviderNotFoundError, createConnector } from "@wagmi/core";
+import { ActiveSessionResource, LoadedClerk } from "@clerk/types";
 import {
     type EIP1193RequestFn,
     type WalletClient,
     type Transport,
     createWalletClient,
     getAddress,
+    createPublicClient,
+    http,
 } from "viem";
 import { getOwlUserRpcTransport } from "@owlprotocol/core-provider";
 export interface ProviderWithChainId {
@@ -17,25 +19,25 @@ export interface OwlConnectorParameters {
     owlClerk: LoadedClerk;
     projectId: string;
     owlApiRestBaseUrl?: string;
+    /** Url to redirect after Owl sign in. Defaults to page root */
+    forceRedirectUrl?: string;
 }
 
-export async function getOwlJwt(owlClerk: LoadedClerk): Promise<string> {
-    if (!owlClerk.session) {
-        owlClerk.openSignIn();
-        throw new Error("User not signed in");
-    }
-
+/**
+ * Get the Clerk JWT to use with out API. Assumes the session is defined
+ */
+export async function getOwlJwt(
+    owlClerkSession: ActiveSessionResource
+): Promise<string> {
     let jwt: string | null;
     try {
-        jwt = await owlClerk.session.getToken({ template: "email" });
+        jwt = await owlClerkSession.getToken({ template: "email" });
     } catch (e) {
-        owlClerk.openSignIn();
-        throw new Error("User needs to sign in again");
+        throw new Error("Error getting Owl JWT");
     }
 
     if (jwt === null) {
-        owlClerk.openSignIn();
-        throw new Error("User needs to sign in again");
+        throw new Error("Error getting Owl JWT");
     }
 
     return jwt;
@@ -46,24 +48,38 @@ export function getConnector({
     owlClerk,
     projectId,
     owlApiRestBaseUrl,
+    forceRedirectUrl,
 }: OwlConnectorParameters) {
     let provider: ProviderWithChainId;
     let walletClient: WalletClient;
     let transport: Transport;
 
-    return createConnector<ProviderWithChainId>((config) => ({
+    return createConnector<ProviderWithChainId | undefined>((config) => ({
         id: "OwlConnector",
         name: "Owl Protocol Connector",
         type: "owlProtocol",
         isAuthorized: async () => !!owlClerk.user,
-        async getProvider({ chainId } = {}): Promise<ProviderWithChainId> {
+        async getProvider({ chainId } = {}): Promise<
+            ProviderWithChainId | undefined
+        > {
             if (chainId) {
-                const jwt = await getOwlJwt(owlClerk);
-
                 const chain = config.chains.find((c) => c.id === chainId);
                 if (!chain) {
                     throw Error(`Chain id ${chainId} not found in connector`);
                 }
+
+                if (!owlClerk.session) {
+                    // TODO: avoid returning public client, just return no provider
+                    // Clerk sign in modal shows up behind rainbowkit modal if provider is undefined
+                    const publicClient = createPublicClient({
+                        chain,
+                        transport: http(),
+                    });
+                    return { request: publicClient.request, chainId };
+                }
+
+                // Session is defined
+                const jwt = await getOwlJwt(owlClerk.session);
 
                 transport = getOwlUserRpcTransport(
                     jwt,
@@ -75,12 +91,22 @@ export function getConnector({
                     chain,
                     transport,
                 });
+
                 provider = { request: walletClient.request, chainId };
             } else if (!provider) {
-                const jwt = await getOwlJwt(owlClerk);
-
                 const firstConfigChain = config.chains[0];
                 const chainId = firstConfigChain.id;
+
+                if (!owlClerk.session) {
+                    const publicClient = createPublicClient({
+                        chain: firstConfigChain,
+                        transport: http(),
+                    });
+                    return { request: publicClient.request, chainId };
+                }
+
+                const jwt = await getOwlJwt(owlClerk.session);
+
                 transport = getOwlUserRpcTransport(
                     jwt,
                     projectId,
@@ -91,29 +117,37 @@ export function getConnector({
                     chain: firstConfigChain,
                     transport,
                 });
+
                 provider = { request: walletClient.request, chainId };
             }
 
             return provider;
         },
         async connect({ chainId } = {}) {
+            if (!owlClerk.session) {
+                owlClerk.openSignIn({ forceRedirectUrl });
+            }
+
             const provider = await this.getProvider({ chainId });
 
             const accounts = (
-                (await provider.request({
+                (await provider!.request({
                     method: "eth_requestAccounts",
                 })) as string[]
             ).map((x) => getAddress(x));
 
-            chainId = provider.chainId;
+            chainId = provider!.chainId;
 
             return { accounts, chainId };
         },
         disconnect: async () => {
-            await owlClerk.signOut();
+            await owlClerk.signOut({ redirectUrl: forceRedirectUrl });
         },
         async getAccounts() {
             const provider = await this.getProvider();
+            if (!provider) {
+                throw ProviderNotFoundError;
+            }
             return (
                 (await provider.request({
                     method: "eth_accounts",
@@ -122,6 +156,7 @@ export function getConnector({
         },
         async getChainId() {
             const provider = await this.getProvider();
+            if (!provider) throw ProviderNotFoundError;
             return provider.chainId;
         },
         // Not relevant for Owl

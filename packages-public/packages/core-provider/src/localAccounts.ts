@@ -4,20 +4,20 @@ import { toAccount } from "viem/accounts";
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
 import { Auth, getOwlAdminSignTransport, getOwlUserSignTransport } from "./transports.js";
 
-export interface CreateUserLocalClientParameters {
+export interface CreateUserLocalAccountParameters {
     jwt: string;
     projectId: string;
     address?: Address;
 }
 
-export interface CreateAdminLocalClientParameters {
+export interface CreateAdminLocalAccountParameters {
     auth: Auth;
     projectId: string;
     address?: Address;
 }
 
-export async function createUserLocalClient(
-    parameters: CreateUserLocalClientParameters,
+export async function createUserLocalAccount(
+    parameters: CreateUserLocalAccountParameters,
     owlRestApiUrl = API_REST_BASE_URL,
 ): Promise<LocalAccount> {
     const { jwt, projectId } = parameters;
@@ -46,9 +46,7 @@ export async function createUserLocalClient(
 
     return toAccount({
         address,
-        async signMessage({ message }) {
-            return clientWithAccount.signMessage({ message });
-        },
+        signMessage: clientWithAccount.signMessage,
         // TODO: Implement
         // async signTransaction(transaction, args) {
         async signTransaction() {
@@ -72,8 +70,8 @@ export async function createUserLocalClient(
     });
 }
 
-export async function createAdminLocalClient(
-    parameters: CreateAdminLocalClientParameters,
+export async function createAdminLocalAccount(
+    parameters: CreateAdminLocalAccountParameters,
     owlRestApiUrl = API_REST_BASE_URL,
 ): Promise<LocalAccount> {
     const { auth, projectId } = parameters;
@@ -102,9 +100,7 @@ export async function createAdminLocalClient(
 
     return toAccount({
         address,
-        async signMessage({ message }) {
-            return clientWithAccount.signMessage({ message });
-        },
+        signMessage: clientWithAccount.signMessage,
         // TODO: Implement
         // async signTransaction(transaction, args) {
         async signTransaction() {
