@@ -1,88 +1,108 @@
-import { Steps, Callout } from "nextra/components";
+import { Steps, Callout, Cards } from "nextra/components";
+import { ChevronRightIcon } from "@components/icons";
 import { Screenshot } from "components/screenshot";
 
-# Getting Started
+# Quickstart
 
-Get started with Owl Protocol by setting up your development environment with this tutorial.
+Get started with Owl Protocol in **1min** by a digital asset and sending it to our CEO with just an email! This quickstart uses `curl` commands in the terminal to keep things simple. You can then move on our other tutorials that use our SDKs.
 
-**Prerequisite**: Create a team and project in [the Owl Protocol Dashboard](https://dashboard.owlprotocol.xyz/).
-
+<Steps>
+### Get Your API Key
 <Callout type="warning">
   **API Key**
 
-The API Key is crucial for authenticating your requests to Owl Protocol. <span style={{ color: "red" }}>**Never expose your API Key in the frontend or client-side code**</span>. Always keep it secure and use it only in **server-side** code to prevent unauthorized access and ensure the security of your project.
+<span style={{ color: "red" }}>**Never expose your API Key in the frontend or client-side code.**</span>
+Your API Key is crucial for authenticating your requests to Owl Protocol. Always keep it secure and use it only in **server-side** code to prevent unauthorized access and ensure the security of your project.
 
 </Callout>
+Go to [owl.build](https://owl.build) to get your API Key. If this is your first time signing up, you will automatically have a default team (**My Team**) and a default project (**My Project**).
 
-<Steps>
-### Get Your Project API Key
-Go to our [Dashboard](https://dashboard.owlprotocol.xyz/), select a team and a project.
-
-On the project overview, you will see the API key under the project name and description.
-
-You can click the copy button to copy the API key to your clipboard, or display the full key by clicking on the eye icon.
+Copy the API key to your clipboard and paste it into the `.env` file in the tutorial template repository. This should **silence the error** when you run `pnpm start` and only show `"Welcome to Owl Protocol!"`.
 
 import projectApiKey from "../public/assets/projectApiKey.png";
 
 <Screenshot src={projectApiKey} alt="projectApiKey" />
 
-
-### Install Client Library
-
-**Install the SDK**.
-Use the following command to install the necessary library:
-
-```bash
-pnpm install @owlprotocol/core-trpc
+### Launch a collection
+The next couple steps will simply be run in your terminal. First temporarily make your api key an environment variable to make it easier for the next couple commands.
+```bash copy showLineNumbers
+export API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx # Replace Here
 ```
 
-### Configute Environment Variables
+Deploy a new ERC721 collection using the Owl Protocol API.
 
-**Configure Your Environment**:
-Set up and load your environment variables to initialize the Owl Protocol client. This involves creating a `.env` file in your project directory and adding your Project API key.
-
-    - Create a `.env` file and include the following line:
-
+```bash copy showLineNumbers
+curl --request POST \
+    --url https://api.owl.build/api/project/collection/deploy \
+    --header 'accept: application/json' \
+    --header 'content-type: application/json' \
+    --header "x-api-key: $API_KEY" \
+    --data '{ "chainId": 150150, "name": "My Collection", "symbol": "MYC" }'
 ```
-API_KEY_SECRET=your_project_api_key_here
-```
 
-    - Use the code snippet below to load the `.env` file:
-
-```typescript
-import dotenv from "dotenv";
-
-// Load environment variables from .env file
-dotenv.config();
-
-const { API_KEY_SECRET } = process.env;
-
-// Validate the presence of the API key
-if (!API_KEY_SECRET) {
-    throw new Error(
-        "API_KEY_SECRET not found! Ensure it's correctly set in your .env file."
-    );
+You should a response like this. **Make sure to copy** the `contractAddress` for the next step.
+```json
+{
+    "contractAddress":"0x687F4aFbDF5dC6DfeE92CE6580917e8cd27e3bd9",
+    "userOpHash":"0xa4cec609adc748eb6af7940919f57b49d51d7709c2b66612f99374a1b4cda630",
+    "contractUri":"https://api.owl.build/api/metadata-contract/150150/0x687F4aFbDF5dC6DfeE92CE6580917e8cd27e3bd9",
+    "name":"My Collection",
+    "symbol":"MYC",
+    "baseUri":"https://api.owl.build/api/metadata-token/150150/0x687F4aFbDF5dC6DfeE92CE6580917e8cd27e3bd9/",
+    "royaltyReceiver":"0x06A5B18BE656327463404a83955D3964e3becCbc",
+    "feeNumerator":"500",
+    "deployParams": { "salt":"0xd984e1473498b33cfb7f5097d764d8511f03e8faa359680032a2bf37c88a1588" }
 }
 ```
 
-### Create client
-
-Create the client with your API key using the following command:
-
-```typescript
-import { createClient } from "@owlprotocol/core-trpc";
-
-// Initialize the Owl Protocol client with your API key
-const client = createClient({ apiKey: API_KEY_SECRET });
+Copy the `contractAddress` and export it for future use.
+```bash copy showLineNumbers
+export ADDRESS=0x0000000000000000000000000000000000000000 #Replace here
 ```
 
+### Mint digital asset to user
+Mint a digitial asset to the user. Provide the collection address, recipient's email, and optional asset metadata (such as name, description, and image).
+
+```bash copy showLineNumbers
+curl --request POST \
+    --url https://api.owl.build/api/project/collection/150150/$ADDRESS/mint-batch/erc721AutoId \
+    --header 'accept: application/json' \
+    --header 'content-type: application/json' \
+    --header "x-api-key: $API_KEY" \
+    --data '{ "to": ["leo@owlprotocol.xyz"], "metadata": {"name": "NFT #1", "description": "This was so easy!", "image": "https://picsum.photos/200" } }'
+```
+
+You should a response like this
+```txt
+{"metadata":{"name":"NFT #1","description":"This was so easy!","image":"https://picsum.photos/200"},"userOpHash":"0x9cfb50d991af323e8a085a1b837a0be75971bb445e0a9738c0188a68805e45d9","tokens":[{"to":"0x6D9882BA693eaF28dcBD23f8629DAD98eE140BE9","tokenId":"1"}]}
+```
+
+You can also view the nft you deployed on the block explorer. Note that indexing metadata might take a while but you should quickly see that an ERC721 digital asset was created on the blockchain.
+```bash showLineNumbers
+echo "View NFT at https://explorer-testnet.hedwig.build/token/$ADDRESS"
+```
+
+### Next Steps
+Congratulations on launching your first digital asset collection!
+
+Check out these tutorials to learn how to use different tools such as our tRPC client SDK or our no code Zapier App.
+
+<Cards>
+    <Cards.Card
+        icon={<ChevronRightIcon />}
+        title="Mint an Asset"
+        href="/tutorials-contracts-api/mint-asset-to-user"
+    />
+    <Cards.Card
+        icon={<ChevronRightIcon />}
+        title="Gasless Transactions"
+        href="/tutorials-account-abstraction/gasless-transactions"
+    />
+    <Cards.Card
+        icon={<ChevronRightIcon />}
+        title="Web2 Plugins"
+        href="/tutorials-zapier/google-form"
+    />
+</Cards>
+
 </Steps>
-
-Congratulations on setting up your development environment for Owl Protocol! Remember, you'll need to follow these steps to configure the environment for any new project where you use Owl Protocol.
-
-You are now ready to start building and experimenting with Web3 applications. Happy coding!
-
-**Next Steps**
-
--   **[Minting an Asset to a User](/api-docs/mint-asset-to-user)**
--   **[Create a template](/api-docs/create-template)**

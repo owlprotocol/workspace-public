@@ -33,7 +33,7 @@
   },
   "tutorials-contracts-api": {
     "title": "Contracts API",
-    "display": "hidden"
+    "display": "normal"
   },
   "tutorials-account-abstraction": {
     "title": "Account Abstraction API",
@@ -51,7 +51,7 @@
     "type": "separator",
     "title": "How-to Guides"
   },
-  "tutorials-custom-chains":{
+  "howto-custom-chains":{
     "title": "Custom EVM Chains",
     "display": "normal"
   },
@@ -108,6 +108,12 @@
   "other": {
     "type": "page",
     "display": "hidden"
+  },
+  "dashboard": {
+    "type": "page",
+    "title": "Dashboard ↗",
+    "href": "https://owl.build",
+    "newWindow": true
   },
   "api-reference": {
     "type": "page",
