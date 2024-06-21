@@ -115,6 +115,10 @@
     "href": "https://owl.build",
     "newWindow": true
   },
+  "help": {
+    "type": "page",
+    "title": "Help"
+  },
   "api-reference": {
     "type": "page",
     "title": "API Playground ↗",

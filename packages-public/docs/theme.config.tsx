@@ -1,10 +1,12 @@
 import { useRouter } from "next/router";
 import type { DocsThemeConfig } from "nextra-theme-docs";
 import { useConfig } from "nextra-theme-docs";
+import { useEffect } from "react";
+import Intercom from '@intercom/messenger-js-sdk';
 
 const config: DocsThemeConfig = {
     //https://nextra.site/docs/docs-theme/theme-configuration#logo
-    logo: <span>docs.owl.build</span>,
+    logo: <div className="flex gap-2"><img src="https://uploads-ssl.webflow.com/62909cbd1d1a8e706926609e/65b86d17d81c2eb031d3ff54_logo.png" width="24"/>docs.owl.build</div>,
     //https://nextra.site/docs/docs-theme/theme-configuration#project-link
     project: {
         //TODO: Replace with public repo link
@@ -33,6 +35,22 @@ const config: DocsThemeConfig = {
     //TODO: Configure glyph
     head: function useHead() {
         const { title } = useConfig();
+        const intercomLauncherSelector = "help_intercom";
+
+        useEffect(() => {
+            // set the id on the Help link, _meta.json does not support setting html ID for a link
+            // this is used for the intercom message widget trigger
+            // TODO: replace with more robust solution
+            document.getElementsByTagName("nav")[0].childNodes.forEach((child) => {
+                // @ts-ignore
+                if (child.innerText === "Help"){child.id = intercomLauncherSelector}
+            });
+
+            Intercom({
+                app_id: 'ndx9cj0b',
+                custom_launcher_selector: `#${intercomLauncherSelector}`,
+            });
+        }, []);
 
         return (
             <>
