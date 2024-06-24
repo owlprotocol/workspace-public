@@ -1,6 +1,7 @@
 import { createRootRoute } from "@tanstack/react-router";
 import { Outlet, Link } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Card } from "../components/ui/card.js";
 import { Button } from "../components/ui/button.js";
 
@@ -42,6 +43,7 @@ function RootComponent() {
                 </div>
             </main>
             <TanStackRouterDevtools />
+            <ReactQueryDevtools initialIsOpen={false} />
         </>
     );
 }

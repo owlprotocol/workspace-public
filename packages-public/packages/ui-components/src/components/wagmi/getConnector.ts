@@ -1,11 +1,11 @@
-import { ProviderNotFoundError, createConnector } from "@wagmi/core";
-import { ActiveSessionResource, LoadedClerk } from "@clerk/types";
+import { createConnector, type CreateConnectorFn } from "@wagmi/core";
+import { type ActiveSessionResource, type LoadedClerk } from "@clerk/types";
 import {
     type EIP1193RequestFn,
     type WalletClient,
     type Transport,
+    type Chain,
     createWalletClient,
-    getAddress,
     createPublicClient,
     http,
 } from "viem";
@@ -43,6 +43,8 @@ export async function getOwlJwt(
     return jwt;
 }
 
+type GetClient = NonNullable<ReturnType<CreateConnectorFn>["getClient"]>;
+
 getConnector.type = "owlProtocol" as const;
 export function getConnector({
     owlClerk,
@@ -50,18 +52,25 @@ export function getConnector({
     owlApiRestBaseUrl,
     forceRedirectUrl,
 }: OwlConnectorParameters) {
-    let provider: ProviderWithChainId;
     let walletClient: WalletClient;
     let transport: Transport;
 
-    return createConnector<ProviderWithChainId | undefined>((config) => ({
+    return createConnector<
+        ProviderWithChainId,
+        {
+            getClient: GetClient;
+        }
+    >((config) => ({
         id: "OwlConnector",
         name: "Owl Protocol Connector",
         type: "owlProtocol",
         isAuthorized: async () => !!owlClerk.user,
-        async getProvider({ chainId } = {}): Promise<
-            ProviderWithChainId | undefined
-        > {
+        async getProvider({ chainId } = {}) {
+            const client = await this.getClient({ chainId });
+            // Chain is always defined in the returned clients
+            return { request: client.request, chainId: client.chain!.id };
+        },
+        async getClient({ chainId } = {}) {
             if (chainId) {
                 const chain = config.chains.find((c) => c.id === chainId);
                 if (!chain) {
@@ -69,13 +78,14 @@ export function getConnector({
                 }
 
                 if (!owlClerk.session) {
-                    // TODO: avoid returning public client, just return no provider
+                    // TODO: avoid returning public client if possible, can we return undefined?
                     // Clerk sign in modal shows up behind rainbowkit modal if provider is undefined
                     const publicClient = createPublicClient({
                         chain,
                         transport: http(),
                     });
-                    return { request: publicClient.request, chainId };
+
+                    return publicClient;
                 }
 
                 // Session is defined
@@ -87,13 +97,12 @@ export function getConnector({
                     chainId,
                     owlApiRestBaseUrl
                 );
+
                 walletClient = createWalletClient({
                     chain,
                     transport,
                 });
-
-                provider = { request: walletClient.request, chainId };
-            } else if (!provider) {
+            } else if (!walletClient) {
                 const firstConfigChain = config.chains[0];
                 const chainId = firstConfigChain.id;
 
@@ -102,7 +111,7 @@ export function getConnector({
                         chain: firstConfigChain,
                         transport: http(),
                     });
-                    return { request: publicClient.request, chainId };
+                    return publicClient;
                 }
 
                 const jwt = await getOwlJwt(owlClerk.session);
@@ -113,51 +122,50 @@ export function getConnector({
                     chainId,
                     owlApiRestBaseUrl
                 );
-                walletClient = createWalletClient({
+                walletClient = createWalletClient<Transport, Chain>({
                     chain: firstConfigChain,
                     transport,
                 });
-
-                provider = { request: walletClient.request, chainId };
             }
 
-            return provider;
+            return walletClient;
         },
         async connect({ chainId } = {}) {
             if (!owlClerk.session) {
                 owlClerk.openSignIn({ forceRedirectUrl });
             }
 
-            const provider = await this.getProvider({ chainId });
+            const client = await this.getClient({ chainId });
 
-            const accounts = (
-                (await provider!.request({
-                    method: "eth_requestAccounts",
-                })) as string[]
-            ).map((x) => getAddress(x));
+            if (!(client.type === "walletClient")) {
+                // NOTE: this error should not happen because once user is logged into clerk, we should have a wallet client
+                throw new Error("Must be logged in first");
+            }
+            const walletClient = client as WalletClient;
 
-            chainId = provider!.chainId;
+            const accounts = await walletClient.getAddresses();
 
-            return { accounts, chainId };
+            // Chain is always defined in the returned clients
+            return { accounts, chainId: walletClient.chain!.id };
         },
         disconnect: async () => {
             await owlClerk.signOut({ redirectUrl: forceRedirectUrl });
         },
         async getAccounts() {
-            const provider = await this.getProvider();
-            if (!provider) {
-                throw ProviderNotFoundError;
+            const client = await this.getClient();
+
+            if (!(client.type === "walletClient")) {
+                // User is not logged in => no address to return
+                return [];
             }
-            return (
-                (await provider.request({
-                    method: "eth_accounts",
-                })) as string[]
-            ).map((x) => getAddress(x));
+            const walletClient = client as WalletClient;
+
+            return walletClient.getAddresses();
         },
         async getChainId() {
-            const provider = await this.getProvider();
-            if (!provider) throw ProviderNotFoundError;
-            return provider.chainId;
+            const client = await this.getClient();
+            // Chain is always defined in the returned clients
+            return client.chain!.id;
         },
         // Not relevant for Owl
         onAccountsChanged: () => {},

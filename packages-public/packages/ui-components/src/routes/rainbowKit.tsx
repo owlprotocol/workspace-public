@@ -32,7 +32,7 @@ export interface MyWalletOptions {
     projectId: string;
 }
 
-const projectId = "b9a54f3c-d889-491d-a7e5-54f631dd44f4";
+const projectId = "00000000-0000-0000-0000-000000100200";
 
 export const Route = createFileRoute("/rainbowKit")({
     component: RainbowKit,
@@ -152,7 +152,7 @@ function RainbowKit() {
         [
             {
                 groupName: "Recommended",
-                wallets: [owlWallet, metaMaskWallet],
+                wallets: [owlWallet],
             },
         ],
         { projectId: "owlProtocol", appName: "Owl Protocol Storybook" }
