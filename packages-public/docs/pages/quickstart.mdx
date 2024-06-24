@@ -17,17 +17,16 @@ Your API Key is crucial for authenticating your requests to Owl Protocol. Always
 </Callout>
 Go to [owl.build](https://owl.build) to get your API Key. If this is your first time signing up, you will automatically have a default team (**My Team**) and a default project (**My Project**).
 
-Copy the API key to your clipboard and paste it into the `.env` file in the tutorial template repository. This should **silence the error** when you run `pnpm start` and only show `"Welcome to Owl Protocol!"`.
-
 import projectApiKey from "../public/assets/projectApiKey.png";
 
 <Screenshot src={projectApiKey} alt="projectApiKey" />
 
-### Launch a collection
-The next couple steps will simply be run in your terminal. First temporarily make your api key an environment variable to make it easier for the next couple commands.
+The next couple steps will simply be run in your terminal. First temporarily make your api key an environment variable to make it easier for the next couple commands. Run this in your terminal.
 ```bash copy showLineNumbers
 export API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx # Replace Here
 ```
+
+### Launch a collection
 
 Deploy a new ERC721 collection using the Owl Protocol API.
 
