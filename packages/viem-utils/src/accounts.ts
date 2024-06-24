@@ -15,7 +15,7 @@ export const ANVIL_MNEMONIC = "test test test test test test test test test test
  * Get account from common test mnemonic, ensures safety by throwing if used in production/staging environment
  * @returns `LocalAccount<"hd">`
  */
-export function getLocalAccount(n: number = 0): HDAccount {
+export function getLocalAccount(n = 0): HDAccount {
     if (isProductionOrStaging()) {
         throw new Error(`Never use getLocalAccount in production or staging! NODE_ENV is ${NODE_ENV}.`);
     }
