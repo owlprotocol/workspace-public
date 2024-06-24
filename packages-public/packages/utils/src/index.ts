@@ -1,6 +1,6 @@
 export * from "./asyncGeneratorToArray.js";
 export * from "./combination.js";
-export * from ".//generateBarrelFile.js";
+export * from "./generateBarrelFile.js";
 export * from "./isClient.js";
 export * from "./isNumbers.js";
 export * from "./isStrings.js";
@@ -11,5 +11,6 @@ export * from "./TopologicalSort.js";
 export * from "./tuple.js";
 export * from "./IndexableType.js";
 export * from "./toReduxORMId.js";
+export * from "./randomString.js";
 export * from "./walkDir.js";
 export * from "./writeFiles.js";

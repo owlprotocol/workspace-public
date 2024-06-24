@@ -9,6 +9,12 @@ import { projectApiKeyGroupQuery } from "../groupQueries.js";
 export const defaultChainIdNotFoundErrorMessage = "Network from defaultChainId not found" as const;
 export const defaultChainIdNotEnabledErrorMessage = "Network from defaultChainId is not enabled" as const;
 
+export class ProjectSlugExistsError extends Error {
+    constructor(slug?: string, options?: ErrorOptions) {
+        super(`Project slug "${slug}" already exists. Please choose a unique slug.`, options);
+    }
+}
+
 /**
  * Create Project
  * - check slug uniquenes
@@ -24,7 +30,7 @@ export async function createProject(project: Omit<Project, "projectId">): Promis
 
     const slugExists = !!(await projectResource.getWhereFirst({ slug }));
     if (slugExists) {
-        throw new Error(`A project with the slug "${slug}" already exists. Please use a different slug.`);
+        throw new ProjectSlugExistsError(slug);
     }
 
     if (isUUID(slug)) {

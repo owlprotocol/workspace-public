@@ -7,6 +7,12 @@ import { teamMemberGroupQuery } from "../groupQueries.js";
 
 export const getTeams = getTeamsFactory(teamMemberGroupQuery, teamResource);
 
+export class TeamSlugExistsError extends Error {
+    constructor(slug?: string, options?: ErrorOptions) {
+        super(`Team slug "${slug}" already exists. Please choose a unique slug.`, options);
+    }
+}
+
 /**
  * Create Team
  * - check slug uniquenes
@@ -19,9 +25,10 @@ export const getTeams = getTeamsFactory(teamMemberGroupQuery, teamResource);
 export async function createTeam(team: Omit<Team, "teamId">): Promise<string> {
     const { slug } = team;
 
+    //TODO: Check if slug is url safe (maybe in zod is better)
     const slugExists = !!(await teamResource.getWhereFirst({ slug }));
     if (slugExists) {
-        throw new Error(`Team slug "${slug}" already exists. Please choose a unique slug.`);
+        throw new TeamSlugExistsError(slug);
     }
 
     if (isUUID(slug)) {

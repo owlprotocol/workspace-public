@@ -31,7 +31,7 @@ describe("project.test.ts", function () {
             defaultChainId,
         };
         await expect(createProject(project2)).rejects.toThrow(
-            `A project with the slug "${slug}" already exists. Please use a different slug.`,
+            `Project slug "${slug}" already exists. Please choose a unique slug.`,
         );
     });
 });
