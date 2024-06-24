@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "lib/types",
-    "types": [
-      "node",
-      "vite"
-    ],
+    "outDir": "lib/types"
   },
   "include": [
     "src"

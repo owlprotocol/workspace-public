@@ -1,0 +1,53 @@
+{
+  "name": "@owlprotocol/owlprotocol",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Owl Protocol Monorepo",
+  "keywords": [
+    "pnpm",
+    "workspace"
+  ],
+  "license": "MIT",
+  "author": "Leo Vigna",
+  "type": "module",
+  "scripts": {
+    "anvil": "anvil --chain-id 1337",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "start": "turbo run start",
+    "clean": "turbo run clean",
+    "clean:node_modules": "rimraf node_modules ./**/node_modules",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "lint:staged": "turbo run lint:staged",
+    "dotenv:login": "dotenv-vault login",
+    "dotenv:pull": "dotenv-vault pull",
+    "dotenv:push": "dotenv-vault push",
+    "husky:install": "husky install",
+    "publish": "changeset publish",
+    "turbo:login": "turbo login",
+    "turbo:link": "turbo link"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.26.2",
+    "@owlprotocol/eslint-config": "workspace:*",
+    "cross-env": "^7.0.3",
+    "dotenv": "16.3.1",
+    "dotenv-vault": "1.25.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^11.2.6",
+    "next": "^13.0.6",
+    "node-gyp": "^9.3.1",
+    "node-pre-gyp": "^0.17.0",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
+    "tslib": "^2.6.2",
+    "turbo": "^1.10.12"
+  },
+  "engines": {
+    "npm": ">=v10.5.0",
+    "pnpm": ">=9.0.0",
+    "node": "^18.0.0"
+  }
+}

@@ -1,3 +1,5 @@
+export {}
+/*
 import { asyncGeneratorToArray } from "@owlprotocol/utils";
 import { utils } from "ethers";
 import { Hash } from "viem";
@@ -50,3 +52,4 @@ export async function uploadEthFunctionAbis(topicsDir = DEFAULT_4BYTES_DIR) {
         ethFunctionAbiResource.setBatch(ethFunctionAbis.slice(10000)),
     ]);
 }
+*/

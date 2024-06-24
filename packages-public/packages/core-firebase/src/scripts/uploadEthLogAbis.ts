@@ -1,3 +1,5 @@
+export {}
+/*
 import { asyncGeneratorToArray } from "@owlprotocol/utils";
 import { utils } from "ethers";
 import { Hash } from "viem";
@@ -48,3 +50,4 @@ export async function uploadEthLogAbis(topicsDir = DEFAULT_TOPICS_DIR) {
     const ethLogAbis = await getEthLogAbisFromDir(topicsDir);
     return ethLogAbiResource.setBatch(ethLogAbis);
 }
+*/
