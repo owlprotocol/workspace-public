@@ -35,6 +35,7 @@ npm start
 ```
 
 If everything has been set up correctly, you should see something similar to this printed to the console.
+
 ```bash
 Welcome to Owl Protocol!
 API_KEY_SECRET not found! Ensure it\'s correctly set in your .env file.
@@ -43,22 +44,29 @@ API_KEY_SECRET not found! Ensure it\'s correctly set in your .env file.
 To fix the error you will **need an API Key**.
 
 #### Get Your API Key
-<Callout type="warning">
-  **API Key**
 
-<span style={{ color: "red" }}>**Never expose your API Key in the frontend or client-side code.**</span>
-Your API Key is crucial for authenticating your requests to Owl Protocol. Always keep it secure and use it only in **server-side** code to prevent unauthorized access and ensure the security of your project.
-
-</Callout>
 Go to [owl.build](https://owl.build) to get your API Key. If this is your first time signing up, you will automatically have a default team (**My Team**) and a default project (**My Project**).
 
 Copy the API key to your clipboard and paste it into the `.env` file in the tutorial template repository. This should **silence the error** when you run `pnpm start` and only show `"Welcome to Owl Protocol!"`.
+
+<Callout type="warning">
+  **API Key**
+
+<span style={{ color: "red" }}>
+    **Never expose your API Key in the frontend or client-side code.**
+</span>
+Your API Key is crucial for authenticating your requests to Owl Protocol. Always
+keep it secure and use it only in **server-side** code to prevent unauthorized access
+and ensure the security of your project.
+
+</Callout>
 
 import projectApiKey from "../../public/assets/projectApiKey.png";
 
 <Screenshot src={projectApiKey} alt="projectApiKey" />
 
 ### Create TRPC Client
+
 Create the client with your API key using the following command:
 
 ```ts copy showLineNumbers
@@ -87,7 +95,9 @@ const userExisting = await client.projectUser.get.query({
     chainId: 150150, //this won't be required soon
     email: "leo@owlprotocol.xyz",
 });
-console.debug(`User ${userExisting.email} has smart account ${userExisting.safeAddress}`)
+console.debug(
+    `User ${userExisting.email} has smart account ${userExisting.safeAddress}`
+);
 ```
 
 ### Launch a collection
@@ -104,7 +114,7 @@ const chainId = 150150;
 const contract = await client.collection.deploy.mutate({
     name: "My Collection",
     symbol: "MYC",
-    chainId
+    chainId,
     // Add other optional parameters
 });
 ```
@@ -132,12 +142,15 @@ await client.collection.erc721AutoId.mintBatch.mutate({
 </Steps>
 
 ### Summary
+
 Using the Owl Protocol API & tRPC client, you have:
-- Deployed an ERC721 digital asset collection
-- Minted a digital asset to a user using just an email
+
+-   Deployed an ERC721 digital asset collection
+-   Minted a digital asset to a user using just an email
 
 Under the hood however, you've also leveraged several additional features implicitly:
-- Used Owl Protocol's Wallet API to create wallets
-- Used Owl Protocol's Account Abstraction API to sponsor transactions
+
+-   Used Owl Protocol's Wallet API to create wallets
+-   Used Owl Protocol's Account Abstraction API to sponsor transactions
 
 To learn more about these advanced low-level APIs, check out the [Gasless Transactions](../tutorials-account-abstraction/gasless-transactions.mdx) tutorial.
