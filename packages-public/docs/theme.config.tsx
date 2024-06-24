@@ -4,9 +4,11 @@ import { useConfig } from "nextra-theme-docs";
 import { useEffect } from "react";
 import Intercom from '@intercom/messenger-js-sdk';
 
+const INTERCOM_APP_ID = "ndx9cj0b";
+
 const config: DocsThemeConfig = {
     //https://nextra.site/docs/docs-theme/theme-configuration#logo
-    logo: <div className="flex gap-2"><img src="https://uploads-ssl.webflow.com/62909cbd1d1a8e706926609e/65b86d17d81c2eb031d3ff54_logo.png" width="24"/>docs.owl.build</div>,
+    logo: <div className="flex gap-2"><img src="/logo-sm.png" width="24"/>docs.owl.build</div>,
     //https://nextra.site/docs/docs-theme/theme-configuration#project-link
     project: {
         //TODO: Replace with public repo link
@@ -47,7 +49,7 @@ const config: DocsThemeConfig = {
             });
 
             Intercom({
-                app_id: 'ndx9cj0b',
+                app_id: INTERCOM_APP_ID,
                 custom_launcher_selector: `#${intercomLauncherSelector}`,
             });
         }, []);

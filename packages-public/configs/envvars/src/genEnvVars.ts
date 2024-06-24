@@ -62,6 +62,8 @@ const README_ENVVARS: EnvVarDef[] = [
     { name: "README_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
     { name: "README_SECRET", platform: "node" },
 ];
+//Intercom config
+const INTERCOM_ENVVARS: EnvVarDef[] = [{ name: "INTERCOM_APP_ID", platform: "browser", defaultValue: "ndx9cj0b" }];
 //Resend config
 const RESEND_ENVVARS: EnvVarDef[] = [
     { name: "RESEND_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
@@ -240,6 +242,7 @@ export const ENVVARS: EnvVarDef[] = [
     ...DFNS_ENVVARS,
     ...FIREBASE_ENVVARS,
     ...CLERK_ENVVARS,
+    ...INTERCOM_ENVVARS,
     ...SHOPIFY_ENVVARS,
     ...SCRIPT_ENVVARS,
     ...BLOCKCHAIN_ENVVARS,

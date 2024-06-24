@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@intercom/messenger-js-sdk": "^0.0.11",
+    "@owlprotocol/envvars": "workspace:*",
     "@vercel/og": "^0.5.0",
     "clsx": "^2.0.0",
     "framer-motion": "^10.0.0",
