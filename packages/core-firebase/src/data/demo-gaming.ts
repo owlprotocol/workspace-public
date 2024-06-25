@@ -15,7 +15,7 @@ import { getRandomExternalId } from "../utils/randomExternalId.js";
 export const project: Pick<ProjectData, "name" | "description" | "coverImage"> = {
     name: "OWL Gaming Collectibles Demo",
     description:
-        "For integrating with games. Easily create item types for in-game items, and issue digital items on-chain based on an API trigger.",
+        "For integrating with games. Easily create templates for in-game items, and issue digital items on-chain based on an API trigger.",
     coverImage:
         "https://firebasestorage.googleapis.com/v0/b/owl-protocol.appspot.com/o/demo%2Fgaming-cover.jpg?alt=media",
 };
