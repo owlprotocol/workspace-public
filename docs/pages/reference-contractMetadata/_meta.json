@@ -1,0 +1,5 @@
+{
+  "getContractMetadata": "Get Contract Metadata",
+  "patchContractMetadata": "Patch Contract Metadata",
+  "listContractsMetadata": "List Contracts Metadata"
+}

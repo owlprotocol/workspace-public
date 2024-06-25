@@ -1,0 +1,10 @@
+{
+  "developer-wallets": {
+    "title": "Developer Wallets",
+    "display": "hidden"
+  },
+  "user-wallets": {
+    "title": "User Wallets",
+    "display": "hidden"
+  }
+}

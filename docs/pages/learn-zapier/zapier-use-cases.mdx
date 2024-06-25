@@ -1,0 +1,68 @@
+import { ChevronRightIcon } from "@components/icons";
+import { Callout, Cards } from "nextra/components";
+
+# Use Cases
+Owl Protocol Zapier App makes it trivial to **add web2 connectivity** to your Decentralized App. Various use cases can quickly be launched with **limited coding** necessary.
+
+### Airdrops & Mints
+<Callout>
+If you are looking to build a **more advanced use case** using Zapier (eg. Ticketing, E-Commerce) we **strongly recommend** trying out the **Google Forms Tutorial** first to get a feel for using Owl Protocol with Zapier.
+</Callout>
+Mint tokens or NFTs from Google Form submissions or Google Sheets data. Use this to reward community members or create personalized NFTs.
+
+<Cards>
+    <Cards.Card
+        icon={<ChevronRightIcon />}
+        title="Google Forms Tutorial"
+        href="/tutorials-zapier/google-form"
+    />
+    <Cards.Card
+        icon={<ChevronRightIcon />}
+        title="Google Sheets Tutorial"
+        href="/tutorials-zapier/google-sheet"
+    />
+</Cards>
+
+
+### Event Ticketing
+Integrate with platforms like Eventbrite to mint NFTs for new attendee check-ins. Each ticket purchase or event registration can trigger creating and distributing a unique NFT.
+
+<Cards>
+    <Cards.Card
+        icon={<ChevronRightIcon />}
+        title="Eventbrite Tutorial"
+        href="/tutorials-zapier/eventbrite"
+    />
+</Cards>
+
+
+### E-Commerce Integrations
+Connect e-commerce platforms like Shopify or WooCommerce to create products with **digital certificates** or launch **on-chain loyalty programs.** Automate the process of creating and delivering digital assets (eg. NFTs, tokens) to your customers.
+
+<Cards>
+    <Cards.Card
+        icon={<ChevronRightIcon />}
+        title="Shopify Tutorial"
+        href="/tutorials-zapier/google-form"
+    />
+</Cards>
+
+### Database Sync
+<Callout type="warning">
+If your database is quite large, you can prototype a simple MVP using Zapier, but you should consider using the [Owl Protocol API](../learn-api.mdx) directly for your use case
+</Callout>
+
+**Incrementally add web3 features** to your **existing application** by syncing your database models (eg. gaming server) with blockchain smart contracts. You can keep running your **existing infra** that will partially be **synced on-chain** as database entries are made.
+
+Let's say for example you have an SQL database with in-game assets that are **not** on blockchain  but are associated with a user's email (or wallet address). You can easily add a `onchain: bool` column that when set to `TRUE` mints the asset to the user. More advanced logic can also be implemented that incorporates more values such as in-game points or stats.
+
+### GitHub Contributions
+Reward GitHub contributors with digital assets (eg. NFTs, tokens) when they contribute code or documentation to your project. This fosters a vibrant community of developers that can help you incorporate feedback into your product.
+
+<Cards>
+    <Cards.Card
+        icon={<ChevronRightIcon />}
+        title="GitHub Tutorial"
+        href="/tutorials-zapier/github"
+    />
+</Cards>

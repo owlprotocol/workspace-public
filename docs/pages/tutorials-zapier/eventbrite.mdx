@@ -1,0 +1,82 @@
+# Mint NFTs from Eventbrite Attendees
+
+import { Screenshot } from "components/screenshot";
+import { Callout, Steps } from "nextra/components";
+import start from "../../public/assets/zapier/google-form/start.png";
+import trigger from "../../public/assets/zapier/google-form/trigger.png";
+import action from "../../public/assets/zapier/google-form/action.png";
+import success from "../../public/assets/zapier/google-form/success.png";
+
+In this tutorial, we'll setup a _no-code automation_ using the [Owl Zapier App](https://zapier.com/apps/owl-protocol-ca19902/integrations) to mint an NFT whenever someone **receives an Eventbrite ticket**
+
+## Prerequisites
+
+Before you begin you should have the following
+* Create an Owl Protocol project at [owl.build](https://owl.build) and get an API Key
+* Deploy an ERC721 Collection on that project
+* Create an account on [Zapier](https://zapier.com)
+* Create an account on [Eventbrite](https://www.eventbrite.com) and **create an event**
+* **Add Tickets** to your event (free is simpler for trying things out)
+* **View Your Event** (as a user) and purchase a ticket with your email (this will be used to test Zapier)
+
+## Steps
+<Steps>
+
+### Zapier Template
+
+Create a Zap using our one-click [template](https://zapier.com/app/editor/template/1728704) for Eventbrite & Owl Protocol Zaps. You will now configure your Zap from within the Zapier Editor
+
+<Screenshot src={start} alt="start" />
+
+### Configure the Google Trigger
+Click on **Updated Attendee in Eventbrite** box to configure the Zap Trigger.
+* **Account**: Connect your Eventbrite Account with Zapier
+* **App & Event**: Set the Event to "Updated Attendee" ("New Attendee Registered" may fail because Eventbrite does not always provide email)
+* **Trigger**: Select your Organization, the Event you created (in this demo we created a form called "Owl Protocol Eventbrite Workshop Demo"), and Filter by status "Attending"
+* **Test**: The Zap Trigger should have collected the sample ticket with your email (see **Prerequisites**)
+
+<Screenshot src={trigger} alt="trigger" />
+
+
+### Configure the Owl Protocol Action
+<Callout>
+To use Zapier with **multiple** Owl Protocol projects, you can **connect new accounts** to Zapier using each project's API Key. You can also **rename connections** to match your project name to easily identify them.
+</Callout>
+
+Click on **Mint ERC721 in Owl Protocol** box to configure the Zap Action.
+
+* **Account**: Connect your Owl Protocol Account with Zapier by pasting your API Key
+* **App & Event**: Set the Event to "Mint ERC721"
+* **Action**: Configure the action parameters
+    * **Collection Address**: If you have already deployed a collection, you will see the names and addresses of these collections in the dropdown. If not, first [deploy a collection](/dashboard-docs/deploy-collection).
+    * **To**: Use the **Profile Email** output from the Eventbrite Attendee. This way, tokens will be sent to anyone who has a ticket marked as Attending.
+    * **Token Template ID** (optional): If you have previously created Templates, they will appear in the dropdown. If not, you can skip this.
+    * **Name** (optional): You can for example use the **Profile Name** or **Ticket Class Name**
+    * **Description** (optional)
+    * **Image** (optional)
+    * **Attributes** (optional)
+* **Test**: The Eventbrite Trigger should have passed down the sample submission, and testing the Owl Action should mint a new ERC721 successfully
+
+
+<Screenshot src={action} alt="action" />
+
+### Publish your Zap
+After testing the Zap, publish your Zap. While it is on, it will mint an ERC721 from the selected collection to every user who gets a ticket to your event.
+
+<Screenshot src={success} alt="success" />
+
+
+</Steps>
+
+## Workflow Recap
+
+By following this guide, you have successfully set up an automated workflow that mints NFTs whenever someone **receives an Eventbrite ticket**
+
+## Additional Tips
+
+-   **Troubleshooting:** If your Eventbrite responses are not triggering the Zap, double-check that the event is properly published and accessible by Zapier.
+-   **Customization:** Fill in fields such as name, image, and attributes to personalize the NFTs. You can also create Token Templates in the Owl Protocol Dashboard to further customize the NFTs to meet your specific needs.
+
+## Next Steps
+
+Explore the wide range of apps available on Zapier and experiment with Owl Protocol. Develop your own workflows to meet your specific needs, and discover creative ways to automate and enhance your Web3 experience.

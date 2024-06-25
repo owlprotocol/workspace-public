@@ -1,0 +1,74 @@
+import { Steps, Callout } from "nextra/components";
+import { Screenshot } from "components/screenshot";
+import conduitDeployRollup from "../../public/assets/conduit/conduit-deploy-rollup.png";
+import calderaDeployRollup12 from "../../public/assets/caldera/caldera-deploy-rollup-1-2.png";
+import calderaDeployRollup35 from "../../public/assets/caldera/caldera-deploy-rollup-3-5.png";
+
+# Launch a Custom EVM Chain
+<Callout type="info">
+  What's a rollup? Learn more about [EVM Rollups](./howto-custom-chains/rollups)
+</Callout>
+
+If you wish to launch a custom Ethereum Virtual Machine (EVM)-compatible blockchain, L2/L3 rollups are probably the best solution.
+
+<Callout>
+  If you are looking to launch a new L2/L3 rollup consider [reaching out](https://contact.owl.build) for dedicated support.
+</Callout>
+
+To launch a rollup, you can either use a **Node as a Service Provider (NaaS)** for a simple no-code experience to quickly deploy a chain, or use a **Rollup Framework** for a more advanced but customizable configuration. We recommend using one of the following solutions to launch a custom EVM Chain.
+
+
+## Rollup Providers (easy)
+### Conduit
+[Conduit](https://conduit.xyz) is a Node as a Service Provider that lets you _deploy rollups in minutes, not months_.
+Conduit supports OP Stack, Arbitrum Orbit, and Polygon CDK, with many configuration options.
+
+1. Click **New deployment** in the top right corner of the Conduit [dashboard](https://app.conduit.xyz).
+2. Chain ID: We recommend a number over 1,000,000 to **avoid collisions with other chains** ⚠️. See [ChainList](https://chainlist.org) for a list of official chain IDs.
+3. Framework: Owl Protocol currently supports both **Optimism Bedrock** & **Arbitrum Nitro** so you can pick either
+4. Settlement Layer: This is the _parent chain_ of your rollup. You can pick any of the available options (Ethereum, Base, Zora, Mode).
+5. Data Availability: Data availability. You can pick any of the available options. Ethereum provides higher guarantees at greater cost. Alternatives (Celestia, EigenDA, Plasma, AnyTrust) are usually designed for greater scalability to reduce transaction costs significantly.
+6. Environment (Testnet / Mainnet): If launching a mainnet, consider [reaching out](https://contact.owl.build) for additional developer infrastructure support (account abstraction, explorers, bridges, indexing).
+
+See [conduit.xyz](https://conduit.xyz) for more info.
+Feel free to [contact us](https://contact.owl.build) if you need support launching a custom chain.
+
+<Screenshot src={conduitDeployRollup} alt="conduitDeployRollup" />
+
+### Caldera
+<Callout type="warning">
+Caldera self-serve dashboard **only supports testnets** at this time but feel free to [contact us](https://contact.owl.build) or [caldera team](https://conduitxyz.typeform.com/to/v0WGo3cz) if you need support launching a custom mainnet chain.
+</Callout>
+[Caldera](https://www.caldera.xyz) is a Node as a Service Provider that lets you _deploy rollups in one click_.
+Caldera supports OP Stack, Arbitrum Orbit, and Polygon CDK, with many configuration options.
+
+1. Click the "New Rollup" button in the top right corner of the Caldera [dashboard](https://dashboard.caldera.xyz/)
+2. Framework: Owl Protocol currently supports both **Optimism Bedrock** & **Arbitrum Nitro** so you can pick either
+
+<Screenshot src={calderaDeployRollup12} alt="calderaDeployRollup12" />
+
+3. Native Token: You can _technically_ select any option but we recommend using Ethereum for better bridging compatibility
+4. Data Availability Layer: Ethereum provides higher guarantees at greater cost. Celestia provides greater scalability by reducing transaction costs significantly.
+5. Chain ID: We recommend a number over 1,000,000 to **avoid collisions with other chains** ⚠️. See [ChainList](https://chainlist.org) for a list of official chain IDs.
+
+<Screenshot src={calderaDeployRollup35} alt="calderaDeployRollup35" />
+
+See [caldera.xyz](https://www.caldera.xyz) for more info.
+Feel free to [contact us](https://contact.owl.build) if you need support launching a custom chain.
+
+## Rollup Frameworks (advanced)
+
+### OP Stack
+OP Stack is the standardized, shared, and open-source development stack that powers Optimism, maintained by the Optimism Collective. OP Stack can be used to launch a custom EVM-compatible L2/L3 rollup.
+
+See [docs.optimism.io/stack/getting-started](https://docs.optimism.io/stack/getting-started) for more info.
+
+### Arbitrum Orbit
+Arbitrum Orbit is the permissionless path for launching customizable dedicated chains using Arbitrum technology. Arbitrum Orbit lets you create your own Arbitrum Rollup and AnyTrust chains.
+
+See [arbitrum.io/orbit](https://arbitrum.io/orbit) for more info.
+
+### Rollkit
+Rollkit is an opensource sovereign rollup framework.
+
+See [rollkit.dev](https://rollkit.dev) for more info.

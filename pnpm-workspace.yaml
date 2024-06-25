@@ -1,0 +1,27 @@
+### Temporary workspace until contracts are refactored (see workspace.backup)
+packages:
+  ### PUBLIC CONFIGS ###
+  - "configs/envvars"
+  - "configs/esbuild-config"
+  - "configs/eslint-config"
+  - "configs/hardhat-config"
+  - "configs/prettier-config"
+  - "configs/tsconfig"
+  - "configs/vite-config"
+  ### PUBLIC DOCS ###
+  - "docs"
+  ### PUBLIC PACKAGES ###
+  ##### Firebase #####
+  - "packages/crud-firebase"
+  - "packages/eth-firebase"
+  - "packages/core-firebase"
+  ##### Other #####
+  - "packages/chains"
+  - "packages/dfns-sdk-mock"
+  - "packages/utils"
+  - "packages/viem-utils"
+  - "packages/zod-sol"
+  ##### Contracts #####
+  - "packages/contracts-create2factory"
+  - "packages/contracts-account-abstraction"
+  - "packages/contracts-diamond"

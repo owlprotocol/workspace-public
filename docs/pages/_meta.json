@@ -1,0 +1,135 @@
+{
+  "index": {
+    "title": "Overview",
+    "display": "normal"
+  },
+  "quickstart": {
+    "title": "Quickstart",
+    "display": "normal"
+  },
+  "-- Learn": {
+    "type": "separator",
+    "title": "Learn"
+  },
+  "learn-api": {
+    "title": "Contracts API",
+    "display": "normal"
+  },
+  "learn-wallets": {
+    "title": "Wallets",
+    "display": "normal"
+  },
+  "learn-no-code": {
+    "title": "No Code Dashboard",
+    "display": "normal"
+  },
+  "learn-zapier": {
+    "title": "Web2 Plugins (Zapier)",
+    "display": "normal"
+  },
+  "-- Tutorials": {
+    "type": "separator",
+    "title": "Tutorials"
+  },
+  "tutorials-contracts-api": {
+    "title": "Contracts API",
+    "display": "normal"
+  },
+  "tutorials-account-abstraction": {
+    "title": "Account Abstraction API",
+    "display": "normal"
+  },
+  "tutorials-dashboard": {
+    "title": "No Code Dashboard",
+    "display": "hidden"
+  },
+  "tutorials-zapier":{
+    "title": "Web2 Plugins (Zapier)",
+    "display": "normal"
+  },
+  "-- How-to Guides": {
+    "type": "separator",
+    "title": "How-to Guides"
+  },
+  "howto-custom-chains":{
+    "title": "Custom EVM Chains",
+    "display": "normal"
+  },
+  "faq":{
+    "title": "FAQ",
+    "display": "hidden"
+  },
+  "-- API Reference": {
+    "type": "separator",
+    "title": "API Reference"
+  },
+  "reference-collection": {
+    "title": "Collection",
+    "display": "normal"
+  },
+  "reference-projectUser": {
+    "title": "Project User",
+    "display": "normal"
+  },
+  "reference-projectToken": {
+    "title": "Project Token",
+    "display": "normal"
+  },
+  "reference-projectTokenTemplate": {
+    "title": "Project Token Template",
+    "display": "normal"
+  },
+  "reference-contractMetadata": {
+    "title": "Contract Metadata",
+    "display": "normal"
+  },
+  "-- Connect": {
+    "type": "separator",
+    "title": "Connect"
+  },
+  "contribute": {
+    "title": "Contribute",
+    "display": "hidden"
+  },
+  "github": {
+    "title": "GitHub ↗",
+    "href": "https://github.com/owlprotocol/owlprotocol",
+    "newWindow": true
+  },
+  "support": {
+    "title": "Support ↗",
+    "href": "https://discord.owl.build",
+    "newWindow": true
+  },
+  "dashboard-docs": {
+    "type": "page",
+    "display":"hidden"
+  },
+  "other": {
+    "type": "page",
+    "display": "hidden"
+  },
+  "dashboard": {
+    "type": "page",
+    "title": "Dashboard ↗",
+    "href": "https://owl.build",
+    "newWindow": true
+  },
+  "help": {
+    "type": "page",
+    "title": "Help"
+  },
+  "api-reference": {
+    "type": "page",
+    "title": "API Playground ↗",
+    "href": "https://docs-api.owlprotocol.xyz/reference/collection-deploy",
+    "newWindow": true
+  },
+  "404": {
+    "type": "page",
+    "theme": {
+      "timestamp": false,
+      "typesetting": "article"
+    }
+  }
+}

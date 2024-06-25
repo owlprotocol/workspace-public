@@ -1,0 +1,131 @@
+{
+  "name": "@owlprotocol/eth-firebase",
+  "version": "3.0.0",
+  "keywords": [
+    "web3",
+    "solidity",
+    "trpc",
+    "react-query"
+  ],
+  "private": false,
+  "type": "module",
+  "homepage": "https://owlprotocol.github.io/eth-firebase",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/owlprotocol/owlprotocol.git"
+  },
+  "copyright": "Copyright 2023 Owl Protocol",
+  "license": "MIT",
+  "author": {
+    "name": "Leo Vigna",
+    "email": "leo@owlprotocol.xyz",
+    "url": "https://github.com/leovigna"
+  },
+  "files": [
+    "dist/*",
+    "lib/*",
+    "src/*",
+    "LICENSE",
+    "README.md"
+  ],
+  "main": "./lib/cjs/index.cjs",
+  "module": "./lib/esm/index.mjs",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "require": "./lib/cjs/index.js",
+      "import": "./lib/esm/index.js"
+    },
+    "./models": {
+      "types": "./lib/types/models/index.d.ts",
+      "require": "./lib/cjs/models/index.js",
+      "import": "./lib/esm/models/index.js"
+    },
+    "./models/*": {
+      "types": "./lib/types/models/*.d.ts",
+      "require": "./lib/cjs/models/*.js",
+      "import": "./lib/esm/models/*.js"
+    },
+    "./admin": {
+      "types": "./lib/types/admin/index.d.ts",
+      "require": "./lib/cjs/admin/index.js",
+      "import": "./lib/esm/admin/index.js"
+    },
+    "./web": {
+      "types": "./lib/types/web/index.d.ts",
+      "require": "./lib/cjs/web/index.js",
+      "import": "./lib/esm/web/index.js"
+    },
+    "./react-query": {
+      "types": "./lib/types/query/index.d.ts",
+      "require": "./lib/cjs/query/index.js",
+      "import": "./lib/esm/query/index.js"
+    }
+  },
+  "scripts": {
+    "build": "npm-run-all -p tsc esbuild",
+    "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
+    "clean": "rimraf lib dist",
+    "esbuild": "node esbuild.config.mjs",
+    "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
+    "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "eslint --fix 'src/**/*.ts'",
+    "lint:staged": "lint-staged",
+    "madge": "madge src/index.ts -c",
+    "test": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'pnpm run test:ci'",
+    "test:ci": "vitest --run",
+    "test:watch": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol 'vitest'",
+    "tsc": "tsc",
+    "tsc:trace": "tsc --generateTrace lib/trace && analyze-trace lib/trace",
+    "tsc:watch": "tsc -w"
+  },
+  "dependencies": {
+    "@owlprotocol/crud-firebase": "workspace:*",
+    "@owlprotocol/envvars": "workspace:*",
+    "@owlprotocol/utils": "workspace:*",
+    "@owlprotocol/zod-sol": "workspace:*",
+    "abitype": "1.0.0",
+    "lodash-es": "4.17.21",
+    "uuid": "^9.0.1",
+    "viem": "2.9.20",
+    "zod": "3.21.4"
+  },
+  "peerDependencies": {
+    "@tanstack/query-core": "5.24.8",
+    "@tanstack/react-query": "5.24.8",
+    "firebase": "^10.3.1",
+    "firebase-admin": "^11.10.1",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@owlprotocol/esbuild-config": "workspace:*",
+    "@owlprotocol/eslint-config": "workspace:*",
+    "@owlprotocol/prettier-config": "workspace:*",
+    "@owlprotocol/tsconfig": "workspace:*",
+    "@types/lodash-es": "4.17.12",
+    "@types/node": "^20.5.6",
+    "@types/uuid": "^9.0.8",
+    "@typescript/analyze-trace": "^0.10.1",
+    "firebase-tools": "^12.5.2",
+    "ganache": "^7.9.2",
+    "lint-staged": "^11.1.2",
+    "madge": "^5.0.2",
+    "npm-run-all": "^4.1.5",
+    "ts-expect": "^1.3.0",
+    "rimraf": "^3.0.2",
+    "tsx": "3.12.7",
+    "typescript": "5.4.2",
+    "vite": "^5.1.6",
+    "vitest": "^1.4.0"
+  },
+  "bugs": {
+    "url": "https://github.com/owlprotocol/owlprotocol/issues",
+    "email": "leo@owlprotocol.xyz"
+  },
+  "funding": "https://owlprotocol.xyz",
+  "engines": {
+    "node": "^18.0.0"
+  }
+}

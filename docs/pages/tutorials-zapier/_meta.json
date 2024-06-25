@@ -1,0 +1,26 @@
+{
+  "google-form": {
+    "title": "Google Form Submissions",
+    "display": "normal"
+  },
+  "google-sheet": {
+    "title": "Google Sheet New Row",
+    "display": "normal"
+  },
+  "github": {
+    "title": "GitHub Commits",
+    "display": "normal"
+  },
+  "eventbrite": {
+    "title": "Eventbrite Attendees",
+    "display": "normal"
+  },
+  "shopify": {
+    "title": "Shopify Orders",
+    "display": "normal"
+  },
+  "stripe": {
+    "title": "Stripe Payments",
+    "display": "hidden"
+  }
+}

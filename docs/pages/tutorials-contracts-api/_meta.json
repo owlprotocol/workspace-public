@@ -1,0 +1,10 @@
+{
+  "mint-asset-to-user": {
+    "title": "Mint Asset to a User",
+    "display": "normal"
+  },
+  "create-template": {
+    "title": "Create Token Template",
+    "display": "hidden"
+  }
+}

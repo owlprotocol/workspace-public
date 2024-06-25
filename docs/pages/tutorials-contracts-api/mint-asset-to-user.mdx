@@ -1,0 +1,156 @@
+import { Screenshot } from "components/screenshot";
+import { Callout, Steps } from "nextra/components";
+
+# Mint an Asset to a User
+
+In this tutorial, you'll learn how to seamlessly mint an asset to a user using Owl Protocol. Along the way, we'll also cover how to deploy collections and add users to your project.
+
+**Minting assets is particularly useful for airdrops, giveaways, or any promotional campaign designed to deliver unique assets directly to your users.**
+
+<Steps>
+### Tutorials Repository
+<Callout>
+    The tutorials repository contains a basic `index.ts` file to follow along tutorials as well as the final code of all Owl Protocol tutorials under the `/tutorials` folder.
+</Callout>
+
+#### Clone the repo
+
+We have created the Owl Protocol [tutorials repository](https://github.com/owlprotocol/tutorials.git) to quickly get started. It comes set up with Typescript, viem, permissionless, and Owl Protocol SDKs.
+
+```bash
+git clone https://github.com/owlprotocol/tutorials.git owlprotocol-tutorials
+cd owlprotocol-tutorials
+```
+
+Now, let's install the dependencies (we recommend using [pnpm](https://pnpm.io/))
+
+```sh npm2yarn
+npm install
+```
+
+The main file we will be working with is `index.ts`. Let's run it to make sure everything is working
+
+```sh npm2yarn
+npm start
+```
+
+If everything has been set up correctly, you should see something similar to this printed to the console.
+
+```bash
+Welcome to Owl Protocol!
+API_KEY_SECRET not found! Ensure it\'s correctly set in your .env file.
+```
+
+To fix the error you will **need an API Key**.
+
+#### Get Your API Key
+
+Go to [owl.build](https://owl.build) to get your API Key. If this is your first time signing up, you will automatically have a default team (**My Team**) and a default project (**My Project**).
+
+Copy the API key to your clipboard and paste it into the `.env` file in the tutorial template repository. This should **silence the error** when you run `pnpm start` and only show `"Welcome to Owl Protocol!"`.
+
+<Callout type="warning">
+  **API Key**
+
+<span style={{ color: "red" }}>
+    **Never expose your API Key in the frontend or client-side code.**
+</span>
+Your API Key is crucial for authenticating your requests to Owl Protocol. Always
+keep it secure and use it only in **server-side** code to prevent unauthorized access
+and ensure the security of your project.
+
+</Callout>
+
+import projectApiKey from "../../public/assets/projectApiKey.png";
+
+<Screenshot src={projectApiKey} alt="projectApiKey" />
+
+### Create TRPC Client
+
+Create the client with your API key using the following command:
+
+```ts copy showLineNumbers
+import { createClient } from "@owlprotocol/core-trpc";
+
+// Initialize the Owl Protocol client with your API key
+const client = createClient({ apiKey: API_KEY_SECRET });
+```
+
+### Add users to your project
+
+To mint an asset for a user, first add the user to your project using the `createOrSet` method:
+
+```ts copy showLineNumbers
+/***** Create a user *****/
+const user = await client.projectUser.createOrSet.mutate({
+    email: "leo@owlprotocol.xyz", //Owl Protocol CEO (Send me something cool!)
+});
+```
+
+To retrieve an existing user by email, you can use `get` method:
+
+```typescript
+/***** Get a user ******/
+const userExisting = await client.projectUser.get.query({
+    chainId: 150150, //this won't be required soon
+    email: "leo@owlprotocol.xyz",
+});
+console.debug(
+    `User ${userExisting.email} has smart account ${userExisting.safeAddress}`
+);
+```
+
+### Launch a collection
+
+Deploy a new ERC721 collection using the client, or use one of your existing collections.
+
+Set the name and symbol of your collection, and any other optional parameters.
+
+```ts copy showLineNumbers
+/***** Launch a collection *****/
+// The id of the blockchain we wish to connect to, replace this with any
+// chainId supported by Owl Protocol.
+const chainId = 150150;
+const contract = await client.collection.deploy.mutate({
+    name: "My Collection",
+    symbol: "MYC",
+    chainId,
+    // Add other optional parameters
+});
+```
+
+### Mint digital asset to user
+
+Call `collection.erc721AutoId.mint` to mint an asset to the user. Provide the collection address, recipient's email, and optional asset metadata (such as name, description, and image).
+
+```ts copy showLineNumbers
+/***** Mint Asset to User *****/
+const image = "https://picsum.photos/200"; // Replace with your image. Make sure the image is properly hosted online.
+
+await client.collection.erc721AutoId.mintBatch.mutate({
+    chainId,
+    address: contract.contractAddress,
+    to: [user.email],
+    metadata: {
+        name: "NFT #1",
+        description: "This was so easy!",
+        image,
+    },
+});
+```
+
+</Steps>
+
+### Summary
+
+Using the Owl Protocol API & tRPC client, you have:
+
+-   Deployed an ERC721 digital asset collection
+-   Minted a digital asset to a user using just an email
+
+Under the hood however, you've also leveraged several additional features implicitly:
+
+-   Used Owl Protocol's Wallet API to create wallets
+-   Used Owl Protocol's Account Abstraction API to sponsor transactions
+
+To learn more about these advanced low-level APIs, check out the [Gasless Transactions](../tutorials-account-abstraction/gasless-transactions.mdx) tutorial.

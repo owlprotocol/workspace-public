@@ -1,0 +1,76 @@
+# Add Custom EVM Chain
+
+import { Steps, Callout } from "nextra/components";
+import { Screenshot } from "components/screenshot";
+import createProjectCustomNetwork from "../../public/assets/caldera/createProjectCustomNetwork.png";
+import addCustomNetwork from "../../public/assets/caldera/addCustomNetwork.png";
+import gasTank from "../../public/assets/custom-network/gas-tank.png";
+
+
+Owl Protocol can be deployed on any Ethereum Virtual Machine (EVM) compatible blockchain.
+Adding Owl Protocol to your custom chain provides a layer of additional tooling for builders in your ecosystem.
+* Contracts API for simple web3 development
+* Smart Wallets (ERC4337) for users & developers
+* No code Smart Contract Management
+* 6000+ Web2 Plugins using Zapier
+
+In this tutorial, you will add a custom EVM chain configuration to your organization.
+
+## Prerequisites
+<Callout>
+  If you are looking to launch a new L2/L3 rollup, checkout our guide on [launching a custom chain](./launch-custom-chain.mdx) or [reach out](https://contact.owl.build) for dedicated support.
+</Callout>
+You must have a blockchain launched with the following characteristics
+* Ethereum Virtual Machine (EVM) compatible with minimal differences
+* [Arachnid Deployer](https://github.com/Arachnid/deterministic-deployment-proxy) deployed at [0x4e59b44847b379578588920ca78fbf26c0b4956c](https://etherscan.io/address/0x4e59b44847b379578588920ca78fbf26c0b4956c) **OR** support for non-[EIP155](https://eips.ethereum.org/EIPS/eip-155) transactions (Owl Protocol will self-deploy the contract)
+
+We also recommend using one of the following blockchain rollup frameworks if possible for better compatibility guarantees.
+* [OP Stack](https://docs.optimism.io/stack/getting-started)
+* [Arbitrum Orbit](https://arbitrum.io/orbit)
+* [Polygon CDK](https://polygon.technology/polygon-cdk)
+
+## Steps
+<Steps>
+### Get Chain Info & Funds
+Gather the following information about your blockchain
+* Name of your blockchain network
+* Chain ID: Unique identifier of your blockchain
+* RPC URL: Connection endpoint to your blockchain
+* Block Explorer URL (optional): Used to explore transactions on your network
+* **At least** 0.05 in native tokens (eg. ETH) used to pay gas fees on your blockchain
+
+### Add Custom Network
+1. Go to the [Owl Dashboard](https://dashboard.owlprotocol.xyz) and create a project that will use your custom chain
+2. Click **Add Custom Network** to open a window to add your deployed chain
+<Screenshot src={createProjectCustomNetwork} alt="createProjectCustomNetwork" />
+
+3. Name the network
+4. Add the RPC URL and Chain ID
+5. Set the symbol to your native token sumbol (eg. ETH)
+6. Add the Block Explorer URL (optional)
+6. Click **Create Network**
+
+<Screenshot src={addCustomNetwork} alt="addCustomNetwork" />
+
+7. Continue filling out your project information, such as the name and description
+8. Select your newly added custom network for this project
+
+### Funding the Gas Tank
+Owl Protocol uses Account Abstraction (ERC4337) to sponsor gas fees for developers and users. This creates a seamless experience for interacting with blockchains. On custom networks, you will need to **fund the gas tank yourself** using the native tokens of your blockchain (eg. ETH).
+
+The gas tank address depends on what environment you are in
+* **owl.build** `0xa2E8B0AE8B5A51d494eCf7E35F3734A6CEd7eeCf`
+* **staging.owl.build** `0xAAb6f44B46f19d061582727B66C9a0c84C97a2F6`
+
+<Screenshot src={gasTank} alt="gasTank" />
+
+1. Check the current gas tank balance in the **Blockchain** section in your project.
+2. If the balance is 0, click the warning box or **More Info** button to show the blockchain information, which will display the gas tank address.
+3. Send at least **0.2** native tokens to the gas tank (more is better). These funds will be used to cover the gas fees of transactions sent through the Owl Protocol bundler
+
+If you need assistance, reach out to our [support team on Discord](https://discord.owl.build).
+
+</Steps>
+
+## Build With Owl Protocol
+Your custom blockchain is now integrated with Owl Protocol. You can now follow all of our other tutorials and guides but using your custom chain.

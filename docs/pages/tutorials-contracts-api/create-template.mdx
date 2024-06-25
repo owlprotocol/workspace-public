@@ -1,0 +1,83 @@
+import { Screenshot } from "components/screenshot";
+import { Callout, Steps } from "nextra/components";
+
+# Create a Template
+
+In this section, you will learn about templates, what they are, and how to create and modify them.
+
+<Callout type="info">
+  📘 **Templates**
+
+A template contains metadata, including an image, a name, and attributes, adhering to the [OpenSea Metadata Standards](https://docs.opensea.io/docs/metadata-standards). This feature streamlines the minting process, allowing you to mint multiple items using the same predefined metadata.
+
+</Callout>
+
+**Templates are useful for defining metadata for tokens, especially when you anticipate minting multiple items with the same attributes, such as name and image. Create a template to simplify the minting process by using predefined metadata, which avoids the need to manually input details for each item.**
+
+<Steps>
+
+### Set Up Your Development Environment
+
+Follow our [Set Up Your Development Environment](/api-docs/development-environment) tutorial to ensure your development environment is properly set up.
+
+### Create a Template
+
+We will use the `projectTokenTemplate.createOrSet` method from the `client` object. Ensure you have set up and authenticated the `client` object.
+
+Launch a collection before proceeding. If you haven't or don't know how to, check out the [Launch a Collection](/api-docs/mint-asset-to-user#launch-a-collection) step from our previous tutorial.
+
+You can follow this tutorial without a collection by defining a template for your project as a whole. However, associating templates with specific collections helps keep your project organized and is particularly useful in some cases, like when using [Zapier](/dashboard-docs/zapier).
+
+```typescript
+let image = "https://picsum.photos/200"; // Replace this with your image URL.
+
+const template = await client.projectTokenTemplate.createOrSet.mutate({
+    address: contract.address, // Optionally, include the address of your collection to ensure the template is specific to a collection, not just the project.
+    metadata: {
+        name: "Example",
+        description: "Your description here",
+        image,
+    },
+});
+```
+
+You have now created a template associated with the collection (contract) by passing the address here.
+
+### Modify a Template
+
+Modify your existing templates at any time by calling the `projectTokenTemplate.patch` method. In this example, we modify the description while keeping the previously set fields (name and image) the same.
+
+```typescript
+const modifiedTemplate = await client.projectTokenTemplate.patch.mutate({
+    id: template.id, // use the template we created above.
+    metadata: {
+        description: "New Token Description", // Replace description with this one
+    },
+});
+```
+
+### Mint an asset to user
+
+Now, use this template to mint an item to a user with the predefined metadata.
+
+```typescript
+await client.collection.erc721AutoId.mintBatch.mutate({
+    address: contract.address,
+    to: ["userEmail@example.com"],
+    projectTokenTemplateId: modifiedTemplate.id, // pass template ID here
+});
+```
+
+</Steps>
+
+Congratulations on creating your first template. This template remains available for future minting operations. Create templates for any item you plan to mint frequently. For example, if you are creating a video game and plan to mint many 'Piece of Wood' items, you can keep minting using the template, avoiding the need to reset the image and fields each time
+
+**Next steps?**
+
+-   **Test the Template:** Ensure the template works as expected by minting a few tokens. Verify that all metadata fields (name, description, image, etc.) correctly apply to the minted tokens.
+
+-   **Create Additional Templates:** Create additional templates for different types of assets you plan to mint based on your project requirements. This approach saves time and ensures consistency across your tokens.
+
+-   **Integrate with Other Tools:** Integrate your templates with automation tools like Zapier to streamline your workflow. Check out the [Zapier Integration Guide](/dashboard-docs/zapier) for more details.
+
+Follow these next steps to maximize the potential of your templates and create a more efficient and effective token minting process.

@@ -1,0 +1,4 @@
+src/envvars.ts
+src/envvars.mts
+src/envvars.cts
+src/envvars.browser.ts

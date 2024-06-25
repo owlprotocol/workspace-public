@@ -1,0 +1,83 @@
+{
+  "index": "Introduction",
+  "features": {
+    "title":"Features",
+    "display":"hidden"
+  },
+  "use-cases":{
+    "title":"Use Cases",
+    "display":"hidden"
+  },
+  "get-started":{
+    "title": "Get Started",
+    "display":"hidden"
+  },
+  "owlFAQ":{
+  "display":"hidden"
+  },
+  "guide": {
+    "display":"hidden"
+  },
+  "-- Tutorials": {
+    "type": "separator",
+    "title": "Tutorials"
+  },
+  "deploy-demo-project":{
+    "title":"Deploy Demo Project"
+  },
+  "mint-collectible-per-user":{
+    "title":"Mint A Collectible Per User"
+  },
+  "get-api-key":{
+    "title":"Get Your Project API Key"
+  },
+  "deploy-custom-project":{
+    "title":"Deploy Your Custom Project"
+  },
+  "create-custom-project":{
+    "display":"hidden"
+  },
+  "deployERC721Collection": {
+    "title": "Deploy ERC721 Collection",
+    "display":"hidden"
+  },
+  "addProjectUsers": {
+    "title": "Add Project Users",
+    "display":"hidden"
+  },
+  "createItemTypeAndMint": {
+    "title": "Create Template and Mint to Users",
+    "display":"hidden"
+  },
+  "-- How To Guides": {
+    "type": "separator",
+    "title": "How To Guides"
+  },
+  "zapier":{
+    "title":"Zapier Integration"
+  },
+  "caldera":{
+    "title":"Caldera Rollup Integration"
+  },
+  "-- Explanations": {
+    "type": "separator",
+    "title": "Explanations"
+  },
+  "rollups":{
+    "title":"Rollups"
+  },
+  "-- Links": {
+    "type": "separator",
+    "title": "More"
+  },
+  "about-link": {
+    "title": "About Owl",
+    "href": "/about",
+    "display":"hidden"
+  },
+  "owl.build-link": {
+    "title": "Owl Build ↗",
+    "href": "https://dashboard.owlprotocol.xyz",
+    "newWindow": true
+  }
+}

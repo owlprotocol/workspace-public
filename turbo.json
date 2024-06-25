@@ -1,0 +1,97 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "globalEnv": ["DOTENV_KEY"],
+  "globalDependencies": [".env.vault"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["build/**", "dist/**", "lib/**"]
+    },
+    "@owlprotocol/envvars#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "lib/**", "src/envvars.ts", "src/envvars.browser.ts"]
+    },
+    "@owlprotocol/contracts-create2factory#build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        "artifacts/**",
+        "dist/**",
+        "lib/**",
+        "src/artifacts/**",
+        "src/zsol/**",
+        "docs-contracts-reference/**"
+      ]
+    },
+    "@owlprotocol/contracts-diamond#build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        "artifacts/**",
+        "dist/**",
+        "lib/**",
+        "src/artifacts/**",
+        "src/zsol/**",
+        "docs-contracts-reference/**"
+      ]
+    },
+    "@owlprotocol/contracts-account-abstraction#build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        "artifacts/**",
+        "dist/**",
+        "lib/**",
+        "src/artifacts/**",
+        "src/zsol/**",
+        "docs-contracts-reference/**"
+      ]
+    },
+    "@owlprotocol/docs#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "lib/**", ".next/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
+    },
+    "start": {
+      "cache": false,
+      "persistent": true
+    },
+    "test": {
+      "dependsOn": ["build", "^test"],
+      "outputs": []
+    },
+    "test-integration": {
+      "dependsOn": ["build"],
+      "outputs": []
+    },
+    "madge": {
+      "outputs": []
+    },
+    "lint": {
+      "outputs": []
+    },
+    "lint:fix": {
+      "dependsOn": ["^lint:fix"],
+      "outputs": []
+    },
+    "lint:staged": {
+      "cache": false,
+      "outputs": []
+    },
+    "deploy": {
+      "cache": false,
+      "outputs": []
+    },
+    "node": {
+      "cache": false,
+      "outputs": []
+    },
+    "serve": {
+      "cache": false,
+      "outputs": []
+    }
+  }
+}

@@ -1,0 +1,81 @@
+import { Screenshot } from "components/screenshot";
+import { Callout, Steps } from "nextra/components";
+import start from "../../public/assets/zapier/google-sheet/start.png";
+import trigger from "../../public/assets/zapier/google-sheet/trigger.png";
+import action from "../../public/assets/zapier/google-sheet/action.png";
+import success from "../../public/assets/zapier/google-sheet/success.png";
+
+# Mint NFTs from Google Sheet Responses
+
+In this tutorial, we'll setup a _no-code automation_ using the [Owl Zapier App](https://zapier.com/apps/owl-protocol-ca19902/integrations) to mint an NFT whenever you **add a row to your Google Sheet**
+
+## Prerequisites
+
+Before you begin you should have the following
+* Create an Owl Protocol project at [owl.build](https://owl.build) and get an API Key
+* Deploy an ERC721 Collection on that project
+* Create an account on [Zapier](https://zapier.com)
+* [Create a Google Sheet](https://docs.google.com/spreadsheets) that has an "emails" column
+* Add sample row to the Google Sheet with your email
+
+## Steps
+<Steps>
+
+### Zapier Template
+
+Create a Zap using our one-click [template](https://zapier.com/app/editor/template/1719387) for Google Sheet & Owl Protocol Zaps. You will now configure your Zap from within the Zapier Editor
+
+<Screenshot src={start} alt="start" />
+
+### Configure the Google Trigger
+Click on **New Sheet Response in Google Sheets** box to configure the Zap Trigger.
+* **Account**: Connect your Google Account with Zapier
+* **App & Event**: Set the Event to "New Spreadsheet Row"
+* **Trigger**: Select your Google Drive, the Google Sheet you created (eg. "Google Sheets Zapier"), and the Worskheet with your data (eg. "Mints")
+* **Test**: The Zap Trigger should have collected the sample row with your email (see **Prerequisites**)
+
+<Screenshot src={trigger} alt="trigger" />
+
+
+### Configure the Owl Protocol Action
+<Callout>
+To use Zapier with **multiple** Owl Protocol projects, you can **connect new accounts** to Zapier using each project's API Key. You can also **rename connections** to match your project name to easily identify them.
+</Callout>
+
+Click on **Mint ERC721 in Owl Protocol** box to configure the Zap Action.
+
+* **Account**: Connect your Owl Protocol Account with Zapier by pasting your API Key
+* **App & Event**: Set the Event to "Mint ERC721"
+* **Action**: Configure the action parameters
+    * **Collection Address**: If you have already deployed a collection, you will see the names and addresses of these collections in the dropdown. If not, first [deploy a collection](/dashboard-docs/deploy-collection).
+    * **To**: Use the **Email** output from the Google Sheet. Tokens will be sent for each row you add with an email
+    * **Token Template ID** (optional): If you have previously created Templates, they will appear in the dropdown. If not, you can skip this.
+    * **Name** (optional)
+    * **Description** (optional)
+    * **Image** (optional)
+    * **Attributes** (optional)
+* **Test**: The Google Sheet Trigger should have passed down the sample submission, and testing the Owl Action should mint a new ERC721 successfully
+
+
+<Screenshot src={action} alt="action" />
+
+### Publish your Zap
+After testing the Zap, publish your Zap. While it is on, it will mint an ERC721 from the selected collection to each email you add to your spreadsheet.
+
+<Screenshot src={success} alt="success" />
+
+
+</Steps>
+
+## Workflow Recap
+
+By following this guide, you have successfully set up an automated workflow that mints NFTs whenever you **add a row to your Google Sheet**
+
+## Additional Tips
+
+-   **Troubleshooting:** If your Google Sheet responses are not triggering the Zap, double-check that the sheet is properly accessible by Zapier.
+-   **Customization:** Fill in fields such as name, image, and attributes to personalize the NFTs. You can also create Templates in the Owl Zapier App to further customize the NFTs to meet your specific needs.
+
+## Next Steps
+
+Explore the wide range of apps available on Zapier and experiment with Owl Protocol. Develop your own workflows to meet your specific needs, and discover creative ways to automate and enhance your Web3 experience.

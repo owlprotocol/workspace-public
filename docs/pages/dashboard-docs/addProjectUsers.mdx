@@ -1,0 +1,63 @@
+import { Screenshot } from "components/screenshot";
+import { Callout, Steps } from "nextra/components";
+
+# Add Project Users
+
+A project user enables you to create and link a smart wallet to an email address. This allows you, for example, to mint an asset to someone only using an email. This is done by creating both a DFNS wallet and a Smart wallet. The DFNS wallet is the only owner of the Smart wallet. The Smart Wallet enables gasless transactions.
+
+For more information about our wallet structure, see [Smart Wallets Built-In](https://docs-api.owlprotocol.xyz/docs/introduction#2-smart-wallets-built-in)
+
+<Steps>
+### Create users
+
+On the Project Overview page, click on `Add Users`.
+
+import AddUsersButton from "../../public/assets/AddUsersButton.png";
+
+<Screenshot src={AddUsersButton} alt="AddUsersButton" />
+
+Fill out the form with your user's email. Optionally, you can also include their full name and external ID. Once this is done, click on `Add User`.
+
+import AddModal from "../../public/assets/AddModal.png";
+
+<Screenshot src={AddModal} alt="AddModal" />
+
+You're now ready to create the user. Before finalizing the process, consider adding more users through one of the following two methods:
+
+-   `Add Another User`: Continue adding users manually, as demonstrated earlier.
+-   `Import CSV`: If you have multiple users to add, consider importing them from a CSV file. Use our sample CSV to ensure the data is properly formatted and readable.
+
+import ImportCSV from "../../public/assets/ImportCSV.png";
+
+<Screenshot src={ImportCSV} alt="ImportCSV" />
+
+#### Add users with CSV
+
+To add users with CSV, you need to have the following three columns in your file: "email", "fullName", "externalId". See the example table below:
+
+| email             | fullName  | externalId |
+| :---------------- | :-------- | :--------- |
+| `marc@gmail.com`  | Marc Doe  | 12345      |
+| `alice@gmail.com` | Alice Doe | 67890      |
+
+### Confirm adding
+
+Click `Create Users` to finalize your changes. After confirming, the users will be added to the project.
+
+import createUsers from "../../public/assets/createUsers.png";
+
+<Screenshot src={createUsers} alt="createUsers" />
+
+### View Users
+
+The newly added users will appear in your users table. This addition simplifies the minting process. Each user has a wallet address to which you can mint collectibles.
+
+import usersTable from "../../public/assets/usersTable.png";
+
+<Screenshot src={usersTable} alt="usersTable" />
+
+</Steps>
+
+### Further Steps
+
+-   [Create a Template & Mint to Users](/dashboard-docs/createItemTypeAndMint)

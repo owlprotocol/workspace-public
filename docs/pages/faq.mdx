@@ -1,0 +1,22 @@
+## Owl Protocol FAQ
+
+If you have a question that isn't answered here, please
+[open a discussion](https://github.com/owlprotocol/owlprotocol/discussions)
+
+export function FAQBox({ title, children }) {
+    return (
+        <details
+            open
+            className="last-of-type:mb-0 rounded-lg bg-neutral-50 dark:bg-neutral-800 p-2 mt-4"
+        >
+            <summary>
+                <strong className="text-lg">{title}</strong>
+            </summary>
+            <div className="nx-p-2">{children}</div>
+        </details>
+    );
+}
+
+<FAQBox title="Can I use Owl Protocol with Metamask or some other wallet solution?">
+    Yes
+</FAQBox>

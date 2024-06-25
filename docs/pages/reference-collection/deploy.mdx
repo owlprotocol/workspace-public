@@ -1,0 +1,88 @@
+# Deploy a collection
+
+Deploy digital asset collection with single unique items.
+
+import { Tabs } from "nextra/components";
+
+<Tabs items={['Typescript (tRPC)', 'JavaScript (fetch)', 'cURL']}>
+  <Tabs.Tab>
+    ```ts copy showLineNumbers
+    import { createClient } from "@owlprotocol/core-trpc";
+    const API_KEY_SECRET = "<API_KEY_SECRET>" //Replace this with your API Key Secret
+    const client = createClient({ apiKey: API_KEY_SECRET });
+
+    const collection = await client.collection.deploy.mutate({
+        chainId: 150150,
+        name: "My Collection",
+        symbol: "MYC"
+    })
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```js copy showLineNumbers
+    const API_KEY_SECRET = "<API_KEY_SECRET>" //Replace this with your API Key Secret
+    const url = 'https://contracts-api.owlprotocol.xyz/api/project/collection/deploy';
+
+    const options = {
+    method: 'POST',
+    headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        'x-api-key': API_KEY_SECRET
+    },
+    body: JSON.stringify({projectId: 'fd', chainId: 1, authMode: 'project'})
+    };
+
+    fetch(url, options)
+    .then(res => res.json())
+    .then(json => console.log(json))
+    .catch(err => console.error('error:' + err));
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash copy showLineNumbers
+    curl --request POST \
+     --url https://api.owl.build/api/project/collection/deploy \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --header 'x-api-key: <API_KEY_SECRET>' \
+     --data '{ "chainId": 150150, "name": "My Collection", "symbol": "MYC" }'
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### API Endpoint
+
+`https://contracts-api.owlprotocol.xyz/api/project/collection/deploy`
+
+### Authorization
+
+**x-api-key** `string` `[0m[31mrequired[0m{:ansi}`
+
+### Body Params
+
+**chainId** `number` `[0m[31mrequired[0m{:ansi}`<br/>
+Network chain id
+
+**name** `string` `[0m[31mrequired[0m{:ansi}`<br/>
+Name of collection
+
+**symbol** `string` `[0m[31mrequired[0m{:ansi}`<br/>
+Ticker symbol of collection. Should be 3-4 characters long.
+
+**baseUri** `string`<br/>
+Base URI for token metadata. Defaults to Owl Protocol API Endpoint.
+
+**royaltyReceiver** `string`<br/>
+ERC2981 Royalty receiver. Defaults to smart account address.
+
+**feeNumerator** `string`<br/>
+ERC2981 Royalty amount in basis points. Defaults to 5% => 500/10000
+
+**contractImage** `string`<br/>
+An image for contract metadata. Encoded in base64.
+
+**contractImageSuffix** `string`<br/>
+The extension of the image

@@ -1,0 +1,17 @@
+# Get Project User
+
+Get an existing user's information, including Safe Wallet address.
+
+```typescript
+const user = client.projectUser.get.query({
+    chainId: 130130,
+    email: "user2@gmail.com",
+});
+```
+
+**Required fields**:
+
+-   `chainId`: Id of the chain you selected when creating your project.
+-   `email`,`userId`, or `externalId`: You can query by either of these three options.
+
+**Optional fields**: See [Get project user](https://docs-api.owlprotocol.xyz/reference/projectuser-get)

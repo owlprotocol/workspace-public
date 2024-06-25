@@ -1,0 +1,64 @@
+import { Screenshot } from "components/screenshot";
+import { Steps } from "nextra/components";
+
+# Mint A Collectible Per User
+
+In this tutorial, we will mint an asset to a user. We will use the demo project deployed in [Deploy Your First Demo Project](/dashboard-docs/deploy-demo-project), add a user, and mint an asset to them from a template. Note that templates allow you to easily mint the same asset for multiple users.
+
+Before we start, make sure to be on your project overview of your demo project.
+
+## Steps
+
+<Steps>
+
+### Show Collection Templates
+
+In your project overview, scroll to the list of collections for the project. You should see one collection. Note that you can see its name "Rare Weapons", and the blockchain address that it is deployed at.
+
+Then, click on `Show Templates`.
+
+import demoCollectionsTable from "../../public/assets/demoCollectionsTable.png";
+
+<Screenshot src={demoCollectionsTable} alt="demoCollectionsTable" />
+
+### Mint From A Template
+
+You should now see two templates to mint from. We will mint a "Dancing Edge" collectible. To do so, click on the `Mint` button at the right of the "Dancing Edge".
+
+import demoItemTypes from "../../public/assets/demoItemTypes.png";
+
+<Screenshot src={demoItemTypes} alt="demoItemTypes" />
+
+### Select User To Mint To
+
+We want to mint the sword to the user with email address "gamer.john.777@example.com". To do so, click on the checkbox next to that email address, and click on `Mint Item`. Notice that you can associate a name and an external id to the user email addresses that you add in your project.
+
+import demoMintItemType from "../../public/assets/demoMintItemType.png";
+
+<Screenshot src={demoMintItemType} alt="demoMintItemType" />
+
+Note that you will need to wait a few seconds as this is executing a blockchain transaction.
+
+You should then get a notification that the collectible has successfully been minted, and see the "Minted Items" number increase by one.
+
+import demoMintItemTypeSuccessful from "../../public/assets/demoMintItemTypeSuccessful.png";
+
+<Screenshot src={demoMintItemTypeSuccessful} alt="demoMintItemTypeSuccessful" />
+
+</Steps>
+
+## Further Steps
+
+You might want to check out the collectibles that you have minted to a user. On the project overview page, scroll down to the table, and look for the user that you have minted to. In this case, "gamer.john.777@example.com". Click on the `...` button at the right of their row, and click on `View User`.
+
+import demoViewUser from "../../public/assets/demoViewUser.png";
+
+<Screenshot src={demoViewUser} alt="demoViewUser" />
+
+You should then see on the right side an overview of your user, with the collectibles that they own.
+
+import demoUserSheet from "../../public/assets/demoUserSheet.png";
+
+<Screenshot src={demoUserSheet} alt="demoUserSheet" />
+
+Once you are done exploring the demo project, you can [Create A Custom Project](/dashboard-docs/create-custom-project)

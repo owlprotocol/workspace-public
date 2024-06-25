@@ -1,0 +1,14 @@
+{
+  "smart-contracts": {
+    "title": "Smart Contracts",
+    "display": "normal"
+  },
+  "account-abstraction-api": {
+    "title": "Account Abstraction API",
+    "display": "hidden"
+  },
+  "metadata-api": {
+    "title": "Metadata API",
+    "display": "hidden"
+  }
+}

@@ -1,0 +1,451 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "teamMember",
+      "fieldPath": "userId",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "teamMember", "fieldPath": "role", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "teamNetwork",
+      "fieldPath": "chainId",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "projectApiKey",
+      "fieldPath": "apiKey",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "projectApiKey", "fieldPath": "role", "ttl": false, "indexes": [] },
+    { "collectionGroup": "projectApiKey", "fieldPath": "expiresAt", "ttl": false, "indexes": [] },
+    { "collectionGroup": "projectApiKey", "fieldPath": "createdAt", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "ethBlock",
+      "fieldPath": "hash",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "ethBlock",
+      "fieldPath": "number",
+      "ttl": false,
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }]
+    },
+    { "collectionGroup": "ethBlock", "fieldPath": "parentHash", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "nonce", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "difficulty", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "totalDifficulty", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "miner", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "extraData", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "mixHash", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "size", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "stateRoot", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "timestamp", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "uncles", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "sha3Uncles", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "withdrawals", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "withdrawalsRoot", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "gasLimit", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "gasUsed", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "baseFeePerGas", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "blobGasUsed", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "excessBlobGas", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "receiptsRoot", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "sealFields", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "logsBloom", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "transactions", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethBlock", "fieldPath": "transactionsRoot", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "ethTransaction",
+      "fieldPath": "hash",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "ethTransaction",
+      "fieldPath": "blockNumber",
+      "ttl": false,
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }]
+    },
+    {
+      "collectionGroup": "ethTransaction",
+      "fieldPath": "blockHash",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "ethTransaction", "fieldPath": "transactionIndex", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "ethTransaction",
+      "fieldPath": "from",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "ethTransaction",
+      "fieldPath": "to",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "ethTransaction", "fieldPath": "nonce", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "input", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "value", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "gas", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "r", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "s", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "v", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "yParity", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "type", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "chainId", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "accessList", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "blobVersionedHashes", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "gasPrice", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "maxPriorityFeePerGas", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "maxFeePerGas", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransaction", "fieldPath": "maxFeePerBlobGas", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "ethTransactionReceipt",
+      "fieldPath": "transactionHash",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "ethTransactionReceipt",
+      "fieldPath": "blockNumber",
+      "ttl": false,
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }]
+    },
+    {
+      "collectionGroup": "ethTransactionReceipt",
+      "fieldPath": "blockHash",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "ethTransactionReceipt", "fieldPath": "transactionIndex", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "ethTransactionReceipt",
+      "fieldPath": "from",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "ethTransactionReceipt",
+      "fieldPath": "to",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "ethTransactionReceipt", "fieldPath": "contractAddress", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransactionReceipt", "fieldPath": "type", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransactionReceipt", "fieldPath": "status", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransactionReceipt", "fieldPath": "root", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransactionReceipt", "fieldPath": "gasUsed", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransactionReceipt", "fieldPath": "cumulativeGasUsed", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransactionReceipt", "fieldPath": "effectiveGasPrice", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransactionReceipt", "fieldPath": "blobGasUsed", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransactionReceipt", "fieldPath": "blobGasPrice", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethTransactionReceipt", "fieldPath": "logsBloom", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "ethLog",
+      "fieldPath": "transactionHash",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "ethLog", "fieldPath": "logIndex", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "ethLog",
+      "fieldPath": "blockNumber",
+      "ttl": false,
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }]
+    },
+    {
+      "collectionGroup": "ethLog",
+      "fieldPath": "blockHash",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "ethLog", "fieldPath": "transactionIndex", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "ethLog",
+      "fieldPath": "address",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "ethLog", "fieldPath": "removed", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethLog", "fieldPath": "topics", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethLog", "fieldPath": "data", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "ethLog",
+      "fieldPath": "eventName",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "ethLog",
+      "fieldPath": "args",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "ethUserOp",
+      "fieldPath": "userOpHash",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "ethUserOp",
+      "fieldPath": "blockHash",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "ethUserOp",
+      "fieldPath": "blockNumber",
+      "ttl": false,
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }]
+    },
+    {
+      "collectionGroup": "ethUserOp",
+      "fieldPath": "transactionHash",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "ethUserOp", "fieldPath": "actualGasUsed", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethUserOp", "fieldPath": "actualGasCost", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethUserOp", "fieldPath": "success", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethUserOp", "fieldPath": "logIds", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "ethUserOp",
+      "fieldPath": "sender",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "ethUserOp", "fieldPath": "nonce", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "ethUserOp",
+      "fieldPath": "factory",
+      "ttl": false,
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }]
+    },
+    { "collectionGroup": "ethUserOp", "fieldPath": "factoryData", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethUserOp", "fieldPath": "callData", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethUserOp", "fieldPath": "callGasLimit", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethUserOp", "fieldPath": "verificationGasLimit", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethUserOp", "fieldPath": "preVerificationGas", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethUserOp", "fieldPath": "maxFeePerGas", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethUserOp", "fieldPath": "maxPriorityFeePerGas", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "ethUserOp",
+      "fieldPath": "paymaster",
+      "ttl": false,
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION" }]
+    },
+    { "collectionGroup": "ethUserOp", "fieldPath": "paymasterVerificationGasLimit", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethUserOp", "fieldPath": "paymasterPostOpGasLimit", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethUserOp", "fieldPath": "paymasterData", "ttl": false, "indexes": [] },
+    { "collectionGroup": "ethUserOp", "fieldPath": "signature", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "erc20",
+      "fieldPath": "name",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "erc20",
+      "fieldPath": "symbol",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "erc20", "fieldPath": "decimals", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc20", "fieldPath": "totalSupply", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc20", "fieldPath": "logoURI", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc20", "fieldPath": "listedIn", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "erc20Balance",
+      "fieldPath": "address",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "erc20Balance",
+      "fieldPath": "account",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "erc20Balance", "fieldPath": "balance", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc20Balance", "fieldPath": "blockNumber", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "erc20Allowance",
+      "fieldPath": "address",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "erc20Allowance",
+      "fieldPath": "account",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "erc20Allowance",
+      "fieldPath": "spender",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "erc20Allowance", "fieldPath": "balance", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc20Allowance", "fieldPath": "blockNumber", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "erc721",
+      "fieldPath": "address",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "erc721", "fieldPath": "tokenId", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "erc721",
+      "fieldPath": "owner",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "erc721",
+      "fieldPath": "approved",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "erc721", "fieldPath": "ownerBlockNumber", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc721", "fieldPath": "approvedBlockNumber", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc721", "fieldPath": "tokenURI", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc721", "fieldPath": "tokenURIBlockNumber", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc721", "fieldPath": "metadata", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc721", "fieldPath": "metadataUpdatedAt", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "erc1155",
+      "fieldPath": "address",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "erc1155", "fieldPath": "id", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc1155", "fieldPath": "uri", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc1155", "fieldPath": "metadata", "ttl": false, "indexes": [] },
+    {
+      "collectionGroup": "erc1155Balance",
+      "fieldPath": "address",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "collectionGroup": "erc1155Balance",
+      "fieldPath": "account",
+      "ttl": false,
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    { "collectionGroup": "erc1155Balance", "fieldPath": "id", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc1155Balance", "fieldPath": "balance", "ttl": false, "indexes": [] },
+    { "collectionGroup": "erc1155Balance", "fieldPath": "blockNumber", "ttl": false, "indexes": [] }
+  ]
+}

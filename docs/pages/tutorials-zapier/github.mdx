@@ -1,0 +1,84 @@
+import { Screenshot } from "components/screenshot";
+import { Callout, Steps } from "nextra/components";
+import start from "../../public/assets/zapier/github-commit/start.png";
+import trigger from "../../public/assets/zapier/github-commit/trigger.png";
+import action from "../../public/assets/zapier/github-commit/action.png";
+import success from "../../public/assets/zapier/github-commit/success.png";
+
+# Mint NFTs from GitHub Commits
+
+In this tutorial, we'll setup a _no-code automation_ using the [Owl Zapier App](https://zapier.com/apps/owl-protocol-ca19902/integrations) to mint an NFT whenever someone **makes a commit to your Github repository**
+
+## Prerequisites
+
+Before you begin you should have the following
+* Create an Owl Protocol project at [owl.build](https://owl.build) and get an API Key
+* Deploy an ERC721 Collection on that project
+* Create an account on [Zapier](https://zapier.com)
+* Create a public Github repository [github.com/new](https://github.com/new)
+* Initialize the repository with a README file or make a simple commit to it
+
+## Steps
+<Steps>
+
+### Zapier Template
+
+Create a Zap using our one-click [template](https://zapier.com/app/editor/template/1718295) for Github Commits & Owl Protocol Zaps. You will now configure your Zap from within the Zapier Editor
+<Screenshot src={start} alt="start" />
+
+### Configure the Github Trigger
+<Callout type="warning">
+Every contributor must **enable their email in Github** to receive the NFT. This is usually **enabled by default**, but we recommend this Github [guide](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address#setting-your-commit-email-address-on-github) for more info on commit email addresses.
+</Callout>
+
+Click on **New Commit in Github** box to configure the Zap Trigger.
+* **Account**: Connect your Github Account with Zapier
+* **App & Event**: Set the Event to "New Commit"
+* **Trigger**: Select the Github repository you created (Click "+ Load More" if you can't find it)
+* **Test**: The Zap Trigger should have collected the initial commit with your email as "Committer Email" (see **Prerequisites**)
+
+<Screenshot src={trigger} alt="trigger" />
+
+
+### Configure the Owl Protocol Action
+<Callout>
+To use Zapier with **multiple** Owl Protocol projects, you can **connect new accounts** to Zapier using each project's API Key. You can also **rename connections** to match your project name to easily identify them.
+</Callout>
+
+Click on **Mint ERC721 in Owl Protocol** box to configure the Zap Action.
+
+* **Account**: Connect your Owl Protocol Account with Zapier by pasting your API Key
+* **App & Event**: Set the Event to "Mint ERC721"
+* **Action**: Configure the action parameters
+    * **Collection Address**: If you have already deployed a collection, you will see the names and addresses of these collections in the dropdown. If not, first [deploy a collection](/dashboard-docs/deploy-collection).
+    * **To**: Use the **Committer Email** output from the Github Commit. This way, NFTs will be sent to anyone who contributes to your repository.
+    * **Token Template ID** (optional): If you have previously created Templates, they will appear in the dropdown. If not, you can skip this.
+    * **Name** (optional)
+    * **Description** (optional)
+    * **Image** (optional)
+    * **Attributes** (optional)
+* **Test**: The Github Commit Trigger should have passed down the sample submission, and testing the Owl Action should mint a new ERC721 successfully
+
+
+<Screenshot src={action} alt="action" />
+
+### Publish your Zap
+After testing the Zap, publish your Zap. While it is on, it will mint an ERC721 from the selected collection for every new commit made to your repository's default branch.
+
+<Screenshot src={success} alt="success" />
+
+
+</Steps>
+
+## Workflow Recap
+
+By following this guide, you have successfully set up an automated workflow that mints NFTs whenever someone completes contributes to your Github repository. This integration saves time and ensures immediate reward distribution, enhancing user engagement and automating the NFT minting process.
+
+## Additional Tips
+
+-   **Troubleshooting:** If your Github commits are not triggering the Zap, double-check that your Gihtub Zapier connection and that Committer have their email enabled.
+-   **Customization:** Fill in fields such as name, image, and attributes to personalize the NFTs. You can also create Token Templates in the Owl Protocol Dashboard to further customize the NFTs to meet your specific needs.
+
+## Next Steps
+
+Explore the wide range of apps available on Zapier and experiment with Owl Protocol. Develop your own workflows to meet your specific needs, and discover creative ways to automate and enhance your Web3 experience.

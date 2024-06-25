@@ -1,0 +1,5 @@
+{
+  "deploy": "Deploy Collection",
+  "mintERC721": "Mint ERC721",
+  "batchMintERC721": "Mint Batch ERC721"
+}
