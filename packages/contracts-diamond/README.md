@@ -1,5 +1,7 @@
 # Contracts Diamond
+Owl Protocol Smart Contracts built using [EIP2535]
 
-## TODO
-
-* Export viem encode/decode etc... wrappers
+## Contracts
+TODO: Add table listing contracts
+## Design Decisions
+TODO: Add design decisions regarding EIP2535

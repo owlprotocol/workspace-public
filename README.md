@@ -94,6 +94,8 @@ pnpm run test
 Visit our docs at [docs.owl.build](https://docs.owl.build) for in-depth tutorials on using Smart Wallets & Modular Smart Contracts. Contribute to our docs by adding content to [docs](./docs/)
 
 ## Packages
+Owl Protocol uses a monorepo architecture. We uses [pnpm] along with a [pnpm-workspace.yaml](./pnpm-workspace.yaml) file to configure managing the following packages.
+
 ### Typescript
 General Web3 Typescript packages built by Owl Protocol.
 
