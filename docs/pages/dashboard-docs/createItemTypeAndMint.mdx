@@ -7,9 +7,9 @@ In the previous sections, we explained how to add users to a project and create
 collections. Now, you are ready to start minting items for your users.
 
 <Callout type="info">
-  📘 **Item Types**
+  📘 **Templates**
 
-An item type is metadata that can include an image, a name, and attributes.
+A template is metadata that can include an image, a name, and attributes.
 These adhere to the
 [OpenSea Metadata Standards](https://docs.opensea.io/docs/metadata-standards).
 This feature streamlines the minting process, allowing you to mint multiple
@@ -19,36 +19,36 @@ items using the same pre-defined metadata.
 # Creating Templates and Minting
 
 <Steps>
-### View or add item types
+### View or add templates
 
 In the project overview page, pick the collection from which you want to mint
-items. Click on `Show Item Types`.
+items. Click on `Show Templates`.
 
 import ShowItemType from "../../public/assets/ShowItemType.png";
 
 <Screenshot src={ShowItemType} alt="ShowItemType" />
 
-This will show a table displaying all the item types that you have defined.
-Click on `Add New Item Type` to create a new Item Type.
+This will show a table displaying all the templates that you have defined.
+Click on `Add New Template` to create a new template.
 
 import AddItemType from "../../public/assets/AddItemType.png";
 
 <Screenshot src={AddItemType} alt="AddItemType" />
 
-### Define metadata for item type
+### Define metadata for template
 
-Name your item type and set its metadata. Note that the item type name will also
+Name your template and set its metadata. Note that the template name will also
 be the name of the token once minted.
 
-Click `Create` to save your newly defined item type.
+Click `Create` to save your newly defined template.
 
 import createTemplate from "../../public/assets/createTemplate.png";
 
 <Screenshot src={createTemplate} alt="createTemplate" />
 
-### Minting from an existing item type
+### Minting from an existing template
 
-The item type will now appear in your table. To mint an item to a user, simply
+The template will now appear in your table. To mint an item to a user, simply
 click the `Mint` button
 
 import mintFromTemplate from "../../public/assets/mintFromTemplate.png";
@@ -62,6 +62,6 @@ import mintItemToUser from "../../public/assets/mintItemToUser.png";
 <Screenshot src={mintItemToUser} alt="mintItemToUser" />
 
 Finally, click `Mint Item`. You have now minted a token with the metadata from
-your item type to your user.
+your template to your user.
 
 </Steps>
