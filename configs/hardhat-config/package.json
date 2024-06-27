@@ -47,11 +47,9 @@
     "tsc": "tsc",
     "tsc:watch": "tsc -w"
   },
-  "dependencies": {
-    "@owlprotocol/envvars": "workspace:*",
-    "viem": "2.9.20"
-  },
   "devDependencies": {
+    "@owlprotocol/envvars": "workspace:*",
+    "viem": "2.9.20",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",

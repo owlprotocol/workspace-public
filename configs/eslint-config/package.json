@@ -27,7 +27,7 @@
     ".": "./.eslintrc.cjs",
     "./react": "./.eslintrc.react.cjs"
   },
-  "dependencies": {
+  "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.10.0",

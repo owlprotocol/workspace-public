@@ -98,10 +98,16 @@ importers:
         version: 5.3.1(@types/node@20.14.8)
 
   configs/esbuild-config:
-    dependencies:
+    devDependencies:
       '@esbuild-plugins/node-resolve':
         specifier: ^0.1.4
         version: 0.1.4(esbuild@0.19.12)
+      '@owlprotocol/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@owlprotocol/prettier-config':
+        specifier: workspace:*
+        version: link:../prettier-config
       esbuild:
         specifier: ^0.19.2
         version: 0.19.12
@@ -120,16 +126,9 @@ importers:
       glob:
         specifier: ^7.2.0
         version: 7.2.3
-    devDependencies:
-      '@owlprotocol/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@owlprotocol/prettier-config':
-        specifier: workspace:*
-        version: link:../prettier-config
 
   configs/eslint-config:
-    dependencies:
+    devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.62.0
         version: 5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5)
@@ -168,14 +167,10 @@ importers:
         version: 2.8.8
 
   configs/hardhat-config:
-    dependencies:
+    devDependencies:
       '@owlprotocol/envvars':
         specifier: workspace:*
         version: link:../envvars
-      viem:
-        specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.2)(utf-8-validate@6.0.3)(zod@3.21.4)
-    devDependencies:
       '@owlprotocol/esbuild-config':
         specifier: workspace:*
         version: link:../esbuild-config
@@ -197,6 +192,9 @@ importers:
       typescript:
         specifier: 5.4.2
         version: 5.4.2
+      viem:
+        specifier: 2.9.20
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.2)(utf-8-validate@6.0.3)(zod@3.21.4)
       vite:
         specifier: ^5.1.6
         version: 5.3.1(@types/node@20.14.8)

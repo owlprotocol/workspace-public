@@ -33,16 +33,14 @@
     "lint": "eslint index.mjs",
     "lint:fix": "eslint index.mjs --fix"
   },
-  "dependencies": {
+  "devDependencies": {
     "@esbuild-plugins/node-resolve": "^0.1.4",
     "esbuild": "^0.19.2",
     "esbuild-copy-static-files": "^0.1.0",
     "esbuild-plugin-alias": "^0.2.1",
     "esbuild-plugin-babel": "^0.2.3",
     "esbuild-plugin-copy": "^1.1.0",
-    "glob": "^7.2.0"
-  },
-  "devDependencies": {
+    "glob": "^7.2.0",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*"
   },
