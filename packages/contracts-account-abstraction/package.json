@@ -125,11 +125,11 @@
     "solidity-docgen": "^0.6.0-beta.36",
     "ts-node": "^10.8.0",
     "tsx": "3.12.7",
-    "typescript": "5.4.2",
+    "typescript": "5.4.5",
     "vite": "^5.1.6",
     "vitest": "^1.4.0",
     "@typescript/analyze-trace": "^0.10.1",
-    "lint-staged": "^11.1.2",
+    "lint-staged": "^11.2.6",
     "depcheck": "^1.4.7"
   },
   "bugs": {
