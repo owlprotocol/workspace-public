@@ -74,6 +74,8 @@ jobs:
       # Dependencies
       - run: pnpm run depcheck
         name: Dependency Check
+      - run: pnpm run syncpack
+        name: Depedency Synced Versioning Check
       # Build
       - run: pnpm run build
         name: Build All
