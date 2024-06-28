@@ -67,6 +67,7 @@
     "build": "npm-run-all -p tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
     "clean": "rimraf lib dist",
+    "depcheck": "depcheck --ignores @types/*,@owlprotocol/tsconfig,@owlprotocol/prettier-config,tsx,dotenv",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "firebase:exec": "firebase emulators:exec --only firestore,storage,auth --project demo-owl-protocol",
@@ -83,12 +84,7 @@
   },
   "dependencies": {
     "@owlprotocol/crud-firebase": "workspace:*",
-    "@owlprotocol/envvars": "workspace:*",
-    "@owlprotocol/utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
-    "abitype": "1.0.0",
-    "lodash-es": "4.17.21",
-    "uuid": "^9.0.1",
     "viem": "2.9.20",
     "zod": "3.21.4"
   },
@@ -109,7 +105,6 @@
     "@types/uuid": "^9.0.8",
     "@typescript/analyze-trace": "^0.10.1",
     "firebase-tools": "^12.5.2",
-    "ganache": "^7.9.2",
     "lint-staged": "^11.1.2",
     "madge": "^5.0.2",
     "npm-run-all": "^4.1.5",
@@ -118,7 +113,8 @@
     "tsx": "3.12.7",
     "typescript": "5.4.2",
     "vite": "^5.1.6",
-    "vitest": "^1.4.0"
+    "vitest": "^1.4.0",
+    "depcheck": "^1.4.7"
   },
   "bugs": {
     "url": "https://github.com/owlprotocol/owlprotocol/issues",

@@ -63,6 +63,7 @@
     "build:watch": "npm run codegen:chains && npm-run-all -p tsc:watch esbuild:watch",
     "clean": "rimraf lib dist",
     "codegen:chains": "tsx src/scripts/genChainsExport.ts",
+    "depcheck": "depcheck --ignores @types/*,@owlprotocol/tsconfig,@owlprotocol/prettier-config,tsx,dotenv",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "lint": "eslint 'src/**/*.ts'",
@@ -80,9 +81,7 @@
   "dependencies": {
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/eth-firebase": "workspace:*",
-    "@owlprotocol/zod-sol": "workspace:*",
-    "viem": "2.9.20",
-    "zod": "3.21.4"
+    "viem": "2.9.20"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",
@@ -100,7 +99,8 @@
     "tsx": "3.12.7",
     "typescript": "5.4.2",
     "vite": "^5.1.6",
-    "vitest": "^1.4.0"
+    "vitest": "^1.4.0",
+    "depcheck": "^1.4.7"
   },
   "bugs": {
     "url": "https://github.com/owlprotocol/owlprotocol/issues",

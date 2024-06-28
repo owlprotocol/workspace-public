@@ -22,6 +22,12 @@
   ],
   "main": "./tsconfig.json",
   "module": "./tsconfig.json",
+  "scripts": {
+    "depcheck": "depcheck --skip-missing=true"
+  },
+  "devDependencies": {
+    "depcheck": "^1.4.7"
+  },
   "bugs": {
     "url": "https://github.com/owlprotocol/owlprotocol/issues",
     "email": "leo@owlprotocol.xyz"

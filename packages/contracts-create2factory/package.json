@@ -97,11 +97,13 @@
     "build:watch": "npm-run-all -p build:tsc:watch build:esbuild:watch",
     "build:zsol": "tsx src/codegen/runGenerateZodValidators.ts",
     "clean": "rimraf lib cache artifacts src/artifacts src/zsol docs-contracts-reference",
+    "depcheck": "depcheck --ignores @types/*,@owlprotocol/tsconfig,@owlprotocol/prettier-config,@openzeppelin/contracts,tsx,dotenv,zod",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "hardhat:deploy": "npm run to:commonjs && hardhat deploy && npm run to:module",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
+    "lint:staged": "lint-staged",
     "madge": "madge src/index.ts -c",
     "test": "pnpm run test:ci",
     "test:ci": "vitest --run",
@@ -114,10 +116,8 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "5.0.2",
-    "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
-    "abitype": "1.0.0",
     "viem": "2.9.20",
     "zod": "3.21.4"
   },
@@ -128,12 +128,10 @@
     "@owlprotocol/hardhat-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
-    "@owlprotocol/utils": "workspace:*",
     "@types/lodash-es": "4.17.12",
     "@types/node": "^20.5.6",
     "@typescript/analyze-trace": "^0.10.1",
     "ganache": "^7.9.2",
-    "glob": "10.3.10",
     "handlebars": "^4.7.7",
     "hardhat": "^2.22.1",
     "hardhat-deploy": "^0.12.2",
@@ -148,7 +146,8 @@
     "tsx": "3.12.7",
     "typescript": "5.4.2",
     "vite": "^5.1.6",
-    "vitest": "^1.4.0"
+    "vitest": "^1.4.0",
+    "depcheck": "^1.4.7"
   },
   "bugs": {
     "url": "https://github.com/owlprotocol/owlprotocol/issues",

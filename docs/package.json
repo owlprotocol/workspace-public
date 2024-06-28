@@ -1,7 +1,23 @@
 {
   "name": "@owlprotocol/docs",
-  "license": "MIT",
+  "version": "3.0.0",
+  "keywords": [
+    "web3",
+    "solidity",
+    "trpc",
+    "react-query"
+  ],
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/owlprotocol/owlprotocol.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Leo Vigna",
+    "email": "leo@owlprotocol.xyz",
+    "url": "https://github.com/leovigna"
+  },
   "scripts": {
     "build": "next build",
     "dev": "next",
@@ -28,6 +44,15 @@
     "eslint": "^8.30.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.3",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "depcheck": "^1.4.7"
+  },
+  "bugs": {
+    "url": "https://github.com/owlprotocol/owlprotocol/issues",
+    "email": "leo@owlprotocol.xyz"
+  },
+  "funding": "https://owlprotocol.xyz",
+  "engines": {
+    "node": "^18.0.0"
   }
 }

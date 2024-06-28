@@ -26,6 +26,12 @@
   "exports": {
     ".": "./.prettierrc.cjs"
   },
+  "scripts": {
+    "depcheck": "depcheck --ignores @types/*,@owlprotocol/tsconfig,@owlprotocol/prettier-config,tsx,dotenv"
+  },
+  "devDependencies": {
+    "depcheck": "^1.4.7"
+  },
   "bugs": {
     "url": "https://github.com/owlprotocol/owlprotocol/issues",
     "email": "leo@owlprotocol.xyz"

@@ -71,6 +71,9 @@ jobs:
       # Install
       - run: pnpm i
         name: Install dependencies
+      # Dependencies
+      - run: pnpm run depcheck
+        name: Dependency Check
       # Build
       - run: pnpm run build
         name: Build All

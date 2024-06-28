@@ -48,6 +48,9 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "lib/**", ".next/**"]
     },
+    "depcheck": {
+      "cache": false
+    },
     "dev": {
       "cache": false,
       "persistent": true
