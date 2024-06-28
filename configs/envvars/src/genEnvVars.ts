@@ -80,20 +80,6 @@ const SHOPIFY_ENVVARS: EnvVarDef[] = [
     { name: "SHOPIFY_SCOPES", platform: "node", defaultValue: "read_customers,read_orders,write_price_rules" },
     { name: "SHOPIFY_HOSTNAME", platform: "neutral" },
 ];
-const SCRIPT_ENVVARS: EnvVarDef[] = [
-    //Hardhat wallet (TODO: Deprecate this?)
-    { name: "PRIVATE_KEY_CONTRACT_DEPLOYER", platform: "node" },
-    //For networks that enforce EIP151, we deploy Create2Factory with 1 key
-    {
-        name: "PRIVATE_KEY_CREATE2FACTORY_DEPLOYER",
-        platform: "node",
-    },
-    {
-        name: "PUBLIC_ADDRESS_CREATE2FACTORY_DEPLOYER",
-        platform: "node",
-        defaultValue: "0x6efA2F40d59e3DA02e56Ff5a1daB6201b86f8aCF",
-    },
-];
 /** Add public defaults that are free */
 const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
     //rpc providers
@@ -244,7 +230,6 @@ export const ENVVARS: EnvVarDef[] = [
     ...CLERK_ENVVARS,
     ...INTERCOM_ENVVARS,
     ...SHOPIFY_ENVVARS,
-    ...SCRIPT_ENVVARS,
     ...BLOCKCHAIN_ENVVARS,
     ...INDEXER_ENVVARS,
     ...POH_ENVVARS,
