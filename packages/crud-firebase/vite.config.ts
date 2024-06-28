@@ -8,7 +8,7 @@ export default defineConfig({
         globals: false,
         globalSetup: "vitest.setup.ts",
         testTimeout: 60000,
-        threads: false,
+        hookTimeout: 60000,
         watch: true,
         include: ["src/**/*.test.ts"],
         //setupFiles: "./src/test/setup.ts",
