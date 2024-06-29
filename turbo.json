@@ -49,7 +49,16 @@
       "outputs": ["dist/**", "lib/**", ".next/**"]
     },
     "depcheck": {
-      "cache": false
+      "cache": false,
+      "outputs": []
+    },
+    "syncpack": {
+      "cache": false,
+      "outputs": []
+    },
+    "madge": {
+      "cache": false,
+      "outputs": []
     },
     "dev": {
       "cache": false,
@@ -68,9 +77,6 @@
     },
     "test-integration": {
       "dependsOn": ["build"],
-      "outputs": []
-    },
-    "madge": {
       "outputs": []
     },
     "lint": {
