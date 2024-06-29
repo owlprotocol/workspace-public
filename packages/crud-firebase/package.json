@@ -57,7 +57,7 @@
     "build": "npm-run-all -p tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
     "clean": "rimraf lib dist",
-    "depcheck": "depcheck --ignores @types/*,@owlprotocol/tsconfig,@owlprotocol/prettier-config,tsx,dotenv",
+    "depcheck": "depcheck --ignores @types/*,@owlprotocol/tsconfig,@owlprotocol/prettier-config,tsx,dotenv,winston",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "firebase-emulator": "firebase emulators:start --only firestore,storage,auth --project demo-owl-protocol",
@@ -112,6 +112,7 @@
     "uuid": "^9.0.1",
     "vite": "^5.1.6",
     "vitest": "^1.4.0",
+    "winston": "^3.12.0",
     "@typescript/analyze-trace": "^0.10.1",
     "zod": "3.21.4",
     "depcheck": "^1.4.7"
