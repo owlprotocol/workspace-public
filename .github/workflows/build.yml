@@ -75,7 +75,9 @@ jobs:
       - run: pnpm run depcheck
         name: Dependency Check
       - run: pnpm run syncpack
-        name: Depedency Synced Versioning Check
+        name: Dependency Synced Versioning Check
+      - run: pnpm run madge
+        name: Circular dependency check
       # Build
       - run: pnpm run build
         name: Build All
