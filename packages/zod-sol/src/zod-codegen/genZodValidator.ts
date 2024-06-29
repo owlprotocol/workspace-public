@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import { writeFiles } from "@owlprotocol/utils";
+import { mapValues, mapKeys } from "lodash-es";
 import { join } from "path";
 import { existsSync, rmdirSync } from "fs";
 import { genBarrelFile } from "./genBarrelFile.js";
@@ -11,7 +12,6 @@ import { NonTupleType } from "../abi/abiParamNonTuple.js";
 import { AbiParamTuple, isAbiParamTuple } from "../abi/abiParamTuple.js";
 import { AbiParamTupleArray, isAbiParamTupleArray } from "../abi/abiParamTupleArray.js";
 import { Abi, abiWithFunctionsOnly } from "../abi/abi.js";
-import { mapValues, mapKeys } from "../lodash.js";
 
 /**
  * From non-array type to zod validator name (`${type}Zod`)

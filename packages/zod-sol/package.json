@@ -76,7 +76,7 @@
     "abitype": "1.0.0",
     "viem": "2.9.20",
     "ethers": "5.7.2",
-    "lodash": "4.17.21",
+    "lodash-es": "4.17.21",
     "zod": "3.21.4"
   },
   "devDependencies": {
@@ -87,7 +87,7 @@
     "@types/dotenv": "^8.2.0",
     "@types/eslint": "^8.44.2",
     "@types/node": "^20.5.6",
-    "@types/lodash": "4.14.188",
+    "@types/lodash-es": "4.17.12",
     "dotenv": "^16.3.1",
     "eslint": "^8.30.0",
     "madge": "^5.0.2",

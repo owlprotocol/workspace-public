@@ -1,6 +1,6 @@
+import { filter } from "lodash-es";
 import type { AbiParam } from "./abiParam.js";
 import { AbiFunction } from "./abiFunction.js";
-import { filter } from "../lodash.js";
 
 /** Abi Event Item  */
 export interface AbiEvent {
