@@ -27,10 +27,13 @@
     ".": "./.eslintrc.cjs",
     "./react": "./.eslintrc.react.cjs"
   },
-  "dependencies": {
+  "scripts": {
+    "depcheck": "depcheck"
+  },
+  "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
-    "eslint": "^8.10.0",
+    "eslint": "^8.55.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-import": "^2.25.4",
@@ -39,7 +42,8 @@
     "eslint-plugin-react": "^7.29.3",
     "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-plugin-react-refresh": "^0.4.3",
-    "prettier": "^2.5.1"
+    "prettier": "^2.6.0",
+    "depcheck": "^1.4.7"
   },
   "bugs": {
     "url": "https://github.com/owlprotocol/owlprotocol/issues",

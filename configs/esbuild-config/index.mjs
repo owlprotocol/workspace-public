@@ -1,11 +1,11 @@
 import { NodeResolvePlugin } from "@esbuild-plugins/node-resolve";
-import * as glob from "glob";
+import { globSync } from "glob";
 import * as esbuild from "esbuild";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 
-const filesCts = glob.default.sync("src/**/*.{ts,cts,tsx,json}");
-const filesMts = glob.default.sync("src/**/*.{ts,mts,tsx,json}");
+const filesCts = globSync("src/**/*.{ts,cts,tsx,json}");
+const filesMts = globSync("src/**/*.{ts,mts,tsx,json}");
 
 const excludeNodeModulesPlugin = NodeResolvePlugin({
     extensions: [".ts", ".js", ".json"],

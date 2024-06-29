@@ -1,7 +1,23 @@
 {
   "name": "@owlprotocol/docs",
-  "license": "MIT",
+  "version": "3.0.0",
+  "keywords": [
+    "web3",
+    "solidity",
+    "trpc",
+    "react-query"
+  ],
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/owlprotocol/owlprotocol.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Leo Vigna",
+    "email": "leo@owlprotocol.xyz",
+    "url": "https://github.com/leovigna"
+  },
   "scripts": {
     "build": "next build",
     "dev": "next",
@@ -10,7 +26,7 @@
   "dependencies": {
     "@intercom/messenger-js-sdk": "^0.0.11",
     "@vercel/og": "^0.5.0",
-    "clsx": "^2.0.0",
+    "clsx": "^2.1.0",
     "framer-motion": "^10.0.0",
     "katex": "^0.16.9",
     "next": "^13.5.6",
@@ -22,12 +38,21 @@
   },
   "devDependencies": {
     "@svgr/webpack": "^8.0.1",
-    "@types/node": "^20.0.0",
-    "@types/react": "^18.2.21",
+    "@types/node": "^20.11.10",
+    "@types/react": "^18.2.43",
     "autoprefixer": "^10.4.15",
-    "eslint": "^8.30.0",
+    "eslint": "^8.55.0",
     "postcss": "^8.4.31",
-    "tailwindcss": "^3.3.3",
-    "typescript": "5.4.5"
+    "tailwindcss": "^3.4.1",
+    "typescript": "5.4.5",
+    "depcheck": "^1.4.7"
+  },
+  "bugs": {
+    "url": "https://github.com/owlprotocol/owlprotocol/issues",
+    "email": "leo@owlprotocol.xyz"
+  },
+  "funding": "https://owlprotocol.xyz",
+  "engines": {
+    "node": "^18.0.0"
   }
 }

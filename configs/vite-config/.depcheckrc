@@ -1,0 +1,4 @@
+ignores: [
+    "@owlprotocol/eslint-config",
+    "@owlprotocol/tsconfig"
+]
