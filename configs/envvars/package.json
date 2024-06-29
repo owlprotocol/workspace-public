@@ -57,7 +57,7 @@
     "tsc:watch": "tsc -w"
   },
   "dependencies": {
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.5",
     "find-config": "^1.0.0"
   },
   "devDependencies": {
@@ -66,11 +66,11 @@
     "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
     "@types/find-config": "^1.0.2",
-    "@types/node": "^20.5.6",
-    "eslint": "^8.30.0",
+    "@types/node": "^20.11.10",
+    "eslint": "^8.55.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
-    "tsx": "3.12.7",
+    "tsx": "^4.11.0",
     "typescript": "5.4.5",
     "vite": "^5.1.6",
     "depcheck": "^1.4.7"
