@@ -47,7 +47,7 @@
     "build": "npm-run-all -p tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
     "clean": "rimraf lib dist",
-    "depcheck": "depcheck --ignores @types/*,@owlprotocol/tsconfig,@owlprotocol/prettier-config,tsx,dotenv",
+    "depcheck": "depcheck",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "lint": "eslint 'src/**/*.ts'",
@@ -76,7 +76,6 @@
     "@typescript/analyze-trace": "^0.10.1",
     "lint-staged": "^11.2.6",
     "ts-expect": "^1.3.0",
-    "tsx": "3.12.7",
     "depcheck": "^1.4.7"
   },
   "bugs": {

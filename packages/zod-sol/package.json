@@ -57,7 +57,7 @@
     "build": "npm-run-all -p tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
     "clean": "rimraf lib dist",
-    "depcheck": "depcheck --ignores @types/*,@owlprotocol/tsconfig,@owlprotocol/prettier-config,tsx,dotenv",
+    "depcheck": "depcheck",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "lint": "eslint 'src/**/*.ts'",
@@ -84,11 +84,9 @@
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
-    "@types/dotenv": "^8.2.0",
     "@types/eslint": "^8.44.2",
     "@types/node": "^20.5.6",
     "@types/lodash-es": "4.17.12",
-    "dotenv": "^16.3.1",
     "eslint": "^8.30.0",
     "madge": "^5.0.2",
     "npm-run-all": "^4.1.5",
@@ -99,7 +97,6 @@
     "vitest": "^1.4.0",
     "@typescript/analyze-trace": "^0.10.1",
     "lint-staged": "^11.2.6",
-    "tsx": "3.12.7",
     "depcheck": "^1.4.7"
   },
   "bugs": {

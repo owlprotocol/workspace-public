@@ -48,7 +48,7 @@
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
     "clean": "rimraf lib dist",
     "codegen": "tsx src/genEnvVars.ts",
-    "depcheck": "depcheck --ignores @types/*,@owlprotocol/tsconfig,@owlprotocol/prettier-config,vite,tsx,dotenv",
+    "depcheck": "depcheck",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "lint": "eslint",

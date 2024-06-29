@@ -63,7 +63,7 @@
     "build:watch": "npm run codegen:chains && npm-run-all -p tsc:watch esbuild:watch",
     "clean": "rimraf lib dist",
     "codegen:chains": "tsx src/scripts/genChainsExport.ts",
-    "depcheck": "depcheck --ignores @types/*,@owlprotocol/tsconfig,@owlprotocol/prettier-config,tsx,dotenv",
+    "depcheck": "depcheck",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "lint": "eslint 'src/**/*.ts'",

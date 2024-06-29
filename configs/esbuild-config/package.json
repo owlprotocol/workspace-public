@@ -30,7 +30,7 @@
     }
   },
   "scripts": {
-    "depcheck": "depcheck --ignores @types/*,@owlprotocol/tsconfig,@owlprotocol/prettier-config,tsx,dotenv",
+    "depcheck": "depcheck",
     "lint": "eslint index.mjs",
     "lint:fix": "eslint index.mjs --fix"
   },

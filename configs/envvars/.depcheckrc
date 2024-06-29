@@ -1,0 +1,6 @@
+ignores: [
+    "@types/*",
+    "@owlprotocol/tsconfig",
+    "@owlprotocol/prettier-config",
+    "vite"
+]

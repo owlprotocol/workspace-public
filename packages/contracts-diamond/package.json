@@ -72,7 +72,7 @@
     "build:watch": "npm-run-all -p build:tsc:watch build:esbuild:watch",
     "build:zsol": "tsx src/codegen/runGenerateZodValidators.ts",
     "clean": "rimraf lib cache artifacts src/artifacts src/zsol docs-contracts-reference",
-    "depcheck": "depcheck --ignores @types/*,@owlprotocol/tsconfig,@owlprotocol/prettier-config,@openzeppelin/contracts,tsx,dotenv,zod",
+    "depcheck": "depcheck",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "hardhat:deploy": "npm run to:commonjs && hardhat deploy && npm run to:module",
