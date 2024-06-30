@@ -1,9 +1,10 @@
 import { describe, test, beforeAll, beforeEach, expect } from "vitest";
 import {
-    Account,
     Address,
     Chain,
     Transport,
+    HDAccount,
+    PrivateKeyAccount,
     Hex,
     PublicClient,
     WalletClient,
@@ -18,7 +19,6 @@ import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { ENTRYPOINT_ADDRESS_V07_TYPE, UserOperation } from "permissionless/types";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
-import { topupAddress } from "@owlprotocol/viem-utils";
 import { port } from "./test/constants.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { getSimpleAccountAddress } from "./SimpleAccount.js";
@@ -35,9 +35,9 @@ describe("SimpleAccount.test.ts", function () {
     let transport: Transport;
     let publicClient: PublicClient<Transport, Chain>;
     // Fixed account with funding `getLocalAccount(0)`
-    let localWalletClient: WalletClient<Transport, Chain, Account>;
+    let walletClient: WalletClient<Transport, Chain, HDAccount>;
     // Generated account on each test
-    let walletClient: WalletClient<Transport, Chain, Account>;
+    let account: PrivateKeyAccount;
 
     let entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
     let simpleAccountFactory: Address;
@@ -49,33 +49,18 @@ describe("SimpleAccount.test.ts", function () {
             chain: localhost,
             transport,
         });
-        localWalletClient = createWalletClient({
+        walletClient = createWalletClient({
             account: getLocalAccount(0),
             chain: localhost,
             transport,
         });
-        const contracts = await setupERC4337Contracts({ publicClient, walletClient: localWalletClient });
+        const contracts = await setupERC4337Contracts({ publicClient, walletClient: walletClient });
         entryPoint = contracts.entrypoint.address;
         simpleAccountFactory = contracts.simpleAccountFactory.address;
     });
 
     beforeEach(async () => {
-        walletClient = createWalletClient({
-            account: privateKeyToAccount(generatePrivateKey()),
-            chain: localhost,
-            transport,
-        });
-
-        //Top-up EOA address
-        const { hash } = await topupAddress({
-            publicClient,
-            walletClient: localWalletClient,
-            address: walletClient.account.address,
-            minBalance: parseEther("10"),
-            targetBalance: parseEther("10"),
-        });
-        expect(hash, "Generated EOA address should have 0 balance").toBeDefined();
-        await publicClient.waitForTransactionReceipt({ hash: hash! });
+        account = privateKeyToAccount(generatePrivateKey());
     });
 
     /** Tests involving deploying an account */
@@ -97,7 +82,7 @@ describe("SimpleAccount.test.ts", function () {
                 address: simpleAccountFactory,
                 abi: SimpleAccountFactory.abi,
                 functionName: "getAddress",
-                args: [walletClient.account.address, 0n],
+                args: [account.address, 0n],
             });
             //2. Use permissionless getSenderAddress (patched) to call Entrypoint (throw error & catch)
             const factoryData = encodeFunctionData({
@@ -113,7 +98,7 @@ describe("SimpleAccount.test.ts", function () {
                         type: "function",
                     },
                 ],
-                args: [walletClient.account.address, 0n],
+                args: [account.address, 0n],
             });
             const simpleAccountAddressFromGetSender = await getSenderAddress(publicClient, {
                 factory: simpleAccountFactory,
@@ -125,7 +110,7 @@ describe("SimpleAccount.test.ts", function () {
             //3. Compute off-chain with no calls
             const simpleAccountAddressOffchain = getSimpleAccountAddress(
                 {
-                    owner: walletClient.account.address,
+                    owner: account.address,
                     salt: 0n,
                 },
                 {
@@ -148,7 +133,7 @@ describe("SimpleAccount.test.ts", function () {
                 address: simpleAccountFactory,
                 abi: SimpleAccountFactory.abi,
                 functionName: "createAccount",
-                args: [walletClient.account.address, 0n],
+                args: [account.address, 0n],
             });
             const createAccountHash = await walletClient.writeContract(createAccountRequest);
             await publicClient.waitForTransactionReceipt({ hash: createAccountHash });
@@ -160,7 +145,7 @@ describe("SimpleAccount.test.ts", function () {
                 abi: SimpleAccount.abi,
                 functionName: "owner",
             });
-            expect(accountOwner).toBe(walletClient.account.address);
+            expect(accountOwner).toBe(account.address);
         });
     });
 
@@ -176,7 +161,7 @@ describe("SimpleAccount.test.ts", function () {
             //Get SimpleAccount address
             const simpleAccountAddress = getSimpleAccountAddress(
                 {
-                    owner: walletClient.account.address,
+                    owner: account.address,
                     salt: 0n,
                 },
                 {
@@ -188,7 +173,7 @@ describe("SimpleAccount.test.ts", function () {
             const simpleAccountFactoryData = encodeFunctionData({
                 abi: SimpleAccountFactory.abi,
                 functionName: "createAccount",
-                args: [walletClient.account.address, 0n],
+                args: [account.address, 0n],
             });
 
             simpleAccount = {
@@ -203,7 +188,7 @@ describe("SimpleAccount.test.ts", function () {
                 address: simpleAccountFactory,
                 abi: SimpleAccountFactory.abi,
                 functionName: "createAccount",
-                args: [walletClient.account.address, 0n],
+                args: [account.address, 0n],
             });
             const createAccountHash = await walletClient.writeContract(createAccountRequest);
             await publicClient.waitForTransactionReceipt({ hash: createAccountHash });
@@ -218,7 +203,7 @@ describe("SimpleAccount.test.ts", function () {
          **/
         test("submitUserOp - manual", async () => {
             //Create UserOp
-            //Encode smart account tx, send mock to vitalik
+            //Encode smart account tx, send to random address
             const to = privateKeyToAccount(generatePrivateKey()).address;
             const value = 1n;
             const data = "0x";
@@ -254,7 +239,7 @@ describe("SimpleAccount.test.ts", function () {
                 maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
             };
             const signature = await signUserOperationHashWithECDSA({
-                account: walletClient.account,
+                account,
                 userOperation: userOp,
                 chainId: localhost.id,
                 entryPoint,
@@ -285,7 +270,7 @@ describe("SimpleAccount.test.ts", function () {
             const handleOpsHash = await walletClient.writeContract(request as any);
             await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
 
-            //Get balanceOf vitalik
+            //Get balanceOf
             const balance = await publicClient.getBalance({ address: to });
             expect(balance).toBe(value);
         });
