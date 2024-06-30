@@ -1,16 +1,15 @@
 import { describe, test, beforeEach, expect } from "vitest";
-import ganache from "ganache";
 import {
     Account,
     Address,
     Chain,
-    CustomTransport,
+    Transport,
     Hex,
     PublicClient,
     WalletClient,
     createPublicClient,
     createWalletClient,
-    custom,
+    http,
     encodeAbiParameters,
     encodeFunctionData,
     parseEther,
@@ -20,7 +19,7 @@ import {
     HDAccount,
 } from "viem";
 import { localhost } from "viem/chains";
-import { DEFAULT_GANACHE_CONFIG, getLocalAccount } from "@owlprotocol/viem-utils";
+import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
 import { UserOperation } from "permissionless/types";
@@ -37,17 +36,15 @@ import { setupERC4337Contracts, setupVerifyingPaymaster } from "./setupERC4337Co
 import { toPackedUserOperation } from "./models/PackedUserOperation.js";
 
 describe("VerifyingPaymaster.test.ts", function () {
-    let transport: CustomTransport;
-    let publicClient: PublicClient<CustomTransport, Chain>;
-    let walletClient: WalletClient<CustomTransport, Chain, HDAccount>;
+    let publicClient: PublicClient<Transport, Chain>;
+    let walletClient: WalletClient<Transport, Chain, HDAccount>;
 
     // let entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
     let simpleAccountFactory: Address;
     let verifyingPaymaster: Address;
 
     beforeEach(async () => {
-        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
-        transport = custom(provider);
+        const transport = http("http://localhost:8545/1");
         publicClient = createPublicClient({
             chain: localhost,
             transport,
@@ -93,28 +90,30 @@ describe("VerifyingPaymaster.test.ts", function () {
                 },
             );
 
-            const simpleAccountFactoryData = encodeFunctionData({
-                abi: SimpleAccountFactory.abi,
-                functionName: "createAccount",
-                args: [account.address, 0n],
-            });
+            if (!(await publicClient.getBytecode({ address: simpleAccountAddress }))) {
+                const simpleAccountFactoryData = encodeFunctionData({
+                    abi: SimpleAccountFactory.abi,
+                    functionName: "createAccount",
+                    args: [account.address, 0n],
+                });
 
-            simpleAccount = {
-                address: simpleAccountAddress,
-                factoryData: simpleAccountFactoryData,
-                factoryAddress: simpleAccountFactory,
-            };
+                simpleAccount = {
+                    address: simpleAccountAddress,
+                    factoryData: simpleAccountFactoryData,
+                    factoryAddress: simpleAccountFactory,
+                };
 
-            //Deploy SimpleAccount
-            const { request: createAccountRequest } = await publicClient.simulateContract({
-                account: walletClient.account,
-                address: simpleAccountFactory,
-                abi: SimpleAccountFactory.abi,
-                functionName: "createAccount",
-                args: [account.address, 0n],
-            });
-            const createAccountHash = await walletClient.writeContract(createAccountRequest);
-            await publicClient.waitForTransactionReceipt({ hash: createAccountHash });
+                //Deploy SimpleAccount
+                const { request: createAccountRequest } = await publicClient.simulateContract({
+                    account: walletClient.account,
+                    address: simpleAccountFactory,
+                    abi: SimpleAccountFactory.abi,
+                    functionName: "createAccount",
+                    args: [account.address, 0n],
+                });
+                const createAccountHash = await walletClient.writeContract(createAccountRequest);
+                await publicClient.waitForTransactionReceipt({ hash: createAccountHash });
+            }
         });
 
         /**
@@ -244,7 +243,7 @@ describe("VerifyingPaymaster.test.ts", function () {
 
                 //Get balanceOf vitalik
                 const balance = await publicClient.getBalance({ address: to });
-                expect(balance).toBe(value);
+                expect(balance).toBeGreaterThanOrEqual(value);
             } catch (err: any) {
                 const errorEntryPoint = decodeViemError(err, EntryPointAbi);
                 if (errorEntryPoint) {

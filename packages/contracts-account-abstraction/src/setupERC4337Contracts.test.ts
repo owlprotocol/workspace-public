@@ -1,27 +1,24 @@
-import { expect, describe, test, beforeEach } from "vitest";
-import ganache from "ganache";
+import { expect, describe, test, beforeAll } from "vitest";
 import {
     Account,
     Chain,
-    CustomTransport,
+    Transport,
     PublicClient,
     WalletClient,
     createPublicClient,
     createWalletClient,
-    custom,
+    http,
 } from "viem";
 import { localhost } from "viem/chains";
-import { DEFAULT_GANACHE_CONFIG, getLocalAccount } from "@owlprotocol/viem-utils";
+import { getOrDeployDeterministicDeployer, getLocalAccount } from "@owlprotocol/viem-utils";
 import { setupERC4337Contracts, setupVerifyingPaymaster } from "./setupERC4337Contracts.js";
 
 describe("setupERC4337Contracts.test.ts", function () {
-    let publicClient: PublicClient<CustomTransport, Chain>;
-    let walletClient: WalletClient<CustomTransport, Chain, Account>;
+    let publicClient: PublicClient<Transport, Chain>;
+    let walletClient: WalletClient<Transport, Chain, Account>;
 
-    beforeEach(async () => {
-        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
-        const transport = custom(provider);
-        //const transport = http(localhost.rpcUrls.default.http[0]);
+    beforeAll(async () => {
+        const transport = http("http://localhost:8545/1");
         publicClient = createPublicClient({
             chain: localhost,
             transport,
@@ -31,6 +28,12 @@ describe("setupERC4337Contracts.test.ts", function () {
             chain: localhost,
             transport,
         });
+
+        //Deploy Deterministic Deployer first
+        const { hash } = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
+        if (hash) {
+            await publicClient.waitForTransactionReceipt({ hash });
+        }
     });
 
     test("setupERC4337Contracts", async () => {
