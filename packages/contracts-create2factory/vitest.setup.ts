@@ -8,7 +8,7 @@ let server: CreateServerReturnType;
  */
 export async function setup() {
     server = createServer({
-        host: "localhost",
+        host: "127.0.0.1",
         port: 8545,
         instance: anvil({
             chainId: 1337,

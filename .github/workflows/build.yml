@@ -27,7 +27,9 @@ jobs:
         #  submodules: true
       # Anvil Setup
       - run: curl -L https://foundry.paradigm.xyz | bash
-        name: Instal Anvil
+        name: Download Foundry Installer
+      - run: foundryup
+        name: Install Foundry
       # Node Setup
       - uses: actions/setup-node@v3
         with:
