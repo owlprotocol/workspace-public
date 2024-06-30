@@ -53,6 +53,6 @@
   },
   "funding": "https://owlprotocol.xyz",
   "engines": {
-    "node": "^22.0.0"
+    "node": "^20.0.0"
   }
 }
