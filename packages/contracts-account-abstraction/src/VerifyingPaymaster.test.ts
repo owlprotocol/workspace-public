@@ -23,6 +23,7 @@ import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
 import { UserOperation } from "permissionless/types";
+import { port } from "./test/constants.js";
 import { VerifyingPaymaster } from "./artifacts/VerifyingPaymaster.js";
 import { ENTRYPOINT_ADDRESS_V07 } from "./constants.js";
 import { IEntryPoint } from "./artifacts/IEntryPoint.js";
@@ -44,7 +45,7 @@ describe("VerifyingPaymaster.test.ts", function () {
     let verifyingPaymaster: Address;
 
     beforeEach(async () => {
-        const transport = http("http://localhost:8545/1");
+        const transport = http(`http://127.0.0.1:${port}/1`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,

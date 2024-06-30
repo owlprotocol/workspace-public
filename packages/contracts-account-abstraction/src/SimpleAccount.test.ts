@@ -19,6 +19,7 @@ import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { ENTRYPOINT_ADDRESS_V07_TYPE, UserOperation } from "permissionless/types";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
 import { topupAddress } from "@owlprotocol/viem-utils";
+import { port } from "./test/constants.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { getSimpleAccountAddress } from "./SimpleAccount.js";
 import { SIMPLE_ACCOUNT_IMPLEMENTATION_ADDRESS } from "./constants.js";
@@ -43,7 +44,7 @@ describe("SimpleAccount.test.ts", function () {
     // let verifyingPaymaster: Address;
 
     beforeAll(async () => {
-        transport = http("http://localhost:8545/1");
+        transport = http(`http://127.0.0.1:${port}/1`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,

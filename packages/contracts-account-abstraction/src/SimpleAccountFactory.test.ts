@@ -19,6 +19,7 @@ import {
     getLocalAccount,
 } from "@owlprotocol/viem-utils";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
+import { port } from "./test/constants.js";
 import { ENTRYPOINT_ADDRESS_V07, SIMPLE_ACCOUNT_FACTORY_ADDRESS } from "./constants.js";
 
 describe("SimpleAccountFactory.test.ts", function () {
@@ -26,7 +27,7 @@ describe("SimpleAccountFactory.test.ts", function () {
     let walletClient: WalletClient<Transport, Chain, Account>;
 
     beforeEach(async () => {
-        const transport = http("http://localhost:8545/1");
+        const transport = http(`http://127.0.0.1:${port}/1`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,

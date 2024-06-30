@@ -23,6 +23,7 @@ import { getLocalAccount, getOrDeployDeterministicDeployer } from "@owlprotocol/
 import { MyContract } from "@owlprotocol/contracts-create2factory/artifacts/MyContract";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { topupAddress } from "@owlprotocol/viem-utils";
+import { port } from "./test/constants.js";
 import { ERC721PresetDiamondSpec } from "./diamondSpec.js";
 import {
     FacetCutAction,
@@ -46,7 +47,7 @@ describe("facets.test.ts", function () {
     let walletClient: WalletClient<Transport, Chain, Account>;
 
     beforeAll(async () => {
-        transport = http("http://localhost:8545/1");
+        transport = http(`http://127.0.0.1:${port}/1`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,

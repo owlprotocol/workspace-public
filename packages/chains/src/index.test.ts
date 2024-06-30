@@ -24,6 +24,7 @@ describe("State Overrides", function () {
     const address = numberToAddress(1_000_000);
 
     test.skip("state override - ganache", async () => {
+        //TODO: Replace with port constant
         const transport = http("http://localhost:8545/1");
         const publicClient = createPublicClient({
             chain: { ...localhost, id: localhost.chainId } as Chain,

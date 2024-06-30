@@ -15,6 +15,7 @@ import { DETERMINISTIC_DEPLOYER_ADDRESS } from "./constants.js";
 import { getOrDeployDeterministicDeployer } from "./deployDeterministicDeployer.js";
 import { getOrDeployDeterministicContract } from "./getTransaction.js";
 import { getDeployDeterministicAddress } from "./getAddress.js";
+import { port } from "../test/constants.js";
 import { getLocalAccount } from "../accounts.js";
 //Copied artifact just for testing contract deployment
 import { MyContract } from "../artifacts/MyContract.js";
@@ -24,7 +25,7 @@ describe("DeterministicDeployer.test.ts", function () {
     let walletClient: WalletClient<Transport, Chain, Account>;
 
     beforeAll(async () => {
-        const transport = http("http://localhost:8545/1");
+        const transport = http(`http://127.0.0.1:${port}/1`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,

@@ -1,5 +1,6 @@
 import { createServer, CreateServerReturnType } from "prool";
 import { anvil } from "prool/instances";
+import { port } from "./src/test/constants.js";
 
 let server: CreateServerReturnType;
 
@@ -9,7 +10,7 @@ let server: CreateServerReturnType;
 export async function setup() {
     server = createServer({
         host: "127.0.0.1",
-        port: 8545,
+        port,
         instance: anvil({
             chainId: 1337,
         }),

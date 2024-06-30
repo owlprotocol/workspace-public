@@ -11,6 +11,7 @@ import {
 } from "viem";
 import { localhost } from "viem/chains";
 import { getOrDeployDeterministicDeployer, getLocalAccount } from "@owlprotocol/viem-utils";
+import { port } from "./test/constants.js";
 import { setupERC4337Contracts, setupVerifyingPaymaster } from "./setupERC4337Contracts.js";
 
 describe("setupERC4337Contracts.test.ts", function () {
@@ -18,7 +19,7 @@ describe("setupERC4337Contracts.test.ts", function () {
     let walletClient: WalletClient<Transport, Chain, Account>;
 
     beforeAll(async () => {
-        const transport = http("http://localhost:8545/1");
+        const transport = http(`http://127.0.0.1:${port}/1`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,

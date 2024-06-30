@@ -19,6 +19,7 @@ import { getOrDeployCreate2Factory } from "./deployCreate2Factory.js";
 import { CREATE2_FACTORY_ADDRESS } from "./constants.js";
 import { getOrDeployContracts } from "./getTransaction.js";
 import { getDeployAddress } from "./getAddress.js";
+import { port } from "../test/constants.js";
 import { getLocalAccount } from "../utils/index.js";
 import { MyContract } from "../artifacts/MyContract.js";
 import { Create2Factory } from "../artifacts/Create2Factory.js";
@@ -28,7 +29,7 @@ describe("deployCreate2Factory.test.ts", function () {
     let walletClient: WalletClient<Transport, Chain, Account>;
 
     beforeAll(async () => {
-        const transport = http("http://localhost:8545/1");
+        const transport = http(`http://127.0.0.1:${port}/1`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,

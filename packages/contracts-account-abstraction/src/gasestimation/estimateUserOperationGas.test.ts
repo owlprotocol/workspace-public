@@ -28,6 +28,7 @@ import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { ENTRYPOINT_ADDRESS_V07_TYPE, UserOperation } from "permissionless/types";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
 import { UserOperationGasFields, estimateUserOperationGas } from "./estimateUserOperationGas.js";
+import { port } from "../test/constants.js";
 import { VerifyingPaymaster } from "../artifacts/VerifyingPaymaster.js";
 import { getSimpleAccountAddress } from "../SimpleAccount.js";
 import { ERC1967Proxy } from "../artifacts/ERC1967Proxy.js";
@@ -47,7 +48,7 @@ describe("estimateUserOperationGas.test.ts", function () {
     let simpleAccountFactory: Address;
 
     beforeEach(async () => {
-        const transport = http("http://localhost:8545/1");
+        const transport = http(`http://127.0.0.1:${port}/1`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,

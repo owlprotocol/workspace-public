@@ -18,6 +18,7 @@ import {
     getDeployDeterministicAddress,
     getLocalAccount,
 } from "@owlprotocol/viem-utils";
+import { port } from "./test/constants.js";
 import { EntryPointSimulations } from "./artifacts/EntryPointSimulations.js";
 
 describe("EntryPointSimulations.test.ts", function () {
@@ -31,7 +32,7 @@ describe("EntryPointSimulations.test.ts", function () {
         let walletClient: WalletClient<Transport, Chain, Account>;
 
         beforeAll(async () => {
-            const transport = http("http://localhost:8545/1");
+            const transport = http(`http://127.0.0.1:${port}/1`);
             publicClient = createPublicClient({
                 chain: localhost,
                 transport,
