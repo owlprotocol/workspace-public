@@ -411,6 +411,9 @@ importers:
       '@typescript/analyze-trace':
         specifier: ^0.10.1
         version: 0.10.1
+      core-js:
+        specifier: ^3.37.1
+        version: 3.37.1
       depcheck:
         specifier: ^1.4.7
         version: 1.4.7
@@ -505,6 +508,9 @@ importers:
       '@typescript/analyze-trace':
         specifier: ^0.10.1
         version: 0.10.1
+      core-js:
+        specifier: ^3.37.1
+        version: 3.37.1
       depcheck:
         specifier: ^1.4.7
         version: 1.4.7
@@ -605,6 +611,9 @@ importers:
       '@typescript/analyze-trace':
         specifier: ^0.10.1
         version: 0.10.1
+      core-js:
+        specifier: ^3.37.1
+        version: 3.37.1
       depcheck:
         specifier: ^1.4.7
         version: 1.4.7
@@ -1090,6 +1099,9 @@ importers:
       '@typescript/analyze-trace':
         specifier: ^0.10.1
         version: 0.10.1
+      core-js:
+        specifier: ^3.37.1
+        version: 3.37.1
       depcheck:
         specifier: ^1.4.7
         version: 1.4.7
@@ -4616,6 +4628,9 @@ packages:
 
   core-js-compat@3.37.1:
     resolution: {integrity: sha512-9TNiImhKvQqSUkOvk/mMRZzOANTiEVC7WaBNhHcKM7x+/5E1l5NvsysR19zuDQScE8k+kfQXWRN3AtS/eOSHpg==}
+
+  core-js@3.37.1:
+    resolution: {integrity: sha512-Xn6qmxrQZyB0FFY8E3bgRXei3lWDJHhvI+u0q9TKIYM49G8pAr0FgnnrFRAmsbptZL1yxRADVXn+x5AGsbBfyw==}
 
   core-util-is@1.0.2:
     resolution: {integrity: sha512-3lqz5YjWTYnW6dlDa5TLaTCcShfar1e40rmcJVwCBJC6mWlFuj0eCHIElmG1g5kyuJ/GD+8Wn4FFCcz4gJPfaQ==}
@@ -14257,6 +14272,8 @@ snapshots:
   core-js-compat@3.37.1:
     dependencies:
       browserslist: 4.23.1
+
+  core-js@3.37.1: {}
 
   core-util-is@1.0.2: {}
 

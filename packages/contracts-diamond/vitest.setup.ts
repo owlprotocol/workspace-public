@@ -1,3 +1,5 @@
+//polyfill Promise.withResolvers
+import "core-js/actual/promise";
 import { createServer, CreateServerReturnType } from "prool";
 import { anvil } from "prool/instances";
 import { port } from "./src/test/constants.js";
