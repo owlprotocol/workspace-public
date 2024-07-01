@@ -25,6 +25,9 @@ jobs:
         # TODO: Add submodule support if needed for build/test, currently this breaks pnpm cache
         #with:
         #  submodules: true
+      # Foundry Setup (anvil)
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
       # Node Setup
       - uses: actions/setup-node@v3
         with:

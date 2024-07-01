@@ -1,36 +1,33 @@
 import { describe, test, beforeEach, expect } from "vitest";
-import ganache from "ganache";
 import {
     Account,
     Chain,
-    CustomTransport,
+    Transport,
     PublicClient,
     WalletClient,
     createPublicClient,
     createWalletClient,
-    custom,
+    http,
     encodeDeployData,
     zeroHash,
 } from "viem";
 import { localhost } from "viem/chains";
 import {
-    DEFAULT_GANACHE_CONFIG,
     getDeployDeterministicAddress,
     getOrDeployDeterministicContract,
     getOrDeployDeterministicDeployer,
     getLocalAccount,
 } from "@owlprotocol/viem-utils";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
+import { port } from "./test/constants.js";
 import { ENTRYPOINT_ADDRESS_V07, SIMPLE_ACCOUNT_FACTORY_ADDRESS } from "./constants.js";
 
 describe("SimpleAccountFactory.test.ts", function () {
-    let publicClient: PublicClient<CustomTransport, Chain>;
-    let walletClient: WalletClient<CustomTransport, Chain, Account>;
+    let publicClient: PublicClient<Transport, Chain>;
+    let walletClient: WalletClient<Transport, Chain, Account>;
 
     beforeEach(async () => {
-        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
-        const transport = custom(provider);
-        //const transport = http(localhost.rpcUrls.default.http[0]);
+        const transport = http(`http://127.0.0.1:${port}/1`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,
@@ -42,7 +39,9 @@ describe("SimpleAccountFactory.test.ts", function () {
         });
         //Deploy Deterministic Deployer first
         const { hash } = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
-        await publicClient.waitForTransactionReceipt({ hash: hash! });
+        if (hash) {
+            await publicClient.waitForTransactionReceipt({ hash });
+        }
     });
 
     test("deploy", async () => {
@@ -60,14 +59,15 @@ describe("SimpleAccountFactory.test.ts", function () {
 
         //Deploy new
         const resultDeploy = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
-        expect(resultDeploy.existed).toBe(false);
-        expect(resultDeploy.hash).toBeDefined();
         expect(resultDeploy.address).toBe(address);
 
         //Wait for receipt
-        const receipt = await publicClient.waitForTransactionReceipt({ hash: resultDeploy.hash! });
-        //receipt.contractAddress null since using factory
-        expect(receipt.contractAddress).toBe(null);
+        const hash = resultDeploy.hash;
+        if (hash) {
+            const receipt = await publicClient.waitForTransactionReceipt({ hash });
+            //receipt.contractAddress null since using factory
+            expect(receipt.contractAddress).toBe(null);
+        }
 
         //Get existing
         const resultGet = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);

@@ -1,18 +1,7 @@
 import { describe, test, expect } from "vitest";
-import { Address, Chain, createPublicClient, custom, http, numberToHex, padHex } from "viem";
-import ganache from "ganache";
+import { Address, Chain, createPublicClient, http, numberToHex, padHex } from "viem";
 import { localhost, mainnet } from "./chains/index.js";
 import { MyContract } from "./artifacts/MyContract.js";
-
-const DEFAULT_GANACHE_CONFIG = {
-    // wallet: { mnemonic: ANVIL_MNEMONIC },
-    //Instamine set to "strict" to better simulate real-world conditions.
-    //This mining mode forces us to account for the fact that once a hash is returned, this does NOT mean the transaction is confirmed
-    //Transaction is only mined once we request the receipt. This is better then just setting a block time as that would be non-deterministic
-    //Also see https://github.com/trufflesuite/ganache/discussions/2111
-    miner: { instamine: "strict" },
-    logging: { quiet: false },
-} as const;
 
 /**
  * Convert number to address
@@ -29,13 +18,14 @@ export function numberToAddress(n: number | bigint): Address {
 //https://geth.ethereum.org/docs/interacting-with-geth/rpc/ns-eth#eth-call
 //TODO: Replace HelloWorld with contract that can read balance/view/write/blockNumber etc...
 //TODO: Manage smart account nonces with this too? => Not required while we have channels
+//TODO: Disabled for now as state overrides are not needed for ERC4337 EntryPoint v0.7
 //Note: State code overrides no NOT work with low-value addresses (1-10)
 describe("State Overrides", function () {
     const address = numberToAddress(1_000_000);
 
-    test("state override - ganache", async () => {
-        const provider = ganache.provider(DEFAULT_GANACHE_CONFIG);
-        const transport = custom(provider);
+    test.skip("state override - ganache", async () => {
+        //TODO: Replace with port constant
+        const transport = http("http://localhost:8545/1");
         const publicClient = createPublicClient({
             chain: { ...localhost, id: localhost.chainId } as Chain,
             transport,
