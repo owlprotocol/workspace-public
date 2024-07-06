@@ -10,6 +10,5 @@ export * from "./constants.js";
 export * from "./isViemError.js";
 export * from "./setupERC4337Contracts.js";
 export * from "./SimpleAccount.js";
-export * from "./userOp.js";
 export * from "./types/permissionless.js";
 export * from "./getERC4337Nonce.js";
