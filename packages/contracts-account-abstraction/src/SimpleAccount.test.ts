@@ -19,6 +19,7 @@ import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { ENTRYPOINT_ADDRESS_V07_TYPE, UserOperation } from "permissionless/types";
 import { signUserOperationHashWithECDSA } from "permissionless/utils";
+import { getSenderAddress } from "permissionless";
 import { port } from "./test/constants.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { getSimpleAccountAddress } from "./SimpleAccount.js";
@@ -28,7 +29,6 @@ import { SimpleAccount } from "./artifacts/SimpleAccount.js";
 import { encodeUserOp } from "./models/UserOperation.js";
 import { IEntryPoint } from "./artifacts/IEntryPoint.js";
 import { setupERC4337Contracts } from "./setupERC4337Contracts.js";
-import { getSenderAddress } from "./getSenderAddress.js";
 import { toPackedUserOperation } from "./models/PackedUserOperation.js";
 
 describe("SimpleAccount.test.ts", function () {
