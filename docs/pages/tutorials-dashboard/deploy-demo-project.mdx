@@ -1,1 +1,46 @@
-# Deploy Demo Project
+import { Screenshot } from "components/screenshot";
+import { Steps } from "nextra/components";
+import Image from "next/image";
+
+# Deploy Your First Demo Project
+
+In this tutorial, we will create our first project. We will deploy the demo project for gaming collectibles.
+
+## Steps
+
+<Steps>
+
+### Sign Up
+Go to our [Dashboard](https://dashboard.owlprotocol.xyz/), and sign up.
+
+### Create A Team
+
+Teams allow multiple users to manage projects. Pick a name for your new team. Note that the slug is generated from the name. You will be able to change the name later but not the slug.
+
+import createTeam from "../../public/assets/createTeam.png";
+
+<Screenshot src={createTeam} alt="createTeam" />
+
+### Deploy Demo Project
+
+Now, click on the `Demo Project` button, and select `Gaming Collectibles`. Notice that there is another demo project you can try out.
+
+import createProjectButtons from "../../public/assets/createProjectButtons.png";
+
+<Image src={createProjectButtons} alt="createProjectButtons" height={65} />
+
+import demoProjectTypeSelect from "../../public/assets/demoProjectTypeSelect.png";
+
+<Screenshot src={demoProjectTypeSelect} alt="demoProjectTypeSelect" />
+
+</Steps>
+
+## Further Steps
+
+There you have it: your first (demo) project!
+
+Notice the table of users at the bottom of the project overview. These are demo users, but any users you add would appear here. You can mint collectibles to any of them.
+
+Notice too the table of collections. One is already deployed for you in the demo project, but you would be expected to deploy your own in custom projects.
+
+You can now [Get Your API Key](/quickstart#get-your-api-key), and either continue the Dashboard tutorial, our check out API tutorial.

@@ -4,7 +4,7 @@ import { Screenshot } from "components/screenshot";
 
 # Quickstart
 
-Get started with Owl Protocol in **1min** by a digital asset and sending it to our CEO with just an email! This quickstart uses `curl` commands in the terminal to keep things simple. You can then move on our other tutorials that use our SDKs.
+Get started with Owl Protocol in **only one minute** by a creating a digital asset and sending it to our CEO with just an email! This quickstart uses `curl` commands in the terminal to keep things simple. You can then move on to our other tutorials that use our SDKs.
 
 <Steps>
 ### Get Your API Key
@@ -15,7 +15,7 @@ import projectApiKey from "../public/assets/projectApiKey.png";
 
 <Screenshot src={projectApiKey} alt="projectApiKey" />
 
-The next couple steps will simply be run in your terminal. First temporarily make your api key an environment variable to make it easier for the next couple commands. Run this in your terminal.
+You will run the next steps in your terminal. First, temporarily make your API key an environment variable to make it easier for the next couple commands. Run this in your terminal.
 
 ```bash copy showLineNumbers
 export API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx # Replace Here
@@ -35,7 +35,7 @@ and ensure the security of your project.
 
 </Callout>
 
-### Launch a collection
+### Launch A collection
 
 Deploy a new ERC721 collection using the Owl Protocol API.
 
@@ -48,7 +48,7 @@ curl --request POST \
     --data '{ "chainId": 150150, "name": "My Collection", "symbol": "MYC" }'
 ```
 
-You should a response like this. **Make sure to copy** the `contractAddress` for the next step.
+You should see a response like this. **Make sure to copy** the `contractAddress` for the next step.
 
 ```json
 {
@@ -69,12 +69,12 @@ You should a response like this. **Make sure to copy** the `contractAddress` for
 Copy the `contractAddress` and export it for future use.
 
 ```bash copy showLineNumbers
-export ADDRESS=0x0000000000000000000000000000000000000000 #Replace here
+export ADDRESS=0x0000000000000000000000000000000000000000 # Replace here
 ```
 
-### Mint digital asset to user
+### Mint A Digital Asset To A User
 
-Mint a digitial asset to the user. Provide the collection address, recipient's email, and optional asset metadata (such as name, description, and image).
+You will now mint a digitial asset to a user. Provide the collection address, recipient's email, and optional asset metadata (such as name, description, and image).
 
 ```bash copy showLineNumbers
 curl --request POST \
@@ -85,7 +85,7 @@ curl --request POST \
     --data '{ "to": ["leo@owlprotocol.xyz"], "metadata": {"name": "NFT #1", "description": "This was so easy!", "image": "https://picsum.photos/200" } }'
 ```
 
-You should a response like this
+You should a response like this:
 
 ```json
 {
@@ -101,7 +101,7 @@ You should a response like this
 }
 ```
 
-You can also view the nft you deployed on the block explorer. Note that indexing metadata might take a while but you should quickly see that an ERC721 digital asset was created on the blockchain.
+You can also view the NFT you deployed on the block explorer. Note that indexing metadata might take a while but you should quickly see that an ERC721 digital asset was created on the blockchain.
 
 ```bash showLineNumbers
 echo "View NFT at https://explorer-testnet.hedwig.build/token/$ADDRESS"
@@ -111,7 +111,7 @@ echo "View NFT at https://explorer-testnet.hedwig.build/token/$ADDRESS"
 
 Congratulations on launching your first digital asset collection!
 
-Check out these tutorials to learn how to use different tools such as our tRPC client SDK or our no code Zapier App.
+Check out these tutorials to learn how to use different tools such as our tRPC client SDK or our no-code Zapier App.
 
 <Cards>
     <Cards.Card
