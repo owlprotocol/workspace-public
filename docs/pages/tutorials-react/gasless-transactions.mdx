@@ -1,0 +1,164 @@
+import { Steps } from "nextra/components";
+
+# Gasless Transactions in React
+In this tutorial, you will create a basic React app that lets you connect a wallet and send a gasless transaction with a smart account using the Owl Protocol [ERC4337](https://www.erc4337.io/docs) Account Abstraction API, [Wagmi](https://wagmi.sh/) hooks and a [RainbowKit](https://www.rainbowkit.com/) wallet connector.
+
+<Steps>
+
+### Clone The Starter Repo
+
+```bash
+git clone https://github.com/owlprotocol/tutorials-react.git
+```
+
+### Copy example environment variables
+
+```bash
+cp .env.example .env
+```
+
+### Initialize The Owl Provider
+
+Initialize the Owl Provider in `App.tsx` to enable gasless transactions.
+
+Note that this is already done for you in the starter repository
+
+```typescript
+import { OwlProvider } from "@owlprotocol/ui-components";
+import {
+  API_TRPC_BASE_URL,
+  CLERK_PUBLISHABLE_KEY,
+} from "@owlprotocol/envvars/browser";
+
+export const App = () => {
+  return (
+    <>
+      <h1>Owl React Tutorials</h1>
+
+      <OwlProvider
+        apiTrpcBaseUrl={API_TRPC_BASE_URL}
+        clerkPublishableKey={CLERK_PUBLISHABLE_KEY}
+      >
+        {/* Add tutorial snippets below */}
+      </OwlProvider>
+    </>
+  );
+};
+
+```
+
+### Create the gasless transaction component
+
+In this step, we will initialize wrappers to create blockchain interactions.
+
+We will connect to the Hedwig Testnet chain, which has chain id `150150`.
+
+We start by fetching data about that chain by making a trpc call to the Owl API,
+
+We then set up two providers:
+
+- `RainbowKitProvider` to add a UI for users to pick a wallet and sign in
+- `WagmiProvider` to add hooks for interactions such as sending transactions
+
+```typescript
+import {
+  createConfig,
+  WagmiProvider,
+} from "wagmi";
+import { type Chain, http} from "viem";
+import { trpc } from "@owlprotocol/core-trpc/react-query";
+import {
+  connectorsForWallets,
+  RainbowKitProvider,
+  darkTheme,
+} from "@rainbow-me/rainbowkit";
+import { metaMaskWallet } from "@rainbow-me/rainbowkit/wallets";
+
+import "@rainbow-me/rainbowkit/styles.css";
+
+export const GaslessTransactionComponent = () => {
+  // Get Hedwig Testnet chain data
+  const [owlChain] = trpc.network.get.useSuspenseQuery({ chainId: 150150 });
+  const chains = [owlChain] as readonly [Chain];
+
+  const connectors = connectorsForWallets(
+    [
+      {
+        groupName: "Recommended",
+        wallets: [metaMaskWallet],
+      },
+    ],
+    { projectId: "owlProtocol", appName: "Owl React Tutorials" }
+  );
+
+  const config = createConfig({
+    chains,
+    connectors,
+    transports: { [owlChain.id]: http(owlChain.rpcUrls.default.http[0]) },
+  });
+
+  return (
+    <WagmiProvider config={config}>
+      <RainbowKitProvider theme={darkTheme()}>
+	      {/* We will be writing this component next */}
+        <GaslessTransactionInnerComponent />
+      </RainbowKitProvider>
+    </WagmiProvider>
+  );
+};
+```
+
+### Create the gasless transaction inner component
+
+```typescript
+import {
+  useSendTransaction,
+  useConnectors,
+} from "wagmi";
+import { zeroAddress } from "viem";
+import { useOwlSimpleSmartAccount } from "@owlprotocol/ui-components";
+import { API_REST_BASE_URL } from "@owlprotocol/envvars/browser";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+
+import "@rainbow-me/rainbowkit/styles.css";
+
+const GaslessTransactionInnerComponent = () => {
+  const { sendTransaction, data: txHash } = useSendTransaction();
+  const currConnectors = useConnectors();
+
+  useOwlSimpleSmartAccount({
+    owlApiRestBaseUrl: API_REST_BASE_URL,
+  });
+
+  return (
+    <>
+      <ConnectButton />
+
+      <button
+        onClick={() =>
+          // A dummy transaction. Note that no ether is sent.
+          sendTransaction({
+            to: zeroAddress,
+            value: 0n,
+            data: "0x",
+          })
+        }
+      >
+        Send test transaction
+      </button>
+
+      <p>{!!txHash && `Transaction Hash: ${txHash}`}</p>
+
+      {/* Need to disconnect all connectors since we are connecting to two connectors, the main connector and the smart account connector */}
+      <button onClick={() => currConnectors.forEach((c) => c.disconnect())}>
+        Disconnect All
+      </button>
+
+      <br />
+    </>
+  );
+};
+
+```
+
+</Steps>

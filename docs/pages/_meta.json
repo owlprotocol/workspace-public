@@ -39,6 +39,10 @@
     "title": "Account Abstraction API",
     "display": "normal"
   },
+  "tutorials-react": {
+    "title": "React",
+    "display": "normal"
+  },
   "tutorials-dashboard": {
     "title": "No Code Dashboard",
     "display": "hidden"
