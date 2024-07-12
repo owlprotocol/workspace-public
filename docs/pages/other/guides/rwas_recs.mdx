@@ -7,7 +7,7 @@ In this guide, we will show you how to set up a REOs asset collection. REOs coul
 
 # The REO Collection Model
 
-We define an ERC-1155 Asset Collection. This is a type of token collection where you can create multiple instances of a same token id. Each token id shall represent one source of renewable energy, say a wind turbine farm. Each instance of a token shall represent one megawatt-hour (MWh) of renewable energy generated. This model allows for each certificate to
+We define an ERC1155 Asset Collection. This is a type of token collection where you can create multiple instances of a same token id. Each token id shall represent one source of renewable energy, say a wind turbine farm. Each instance of a token shall represent one megawatt-hour (MWh) of renewable energy generated. This model allows for each certificate to
 
 The metadata of a token should contain at least:
 
@@ -55,7 +55,7 @@ Note that this step can be done from the dashboard.
 
 ## Step 2: Launch a Collection
 
-Next, you deploy an ERC-1155 collection. We reuse the `client` and the `projectId` from the previous snippet. You will also need to pick a network ID to deploy your collection on. Here, we use `80001` which represents Polygon's test network: Mumbai.
+Next, you deploy an ERC1155 collection. We reuse the `client` and the `projectId` from the previous snippet. You will also need to pick a network ID to deploy your collection on. Here, we use `80001` which represents Polygon's test network: Mumbai.
 
 ```typescript
 // Define network ID (replace with your choice)
@@ -69,10 +69,10 @@ const contract = await client.collection.deploy.mutate({                        
     type: "ERC1155" as any,
 });
 
-// `contract` now contains data about the deployed ERC-1155 collection
+// `contract` now contains data about the deployed ERC1155 collection
 ```
 
-Note: you can also deploy an ERC-1155 collection through our dashboard. See [🚀 Deploy an Owl ERC1155 Collection](https://docs-api.owlprotocol.xyz/docs/1-deploy-erc1155-collection).
+Note: you can also deploy an ERC1155 collection through our dashboard. See [🚀 Deploy an Owl ERC1155 Collection](https://docs-api.owlprotocol.xyz/docs/1-deploy-erc1155-collection).
 
 ## Step 3: Defining Asset Metadata
 
@@ -128,4 +128,4 @@ When automating REO generation, you should aim to use similar code to periodical
 
 ## Advanced Steps
 
-In order to create on-chain Renewable Energy Certificates (RECs), you could then create an ERC-721 collection. You could then generate (mint) an REC when a user redeems (burns) a certain number of REOs. Your REC would then have in its metadata REO information.
+In order to create on-chain Renewable Energy Certificates (RECs), you could then create an ERC721 collection. You could then generate (mint) an REC when a user redeems (burns) a certain number of REOs. Your REC would then have in its metadata REO information.
