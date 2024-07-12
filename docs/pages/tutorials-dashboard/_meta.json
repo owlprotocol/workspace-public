@@ -23,10 +23,12 @@
     "title": "Deploy ERC721 Collection"
   },
   "add-project-users": {
-    "title": "Add Project Users"
+    "title": "Add Project Users",
+    "display":"hidden"
   },
   "create-template-and-mint": {
-    "title": "Create Template and Mint to Users"
+    "title": "Create Template and Mint to Users",
+    "display":"hidden"
   },
   "index": {
     "title": "Index",
