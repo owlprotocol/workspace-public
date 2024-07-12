@@ -1,6 +1,35 @@
 {
-  "deploy-demo-project": {
-    "title": "Deploy Demo Project",
-    "display": "normal"
+  "features": {
+    "title":"Features",
+    "display":"hidden"
+  },
+  "get-started":{
+    "title": "Get Started",
+    "display":"hidden"
+  },
+  "deploy-demo-project":{
+    "title":"Deploy Demo Project"
+  },
+  "mint-collectible-per-user":{
+    "title":"Mint A Collectible Per User"
+  },
+  "deploy-custom-project":{
+    "title":"Deploy Your Custom Project"
+  },
+  "create-custom-project":{
+    "display":"hidden"
+  },
+  "deploy-erc721-collection": {
+    "title": "Deploy ERC721 Collection"
+  },
+  "add-project-users": {
+    "title": "Add Project Users"
+  },
+  "create-template-and-mint": {
+    "title": "Create Template and Mint to Users"
+  },
+  "index": {
+    "title": "Index",
+    "display":"hidden"
   }
 }
