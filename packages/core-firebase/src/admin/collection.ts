@@ -26,6 +26,8 @@ import {
     projectTokenTemplatePath,
     projectWalletDfnsGroupPath,
     projectWalletSafeGroupPath,
+    projectUserCustodialPath,
+    projectUserCustodialGroupPath,
 } from "../collections.js";
 import {
     NetworkDataEncoded,
@@ -36,6 +38,7 @@ import {
     ProjectId,
     ProjectTokenData,
     ProjectTokenTemplateData,
+    ProjectUserCustodialData,
     ProjectUserData,
     ProjectUserListData,
     ProjectUserListId,
@@ -72,6 +75,13 @@ export const projectApiKeyCol = (collectionId: ProjectId) =>
 export const projectUserColGroup = getColGroupRef<ProjectUserData>(firestore, projectUserGroupPath);
 export const projectUserCol = (collectionId: ProjectId) =>
     getColRef<ProjectUserData>(firestore, projectUserPath(collectionId));
+
+export const projectUserCustodialColGroup = getColGroupRef<ProjectUserCustodialData>(
+    firestore,
+    projectUserCustodialGroupPath,
+);
+export const projectUserCustodialCol = (collectionId: ProjectId) =>
+    getColRef<ProjectUserCustodialData>(firestore, projectUserCustodialPath(collectionId));
 
 export const projectUserListCol = (collectionId: ProjectId) =>
     getColRef<ProjectUserListData>(firestore, projectUserListPath(collectionId));

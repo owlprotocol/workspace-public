@@ -37,6 +37,10 @@ export const projectUserGroupPath = "projectUser";
 export const projectUserPath = (collectionId: ProjectId) => {
     return join(projectPath, encodeProjectId(collectionId), projectUserGroupPath);
 };
+export const projectUserCustodialGroupPath = "projectUserCustodial";
+export const projectUserCustodialPath = (collectionId: ProjectId) => {
+    return join(projectPath, encodeProjectId(collectionId), projectUserCustodialGroupPath);
+};
 export const projectUserListGroupPath = "projectUserList";
 export const projectUserListPath = (collectionId: ProjectId) => {
     return join(projectPath, encodeProjectId(collectionId), projectUserListGroupPath);

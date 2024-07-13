@@ -18,6 +18,7 @@ import {
     projectTokenCol,
     projectTokenTemplateCol,
     projectUserCol,
+    projectUserCustodialCol,
     projectUserWalletDfnsCol,
     projectUserWalletSafeCol,
     projectWalletDfnsCol,
@@ -109,6 +110,12 @@ import {
     encodeProjectWalletSafeData,
     encodeProjectWalletSafeDataPartial,
     encodeProjectWalletSafeId,
+    ProjectUserCustodialData,
+    ProjectUserCustodialId,
+    decodeProjectUserCustodialId,
+    encodeProjectUserCustodialData,
+    encodeProjectUserCustodialDataPartial,
+    encodeProjectUserCustodialId,
 } from "../models/index.js";
 
 //user & team
@@ -231,6 +238,20 @@ export const projectUserResource = getFirebaseResource<ProjectUserData, ProjectU
         decodeParentDocId: decodeProjectId,
     },
 );
+
+//project users
+export const projectUserCustodialResource = getFirebaseResource<
+    ProjectUserCustodialData,
+    ProjectUserCustodialId,
+    ProjectId
+>(firestore, projectUserCustodialCol, {
+    encodeId: encodeProjectUserCustodialId,
+    decodeId: decodeProjectUserCustodialId,
+    encodeDataPartial: encodeProjectUserCustodialDataPartial,
+    encodeData: encodeProjectUserCustodialData,
+    encodeParentDocId: encodeProjectId,
+    decodeParentDocId: decodeProjectId,
+});
 
 //project wallets
 export const projectWalletDfnsResource = getFirebaseResource<ProjectWalletDfnsData, ProjectWalletDfnsId, ProjectId>(

@@ -8,6 +8,7 @@ export * from "./ProjectContractMetadata.js";
 export * from "./ProjectToken.js";
 export * from "./ProjectTokenTemplate.js";
 export * from "./ProjectUser.js";
+export * from "./ProjectUserCustodial.js";
 export * from "./ProjectUserList.js";
 export * from "./ProjectUserListMember.js";
 export * from "./ProjectUserWalletDfns.js";
