@@ -77,7 +77,7 @@ export const blockEncodeZod = z
         excessBlobGas: quantityEncodeZod.default("0x0").describe("Excess blob gas"),
         /** Receipts */
         receiptsRoot: bytes32Zod.describe("Root of the this block’s receipts trie"),
-        sealFields: z.array(bytes32Zod).default([]),
+        sealFields: z.array(bytesZod).default([]),
         /** Logs */
         logsBloom: bytesZod.describe("Logs bloom filter or `null` if pending"),
         /** Transactions */
@@ -125,7 +125,7 @@ export const blockDecodeZod = z
         excessBlobGas: quantityDecodeZod.default(0n).describe("Excess blob gas"),
         /** Receipts */
         receiptsRoot: bytes32Zod.describe("Root of the this block’s receipts trie"),
-        sealFields: z.array(bytes32Zod).default([]),
+        sealFields: z.array(bytesZod).default([]),
         /** Logs */
         logsBloom: bytesZod.describe("Logs bloom filter or `null` if pending"),
         /** Transactions */
