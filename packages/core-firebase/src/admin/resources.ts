@@ -240,18 +240,18 @@ export const projectUserResource = getFirebaseResource<ProjectUserData, ProjectU
 );
 
 //project users
-export const projectUserManagedResource = getFirebaseResource<
-    ProjectUserManagedData,
-    ProjectUserManagedId,
-    ProjectId
->(firestore, projectUserManagedCol, {
-    encodeId: encodeProjectUserManagedId,
-    decodeId: decodeProjectUserManagedId,
-    encodeDataPartial: encodeProjectUserManagedDataPartial,
-    encodeData: encodeProjectUserManagedData,
-    encodeParentDocId: encodeProjectId,
-    decodeParentDocId: decodeProjectId,
-});
+export const projectUserManagedResource = getFirebaseResource<ProjectUserManagedData, ProjectUserManagedId, ProjectId>(
+    firestore,
+    projectUserManagedCol,
+    {
+        encodeId: encodeProjectUserManagedId,
+        decodeId: decodeProjectUserManagedId,
+        encodeDataPartial: encodeProjectUserManagedDataPartial,
+        encodeData: encodeProjectUserManagedData,
+        encodeParentDocId: encodeProjectId,
+        decodeParentDocId: decodeProjectId,
+    },
+);
 
 //project wallets
 export const projectWalletDfnsResource = getFirebaseResource<ProjectWalletDfnsData, ProjectWalletDfnsId, ProjectId>(
