@@ -3,51 +3,51 @@ import { Address, createClient, http, LocalAccount, SignableMessage } from "viem
 import { toAccount } from "viem/accounts";
 import { getAddresses, signMessage } from "viem/actions";
 
-/***** Custodial User *****/
+/***** Managed User *****/
 /**
- * Params for instantiating API URL for Custodial User service
+ * Params for instantiating API URL for Managed User service
  */
-export interface ProjectUserCustodialUrlParams {
+export interface ProjectUserManagedUrlParams {
     userId: string;
     owlApiRestBaseUrl?: string;
 }
 
 /**
- * Get base REST url for Custodial User operations
+ * Get base REST url for Managed User operations
  * @param params
- * @returns `<base>/users/custodial/<userId>`
+ * @returns `<base>/users/managed/<userId>`
  */
-export function getUserCustodialUrl(params: ProjectUserCustodialUrlParams): string {
+export function getUserManagedUrl(params: ProjectUserManagedUrlParams): string {
     const { userId, owlApiRestBaseUrl = API_REST_BASE_URL } = params;
-    return `${owlApiRestBaseUrl}/users/custodial/${userId}`;
+    return `${owlApiRestBaseUrl}/users/managed/${userId}`;
 }
 
 /***** Signer *****/
 /**
- * Get signer REST url for Custodial User
+ * Get signer REST url for Managed User
  * @param params
- * @returns `<base>/users/custodial/<userId>/signRpc`
+ * @returns `<base>/users/managed/<userId>/signRpc`
  */
-export function getUserCustodialSignRpcUrl(params: ProjectUserCustodialUrlParams): string {
-    return `${getUserCustodialUrl(params)}/signRpc`;
+export function getUserManagedSignRpcUrl(params: ProjectUserManagedUrlParams): string {
+    return `${getUserManagedUrl(params)}/signRpc`;
 }
 
 /**
- * Get signer Transport for Custodial User
+ * Get signer Transport for Managed User
  * @param params
  * @returns http transport
  */
-export function getUserCustodialSignTransport(params: ProjectUserCustodialUrlParams & { apiKey: string }) {
-    return http(getUserCustodialSignRpcUrl(params), {
+export function getUserManagedSignTransport(params: ProjectUserManagedUrlParams & { apiKey: string }) {
+    return http(getUserManagedSignRpcUrl(params), {
         fetchOptions: { headers: { "x-api-key": params.apiKey } },
     });
 }
 
 //TODO: Refactor to general util that just takes a transport
-export async function createUserCustodialAccount(
-    params: ProjectUserCustodialUrlParams & { apiKey: string; address?: Address },
+export async function createUserManagedAccount(
+    params: ProjectUserManagedUrlParams & { apiKey: string; address?: Address },
 ): Promise<LocalAccount> {
-    const transport = getUserCustodialSignTransport(params);
+    const transport = getUserManagedSignTransport(params);
 
     const client = createClient({ transport }).extend((client) => ({
         getAddresses: () => getAddresses(client),
@@ -98,10 +98,10 @@ export async function createUserCustodialAccount(
 /***** Wallet *****/
 //TODO: Later
 /**
- * Get wallet REST url for Custodial User
+ * Get wallet REST url for Managed User
  * @param params
  * @returns
  */
-export function getUserCustodialWalletRpcUrl(params: ProjectUserCustodialUrlParams & { chainId: number }): string {
-    return `${getUserCustodialUrl(params)}/network/${params.chainId}/walletRpc`;
+export function getUserManagedWalletRpcUrl(params: ProjectUserManagedUrlParams & { chainId: number }): string {
+    return `${getUserManagedUrl(params)}/network/${params.chainId}/walletRpc`;
 }

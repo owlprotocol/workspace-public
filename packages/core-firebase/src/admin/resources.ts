@@ -18,7 +18,7 @@ import {
     projectTokenCol,
     projectTokenTemplateCol,
     projectUserCol,
-    projectUserCustodialCol,
+    projectUserManagedCol,
     projectUserWalletDfnsCol,
     projectUserWalletSafeCol,
     projectWalletDfnsCol,
@@ -110,12 +110,12 @@ import {
     encodeProjectWalletSafeData,
     encodeProjectWalletSafeDataPartial,
     encodeProjectWalletSafeId,
-    ProjectUserCustodialData,
-    ProjectUserCustodialId,
-    decodeProjectUserCustodialId,
-    encodeProjectUserCustodialData,
-    encodeProjectUserCustodialDataPartial,
-    encodeProjectUserCustodialId,
+    ProjectUserManagedData,
+    ProjectUserManagedId,
+    decodeProjectUserManagedId,
+    encodeProjectUserManagedData,
+    encodeProjectUserManagedDataPartial,
+    encodeProjectUserManagedId,
 } from "../models/index.js";
 
 //user & team
@@ -240,15 +240,15 @@ export const projectUserResource = getFirebaseResource<ProjectUserData, ProjectU
 );
 
 //project users
-export const projectUserCustodialResource = getFirebaseResource<
-    ProjectUserCustodialData,
-    ProjectUserCustodialId,
+export const projectUserManagedResource = getFirebaseResource<
+    ProjectUserManagedData,
+    ProjectUserManagedId,
     ProjectId
->(firestore, projectUserCustodialCol, {
-    encodeId: encodeProjectUserCustodialId,
-    decodeId: decodeProjectUserCustodialId,
-    encodeDataPartial: encodeProjectUserCustodialDataPartial,
-    encodeData: encodeProjectUserCustodialData,
+>(firestore, projectUserManagedCol, {
+    encodeId: encodeProjectUserManagedId,
+    decodeId: decodeProjectUserManagedId,
+    encodeDataPartial: encodeProjectUserManagedDataPartial,
+    encodeData: encodeProjectUserManagedData,
     encodeParentDocId: encodeProjectId,
     decodeParentDocId: decodeProjectId,
 });
