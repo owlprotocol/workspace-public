@@ -18,6 +18,7 @@ import {
     projectTokenCol,
     projectTokenTemplateCol,
     projectUserCol,
+    projectUserManagedCol,
     projectUserWalletDfnsCol,
     projectUserWalletSafeCol,
     projectWalletDfnsCol,
@@ -109,6 +110,12 @@ import {
     encodeProjectWalletSafeData,
     encodeProjectWalletSafeDataPartial,
     encodeProjectWalletSafeId,
+    ProjectUserManagedData,
+    ProjectUserManagedId,
+    decodeProjectUserManagedId,
+    encodeProjectUserManagedData,
+    encodeProjectUserManagedDataPartial,
+    encodeProjectUserManagedId,
 } from "../models/index.js";
 
 //user & team
@@ -227,6 +234,20 @@ export const projectUserResource = getFirebaseResource<ProjectUserData, ProjectU
         decodeId: decodeProjectUserId,
         encodeDataPartial: encodeProjectUserDataPartial,
         encodeData: encodeProjectUserData,
+        encodeParentDocId: encodeProjectId,
+        decodeParentDocId: decodeProjectId,
+    },
+);
+
+//project users
+export const projectUserManagedResource = getFirebaseResource<ProjectUserManagedData, ProjectUserManagedId, ProjectId>(
+    firestore,
+    projectUserManagedCol,
+    {
+        encodeId: encodeProjectUserManagedId,
+        decodeId: decodeProjectUserManagedId,
+        encodeDataPartial: encodeProjectUserManagedDataPartial,
+        encodeData: encodeProjectUserManagedData,
         encodeParentDocId: encodeProjectId,
         decodeParentDocId: decodeProjectId,
     },

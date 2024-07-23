@@ -354,6 +354,61 @@ importers:
         specifier: ^1.4.0
         version: 1.6.0(@types/node@20.14.8)
 
+  packages/clients:
+    dependencies:
+      '@owlprotocol/envvars':
+        specifier: workspace:*
+        version: link:../../configs/envvars
+      permissionless:
+        specifier: ^0.1.19
+        version: 0.1.31(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.21.4))
+      viem:
+        specifier: 2.9.20
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.21.4)
+    devDependencies:
+      '@owlprotocol/esbuild-config':
+        specifier: workspace:*
+        version: link:../../configs/esbuild-config
+      '@owlprotocol/eslint-config':
+        specifier: workspace:*
+        version: link:../../configs/eslint-config
+      '@owlprotocol/prettier-config':
+        specifier: workspace:*
+        version: link:../../configs/prettier-config
+      '@owlprotocol/tsconfig':
+        specifier: workspace:*
+        version: link:../../configs/tsconfig
+      '@types/node':
+        specifier: ^20.11.10
+        version: 20.14.8
+      '@typescript/analyze-trace':
+        specifier: ^0.10.1
+        version: 0.10.1
+      depcheck:
+        specifier: ^1.4.7
+        version: 1.4.7
+      lint-staged:
+        specifier: ^11.2.6
+        version: 11.2.6
+      madge:
+        specifier: ^5.0.2
+        version: 5.0.2
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+      vite:
+        specifier: ^5.1.6
+        version: 5.3.1(@types/node@20.14.8)
+      vitest:
+        specifier: ^1.4.0
+        version: 1.6.0(@types/node@20.14.8)
+
   packages/contracts-account-abstraction:
     dependencies:
       '@account-abstraction/contracts':
