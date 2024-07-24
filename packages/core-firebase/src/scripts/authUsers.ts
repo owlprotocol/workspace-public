@@ -10,4 +10,4 @@ export async function migrateAuthUsers() {
     // console.log(update);
 }
 
-await migrateAuthUsers();
+// await migrateAuthUsers();
