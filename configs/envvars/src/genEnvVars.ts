@@ -116,11 +116,6 @@ const INDEXER_ENVVARS: EnvVarDef[] = [
     { name: "INDEXER_MAX_ADDRESSES", platform: "node", defaultValue: "100" },
     { name: "INDEXER_MAX_FILTERS", platform: "node", defaultValue: "10" },
 ];
-const TELEGRAM_BOT_ENVVARS: EnvVarDef[] = [
-    { name: "TELEGRAM_BOT_TOKEN", platform: "node" },
-    { name: "TELEGRAM_BOT_HANDLE", platform: "node", defaultValue: "@easywallet" },
-    { name: "TELEGRAM_BOT_NAME", platform: "node", defaultValue: "Easy Wallet" },
-];
 
 const POH_ENVVARS: EnvVarDef[] = [{ name: "POH_NETWORK_ID", platform: "node", defaultValue: "1337" }];
 
@@ -233,7 +228,6 @@ export const ENVVARS: EnvVarDef[] = [
     ...BLOCKCHAIN_ENVVARS,
     ...INDEXER_ENVVARS,
     ...POH_ENVVARS,
-    ...TELEGRAM_BOT_ENVVARS,
     ...NETWORK_ENVVARS,
     { name: "OPENAI_SECRET_KEY", platform: "node" },
     { name: "OWL_DOMAINS", platform: "node", defaultValue: "*" },
