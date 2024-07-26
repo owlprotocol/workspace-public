@@ -1,13 +1,20 @@
 import { getFirebaseApp } from "@owlprotocol/crud-firebase/admin";
+import { userResource } from "../admin/resources.js";
 
 export async function migrateAuthUsers() {
     const { auth } = getFirebaseApp();
-    const users = await auth.listUsers(10);
-    console.log(users);
-    // TODO: for all users listed, get their email from the users collection, and add the email to the auth users using `updateUser`
-    // const uid = "user_2VKdvYq9WgokilCPzkWWHHoWGAb";
-    // const update = await auth.updateUser(uid, { email: "leo@owlprotocol.xyz" });
-    // console.log(update);
+
+    const { users } = await auth.listUsers();
+
+    const userIds = users.map((user) => ({
+        userId: user.uid,
+    }));
+
+    const userDocuments = await userResource.getBatch(userIds);
+
+    const userUpdates = userDocuments.map((user) => user && auth.updateUser(user!.userId, { email: user!.email }));
+
+    await Promise.all(userUpdates);
 }
 
 // await migrateAuthUsers();
