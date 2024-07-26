@@ -45,6 +45,7 @@ export function getFirebaseConfig() {
             //https://firebase.google.com/docs/emulator-suite/connect_firestore#admin_sdks
             //Demo prefix forces connection to emulator
             projectId: FIREBASE_PROJECT_ID.startsWith("demo-") ? FIREBASE_PROJECT_ID : `demo-${FIREBASE_PROJECT_ID}`,
+            authDomain: "localhost",
             storageBucket: FIREBASE_STORAGE_BUCKET,
         };
     }
