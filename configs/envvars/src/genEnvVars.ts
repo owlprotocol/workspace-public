@@ -231,6 +231,7 @@ export const ENVVARS: EnvVarDef[] = [
     ...NETWORK_ENVVARS,
     { name: "OPENAI_SECRET_KEY", platform: "node" },
     { name: "OWL_DOMAINS", platform: "node", defaultValue: "*" },
+    { name: "OWL_DASHBOARD_URL", platform: "browser", defaultValue: "http://localhost:5173" },
 ];
 
 const NODE_ENV_VAR = {
