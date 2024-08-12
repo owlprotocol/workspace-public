@@ -21,7 +21,15 @@ import {
     persistentMultipleTabManager,
     memoryLocalCache,
 } from "firebase/firestore";
-import { initializeAuth, getAuth, connectAuthEmulator, Auth, Dependencies } from "firebase/auth";
+import {
+    initializeAuth,
+    getAuth,
+    connectAuthEmulator,
+    Auth,
+    Dependencies,
+    browserSessionPersistence,
+    browserPopupRedirectResolver,
+} from "firebase/auth";
 import { getStorage, connectStorageEmulator, FirebaseStorage } from "firebase/storage";
 
 export function getFirebaseConfig() {
@@ -99,10 +107,15 @@ export function getFirestoreInitialized(app: FirebaseApp, settings: FirestoreSet
     }
 }
 
+const defaultAuthSettings = {
+    persistence: browserSessionPersistence,
+    popupRedirectResolver: browserPopupRedirectResolver,
+};
+
 /**
  * Get default auth
  */
-export function getAuthInitialized(app: FirebaseApp, settings: Dependencies = {}): Auth {
+export function getAuthInitialized(app: FirebaseApp, settings: Dependencies = defaultAuthSettings): Auth {
     try {
         const auth = initializeAuth(app, settings);
         //Initialize Emulator
