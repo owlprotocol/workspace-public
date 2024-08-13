@@ -27,8 +27,8 @@ import {
     connectAuthEmulator,
     Auth,
     Dependencies,
-    browserSessionPersistence,
     browserPopupRedirectResolver,
+    browserLocalPersistence,
 } from "firebase/auth";
 import { getStorage, connectStorageEmulator, FirebaseStorage } from "firebase/storage";
 
@@ -108,7 +108,7 @@ export function getFirestoreInitialized(app: FirebaseApp, settings: FirestoreSet
 }
 
 const defaultAuthSettings = {
-    persistence: browserSessionPersistence,
+    persistence: browserLocalPersistence,
     popupRedirectResolver: browserPopupRedirectResolver,
 };
 
