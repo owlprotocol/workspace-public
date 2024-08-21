@@ -43,20 +43,14 @@ This provider is used to interact with our API.
 
 ```tsx
 import { OwlProvider } from "@owlprotocol/ui-components";
-import {
-    API_TRPC_BASE_URL,
-    CLERK_PUBLISHABLE_KEY,
-} from "@owlprotocol/envvars/browser";
+import { API_TRPC_BASE_URL } from "@owlprotocol/envvars/browser";
 
 export const App = () => {
     return (
         <>
             <h1>Owl React Tutorials</h1>
 
-            <OwlProvider
-                apiTrpcBaseUrl={API_TRPC_BASE_URL}
-                clerkPublishableKey={CLERK_PUBLISHABLE_KEY}
-            >
+            <OwlProvider apiTrpcBaseUrl={API_TRPC_BASE_URL}>
                 {/* Add tutorial snippets below */}
             </OwlProvider>
         </>
@@ -186,10 +180,7 @@ Back in `App.tsx`, import and add the `GaslessTransactionComponent`.
 
 ```tsx
 import { OwlProvider } from "@owlprotocol/ui-components";
-import {
-    API_TRPC_BASE_URL,
-    CLERK_PUBLISHABLE_KEY,
-} from "@owlprotocol/envvars/browser";
+import { API_TRPC_BASE_URL, } from "@owlprotocol/envvars/browser";
 import { GaslessTransactionComponent } from "./tutorials/gasless-transactions.jsx";
 
 export const App = () => {
@@ -197,10 +188,7 @@ export const App = () => {
         <>
             <h1>Owl React Tutorials</h1>
 
-            <OwlProvider
-                apiTrpcBaseUrl={API_TRPC_BASE_URL}
-                clerkPublishableKey={CLERK_PUBLISHABLE_KEY}
-            >
+            <OwlProvider apiTrpcBaseUrl={API_TRPC_BASE_URL}>
                 <GaslessTransactionComponent />
             </OwlProvider>
         </>
