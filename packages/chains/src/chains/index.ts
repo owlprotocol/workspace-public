@@ -36,6 +36,7 @@ export * from "./mode.js";
 export * from "./modeTestnet.js";
 export * from "./neonDevnet.js";
 export * from "./neonMainnet.js";
+export * from "./neroTestnet.js";
 export * from "./opBNB.js";
 export * from "./opBNBTestnet.js";
 export * from "./opBedrockL1.js";
