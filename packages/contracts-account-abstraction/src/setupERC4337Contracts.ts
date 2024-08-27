@@ -1,4 +1,10 @@
-import { getOrDeployDeterministicDeployer, getOrDeployDeterministicContract, Clients } from "@owlprotocol/viem-utils";
+import {
+    getOrDeployDeterministicDeployer,
+    getOrDeployDeterministicContract,
+    Clients,
+    DETERMINISTIC_DEPLOYER_ADDRESS,
+    getDeployDeterministicAddress,
+} from "@owlprotocol/viem-utils";
 import { Address, Hash, encodeDeployData, formatEther, zeroHash } from "viem";
 import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./constants.js";
@@ -9,7 +15,52 @@ import { EntryPointSimulations } from "./artifacts/EntryPointSimulations.js";
 import { PimlicoEntryPointSimulations } from "./artifacts/PimlicoEntryPointSimulations.js";
 
 /**
- * Deploy public ERC4337 contracts. These have no permissions system whatsoever and are shared contract infrastructure.
+ * Get public ERC4337 contracts.
+ * @returns
+ */
+export function getERC4337Contracts() {
+    const deterministicDeployer = DETERMINISTIC_DEPLOYER_ADDRESS;
+    const entrypoint = getDeployDeterministicAddress({ salt: ENTRYPOINT_SALT_V07, bytecode: EntryPoint.bytecode });
+    const simpleAccountFactory = getDeployDeterministicAddress({
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: SimpleAccountFactory.abi,
+            bytecode: SimpleAccountFactory.bytecode,
+            args: [entrypoint],
+        }),
+    });
+    const entrypointSimulations = getDeployDeterministicAddress({
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: EntryPointSimulations.abi,
+            bytecode: EntryPointSimulations.bytecode,
+            args: [],
+        }),
+    });
+
+    const pimlicoEntrypointSimulations = getDeployDeterministicAddress({
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: PimlicoEntryPointSimulations.abi,
+            bytecode: PimlicoEntryPointSimulations.bytecode,
+            args: [entrypointSimulations],
+        }),
+    });
+
+    return {
+        deterministicDeployer,
+        entrypoint,
+        simpleAccountFactory,
+        entrypointSimulations,
+        pimlicoEntrypointSimulations,
+    };
+}
+
+export const erc4337Contracts = getERC4337Contracts();
+
+/**
+ * Deploy public ERC4337 contracts.
+ * These have no permissions system whatsoever and are shared contract infrastructure.
  * These are often pre-deployed on certain frameworks (eg. OPStack) and can be used by anyone.
  * This guarantees compatibility on any EVM chain.
  *   - DeterministicDeployer (0x4e59b44847b379578588920cA78FbF26c0B4956C)
@@ -123,6 +174,23 @@ export async function setupERC4337Contracts(clients: Clients) {
         entrypointSimulations,
         pimlicoEntrypointSimulations,
     };
+}
+
+/**
+ * Get VerifyingPaymaster contract.
+ * @param param0
+ */
+export function getVerifyingPaymaster(params: { verifyingSignerAddress: Address }): Address {
+    const { verifyingSignerAddress } = params;
+
+    return getDeployDeterministicAddress({
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: VerifyingPaymaster.abi,
+            bytecode: VerifyingPaymaster.bytecode,
+            args: [ENTRYPOINT_ADDRESS_V07, verifyingSignerAddress],
+        }),
+    });
 }
 
 /**
