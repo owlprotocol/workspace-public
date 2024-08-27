@@ -7,6 +7,7 @@ export const mainnet = /*#__PURE__*/ defineNetwork({
         ...mainnetViem.rpcUrls,
         public: mainnetViem.rpcUrls.default,
     },
+    enabled: true,
     description:
         "Ethereum (ETH) is a decentralized, open-source blockchain featuring smart contract functionality. It is the second-largest cryptocurrency by market capitalization, after Bitcoin.",
     slug: "mainnet",
