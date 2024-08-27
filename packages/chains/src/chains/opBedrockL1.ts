@@ -15,12 +15,6 @@ export const opBedrockL1 = /*#__PURE__*/ defineNetwork({
             http: ["http://127.0.0.1:8545"],
         },
     },
-    minUtilityBalance: parseEther("1"),
-    targetUtilityBalance: parseEther("1000"),
-    minPaymasterBalance: parseEther("1"),
-    targetPaymasterBalance: parseEther("10"),
-    minRelayerBalance: parseEther("1"),
-    targetRelayerBalance: parseEther("10"),
     enabled: true,
     rank: -1,
 });

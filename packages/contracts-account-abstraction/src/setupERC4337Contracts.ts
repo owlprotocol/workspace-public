@@ -165,21 +165,32 @@ export async function setupVerifyingPaymaster(clients: Clients & { verifyingSign
 }
 
 /**
- * Topup Paymaster contract with funds if its balance is below a certain minimum.
- * If a topup is required (balance < `minBalance`), funds are deposited to reach `targetBalance`
- * @param clients publicClient, walletClient with funds, minBalance (to trigger topup), targetBalance (topup amount)
+ * Topup Paymaster contract with funds if balance is below `minBalance` (0 = Always topup)
+ *
+ * Funds are deposited to reach `targetBalance` (defaults to `minBalance`)
+ * @param params publicClient, walletClient **with funds**, minBalance, targetBalance
  * @returns current paymaster balance & transaction hash for topup (if required)
  */
 export async function topupPaymaster(
-    clients: Clients & { paymaster: Address; minBalance: bigint; targetBalance: bigint },
+    params: Clients & { paymaster: Address; minBalance: bigint; targetBalance?: bigint },
 ): Promise<{ balance: bigint; hash?: Hash }> {
-    const { publicClient, walletClient, paymaster, minBalance, targetBalance } = clients;
+    const { publicClient, walletClient, paymaster, minBalance } = params;
+    if (minBalance == 0n && params.targetBalance === undefined) {
+        //Ensure invariant targetBalance ALWAYS defined with minBalance = 0
+        throw new Error(`topupAddressL2: minBalance 0, targetBalance MUST be defined`);
+    }
 
+    const targetBalance = params.targetBalance ?? minBalance;
     if (minBalance > targetBalance) {
-        //Ensure invariant minBalance <= targetBalance
+        //Ensure invariant targetBalance >= minBalance
         throw new Error(
             `topupPaymaster: minBalance (${formatEther(minBalance)}) > targetBalance (${formatEther(targetBalance)})`,
         );
+    }
+
+    if (0n >= targetBalance) {
+        //Ensure invariant targetBalance > 0
+        throw new Error(`topupPaymaster: 0 >= targetBalance (${formatEther(targetBalance)})`);
     }
 
     const balance = await publicClient.readContract({
@@ -189,15 +200,17 @@ export async function topupPaymaster(
         args: [paymaster],
     });
 
-    if (balance < minBalance) {
+    // Amount to topup
+    const targetDeficit = targetBalance - balance;
+
+    if (targetDeficit > 0n && (balance < minBalance || minBalance == 0n)) {
         //Paymaster under-funded => deposit from wallet account
-        const depositAmount = targetBalance - balance;
         const paymasterDeposit = await publicClient.simulateContract({
             account: walletClient.account,
             address: paymaster,
             abi: VerifyingPaymaster.abi,
             functionName: "deposit",
-            value: depositAmount,
+            value: targetDeficit,
             args: [],
         });
         const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);

@@ -25,6 +25,6 @@ export const gelatoBlackberry = /*#__PURE__*/ defineNetwork({
             webSocket: ["wss://ws.polygon-blackberry.gelato.digital"],
         },
     },
-    enabled: true,
+    enabled: false,
     rank: 9999,
 });

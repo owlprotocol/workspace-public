@@ -15,12 +15,6 @@ export const opBedrockL2 = /*#__PURE__*/ defineNetwork({
             http: ["http://127.0.0.1:9545"],
         },
     },
-    minUtilityBalance: parseEther("0.1"),
-    targetUtilityBalance: parseEther("10"),
-    minPaymasterBalance: parseEther("0.1"),
-    targetPaymasterBalance: parseEther("1"),
-    minRelayerBalance: parseEther("0.1"),
-    targetRelayerBalance: parseEther("1"),
     contracts: {
         portal: {
             [900]: {
