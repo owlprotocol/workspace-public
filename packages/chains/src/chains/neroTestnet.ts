@@ -1,4 +1,3 @@
-import { parseEther } from "viem/utils";
 import { nero } from "../currencies/nero.js";
 import { defineNetwork } from "../defineChain.js";
 
