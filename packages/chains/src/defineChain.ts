@@ -1,4 +1,4 @@
-import type { Network, NetworkBalanceConfig } from "@owlprotocol/eth-firebase";
+import type { Network, NetworkBalanceConfig } from "@owlprotocol/eth-firebase/models";
 import { ANKR_API_KEY, DRPC_API_KEY } from "@owlprotocol/envvars";
 import { parseEther } from "viem/utils";
 import { getAnkrEndpoints } from "./providers/ankr.js";
