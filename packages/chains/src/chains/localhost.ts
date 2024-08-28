@@ -1,4 +1,5 @@
 import { localhost as localhostViem } from "viem/chains";
+import { parseEther } from "viem/utils";
 import { defineNetwork } from "../defineChain.js";
 
 export const localhost = /*#__PURE__*/ defineNetwork({
