@@ -43,20 +43,15 @@ This provider is used to interact with our API.
 
 ```tsx
 import { OwlProvider } from "@owlprotocol/ui-components";
-import {
-    API_TRPC_BASE_URL,
-    CLERK_PUBLISHABLE_KEY,
-} from "@owlprotocol/envvars/browser";
+
+import "./App.css";
 
 export const App = () => {
     return (
         <>
             <h1>Owl React Tutorials</h1>
 
-            <OwlProvider
-                apiTrpcBaseUrl={API_TRPC_BASE_URL}
-                clerkPublishableKey={CLERK_PUBLISHABLE_KEY}
-            >
+            <OwlProvider>
                 {/* Add tutorial snippets below */}
             </OwlProvider>
         </>
@@ -74,7 +69,7 @@ We start by fetching data about that chain by making a trpc call to the Owl API.
 
 We then set up two providers:
 
--   `RainbowKitProvider`: adds UI components users to pick a wallet and sign in
+-   `RainbowKitProvider`: adds UI components for users to pick a wallet and sign in
 -   `WagmiProvider`: enables hooks for blockchain interactions such as sending transactions
 
 Notice that in the config we pass to `WagmiProvider`, we initialize a list of connectors using `connectorsForWallets`. This is a wrapper function used to initialize a list of wallets to use and to display in the RainbowKit modal.
@@ -128,14 +123,12 @@ export const GaslessTransactionComponent = () => {
 
 We now create the inner component, which consists of the RainbowKit button to connect a wallet, a button to send a transaction, and a button to disconnect all connectors. We also add the `useOwlSimpleSmartAccount` hook. This automatically overrides the wallet the users connects with to use a smart wallet.
 
-
 Notice that when you send a transaction, the transaction hash will be displayed under. The `data` attribute of `useSendTransaction` gets populated once the transaction has successfully been sent.
 
 ```tsx
 import { useSendTransaction, useConnectors } from "wagmi";
 import { zeroAddress } from "viem";
 import { useOwlSimpleSmartAccount } from "@owlprotocol/ui-components";
-import { API_REST_BASE_URL } from "@owlprotocol/envvars/browser";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import "@rainbow-me/rainbowkit/styles.css";
@@ -144,9 +137,7 @@ const GaslessTransactionInnerComponent = () => {
     const { sendTransaction, data: txHash } = useSendTransaction();
     const currConnectors = useConnectors();
 
-    useOwlSimpleSmartAccount({
-        owlApiRestBaseUrl: API_REST_BASE_URL,
-    });
+    useOwlSimpleSmartAccount();
 
     return (
         <>
@@ -186,10 +177,6 @@ Back in `App.tsx`, import and add the `GaslessTransactionComponent`.
 
 ```tsx
 import { OwlProvider } from "@owlprotocol/ui-components";
-import {
-    API_TRPC_BASE_URL,
-    CLERK_PUBLISHABLE_KEY,
-} from "@owlprotocol/envvars/browser";
 import { GaslessTransactionComponent } from "./tutorials/gasless-transactions.jsx";
 
 export const App = () => {
@@ -197,10 +184,7 @@ export const App = () => {
         <>
             <h1>Owl React Tutorials</h1>
 
-            <OwlProvider
-                apiTrpcBaseUrl={API_TRPC_BASE_URL}
-                clerkPublishableKey={CLERK_PUBLISHABLE_KEY}
-            >
+            <OwlProvider>
                 <GaslessTransactionComponent />
             </OwlProvider>
         </>
@@ -210,6 +194,6 @@ export const App = () => {
 
 </Steps>
 
-And voilà! Run `pnpm dev` again if needed, and check out your first app with a gasless transaction. Make sure to connect a wallet, and then click on `Send Test Transaction`.`
+And voilà! Run `pnpm dev` again if needed, and check out your first app with a gasless transaction. Make sure to connect a wallet, and then click on `Send Test Transaction`.
 
 To see the final component, go to our [GitHub](https://github.com/owlprotocol/tutorials-react/blob/main/src/tutorials/gasless-transactions.tsx)
