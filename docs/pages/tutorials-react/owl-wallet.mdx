@@ -45,19 +45,24 @@ Note that this is already done for you in the starter repository.
 
 This provider is used to interact with our API.
 
+Make sure to also import `@owlprotocol/ui-components/style.css`. This CSS file styles Owl UI components.
+
 ```tsx
 import { OwlProvider } from "@owlprotocol/ui-components";
 
-export const App = () => {
-    return (
-        <>
-            <h1>Owl React Tutorials</h1>
+import "./App.css";
+import "@owlprotocol/ui-components/style.css";
 
-            <OwlProvider>
-                {/* Add tutorial snippets below */}
-            </OwlProvider>
-        </>
-    );
+export const App = () => {
+  return (
+    <>
+      <h1>Owl React Tutorials</h1>
+
+      <OwlProvider>
+        {/* Add tutorial snippets below */}
+      </OwlProvider>
+    </>
+  );
 };
 ```
 
@@ -69,82 +74,42 @@ We first set the Owl project id, from the environment variable `VITE_PROJECT_ID`
 
 We will connect to the Hedwig Testnet chain, which has chain id `150150`.
 
-We start by fetching data about that chain by making a trpc call to the Owl API.
+We start by fetching data about that chain by making a tRPC call to the Owl API.
 
 We then set up two providers:
 
--   `RainbowKitProvider`: adds UI components for users to pick a wallet and sign in
 -   `WagmiProvider`: enables hooks for blockchain interactions such as sending transactions
-
-Notice that in the config we pass to `WagmiProvider`, we initialize a list of connectors using `connectorsForWallets`. This is a wrapper function used to initialize a list of wallets to use and to display in the RainbowKit modal.
 
 ```tsx
 import { trpc } from "@owlprotocol/core-trpc/react-query";
-import {
-  getOwlWallet,
-  useOwlTrpcContext,
-} from "@owlprotocol/ui-components";
-import {
-  connectorsForWallets,
-  RainbowKitProvider,
-} from "@rainbow-me/rainbowkit";
-import { Chain, http, zeroAddress } from "viem";
-import {
-  createConfig,
-  useConnectors,
-  WagmiProvider,
-} from "wagmi";
+import { Chain, http } from "viem";
+import { createConfig, WagmiProvider } from "wagmi";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
 if (!projectId || projectId === "PROJECT_ID")
-  throw new Error("PROJECT_ID must be defined!");
+    throw new Error("VITE_PROJECT_ID must be defined!");
 
 export const OwlWalletTest = () => {
-  const { setOpenSignInDialog, owlJwt, signedIn, isLoaded, owlSignOut } =
-    useOwlTrpcContext();
+    const [hedwigTestnetChain] = trpc.network.get.useSuspenseQuery({
+        chainId: 150150,
+    });
 
-  const [hedwigTestnetChain] = trpc.network.get.useSuspenseQuery({
-    chainId: 150150,
-  });
+    const chains = [hedwigTestnetChain] as readonly [Chain];
 
-  const chains = [hedwigTestnetChain] as readonly [Chain];
+    const config = createConfig({
+        chains,
+        transports: {
+            [hedwigTestnetChain.id]: http(hedwigTestnetChain.rpcDefault),
+        },
+    });
 
-  const owlWallet = getOwlWallet({
-    owlJwt,
-    owlSignOut,
-    signedIn,
-    isLoaded,
-    setOpenSignInDialog,
-    projectId,
-  });
-
-  const connectors = connectorsForWallets(
-    [
-      {
-        groupName: "Recommended",
-        wallets: [owlWallet],
-      },
-    ],
-    { projectId: "owlProtocol", appName: "Owl Protocol Storybook" }
-  );
-
-  const config = createConfig({
-    chains,
-    connectors,
-    transports: {
-      [hedwigTestnetChain.id]: http(hedwigTestnetChain.rpcDefault),
-    },
-  });
-
-  return (
-    <WagmiProvider config={config}>
-      <RainbowKitProvider>
-        {/* We will be writing this component next */}
-        <OwlWalletTestInner />
-      </RainbowKitProvider>
-    </WagmiProvider>
-  );
+    return (
+        <WagmiProvider config={config}>
+            {/* We will be writing this component next */}
+            <OwlWalletTestInner />
+        </WagmiProvider>
+    );
 };
 ```
 
@@ -154,29 +119,36 @@ We now create the inner component, which consists of the RainbowKit button to co
 
 Notice that when you send a transaction, the transaction hash will be displayed under. The `data` attribute of `useSendTransaction` gets populated once the transaction has successfully been sent.
 
-Also, make sure to import `"@rainbow-me/rainbowkit/styles.css"`, otherwise the RainbowKit UI will not be styled.
-
 ```tsx
-import { useSendTransaction, useConnectors } from "wagmi";
-import { zeroAddress } from "viem";
-import { useOwlSimpleSmartAccount } from "@owlprotocol/ui-components";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { trpc } from "@owlprotocol/core-trpc/react-query";
+import {
+    OwlConnectButton,
+    useOwlSimpleSmartAccount,
+} from "@owlprotocol/ui-components";
+import { Chain, http, zeroAddress } from "viem";
+import {
+    createConfig,
+    useConnectors,
+    useSendTransaction,
+    WagmiProvider,
+} from "wagmi";
 
-import "@rainbow-me/rainbowkit/styles.css";
+const projectId = import.meta.env.VITE_PROJECT_ID;
 
-const GaslessTransactionInnerComponent = () => {
+if (!projectId || projectId === "PROJECT_ID")
+    throw new Error("VITE_PROJECT_ID must be defined!");
+
+export const OwlWalletTestInner = () => {
     const { sendTransaction, data: txHash } = useSendTransaction();
-    const currConnectors = useConnectors();
+
+    const connectors = useConnectors();
 
     useOwlSimpleSmartAccount();
 
     return (
         <>
-            <ConnectButton />
-
             <button
                 onClick={() =>
-                    // A dummy transaction. Note that no ether is sent.
                     sendTransaction({
                         to: zeroAddress,
                         value: 0n,
@@ -184,21 +156,23 @@ const GaslessTransactionInnerComponent = () => {
                     })
                 }
             >
-                Send Test Transaction
+                Send test transaction
             </button>
-
-            <p>{!!txHash && `Transaction Hash: ${txHash}`}</p>
-
-            {/* Need to disconnect all connectors since we are connecting to two connectors: the main connector and the smart account connector */}
-            <button
-                onClick={() => currConnectors.forEach((c) => c.disconnect())}
-            >
+            <br />
+            <br />
+            {!!txHash && <p>Transaction Hash: {txHash}</p>}
+            <button onClick={() => connectors.forEach((c) => c.disconnect())}>
                 Disconnect All
             </button>
-
             <br />
+            <br />
+            <OwlConnectButton projectId={projectId} />
         </>
     );
+};
+
+export const OwlWalletTest = () => {
+    // ...
 };
 ```
 
@@ -210,21 +184,25 @@ Back in `App.tsx`, import and add the `OwlWalletTest`.
 import { OwlProvider } from "@owlprotocol/ui-components";
 import { OwlWalletTest } from "./tutorials/owl-wallet.jsx";
 
-export const App = () => {
-    return (
-        <>
-            <h1>Owl React Tutorials</h1>
+import "./App.css";
+import "@owlprotocol/ui-components/style.css";
 
-            <OwlProvider>
-                <OwlWalletTest />
-            </OwlProvider>
-        </>
-    );
+export const App = () => {
+  return (
+    <>
+      <h1>Owl React Tutorials</h1>
+
+      <OwlProvider>
+        {/* Add tutorial snippets below */}
+        <OwlWalletTest />
+      </OwlProvider>
+    </>
+  );
 };
 ```
 
 </Steps>
 
-And voilà! Run `pnpm dev` again if needed, and check out your first app with a gasless transaction. Make sure to connect a wallet, and then click on `Send Test Transaction`.
+And voilà! Run `pnpm dev` again if needed, and check out your first app with a gasless transaction. Make sure to connect your wallet, and then click on `Send Test Transaction`.
 
 To see the final component, go to our [GitHub](https://github.com/owlprotocol/tutorials-react/blob/main/src/tutorials/owl-wallet.tsx)
