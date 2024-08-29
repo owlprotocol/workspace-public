@@ -83,7 +83,7 @@
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
     "clean": "rimraf lib dist",
     "depcheck": "depcheck",
-    "dev": "npm-run-all -p firebase-emulator scripts:uploadTestData",
+    "dev": "npm run firebase-emulator",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "firebase-emulator": "firebase emulators:start --only firestore,storage,auth --project demo-owl-protocol",

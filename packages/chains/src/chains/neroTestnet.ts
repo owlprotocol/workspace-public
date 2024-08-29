@@ -1,4 +1,3 @@
-import { parseEther } from "viem/utils";
 import { nero } from "../currencies/nero.js";
 import { defineNetwork } from "../defineChain.js";
 
@@ -26,11 +25,4 @@ export const neroTestnet = /*#__PURE__*/ defineNetwork({
     },
     enabled: true,
     rank: 1,
-    minUtilityBalance: parseEther("0.1"),
-    //No parent chain to bridge from
-    targetUtilityBalance: parseEther("0"),
-    minPaymasterBalance: parseEther("0.1"),
-    targetPaymasterBalance: parseEther("0.4"),
-    minRelayerBalance: parseEther("0.1"),
-    targetRelayerBalance: parseEther("0.4"),
 });

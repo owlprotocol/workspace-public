@@ -32,6 +32,6 @@ export const flareTestnet = /*#__PURE__*/ defineNetwork({
             http: ["https://coston2-api.flare.network/ext/bc/C/rpc"],
         },
     },
-    enabled: true,
+    enabled: false,
     rank: 9999,
 });

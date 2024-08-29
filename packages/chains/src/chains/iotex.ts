@@ -20,6 +20,6 @@ export const iotex = /*#__PURE__*/ defineNetwork({
             webSocket: ["wss://babel-api.mainnet.iotex.io/ws"],
         },
     },
-    enabled: true,
+    enabled: false,
     rank: 0,
 });

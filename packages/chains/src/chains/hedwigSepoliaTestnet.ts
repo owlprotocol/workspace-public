@@ -26,7 +26,7 @@ export const hedwigSepoliaTestnet = /*#__PURE__*/ defineNetwork({
             webSocket: ["wss://owl-hedwig-testnet.rpc.caldera.xyz/ws"],
         },
     },
-    enabled: true,
+    enabled: false,
     stack: "opstack-bedrock",
     rank: 0,
 });

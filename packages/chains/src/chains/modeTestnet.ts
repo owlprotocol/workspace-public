@@ -1,5 +1,4 @@
 import { modeTestnet as modeTestnetViem } from "viem/chains";
-import { parseEther } from "viem/utils";
 import { defineNetwork } from "../defineChain.js";
 
 const sourceId = modeTestnetViem.sourceId!; // sepolia
@@ -26,11 +25,4 @@ export const modeTestnet = /*#__PURE__*/ defineNetwork({
     enabled: true,
     stack: "opstack-bedrock",
     rank: 1,
-    minUtilityBalance: parseEther("1"),
-    //TODO: Topup code what if utility < target?
-    targetUtilityBalance: parseEther("8"),
-    minPaymasterBalance: parseEther("0.1"),
-    targetPaymasterBalance: parseEther("2"),
-    minRelayerBalance: parseEther("0.1"),
-    targetRelayerBalance: parseEther("1"),
 });

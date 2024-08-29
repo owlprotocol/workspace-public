@@ -1,5 +1,4 @@
 import { polygon as polygonViem } from "viem/chains";
-import { parseEther } from "viem/utils";
 import { defineNetwork } from "../defineChain.js";
 
 export const polygon = /*#__PURE__*/ defineNetwork({
@@ -14,10 +13,4 @@ export const polygon = /*#__PURE__*/ defineNetwork({
     slugAnkr: "polygon",
     slugDrpc: "polygon",
     enabled: true,
-    minUtilityBalance: parseEther("10"),
-    targetUtilityBalance: parseEther("20"),
-    minPaymasterBalance: parseEther("10"),
-    targetPaymasterBalance: parseEther("30"),
-    minRelayerBalance: parseEther("10"),
-    targetRelayerBalance: parseEther("30"),
 });

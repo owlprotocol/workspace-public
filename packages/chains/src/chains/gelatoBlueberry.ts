@@ -25,6 +25,6 @@ export const gelatoBlueberry = /*#__PURE__*/ defineNetwork({
             webSocket: ["wss://ws.arb-blueberry.gelato.digital"],
         },
     },
-    enabled: true,
+    enabled: false,
     rank: 9999,
 });

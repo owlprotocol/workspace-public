@@ -21,7 +21,7 @@ export const iotexTestnet = /*#__PURE__*/ defineNetwork({
             webSocket: ["wss://babel-api.testnet.iotex.io/ws"],
         },
     },
-    enabled: true,
+    enabled: false,
     rank: 0,
     minUtilityBalance: parseEther("1"),
     //TODO: Topup code what if utility < target?

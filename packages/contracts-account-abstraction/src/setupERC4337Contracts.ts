@@ -1,4 +1,10 @@
-import { getOrDeployDeterministicDeployer, getOrDeployDeterministicContract, Clients } from "@owlprotocol/viem-utils";
+import {
+    getOrDeployDeterministicDeployer,
+    getOrDeployDeterministicContract,
+    Clients,
+    DETERMINISTIC_DEPLOYER_ADDRESS,
+    getDeployDeterministicAddress,
+} from "@owlprotocol/viem-utils";
 import { Address, Hash, encodeDeployData, formatEther, zeroHash } from "viem";
 import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./constants.js";
@@ -9,7 +15,52 @@ import { EntryPointSimulations } from "./artifacts/EntryPointSimulations.js";
 import { PimlicoEntryPointSimulations } from "./artifacts/PimlicoEntryPointSimulations.js";
 
 /**
- * Deploy public ERC4337 contracts. These have no permissions system whatsoever and are shared contract infrastructure.
+ * Get public ERC4337 contracts.
+ * @returns
+ */
+export function getERC4337Contracts() {
+    const deterministicDeployer = DETERMINISTIC_DEPLOYER_ADDRESS;
+    const entrypoint = getDeployDeterministicAddress({ salt: ENTRYPOINT_SALT_V07, bytecode: EntryPoint.bytecode });
+    const simpleAccountFactory = getDeployDeterministicAddress({
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: SimpleAccountFactory.abi,
+            bytecode: SimpleAccountFactory.bytecode,
+            args: [entrypoint],
+        }),
+    });
+    const entrypointSimulations = getDeployDeterministicAddress({
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: EntryPointSimulations.abi,
+            bytecode: EntryPointSimulations.bytecode,
+            args: [],
+        }),
+    });
+
+    const pimlicoEntrypointSimulations = getDeployDeterministicAddress({
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: PimlicoEntryPointSimulations.abi,
+            bytecode: PimlicoEntryPointSimulations.bytecode,
+            args: [entrypointSimulations],
+        }),
+    });
+
+    return {
+        deterministicDeployer,
+        entrypoint,
+        simpleAccountFactory,
+        entrypointSimulations,
+        pimlicoEntrypointSimulations,
+    };
+}
+
+export const erc4337Contracts = getERC4337Contracts();
+
+/**
+ * Deploy public ERC4337 contracts.
+ * These have no permissions system whatsoever and are shared contract infrastructure.
  * These are often pre-deployed on certain frameworks (eg. OPStack) and can be used by anyone.
  * This guarantees compatibility on any EVM chain.
  *   - DeterministicDeployer (0x4e59b44847b379578588920cA78FbF26c0B4956C)
@@ -126,6 +177,23 @@ export async function setupERC4337Contracts(clients: Clients) {
 }
 
 /**
+ * Get VerifyingPaymaster contract.
+ * @param param0
+ */
+export function getVerifyingPaymaster(params: { verifyingSignerAddress: Address }): Address {
+    const { verifyingSignerAddress } = params;
+
+    return getDeployDeterministicAddress({
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: VerifyingPaymaster.abi,
+            bytecode: VerifyingPaymaster.bytecode,
+            args: [ENTRYPOINT_ADDRESS_V07, verifyingSignerAddress],
+        }),
+    });
+}
+
+/**
  * Deploy ERC4337 VerifyingPaymaster.
  * This contracts stores a balance of ETH to sponsor UserOps (aka "Paymaster").
  * It approves UserOp sponsorship if these are signed by the `verifyingSignerAddress` (the "Verifying" part).
@@ -165,21 +233,32 @@ export async function setupVerifyingPaymaster(clients: Clients & { verifyingSign
 }
 
 /**
- * Topup Paymaster contract with funds if its balance is below a certain minimum.
- * If a topup is required (balance < `minBalance`), funds are deposited to reach `targetBalance`
- * @param clients publicClient, walletClient with funds, minBalance (to trigger topup), targetBalance (topup amount)
+ * Topup Paymaster contract with funds if balance is below `minBalance` (0 = Always topup)
+ *
+ * Funds are deposited to reach `targetBalance` (defaults to `minBalance`)
+ * @param params publicClient, walletClient **with funds**, minBalance, targetBalance
  * @returns current paymaster balance & transaction hash for topup (if required)
  */
 export async function topupPaymaster(
-    clients: Clients & { paymaster: Address; minBalance: bigint; targetBalance: bigint },
+    params: Clients & { paymaster: Address; minBalance: bigint; targetBalance?: bigint },
 ): Promise<{ balance: bigint; hash?: Hash }> {
-    const { publicClient, walletClient, paymaster, minBalance, targetBalance } = clients;
+    const { publicClient, walletClient, paymaster, minBalance } = params;
+    if (minBalance == 0n && params.targetBalance === undefined) {
+        //Ensure invariant targetBalance ALWAYS defined with minBalance = 0
+        throw new Error(`topupAddressL2: minBalance 0, targetBalance MUST be defined`);
+    }
 
+    const targetBalance = params.targetBalance ?? minBalance;
     if (minBalance > targetBalance) {
-        //Ensure invariant minBalance <= targetBalance
+        //Ensure invariant targetBalance >= minBalance
         throw new Error(
             `topupPaymaster: minBalance (${formatEther(minBalance)}) > targetBalance (${formatEther(targetBalance)})`,
         );
+    }
+
+    if (0n >= targetBalance) {
+        //Ensure invariant targetBalance > 0
+        throw new Error(`topupPaymaster: 0 >= targetBalance (${formatEther(targetBalance)})`);
     }
 
     const balance = await publicClient.readContract({
@@ -189,15 +268,17 @@ export async function topupPaymaster(
         args: [paymaster],
     });
 
-    if (balance < minBalance) {
+    // Amount to topup
+    const targetDeficit = targetBalance - balance;
+
+    if (targetDeficit > 0n && (balance < minBalance || minBalance == 0n)) {
         //Paymaster under-funded => deposit from wallet account
-        const depositAmount = targetBalance - balance;
         const paymasterDeposit = await publicClient.simulateContract({
             account: walletClient.account,
             address: paymaster,
             abi: VerifyingPaymaster.abi,
             functionName: "deposit",
-            value: depositAmount,
+            value: targetDeficit,
             args: [],
         });
         const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);
