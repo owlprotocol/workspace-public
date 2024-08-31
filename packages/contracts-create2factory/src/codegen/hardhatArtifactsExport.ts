@@ -1,4 +1,4 @@
-import { Artifact } from "@owlprotocol/viem-utils";
+import type { Artifact } from "@owlprotocol/viem-utils/codegen";
 import { zeroAddress, zeroHash } from "viem";
 import { getDeployDeterministicAddress } from "@owlprotocol/viem-utils";
 import invariant from "tiny-invariant";

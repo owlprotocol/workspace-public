@@ -1,4 +1,4 @@
-import { hardhatArtifactsExport, getArtifactImplementationFactory } from "@owlprotocol/viem-utils";
+import { hardhatArtifactsExport, getArtifactImplementationFactory } from "@owlprotocol/viem-utils/codegen";
 import {
     ENTRYPOINT_ADDRESS_V07,
     SIMPLE_ACCOUNT_FACTORY_ADDRESS,

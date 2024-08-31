@@ -1,4 +1,4 @@
-import { hardhatArtifactsExport } from "@owlprotocol/viem-utils";
+import { hardhatArtifactsExport } from "@owlprotocol/viem-utils/codegen";
 import { getArtifactImplementationCreate2Factory } from "@owlprotocol/contracts-create2factory";
 
 hardhatArtifactsExport(
