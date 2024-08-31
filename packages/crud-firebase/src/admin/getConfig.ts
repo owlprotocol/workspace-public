@@ -6,6 +6,7 @@ import {
     FIREBASE_PROJECT_ID,
     FIREBASE_SERVICE_EMAIL,
     FIREBASE_STORAGE_BUCKET,
+    GCLOUD_PROJECT,
     NODE_ENV,
 } from "@owlprotocol/envvars";
 import { initializeApp, getApp, getApps, App } from "firebase-admin/app";
@@ -66,9 +67,19 @@ export function getFirebaseConfig() {
  */
 export function getAppInitialized(config: AppOptions): App {
     if (getApps().length === 0) {
-        const app = initializeApp(config);
-        console.debug("Initialized Firebase App");
-        return app;
+        if (GCLOUD_PROJECT) {
+            const app = initializeApp();
+            console.debug(
+                "Initialized Firebase App in Google environment using Default Credentials (ignoring envvars). Read more https://firebase.google.com/docs/admin/setup#initialize-sdk",
+            );
+            return app;
+        } else {
+            const app = initializeApp(config);
+            console.debug(
+                "Initialized Firebase App in non-Google environment using Service Account. Read more https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments",
+            );
+            return app;
+        }
     }
 
     return getApp();

@@ -48,6 +48,10 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
     },
 ];
 
+//GCloud config
+//Detect if running in a GCloud environment such as Firebase Functions or CloudRun
+const GCLOUD_ENVVARS: EnvVarDef[] = [{ name: "GCLOUD_PROJECT", platform: "node" }];
+
 //Clerk config
 const CLERK_ENVVARS: EnvVarDef[] = [
     { name: "CLERK_PUBLISHABLE_KEY", platform: "browser" },
@@ -222,6 +226,7 @@ export const ENVVARS: EnvVarDef[] = [
     ...RESEND_ENVVARS,
     ...DFNS_ENVVARS,
     ...FIREBASE_ENVVARS,
+    ...GCLOUD_ENVVARS,
     ...CLERK_ENVVARS,
     ...INTERCOM_ENVVARS,
     ...SHOPIFY_ENVVARS,
