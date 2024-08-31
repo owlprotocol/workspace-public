@@ -1,5 +1,4 @@
 import { Bucket } from "@google-cloud/storage";
-import { MetadataResponse } from "@google-cloud/storage/build/src/nodejs-common";
 import { v4 as uuidv4 } from "uuid";
 
 export interface FileMetadata {
@@ -37,7 +36,9 @@ export async function uploadFile(
 }
 
 export async function getFileMetadata(bucket: Bucket, fileName: string): Promise<Record<string, any>> {
-    let metadataResponse: MetadataResponse;
+    //# TODO: Type can no longer exported as package.json defines "exports" field
+    // let metadataResponse: MetadataResponse;
+    let metadataResponse: any;
     try {
         metadataResponse = await bucket.file(fileName).getMetadata();
     } catch (e) {
