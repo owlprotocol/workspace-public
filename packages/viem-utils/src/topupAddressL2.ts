@@ -4,16 +4,23 @@ import { getL2TransactionHashes, PublicActionsL2, WalletActionsL1 } from "viem/o
 /**
  * Address balance topup params
  */
-export interface TopupAddressL2Params {
+export type TopupAddressL2Params = {
     publicClientL1: PublicClient<Transport, Chain>;
     publicClientL2: PublicClient<Transport, Chain> & PublicActionsL2<Chain>;
     walletClientL1: WalletClient<Transport, Chain, Account> & WalletActionsL1<Chain, Account>;
     address: Address;
-    minBalance: bigint;
-    targetBalance?: bigint;
-}
+} & (
+    | {
+          minBalance: bigint;
+          targetBalance?: bigint;
+      }
+    | {
+          minBalance?: bigint;
+          targetBalance: bigint;
+      }
+);
 /**
- * Topup address with funds if balance is below `minBalance` (0 = Always topup)
+ * Topup address up to `targetBalance` if balance is below `minBalance` (undefined = Always topup)
  *
  * Funds are sent to reach `targetBalance` (defaults to `minBalance`) using L1 -> L2 transfer.
  * @param params publicClient, walletClient **with funds**, minBalance, targetBalance
@@ -21,13 +28,13 @@ export interface TopupAddressL2Params {
  */
 export async function topupAddressL2(params: TopupAddressL2Params) {
     const { publicClientL1, publicClientL2, walletClientL1, address, minBalance } = params;
-    if (minBalance == 0n && params.targetBalance === undefined) {
-        //Ensure invariant targetBalance ALWAYS defined with minBalance = 0
-        throw new Error(`topupAddressL2: minBalance 0, targetBalance MUST be defined`);
+    if (params.minBalance == undefined && params.targetBalance == undefined) {
+        //Ensure invariant either minBalance or targetBalance defined
+        throw new Error(`topupAddressL2: minBalance AND targetBalance undefined`);
     }
 
-    const targetBalance = params.targetBalance ?? minBalance;
-    if (minBalance > targetBalance) {
+    const targetBalance = params.targetBalance ?? minBalance!;
+    if (minBalance && minBalance > targetBalance) {
         //Ensure invariant targetBalance >= minBalance
         throw new Error(
             `topupAddressL2: minBalance (${formatEther(minBalance)}) > targetBalance (${formatEther(targetBalance)})`,
@@ -43,7 +50,13 @@ export async function topupAddressL2(params: TopupAddressL2Params) {
     // Amount to topup
     const targetDeficit = targetBalance - balance;
 
-    if (targetDeficit > 0n && (balance < minBalance || minBalance == 0n)) {
+    if (
+        targetDeficit > 0n &&
+        //if minBalance undefined, always topup
+        //if minBalance == 0, if balance == 0
+        //if minBalance > 0, if balance < minBalance
+        (minBalance == undefined || (minBalance == 0n && balance == 0n) || balance < minBalance)
+    ) {
         // Address under-funded => deposit from wallet account
         // Follow viem guide https://viem.sh/op-stack/guides/deposits
         // Build parameters for the transaction on the L2.
