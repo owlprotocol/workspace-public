@@ -109,7 +109,7 @@
     "lodash-es": "4.17.21",
     "uuid": "^9.0.1",
     "viem": "2.9.20",
-    "zod": "3.21.4"
+    "zod": "3.22.4"
   },
   "peerDependencies": {
     "firebase": "^10.3.1",
