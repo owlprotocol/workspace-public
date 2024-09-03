@@ -86,7 +86,7 @@
     "@owlprotocol/crud-firebase": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
     "viem": "2.9.20",
-    "zod": "3.21.4"
+    "zod": "3.22.4"
   },
   "peerDependencies": {
     "@tanstack/query-core": "5.24.8",

@@ -112,7 +112,7 @@
     "vitest": "^1.4.0",
     "winston": "^3.12.0",
     "@typescript/analyze-trace": "^0.10.1",
-    "zod": "3.21.4",
+    "zod": "3.22.4",
     "depcheck": "^1.4.7"
   },
   "bugs": {

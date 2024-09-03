@@ -95,7 +95,7 @@
     "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
     "viem": "2.9.20",
-    "zod": "3.21.4"
+    "zod": "3.22.4"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-viem": "^2.0.0",
