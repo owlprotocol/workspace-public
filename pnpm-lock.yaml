@@ -427,8 +427,8 @@ importers:
         specifier: workspace:*
         version: link:../zod-sol
       abitype:
-        specifier: 1.0.0
-        version: 1.0.0(typescript@5.4.5)(zod@3.22.4)
+        specifier: 1.0.6
+        version: 1.0.6(typescript@5.4.5)(zod@3.22.4)
       permissionless:
         specifier: ^0.1.19
         version: 0.1.31(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(zod@3.22.4))
@@ -1124,8 +1124,8 @@ importers:
         specifier: workspace:*
         version: link:../utils
       abitype:
-        specifier: 1.0.0
-        version: 1.0.0(typescript@5.4.5)(zod@3.23.8)
+        specifier: 1.0.6
+        version: 1.0.6(typescript@5.4.5)(zod@3.23.8)
       lodash-es:
         specifier: 4.17.21
         version: 4.17.21
@@ -1200,8 +1200,8 @@ importers:
         specifier: workspace:*
         version: link:../utils
       abitype:
-        specifier: 1.0.0
-        version: 1.0.0(typescript@5.4.5)(zod@3.22.4)
+        specifier: 1.0.6
+        version: 1.0.6(typescript@5.4.5)(zod@3.22.4)
       ethers:
         specifier: 5.7.2
         version: 5.7.2(bufferutil@4.0.7)
@@ -3863,6 +3863,17 @@ packages:
 
   abitype@1.0.0:
     resolution: {integrity: sha512-NMeMah//6bJ56H5XRj8QCV4AwuW6hB6zqz2LnhhLdcWVQOsXki6/Pn3APeqxCma62nXIcmZWdu1DlHWS74umVQ==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3 >=3.22.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+      zod:
+        optional: true
+
+  abitype@1.0.6:
+    resolution: {integrity: sha512-MMSqYh4+C/aVqI2RQaWqbvI4Kxo5cQV40WQ4QFtDnNzCkqChm8MuENhElmynZlO0qUy/ObkEUaXtKqYnx1Kp3A==}
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.22.0
@@ -13343,6 +13354,16 @@ snapshots:
       zod: 3.22.4
 
   abitype@1.0.0(typescript@5.4.5)(zod@3.23.8):
+    optionalDependencies:
+      typescript: 5.4.5
+      zod: 3.23.8
+
+  abitype@1.0.6(typescript@5.4.5)(zod@3.22.4):
+    optionalDependencies:
+      typescript: 5.4.5
+      zod: 3.22.4
+
+  abitype@1.0.6(typescript@5.4.5)(zod@3.23.8):
     optionalDependencies:
       typescript: 5.4.5
       zod: 3.23.8
