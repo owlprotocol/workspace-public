@@ -16,7 +16,7 @@ export interface ERC721Id {
     readonly address: Address;
     readonly tokenId: string;
 }
-const tokenIdZod = z.string().regex(/^\d+$/).describe("tokenId");
+export const tokenIdZod = z.string().regex(/^\d+$/).describe("tokenId");
 export const erc721IdZod = z
     .object({ address: addressZod, tokenId: tokenIdZod })
     .transform(({ address, tokenId }) => `${address}-${tokenId}`);
