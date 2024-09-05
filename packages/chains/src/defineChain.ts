@@ -25,11 +25,11 @@ export const DEFAULT_BALANCE_CONFIG: Record<
     },
     ETH: {
         default: {
-            //~500 USD / chain
-            minPaymasterBalance: parseEther("0.05"),
-            targetPaymasterBalance: parseEther("0.1"),
-            minRelayerBalance: parseEther("0.05"),
-            targetRelayerBalance: parseEther("0.1"),
+            //~50 USD / chain
+            minPaymasterBalance: parseEther("0.005"),
+            targetPaymasterBalance: parseEther("0.01"),
+            minRelayerBalance: parseEther("0.005"),
+            targetRelayerBalance: parseEther("0.01"),
         },
         "opstack-bedrock": {
             //~50 USD / chain

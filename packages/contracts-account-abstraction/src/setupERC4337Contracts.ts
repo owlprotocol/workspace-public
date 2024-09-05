@@ -179,6 +179,7 @@ export async function setupERC4337Contracts(clients: Clients) {
 /**
  * Get VerifyingPaymaster contract.
  * @param param0
+ * @return  TODO: <address> (production) | 0x2e23ef1375aA642504bED97676A566F5A3E4ae5A (staging)
  */
 export function getVerifyingPaymaster(params: { verifyingSignerAddress: Address }): Address {
     const { verifyingSignerAddress } = params;

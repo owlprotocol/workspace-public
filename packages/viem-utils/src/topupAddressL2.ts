@@ -9,6 +9,7 @@ export type TopupAddressL2Params = {
     publicClientL2: PublicClient<Transport, Chain> & PublicActionsL2<Chain>;
     walletClientL1: WalletClient<Transport, Chain, Account> & WalletActionsL1<Chain, Account>;
     address: Address;
+    l1Gas?: number | null;
 } & (
     | {
           minBalance: bigint;
@@ -27,7 +28,7 @@ export type TopupAddressL2Params = {
  * @returns current address balance & transaction hashes & receipts (resolves on confirmation) for topup (if required)
  */
 export async function topupAddressL2(params: TopupAddressL2Params) {
-    const { publicClientL1, publicClientL2, walletClientL1, address, minBalance } = params;
+    const { publicClientL1, publicClientL2, walletClientL1, address, minBalance, l1Gas } = params;
     if (params.minBalance == undefined && params.targetBalance == undefined) {
         //Ensure invariant either minBalance or targetBalance defined
         throw new Error(`topupAddressL2: minBalance AND targetBalance undefined`);
@@ -64,6 +65,12 @@ export async function topupAddressL2(params: TopupAddressL2Params) {
             mint: targetDeficit,
             to: address,
         });
+
+        //Opposite of if statement for depositTransaction.ts (viem)
+        if (typeof l1Gas === "number" || l1Gas === null) {
+            //@ts-expect-error
+            args.gas = l1Gas;
+        }
 
         // Execute the deposit transaction on the L1.
         const l1DepositHash = await walletClientL1.depositTransaction(args);
