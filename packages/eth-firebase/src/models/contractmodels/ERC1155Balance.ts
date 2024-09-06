@@ -10,6 +10,7 @@ import { TypeOf, expectType } from "ts-expect";
 import { z } from "zod";
 import { Address } from "viem";
 import { NetworkId } from "../Network.js";
+import { tokenIdZod } from "../validators/tokenId.js";
 
 /** ERC1155Balance id components */
 export interface ERC1155BalanceId {
@@ -17,7 +18,6 @@ export interface ERC1155BalanceId {
     readonly account: Address;
     readonly id: string;
 }
-const tokenIdZod = z.string().regex(/^\d+$/).describe("tokenId");
 export const erc1155BalanceIdZod = z
     .object({ address: addressZod, account: addressZod, id: tokenIdZod })
     .transform(({ address, account, id }) => `${address}-${account}-${id}`);

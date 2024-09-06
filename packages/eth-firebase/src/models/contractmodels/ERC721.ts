@@ -10,13 +10,14 @@ import {
 } from "@owlprotocol/crud-firebase";
 import { Address } from "viem";
 import { NetworkId } from "../Network.js";
+import { tokenIdZod } from "../validators/tokenId.js";
 
 /** ERC721 id components */
 export interface ERC721Id {
     readonly address: Address;
     readonly tokenId: string;
 }
-export const tokenIdZod = z.string().regex(/^\d+$/).describe("tokenId");
+
 export const erc721IdZod = z
     .object({ address: addressZod, tokenId: tokenIdZod })
     .transform(({ address, tokenId }) => `${address}-${tokenId}`);
