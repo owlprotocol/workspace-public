@@ -11,6 +11,7 @@ import {
     encodeNetworkId,
 } from "@owlprotocol/eth-firebase/models";
 import {
+    erc721MintCol,
     projectApiKeyCol,
     projectCol,
     projectContractCol,
@@ -116,6 +117,12 @@ import {
     encodeProjectUserManagedData,
     encodeProjectUserManagedDataPartial,
     encodeProjectUserManagedId,
+    ERC721MintData,
+    ERC721MintId,
+    encodeERC721MintId,
+    decodeERC721MintId,
+    encodeERC721MintDataPartial,
+    encodeERC721MintData,
 } from "../models/index.js";
 
 //user & team
@@ -304,3 +311,17 @@ export const projectUserWalletSafeResource = getFirebaseResource<
     encodeParentDocId: encodeProjectId,
     decodeParentDocId: decodeProjectId,
 });
+
+// networks
+export const erc721MintResource = getFirebaseResource<ERC721MintData, ERC721MintId, NetworkId>(
+    firestore,
+    erc721MintCol,
+    {
+        encodeId: encodeERC721MintId,
+        decodeId: decodeERC721MintId,
+        encodeDataPartial: encodeERC721MintDataPartial,
+        encodeData: encodeERC721MintData,
+        encodeParentDocId: encodeNetworkId,
+        decodeParentDocId: decodeNetworkId,
+    },
+);

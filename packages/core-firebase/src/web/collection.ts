@@ -26,9 +26,13 @@ import {
     projectTokenTemplatePath,
     projectWalletDfnsGroupPath,
     projectWalletSafeGroupPath,
+    erc721MintGroupPath,
+    erc721MintPath,
 } from "../collections.js";
 import {
+    ERC721MintData,
     NetworkDataEncoded,
+    NetworkId,
     ProjectApiKeyData,
     ProjectContractData,
     ProjectContractMetadataData,
@@ -111,3 +115,7 @@ export const projectTokenCol = (collectionId: ProjectId) =>
     getColRef<ProjectTokenData>(firestore, projectTokenPath(collectionId));
 export const projectTokenTemplateCol = (collectionId: ProjectId) =>
     getColRef<ProjectTokenTemplateData>(firestore, projectTokenTemplatePath(collectionId));
+
+//networks
+export const erc721MintColGroup = getColGroupRef<ERC721MintData>(firestore, erc721MintGroupPath);
+export const erc721MintCol = (netowrkId: NetworkId) => getColRef<ERC721MintData>(firestore, erc721MintPath(netowrkId));
