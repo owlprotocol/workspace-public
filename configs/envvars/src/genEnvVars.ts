@@ -52,15 +52,6 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
 //Detect if running in a GCloud environment such as Firebase Functions or CloudRun
 const GCLOUD_ENVVARS: EnvVarDef[] = [{ name: "GCLOUD_PROJECT", platform: "node" }];
 
-//Clerk config
-const CLERK_ENVVARS: EnvVarDef[] = [
-    { name: "CLERK_PUBLISHABLE_KEY", platform: "browser" },
-    { name: "CLERK_SECRET_KEY", platform: "node" },
-    { name: "CLERK_WEBHOOK_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
-    { name: "CLERK_WEBHOOK_SECRET_KEY", platform: "node" },
-    { name: "CLERK_JWT_KEY", platform: "node" },
-    { name: "CLERK_LOGGING", platform: "neutral", defaultValue: "true" },
-];
 //Readme config
 const README_ENVVARS: EnvVarDef[] = [
     { name: "README_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
@@ -227,7 +218,6 @@ export const ENVVARS: EnvVarDef[] = [
     ...DFNS_ENVVARS,
     ...FIREBASE_ENVVARS,
     ...GCLOUD_ENVVARS,
-    ...CLERK_ENVVARS,
     ...INTERCOM_ENVVARS,
     ...SHOPIFY_ENVVARS,
     ...BLOCKCHAIN_ENVVARS,
