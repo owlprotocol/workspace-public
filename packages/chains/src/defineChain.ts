@@ -25,11 +25,11 @@ export const DEFAULT_BALANCE_CONFIG: Record<
     },
     ETH: {
         default: {
-            //~500 USD / chain
-            minPaymasterBalance: parseEther("0.05"),
-            targetPaymasterBalance: parseEther("0.1"),
-            minRelayerBalance: parseEther("0.05"),
-            targetRelayerBalance: parseEther("0.1"),
+            //~50 USD / chain
+            minPaymasterBalance: parseEther("0.005"),
+            targetPaymasterBalance: parseEther("0.01"),
+            minRelayerBalance: parseEther("0.005"),
+            targetRelayerBalance: parseEther("0.01"),
         },
         "opstack-bedrock": {
             //~50 USD / chain
@@ -107,9 +107,13 @@ export function defineNetwork(chain: Omit<Network, "chainId"> & ({ chainId: numb
         // rpcUrls.thirdweb = getThirdwebEndpoints({ network: chain.slug });
     }
 
-    //Override private rpc drpc => ankr
+    //Override private rpc: drpc, ankr
     if (ANKR_API_KEY && rpcUrls.drpc) rpcUrls.private = rpcUrls.drpc;
     else if (DRPC_API_KEY && rpcUrls.ankr) rpcUrls.private = rpcUrls.ankr;
+
+    //Override default rpc: drpcPublic, ankrPublic
+    if (rpcUrls.drpcPublic) rpcUrls.default = rpcUrls.drpcPublic;
+    else if (rpcUrls.ankrPublic) rpcUrls.default = rpcUrls.ankrPublic;
 
     // Default config network balance config
     const defaultBalanceConfigForCurrency = DEFAULT_BALANCE_CONFIG[chain.nativeCurrency.symbol];
