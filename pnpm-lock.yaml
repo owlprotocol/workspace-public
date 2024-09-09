@@ -523,6 +523,9 @@ importers:
 
   packages/contracts-algebra-integral:
     dependencies:
+      '@cryptoalgebra/integral-periphery':
+        specifier: 1.0.2
+        version: 1.0.2
       '@owlprotocol/viem-utils':
         specifier: workspace:*
         version: link:../viem-utils
@@ -2085,6 +2088,14 @@ packages:
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
     engines: {node: '>=0.1.90'}
 
+  '@cryptoalgebra/integral-core@1.0.0':
+    resolution: {integrity: sha512-1cUooKmmeNDdubiTcosXQ0vQ7qszgBiFxkJFue4rqSzNQs47wrCHnyA0tC86D+mOQFssZ1DDaK7ghNFb5+OPzA==}
+    engines: {node: '>=14.0.0', npm: '>=8.0.0'}
+
+  '@cryptoalgebra/integral-periphery@1.0.2':
+    resolution: {integrity: sha512-mh7mpKrxTYE7p177Cmh9dBRV2MclJj8+ISoZ6uPjU0KaPUp0HIzeFnrwMyFscaQu6Y7OM54jWxvwIbOIn8xA5g==}
+    engines: {node: '>=14.0.0', npm: '>=8.0.0'}
+
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
@@ -3162,6 +3173,9 @@ packages:
 
   '@openzeppelin/contracts@3.4.2-solc-0.7':
     resolution: {integrity: sha512-W6QmqgkADuFcTLzHL8vVoNBtkwjvQRpYIAom7KiUNoLKghyx3FgH0GBjt8NRvigV1ZmMOBllvE1By1C+bi8WpA==}
+
+  '@openzeppelin/contracts@4.9.3':
+    resolution: {integrity: sha512-He3LieZ1pP2TNt5JbkPA4PNT9WC3gOTOlDcFGJW4Le4QKqwmiNJCRt44APfxMxvq7OugU/cqYuPcSBzOw38DAg==}
 
   '@openzeppelin/contracts@5.0.2':
     resolution: {integrity: sha512-ytPc6eLGcHHnapAZ9S+5qsdomhjo6QBHTDRRBFfTxXIpsicMhVPouPgmUPebZZZGX7vt9USA+Z+0M0dSVtSUEA==}
@@ -11159,6 +11173,16 @@ snapshots:
 
   '@colors/colors@1.6.0': {}
 
+  '@cryptoalgebra/integral-core@1.0.0':
+    dependencies:
+      '@openzeppelin/contracts': 4.9.3
+
+  '@cryptoalgebra/integral-periphery@1.0.2':
+    dependencies:
+      '@cryptoalgebra/integral-core': 1.0.0
+      '@openzeppelin/contracts': 4.9.3
+      '@uniswap/v2-core': 1.0.1
+
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
@@ -12581,6 +12605,8 @@ snapshots:
   '@opentelemetry/semantic-conventions@1.25.1': {}
 
   '@openzeppelin/contracts@3.4.2-solc-0.7': {}
+
+  '@openzeppelin/contracts@4.9.3': {}
 
   '@openzeppelin/contracts@5.0.2': {}
 
