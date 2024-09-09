@@ -521,6 +521,100 @@ importers:
         specifier: ^1.4.0
         version: 1.6.0(@types/node@20.14.8)
 
+  packages/contracts-algebra-integral:
+    dependencies:
+      '@owlprotocol/viem-utils':
+        specifier: workspace:*
+        version: link:../viem-utils
+      '@owlprotocol/zod-sol':
+        specifier: workspace:*
+        version: link:../zod-sol
+      viem:
+        specifier: 2.9.20
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(zod@3.22.4)
+      zod:
+        specifier: 3.22.4
+        version: 3.22.4
+    devDependencies:
+      '@nomicfoundation/hardhat-viem':
+        specifier: ^2.0.0
+        version: 2.0.2(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5))(typescript@5.4.5)(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(zod@3.22.4))(zod@3.22.4)
+      '@owlprotocol/esbuild-config':
+        specifier: workspace:*
+        version: link:../../configs/esbuild-config
+      '@owlprotocol/eslint-config':
+        specifier: workspace:*
+        version: link:../../configs/eslint-config
+      '@owlprotocol/hardhat-config':
+        specifier: workspace:*
+        version: link:../../configs/hardhat-config
+      '@owlprotocol/prettier-config':
+        specifier: workspace:*
+        version: link:../../configs/prettier-config
+      '@owlprotocol/tsconfig':
+        specifier: workspace:*
+        version: link:../../configs/tsconfig
+      '@types/lodash-es':
+        specifier: 4.17.12
+        version: 4.17.12
+      '@types/node':
+        specifier: ^20.11.10
+        version: 20.14.8
+      '@typescript/analyze-trace':
+        specifier: ^0.10.1
+        version: 0.10.1
+      core-js:
+        specifier: ^3.37.1
+        version: 3.37.1
+      depcheck:
+        specifier: ^1.4.7
+        version: 1.4.7
+      handlebars:
+        specifier: ^4.7.7
+        version: 4.7.8
+      hardhat:
+        specifier: ^2.22.1
+        version: 2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)
+      hardhat-deploy:
+        specifier: ^0.12.2
+        version: 0.12.4(bufferutil@4.0.7)
+      lint-staged:
+        specifier: ^11.2.6
+        version: 11.2.6
+      lodash-es:
+        specifier: 4.17.21
+        version: 4.17.21
+      madge:
+        specifier: ^5.0.2
+        version: 5.0.2
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      prool:
+        specifier: ^0.0.15
+        version: 0.0.15
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      solidity-docgen:
+        specifier: ^0.6.0-beta.36
+        version: 0.6.0-beta.36(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5))
+      ts-node:
+        specifier: ^10.8.0
+        version: 10.9.2(@swc/core@1.6.5)(@types/node@20.14.8)(typescript@5.4.5)
+      tsx:
+        specifier: ^4.11.0
+        version: 4.16.0
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+      vite:
+        specifier: ^5.1.6
+        version: 5.3.1(@types/node@20.14.8)
+      vitest:
+        specifier: ^1.4.0
+        version: 1.6.0(@types/node@20.14.8)
+
   packages/contracts-create2factory:
     dependencies:
       '@openzeppelin/contracts':
