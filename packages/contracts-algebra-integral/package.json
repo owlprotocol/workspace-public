@@ -58,7 +58,7 @@
     }
   },
   "scripts": {
-    "build": "npm-run-all build:hardhat build:artifacts build:zsol build:esm",
+    "build": "npm-run-all build:artifacts build:zsol build:esm",
     "build:artifacts": "tsx src/codegen/runHardhatArtifactsExport.ts",
     "build:esbuild": "node esbuild.config.mjs",
     "build:esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
