@@ -1,6 +1,5 @@
 import { describe, test } from "vitest";
 import { createPublicClient, formatUnits, http } from "viem";
-import { mapValues } from "lodash-es";
 import { getPortfolio } from "./getPortfolio.js";
 
 describe("getPortfolio.test.ts", function () {

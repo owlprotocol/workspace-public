@@ -1,32 +1,7 @@
-/**
- * Get path Address[] => bytes
- *
- * Get trade logic
- * inputAmount / outputAmount
- * input address
- * output address
- * intermediate addresses[]
- * => compute paths for all, call estimate for all
- * **no gas estimation in consideration for now???**
- * gasPrice
- * if output === WETH auto convert
- * else get price using DEX as oracle
- *
- * Get portfolio values (use get trade logic)
- * tokens Address[]
- * unitToken Address
- * Get balances
- * Get unit values
- * Get portfolio rebalance
- */
-/** Defaults to 0x4200000000000000000000000000000000000006 */
-// wethAddress?: Address;
-//0x7c5aaa464f736740156fd69171505d344855d1e5 (QuoterV2 Mode)
-
 import { mapValues, zip } from "lodash-es";
 import { Address, erc20Abi, PublicClient } from "viem";
 import { awaitAllObj } from "@owlprotocol/utils";
-import { getOptimalTradeExactInput } from "./getOptimalTrade.js";
+import { getOptimalTradeExactInput } from "../quoter/getOptimalTrade.js";
 
 /**
  * Manage a portfolio of assets
@@ -36,16 +11,10 @@ export interface Portfolio {
     tokens: Address[];
     /** Unit of account (eg. WETH, USDC) */
     valueTokenAddress: Address;
-    /** Balance of tokens */
-    balanceOf: Record<Address, bigint>;
-    /** Balance of tokens normalized to value token */
-    balanceOfValue: Record<Address, bigint>;
+    /** Assets */
+    assets: Record<Address, { balance: bigint; value: bigint; basisPoints: number; percentage: number }>;
     /** Total value of portfolio */
     totalValue: bigint;
-    /** Balance of token as basis points of total portfolio (1/10,000) */
-    balanceOfBasisPoints: Record<Address, number>;
-    /** Balance of token as percentage of total portfolio (1/100) */
-    balanceOfPercentage: Record<Address, number>;
 }
 
 export interface GetPortfolioParams {
@@ -66,6 +35,7 @@ export interface GetPortfolioParams {
     /** Unit of account (eg. WETH, USDC) */
     valueTokenAddress: Address;
 }
+
 /**
  * Get portfolio information for a list of tokens such as balances, valuations, and distribution
  * @param params
@@ -114,6 +84,30 @@ export async function getPortfolio(params: GetPortfolioParams): Promise<Portfoli
             return optimalTrade.quote.amountOut;
         }),
     );
+    const { totalValue, balanceOfBasisPoints, balanceOfPercentage } = getPortfolioDistribution(balanceOfValue);
+
+    const assets = mapValues(balanceOf, (balance: bigint, address: Address) => {
+        return {
+            balance,
+            value: balanceOfValue[address],
+            basisPoints: balanceOfBasisPoints[address],
+            percentage: balanceOfPercentage[address],
+        };
+    }) as unknown as Record<Address, { balance: bigint; value: bigint; basisPoints: number; percentage: number }>;
+
+    return {
+        tokens,
+        valueTokenAddress,
+        assets,
+        totalValue,
+    };
+}
+
+/**
+ * Compute portfolio distribution
+ * @param balanceOfValue
+ */
+export function getPortfolioDistribution(balanceOfValue: Record<Address, bigint>) {
     const totalValue = Object.values(balanceOfValue).reduce((acc, curr) => acc + curr, 0n);
 
     const balanceOfBasisPoints = mapValues(balanceOfValue, (balance) => {
@@ -122,10 +116,6 @@ export async function getPortfolio(params: GetPortfolioParams): Promise<Portfoli
     const balanceOfPercentage = mapValues(balanceOfBasisPoints, (balance) => balance / 100);
 
     return {
-        tokens,
-        valueTokenAddress,
-        balanceOf,
-        balanceOfValue,
         totalValue,
         balanceOfBasisPoints,
         balanceOfPercentage,
