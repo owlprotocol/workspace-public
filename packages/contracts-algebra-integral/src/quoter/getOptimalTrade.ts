@@ -5,13 +5,20 @@ import { quoteExactInput, quoteExactOutput } from "./quoteExact.js";
 import { encodeTradePath, getTradePaths } from "./tradePath.js";
 
 export type GetOptimalTradePathParams = {
-    /** Network params */
+    /** Network public client */
     publicClient: PublicClient;
+    /** Algebra Integral quoter address */
     quoterV2Address: Address;
-    /** Trade Params */
+    /** Input token address */
     inputAddress: Address;
+    /** Output token address */
     outputAddress: Address;
+    /** Intermediate trading assets */
     intermediateAddresses?: Address[];
+    /** Gas price override */
+    gasPrice?: bigint;
+    /** WETH address for gas valuation */
+    wethAddress?: Address;
 } & ({ amountIn: bigint; amountOut?: undefined } | { amountIn?: undefined; amountOut: bigint });
 
 /**
@@ -26,16 +33,21 @@ export async function getOptimalTrade(params: GetOptimalTradePathParams) {
 }
 
 export interface GetOptimalTradePathExactInputParams {
-    /** Network params */
+    /** Network public client */
     publicClient: PublicClient;
+    /** Algebra Integral quoter address */
     quoterV2Address: Address;
-    /** Trade Params */
+    /** Input token amount */
     amountIn: bigint;
+    /** Input token address */
     inputAddress: Address;
+    /** Output token address */
     outputAddress: Address;
+    /** Intermediate trading assets */
     intermediateAddresses?: Address[];
-    /** Gas Params */
-    gasPrice?: bigint;
+    /** Gas price override */
+    gasPrice?: bigint | null;
+    /** WETH address for gas valuation */
     wethAddress?: Address;
 }
 
@@ -55,28 +67,34 @@ export async function getOptimalTradeExactInput(params: GetOptimalTradePathExact
     );
 
     // Quotes that account for gas cost as opportunity cost of more output tokens
-    const gasPrice = params.gasPrice ?? (await publicClient.getGasPrice());
-    const wethAddress = params.wethAddress ?? "0x4200000000000000000000000000000000000006";
-    const amountOutWithGas = await Promise.all(
-        quotes.map(async (q) => {
-            const gasCostEth = q.gasEstimate * gasPrice;
-            let gasCostAmountOut: bigint;
+    let amountOutWithGas: bigint[];
+    if (params.gasPrice === null || params.gasPrice === 0n) {
+        //Skip gas price estimations
+        amountOutWithGas = quotes.map((q) => q.amountOut);
+    } else {
+        const gasPrice = params.gasPrice ?? (await publicClient.getGasPrice());
+        const wethAddress = params.wethAddress ?? "0x4200000000000000000000000000000000000006";
+        amountOutWithGas = await Promise.all(
+            quotes.map(async (q) => {
+                const gasCostEth = q.gasEstimate * gasPrice;
+                let gasCostAmountOut: bigint;
 
-            if (outputAddress === wethAddress) {
-                gasCostAmountOut = gasCostEth; // Same
-            } else {
-                const opportunityCost = await quoteExactInput({
-                    publicClient,
-                    quoterV2Address,
-                    amountIn: gasCostEth,
-                    path: encodeTradePath([wethAddress, outputAddress]),
-                });
-                gasCostAmountOut = opportunityCost.amountOut;
-            }
+                if (outputAddress === wethAddress) {
+                    gasCostAmountOut = gasCostEth; // Same
+                } else {
+                    const opportunityCost = await quoteExactInput({
+                        publicClient,
+                        quoterV2Address,
+                        amountIn: gasCostEth,
+                        path: encodeTradePath([wethAddress, outputAddress]),
+                    });
+                    gasCostAmountOut = opportunityCost.amountOut;
+                }
 
-            return q.amountOut - gasCostAmountOut;
-        }),
-    );
+                return q.amountOut - gasCostAmountOut;
+            }),
+        );
+    }
 
     const trades = zip(paths, quotes, amountOutWithGas).map(([path, quote, amountOutWithGas]) => {
         return { path: path!, quote: quote!, amountOutWithGas: amountOutWithGas! };
@@ -93,14 +111,22 @@ export async function getOptimalTradeExactInput(params: GetOptimalTradePathExact
 }
 
 export interface GetOptimalTradePathExactOutputParams {
-    /** Network params */
+    /** Network public client */
     publicClient: PublicClient;
+    /** Algebra Integral quoter address */
     quoterV2Address: Address;
-    /** Trade Params */
+    /** Output token amount */
     amountOut: bigint;
+    /** Input token address */
     inputAddress: Address;
+    /** Output token address */
     outputAddress: Address;
+    /** Intermediate trading assets */
     intermediateAddresses?: Address[];
+    /** Gas price override */
+    gasPrice?: bigint;
+    /** WETH address for gas valuation */
+    wethAddress?: Address;
 }
 
 /**

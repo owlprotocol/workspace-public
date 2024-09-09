@@ -89,6 +89,7 @@
     "@cryptoalgebra/integral-periphery": "1.0.2",
     "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
+    "@owlprotocol/utils": "workspace:*",
     "viem": "2.9.20",
     "zod": "3.22.4"
   },

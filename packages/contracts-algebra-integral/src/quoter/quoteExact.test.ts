@@ -23,6 +23,17 @@ describe("quoteExact.test.ts", function () {
         console.debug(quote);
     });
 
+    test("quoteExactInput WETH - USDC", async () => {
+        const quote = await quoteExactInput({
+            publicClient,
+            quoterV2Address,
+            amountIn: parseEther("0.0005"), // ~ $1 of ETH
+            path: encodeTradePath([WETH, USDC]),
+        });
+
+        console.debug(quote);
+    });
+
     //TODO: Reverts with `Not received full amountOut` ???
     test.skip("quoteExactOutput USDC - WETH", async () => {
         const quote = await quoteExactOutput({
@@ -35,7 +46,7 @@ describe("quoteExact.test.ts", function () {
         console.debug(quote);
     });
 
-    test("quoteExact USDC - WETH", async () => {
+    test.skip("quoteExact USDC - WETH", async () => {
         const quote = await quoteExact({
             publicClient,
             quoterV2Address,

@@ -1,5 +1,5 @@
 import { describe, test } from "vitest";
-import { createPublicClient, http, parseEther } from "viem";
+import { createPublicClient, http } from "viem";
 import { getOptimalTradeExactInput } from "./getOptimalTrade.js";
 
 describe("getOptimalTrade.test.ts", function () {

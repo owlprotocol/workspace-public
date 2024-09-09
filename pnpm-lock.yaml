@@ -526,6 +526,9 @@ importers:
       '@cryptoalgebra/integral-periphery':
         specifier: 1.0.2
         version: 1.0.2
+      '@owlprotocol/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@owlprotocol/viem-utils':
         specifier: workspace:*
         version: link:../viem-utils
