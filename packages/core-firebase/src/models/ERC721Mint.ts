@@ -14,16 +14,16 @@ import { TypeOf, expectType } from "ts-expect";
 
 /** ERC721Mint id components */
 export interface ERC721MintId {
-    readonly address: Address;
-    readonly userOpHash: Hash;
-    readonly tokenIdOffset: string;
+    address: Address;
+    userOpHash: Hash;
+    tokenIdOffset: number;
 }
 
 export const erc721MintIdZod = z
     .object({
         address: addressZod,
         userOpHash: bytes32Zod.describe("userOp hash"),
-        tokenIdOffset: z.string().describe("token id offset"),
+        tokenIdOffset: z.number().describe("token id offset"),
     })
     .transform(({ address, userOpHash, tokenIdOffset }) => `${address}-${userOpHash}-${tokenIdOffset}`);
 export const encodeERC721MintId: (id: ERC721MintId) => string = erc721MintIdZod.parse;
@@ -35,14 +35,20 @@ export const decodeERC721MintId: (id: string) => ERC721MintId = (id) =>
     erc721MintIdRegex.exec(id)!.groups! as unknown as ERC721MintId;
 
 export interface ERC721MintData {
+    address: Address;
+    userOpHash: Hash;
     metadata?: ERC721Metadata;
     tokenId?: string;
+    projectId: string;
 }
 
 export const erc721MintDataZod = z
     .object({
+        address: addressZod,
+        userOpHash: bytes32Zod.describe("userOp hash"),
         tokenId: tokenIdZod.optional(),
         metadata: z.any().optional(),
+        projectId: z.string().describe("projectId"),
     })
     .describe("erc721 pending mint");
 export const encodeERC721MintData: (data: ERC721MintData) => ERC721MintData = erc721MintDataZod.parse;
