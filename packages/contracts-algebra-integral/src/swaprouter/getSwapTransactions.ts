@@ -1,23 +1,33 @@
 import { PublicClient, Address, Hex, encodeFunctionData, erc20Abi } from "viem";
-import { exactInputSingle } from "../artifacts/ISwapRouter.js";
+import { exactInput, exactInputSingle } from "../artifacts/ISwapRouter.js";
+import { multicall } from "../artifacts/IMulticall.js";
+import { unwrapWNativeToken } from "../artifacts/IPeripheryPayments.js";
+import { encodeTradePath } from "../quoter/tradePath.js";
 
 //TODO: list
 //exactInput support
 //WETH unwrapping
 //exactoutput
 
-export interface AlgebraSwapERC20Params {
-    /** Swap params */
-    tokenIn: Address;
-    tokenOut: Address;
-    amountIn: bigint;
-    amountOutMinimum: bigint;
-    from: Address;
-    recipient?: Address;
-    deadline?: bigint;
-    /** Network params */
+export interface SwapExactInputParams {
+    /** Network public client */
     publicClient: PublicClient;
-    algebraSwapRouter: Address;
+    /** Algebra Integral swap router address */
+    swapRouterAddress: Address;
+    /** Swap path, if only 2 tokens, will use `exactInputSingle` */
+    path: [Address, ...Address[]];
+    /** Input token amount */
+    amountIn: bigint;
+    /** Output token minimum amount */
+    amountOutMinimum: bigint;
+    /** Account */
+    from: Address;
+    /** Swap output recipient (defaults to account) */
+    recipient?: Address;
+    /** Swap expiry (defaults to 1hr) */
+    deadline?: bigint;
+    /** WETH address for wrap/unwrap */
+    wethAddress?: Address;
 }
 
 /**
@@ -25,45 +35,95 @@ export interface AlgebraSwapERC20Params {
  * @param params
  * @return necessary transactions to complete bridging
  */
-export async function getSwapExactInputTransactions(params: AlgebraSwapERC20Params): Promise<{
+export async function swapExactInput(params: SwapExactInputParams): Promise<{
     approval?: { account: Address; to: Address; data: Hex };
-    swap: { account: Address; to: Address; data: Hex };
+    swap: { account: Address; to: Address; data: Hex; value: bigint };
 }> {
-    const { tokenIn, tokenOut, amountIn, amountOutMinimum, algebraSwapRouter, from, publicClient } = params;
+    const { publicClient, swapRouterAddress, path, amountIn, amountOutMinimum, from } = params;
     const recipient = params.recipient ?? from; //default swap to self
     const deadline = params.deadline ?? BigInt((Date.now() + 600) * 1000); //default expire in 10min
+    const wethAddress = params.wethAddress ?? "0x4200000000000000000000000000000000000006";
 
-    // Check Allowance & Approve ERC20 for swap router
-    const { transaction: approval } = await getERC20Approval({
-        publicClient,
-        address: tokenIn,
-        owner: from,
-        spender: algebraSwapRouter,
-        amount: amountIn,
-    });
+    const tokenIn = path[0];
+    const tokenOut = path[path.length - 1];
 
-    const data = encodeFunctionData({
-        abi: [exactInputSingle],
-        functionName: "exactInputSingle",
-        args: [
-            {
-                tokenIn,
-                tokenOut,
-                recipient,
-                deadline,
-                amountIn,
-                amountOutMinimum,
-                limitSqrtPrice: 0n,
-            },
-        ],
-    });
+    let approval: { account: Address; to: Address; data: Hex } | undefined;
+
+    if (tokenIn.toLowerCase() === wethAddress.toLowerCase()) {
+        // Token input WETH, no allowance necessary
+        approval = undefined;
+    } else {
+        // Check ERC20 Allowance
+        const erc20Approval = await getERC20Approval({
+            publicClient,
+            address: tokenIn,
+            owner: from,
+            spender: swapRouterAddress,
+            amount: amountIn,
+        });
+        approval = erc20Approval.transaction;
+    }
+
+    let data: Hex;
+    if (path.length === 2) {
+        // Single swap
+        const tokenOut = path[1];
+        data = encodeFunctionData({
+            abi: [exactInputSingle],
+            functionName: "exactInputSingle",
+            args: [
+                {
+                    tokenIn,
+                    tokenOut,
+                    recipient,
+                    deadline,
+                    amountIn,
+                    amountOutMinimum,
+                    limitSqrtPrice: 0n,
+                },
+            ],
+        });
+    } else if (path.length > 2) {
+        // Multi-hop swap
+        data = encodeFunctionData({
+            abi: [exactInput],
+            functionName: "exactInput",
+            args: [
+                {
+                    path: encodeTradePath(path),
+                    recipient,
+                    deadline,
+                    amountIn,
+                    amountOutMinimum,
+                },
+            ],
+        });
+    } else {
+        throw new Error(`Invalid path.length ${path.length} < 2`);
+    }
+
+    // Token output WETH
+    if (tokenOut.toLowerCase() === wethAddress.toLowerCase()) {
+        // Encode unwrap
+        const unwrapData = encodeFunctionData({
+            abi: [unwrapWNativeToken],
+            functionName: "unwrapWNativeToken",
+            args: [amountOutMinimum, recipient],
+        });
+        data = encodeFunctionData({
+            abi: [multicall, unwrapData],
+            functionName: "multicall",
+            args: [[data]],
+        });
+    }
 
     return {
         approval,
         swap: {
             account: from,
-            to: algebraSwapRouter,
+            to: swapRouterAddress,
             data,
+            value: 0n,
         },
     };
 }

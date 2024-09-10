@@ -6,11 +6,17 @@ import {
 } from "../artifacts/IQuoterV2.js";
 
 export interface Quote {
+    /** Output token amount */
     amountOut: bigint;
+    /** Input token amount */
     amountIn: bigint;
+    /** Price */
     sqrtPriceX96AfterList: readonly bigint[];
+    /** Crossed ticks */
     initializedTicksCrossedList: readonly number[];
+    /** Gas estimate */
     gasEstimate: bigint;
+    /** Fee list of pools */
     feeList: readonly number[];
 }
 

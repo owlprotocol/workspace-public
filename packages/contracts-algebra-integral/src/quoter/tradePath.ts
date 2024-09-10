@@ -4,8 +4,11 @@ import { Address, Hex } from "viem";
  * Get trade paths params
  */
 export interface GetTradePathsParams {
+    /** Input token address */
     inputAddress: Address;
+    /** Output token address */
     outputAddress: Address;
+    /** Intermediate token addresses for multi-hop swaps */
     intermediateAddresses?: Address[];
 }
 /**
