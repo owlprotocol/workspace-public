@@ -1,6 +1,6 @@
-import { describe, test } from "vitest";
-import { createPublicClient, http } from "viem";
-import { getOptimalTradeExactInput } from "./getOptimalTrade.js";
+import { describe, test, expect } from "vitest";
+import { createPublicClient, http, parseEther } from "viem";
+import { getOptimalTrade, getOptimalTradeExactInput, getOptimalTradeExactOutput } from "./getOptimalTrade.js";
 
 describe("getOptimalTrade.test.ts", function () {
     const publicClient = createPublicClient({
@@ -12,7 +12,7 @@ describe("getOptimalTrade.test.ts", function () {
     const WETH = "0x4200000000000000000000000000000000000006";
     const MODE = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
-    test.skip("getOptimalTradeExactInput USDC - WETH", async () => {
+    test("getOptimalTradeExactInput USDC > WETH", async () => {
         const { trades, optimalTrade } = await getOptimalTradeExactInput({
             publicClient,
             quoterV2Address,
@@ -21,12 +21,12 @@ describe("getOptimalTrade.test.ts", function () {
             outputAddress: WETH,
         });
 
-        console.debug(trades);
-        console.debug(optimalTrade);
+        expect(trades).toBeDefined();
+        expect(optimalTrade).toBeDefined();
     });
 
-    test("getOptimalTradeExactInput USDC - MODE", async () => {
-        const { optimalTrade } = await getOptimalTradeExactInput({
+    test("getOptimalTradeExactInput USDC > WETH > MODE", async () => {
+        const { trades, optimalTrade } = await getOptimalTradeExactInput({
             publicClient,
             quoterV2Address,
             amountIn: 10_000_000n, //1 USDC
@@ -35,7 +35,61 @@ describe("getOptimalTrade.test.ts", function () {
             intermediateAddresses: [WETH],
         });
 
-        // console.debug(trades);
+        expect(trades).toBeDefined();
+        expect(optimalTrade).toBeDefined();
+    });
+
+    test("getOptimalTradeExactOutput WETH < USDC", async () => {
+        const { trades, optimalTrade } = await getOptimalTradeExactOutput({
+            publicClient,
+            quoterV2Address,
+            amountOut: parseEther("0.0005"), // ~ $1 of ETH
+            inputAddress: USDC,
+            outputAddress: WETH,
+        });
+
+        expect(trades).toBeDefined();
+        expect(optimalTrade).toBeDefined();
+    });
+
+    test("getOptimalTradeExactOutput MODE < WETH < USDC", async () => {
+        const { trades, optimalTrade } = await getOptimalTradeExactOutput({
+            publicClient,
+            quoterV2Address,
+            amountOut: parseEther("90"), // ~ $1 of MODE
+            inputAddress: USDC,
+            outputAddress: MODE,
+            intermediateAddresses: [WETH],
+        });
+
+        expect(trades).toBeDefined();
+        expect(optimalTrade).toBeDefined();
         console.debug(optimalTrade);
+    });
+
+    test("getOptimalTrade USDC > WETH", async () => {
+        const { trades, optimalTrade } = await getOptimalTrade({
+            publicClient,
+            quoterV2Address,
+            amountIn: 1_000_000n, //1 USDC
+            inputAddress: USDC,
+            outputAddress: WETH,
+        });
+
+        expect(trades).toBeDefined();
+        expect(optimalTrade).toBeDefined();
+    });
+
+    test("getOptimalTrade WETH < USDC", async () => {
+        const { trades, optimalTrade } = await getOptimalTrade({
+            publicClient,
+            quoterV2Address,
+            amountOut: parseEther("0.0005"), // ~ $1 of ETH
+            inputAddress: USDC,
+            outputAddress: WETH,
+        });
+
+        expect(trades).toBeDefined();
+        expect(optimalTrade).toBeDefined();
     });
 });

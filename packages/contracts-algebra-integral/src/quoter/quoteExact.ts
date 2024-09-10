@@ -1,5 +1,6 @@
 import { Address, Hex } from "viem";
 import { PublicClient } from "viem";
+import { encodeTradePath } from "./tradePath.js";
 import {
     quoteExactInput as quoteExactInputAbi,
     quoteExactOutput as quoteExactOutputAbi,
@@ -25,7 +26,7 @@ export type QuoteExactParams = {
     publicClient: PublicClient;
     quoterV2Address: Address;
     /** Trade Params */
-    path: Hex;
+    tokens: [Address, Address, ...Address[]];
 } & ({ amountIn: bigint; amountOut?: undefined } | { amountIn?: undefined; amountOut: bigint });
 /**
  * Call `quoteExactInput` or `quoteExactOutput` depending on `amountIn` or `amountOut` param
@@ -33,8 +34,10 @@ export type QuoteExactParams = {
  * @returns return values of `quoteExactInput`
  */
 export async function quoteExact(params: QuoteExactParams): Promise<Quote> {
-    if (typeof params.amountIn === "bigint") return quoteExactInput(params);
-    else if (typeof params.amountOut === "bigint") return quoteExactOutput(params);
+    if (typeof params.amountIn === "bigint")
+        return quoteExactInput({ ...params, path: encodeTradePath(params.tokens) });
+    else if (typeof params.amountOut === "bigint")
+        return quoteExactOutput({ ...params, path: encodeTradePath([...params.tokens].reverse()) });
 
     throw new Error(`quoteExact: Invalid params amountIn === undefined && amountOut === undefined`);
 }
@@ -83,6 +86,7 @@ export interface QuoteExactOutputParams {
 }
 /**
  * Simple wrapper around `quoteExactOutput` call
+ * @dev path MUST be reverted from output -> input
  * @param params network params and call params
  * @returns return values of `quoteExactOutput`
  */

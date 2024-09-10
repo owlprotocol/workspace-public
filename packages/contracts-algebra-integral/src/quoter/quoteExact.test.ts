@@ -1,4 +1,4 @@
-import { describe, test } from "vitest";
+import { describe, test, expect } from "vitest";
 import { createPublicClient, http, parseEther } from "viem";
 import { quoteExactInput, quoteExactOutput, quoteExact } from "./quoteExact.js";
 import { encodeTradePath } from "./tradePath.js";
@@ -12,48 +12,63 @@ describe("quoteExact.test.ts", function () {
     const USDC = "0xd988097fb8612cc24eeC14542bC03424c656005f";
     const WETH = "0x4200000000000000000000000000000000000006";
 
-    test("quoteExactInput USDC - WETH", async () => {
+    test("quoteExactInput USDC > WETH", async () => {
         const quote = await quoteExactInput({
             publicClient,
             quoterV2Address,
             amountIn: 1_000_000n, //1 USDC
             path: encodeTradePath([USDC, WETH]),
         });
-
-        console.debug(quote);
+        expect(quote).toBeDefined();
     });
 
-    test("quoteExactInput WETH - USDC", async () => {
+    test("quoteExactInput WETH > USDC", async () => {
         const quote = await quoteExactInput({
             publicClient,
             quoterV2Address,
             amountIn: parseEther("0.0005"), // ~ $1 of ETH
             path: encodeTradePath([WETH, USDC]),
         });
-
-        console.debug(quote);
+        expect(quote).toBeDefined();
     });
 
-    //TODO: Reverts with `Not received full amountOut` ???
-    test.skip("quoteExactOutput USDC - WETH", async () => {
+    test("quoteExactOutput WETH < USDC", async () => {
         const quote = await quoteExactOutput({
             publicClient,
             quoterV2Address,
             amountOut: parseEther("0.0005"), // ~ $1 of ETH
-            path: encodeTradePath([USDC, WETH]),
+            path: encodeTradePath([WETH, USDC]),
         });
-
-        console.debug(quote);
+        expect(quote).toBeDefined();
     });
 
-    test.skip("quoteExact USDC - WETH", async () => {
+    test("quoteExactOutput USDC < WETH", async () => {
+        const quote = await quoteExactOutput({
+            publicClient,
+            quoterV2Address,
+            amountOut: 1_000_000n, //1 USDC
+            path: encodeTradePath([USDC, WETH]),
+        });
+        expect(quote).toBeDefined();
+    });
+
+    test("quoteExact USDC > WETH", async () => {
         const quote = await quoteExact({
             publicClient,
             quoterV2Address,
             amountIn: 1_000_000n, //1 USDC
-            path: encodeTradePath([USDC, WETH]),
+            tokens: [USDC, WETH],
         });
+        expect(quote).toBeDefined();
+    });
 
-        console.debug(quote);
+    test("quoteExact USDC < WETH", async () => {
+        const quote = await quoteExact({
+            publicClient,
+            quoterV2Address,
+            amountOut: parseEther("0.0005"), // ~ $1 of ETH
+            tokens: [USDC, WETH],
+        });
+        expect(quote).toBeDefined();
     });
 });

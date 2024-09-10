@@ -24,8 +24,11 @@
 //0x7c5aaa464f736740156fd69171505d344855d1e5 (QuoterV2 Mode)
 
 import { Address, PublicClient } from "viem";
-import { mapValues } from "lodash-es";
+import { cloneDeep, filter, pickBy, mapValues, map } from "lodash-es";
+import { Prettify } from "@owlprotocol/utils/types";
 import { Portfolio } from "./getPortfolio.js";
+import { bigIntPredicate } from "../utils/bigIntPredicate.js";
+import { getOptimalTradeExactInput, getOptimalTradeExactOutput, Trade } from "../quoter/getOptimalTrade.js";
 
 export interface BalancePortfolioParams extends Portfolio {
     /** Network public client */
@@ -47,30 +50,153 @@ export interface BalancePortfolioParams extends Portfolio {
  */
 export function balancePortfolio(params: BalancePortfolioParams) {}
 
-export interface GetBalancePortfolioAmounts {
-    /** Assets */
-    assets: Record<Address, { balance: bigint; value: bigint }>;
-    /** Target Ratios, up to 4 decimals, ideally sum up to 100 (percentage), 10_000 (basis points) */
-    targetRatios: Record<Address, number>;
+export interface GetBalancePortfolioTradesAsset {
+    address: Address;
+    balanceDelta: bigint;
+    valueDelta: bigint;
+}
+
+export interface GetBalancePortfolioTradesParams {
+    /** Network public client */
+    publicClient: PublicClient;
+    /** Algebra Integral quoter address */
+    quoterV2Address: Address;
+    /** Intermediate trading assets */
+    intermediateAddresses?: Address[];
+    /** Gas price override */
+    gasPrice?: bigint | null;
+    /** WETH address for gas valuation */
+    wethAddress?: Address;
+    /** Target asset values */
+    assets: GetBalancePortfolioTradesAsset[];
+}
+
+/**
+ * Get optimal trades to rebalance portfolio
+ * @param params
+ */
+export async function getBalancePortfolioTrades(params: GetBalancePortfolioTradesParams): Promise<{
+    trades: Trade[];
+    delta: GetBalancePortfolioTradesAsset[];
+}> {
+    const { publicClient, quoterV2Address, intermediateAddresses, gasPrice, wethAddress } = params;
+
+    const portfolio = cloneDeep(params.assets);
+    // inputs, balance will decrease
+    const inputs = filter(portfolio, (a) => a.balanceDelta < 0);
+    // outputs, balance will increase
+    const outputs = filter(portfolio, (a) => a.balanceDelta > 0);
+
+    const trades: Trade[] = [];
+
+    while (true) {
+        console.debug(portfolio);
+        if (inputs.length === 0 || outputs.length === 0) {
+            // No more assets left to trade
+            break;
+        }
+
+        // Greedy algorithm, match smallest input to smallest output
+        // smallest input, values are negative so sort ascending
+        const smallestInput = inputs.sort((a, b) => bigIntPredicate(a.valueDelta, b.valueDelta))[inputs.length - 1];
+        // smallest output, values are positive so sort descending
+        const smallestOutput = outputs.sort((a, b) => bigIntPredicate(b.valueDelta, a.valueDelta))[outputs.length - 1];
+
+        const tradeExactInput = await getOptimalTradeExactInput({
+            publicClient,
+            quoterV2Address,
+            amountIn: smallestInput.balanceDelta * -1n,
+            inputAddress: smallestInput.address,
+            outputAddress: smallestOutput.address,
+            intermediateAddresses,
+            gasPrice,
+            wethAddress,
+        });
+
+        if (tradeExactInput.optimalTrade.quote.amountOut < smallestOutput.balanceDelta) {
+            // Add trade
+            trades.push(tradeExactInput.optimalTrade);
+            // All inputs consumed
+            smallestInput.valueDelta = 0n;
+            smallestInput.balanceDelta = 0n;
+            inputs.pop();
+            // Update output value delta proportionally
+            smallestOutput.valueDelta -=
+                (smallestOutput.valueDelta * tradeExactInput.optimalTrade.quote.amountOut) /
+                smallestOutput.balanceDelta;
+            // Update output balance delta
+            smallestOutput.balanceDelta -= tradeExactInput.optimalTrade.quote.amountOut;
+            continue;
+        }
+
+        // Too large trade, use getOptimalTradeExactOutput
+        const tradeExactOutput = await getOptimalTradeExactOutput({
+            publicClient,
+            quoterV2Address,
+            amountOut: smallestOutput.balanceDelta,
+            inputAddress: smallestInput.address,
+            outputAddress: smallestOutput.address,
+            intermediateAddresses,
+            gasPrice,
+            wethAddress,
+        });
+
+        // Add trade
+        trades.push(tradeExactOutput.optimalTrade);
+        // Update input balance delta proportionally
+        smallestInput.valueDelta +=
+            (smallestInput.valueDelta * tradeExactInput.optimalTrade.quote.amountIn) / smallestInput.balanceDelta;
+        // Update input balance delta
+        smallestInput.balanceDelta += tradeExactOutput.optimalTrade.quote.amountIn;
+        // All outputs consumed
+        smallestOutput.valueDelta = 0n;
+        smallestOutput.balanceDelta = 0n;
+        outputs.pop();
+        continue;
+    }
+
+    return { trades, delta: portfolio };
+}
+
+export interface GetBalancePortfolioAmountsAssetParam {
+    balance: bigint;
+    value: bigint;
+    targetRatio: number;
+}
+
+export interface GetBalancePortfolioAmountsAssetReturnType {
+    balanceTarget: bigint;
+    balanceDelta: bigint;
+    valueTarget: bigint;
+    valueDelta: bigint;
 }
 
 /**
  * Compute target balances
- * @param params
+ * @param assets
  */
-export function getBalancePortfolioAmounts(params: GetBalancePortfolioAmounts) {
-    const { assets, targetRatios } = params;
+export function getBalancePortfolioAmounts<T extends GetBalancePortfolioAmountsAssetParam>({
+    assets,
+}: {
+    assets: T[];
+}): {
+    totalValue: bigint;
+    totalRatios: number;
+    targetAssets: Prettify<T & GetBalancePortfolioAmountsAssetReturnType>[];
+} {
+    const totalValue = assets.reduce((acc, curr) => acc + curr.value, 0n);
+    const totalRatios = assets.reduce((acc, curr) => acc + curr.targetRatio, 0);
 
-    const totalValue = Object.values(assets).reduce((acc, curr) => acc + curr.value, 0n);
-    const totalRatios = Object.values(targetRatios).reduce((acc, curr) => acc + curr, 0);
-
-    const targetAssets = mapValues(assets, (asset: { balance: bigint; value: bigint }, address: Address) => {
-        const value = (asset.value * BigInt(targetRatios[address] * 10_000)) / BigInt(totalRatios * 10_000);
+    const targetAssets = map(assets, (asset) => {
+        const { balance, value, targetRatio } = asset;
+        const valueTarget = (totalValue * BigInt(targetRatio * 10_000)) / BigInt(totalRatios * 10_000);
+        const valueDelta = valueTarget - value;
         // Scale balance
-        const balance = (asset.balance * value) / asset.value;
+        const balanceTarget = (balance * valueTarget) / value;
+        const balanceDelta = balanceTarget - balance;
 
-        return { balance, value };
-    }) as unknown as Record<Address, { balance: bigint; value: bigint }>;
+        return { ...asset, balanceTarget, balanceDelta, valueTarget, valueDelta };
+    });
 
     return {
         totalValue,

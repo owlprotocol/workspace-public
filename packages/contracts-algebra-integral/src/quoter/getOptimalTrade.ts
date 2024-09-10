@@ -1,8 +1,17 @@
 import { Address } from "viem";
 import { PublicClient } from "viem";
 import { zip } from "lodash-es";
-import { quoteExactInput, quoteExactOutput } from "./quoteExact.js";
+import { Quote, quoteExactInput, quoteExactOutput } from "./quoteExact.js";
 import { encodeTradePath, getTradePaths } from "./tradePath.js";
+import { bigIntPredicate } from "../utils/bigIntPredicate.js";
+
+export type Trade = {
+    path: [Address, Address] | [Address, Address, Address];
+    quote: Quote;
+} & (
+    | { amountOutWithGas: bigint; amountInWithGas?: undefined }
+    | { amountOutWithGas?: undefined; amountInWithGas: bigint }
+);
 
 export type GetOptimalTradePathParams = {
     /** Network public client */
@@ -55,7 +64,10 @@ export interface GetOptimalTradePathExactInputParams {
  * Evaluate possible trade paths and return optimal trade
  * @param params network params, input, output, and intermediate tokens
  */
-export async function getOptimalTradeExactInput(params: GetOptimalTradePathExactInputParams) {
+export async function getOptimalTradeExactInput(params: GetOptimalTradePathExactInputParams): Promise<{
+    trades: Trade[];
+    optimalTrade: Trade;
+}> {
     const { publicClient, quoterV2Address, amountIn, inputAddress, outputAddress, intermediateAddresses } = params;
     const paths = getTradePaths({ inputAddress, outputAddress, intermediateAddresses });
 
@@ -79,7 +91,7 @@ export async function getOptimalTradeExactInput(params: GetOptimalTradePathExact
                 const gasCostEth = q.gasEstimate * gasPrice;
                 let gasCostAmountOut: bigint;
 
-                if (outputAddress === wethAddress) {
+                if (outputAddress.toLowerCase() === wethAddress.toLowerCase()) {
                     gasCostAmountOut = gasCostEth; // Same
                 } else {
                     const opportunityCost = await quoteExactInput({
@@ -101,7 +113,6 @@ export async function getOptimalTradeExactInput(params: GetOptimalTradePathExact
     });
 
     // Sort trades by largest output
-    //TODO: Ignores gas cost
     trades.sort((a, b) => bigIntPredicate(b.amountOutWithGas, a.amountOutWithGas));
 
     return {
@@ -124,7 +135,7 @@ export interface GetOptimalTradePathExactOutputParams {
     /** Intermediate trading assets */
     intermediateAddresses?: Address[];
     /** Gas price override */
-    gasPrice?: bigint;
+    gasPrice?: bigint | null;
     /** WETH address for gas valuation */
     wethAddress?: Address;
 }
@@ -133,39 +144,64 @@ export interface GetOptimalTradePathExactOutputParams {
  * Evaluate possible trade paths and return optimal trade
  * @param params network params, input, output, and intermediate tokens
  */
-export async function getOptimalTradeExactOutput(params: GetOptimalTradePathExactOutputParams) {
+export async function getOptimalTradeExactOutput(params: GetOptimalTradePathExactOutputParams): Promise<{
+    trades: Trade[];
+    optimalTrade: Trade;
+}> {
     const { publicClient, quoterV2Address, amountOut, inputAddress, outputAddress, intermediateAddresses } = params;
     const paths = getTradePaths({ inputAddress, outputAddress, intermediateAddresses });
 
     //TODO: Should we use allSettled to handle when trade path is not supported (liquidity pool doesnt exist) ?
     const quotes = await Promise.all(
         paths.map((tokens) =>
-            quoteExactOutput({ publicClient, quoterV2Address, amountOut, path: encodeTradePath(tokens) }),
+            quoteExactOutput({
+                publicClient,
+                quoterV2Address,
+                amountOut,
+                path: encodeTradePath([...tokens].reverse()),
+            }),
         ),
     );
 
-    const trades = zip(paths, quotes).map(([path, quote]) => {
-        return { path: path!, quote: quote! };
+    // Quotes that account for gas cost as opportunity cost of more output tokens
+    let amountInWithGas: bigint[];
+    if (params.gasPrice === null || params.gasPrice === 0n) {
+        //Skip gas price estimations
+        amountInWithGas = quotes.map((q) => q.amountOut);
+    } else {
+        const gasPrice = params.gasPrice ?? (await publicClient.getGasPrice());
+        const wethAddress = params.wethAddress ?? "0x4200000000000000000000000000000000000006";
+        amountInWithGas = await Promise.all(
+            quotes.map(async (q) => {
+                const gasCostEth = q.gasEstimate * gasPrice;
+                let gasCostAmountIn: bigint;
+
+                if (inputAddress.toLowerCase() === wethAddress.toLowerCase()) {
+                    gasCostAmountIn = gasCostEth; // Same
+                } else {
+                    const opportunityCost = await quoteExactOutput({
+                        publicClient,
+                        quoterV2Address,
+                        amountOut: gasCostEth,
+                        path: encodeTradePath([wethAddress, inputAddress]),
+                    });
+                    gasCostAmountIn = opportunityCost.amountIn;
+                }
+
+                return q.amountIn + gasCostAmountIn;
+            }),
+        );
+    }
+
+    const trades = zip(paths, quotes, amountInWithGas).map(([path, quote, amountInWithGas]) => {
+        return { path: path!, quote: quote!, amountInWithGas: amountInWithGas! };
     });
 
     // Sort trades by smallest input
-    //TODO: Ignores gas cost
-    trades.sort((a, b) => bigIntPredicate(a.quote.amountIn, b.quote.amountIn));
+    trades.sort((a, b) => bigIntPredicate(a.amountInWithGas, b.amountInWithGas));
 
     return {
         trades,
         optimalTrade: trades[0],
     };
-}
-
-/**
- * Predicate to sort in ascending order
- * @param a
- * @param b
- * @returns
- */
-function bigIntPredicate(a: bigint, b: bigint): -1 | 0 | 1 {
-    if (a < b) return -1;
-    else if (a > b) return 1;
-    else return 0;
 }
