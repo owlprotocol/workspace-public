@@ -62,9 +62,7 @@ export async function getOptimalTradeExactInput(params: GetOptimalTradePathExact
 
     //TODO: Should we use allSettled to handle when trade path is not supported (liquidity pool doesnt exist) ?
     const quotes = await Promise.all(
-        paths.map((tokens) =>
-            quoteExactInput({ publicClient, quoterV2, amountIn, path: encodeTradePath(tokens) }),
-        ),
+        paths.map((tokens) => quoteExactInput({ publicClient, quoterV2, amountIn, path: encodeTradePath(tokens) })),
     );
 
     const trades = zip(paths, quotes).map(([path, quote]) => {
