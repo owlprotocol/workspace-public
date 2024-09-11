@@ -1,15 +1,15 @@
 import { bigIntAbs } from "./bigIntAbs.js";
 
 /**
- * - Let `a`, `b` an array of **strictly positive**  `> 0` **sorted integers**
+ * - Let `a`, `b` an array of **positive sorted integers**
  * - Assume `sum(a) >= sum(b)`
  * - You may split the values in `a` and `b` into smaller positive integers
  * - Distribute the values of `a` into `b` such that `b[i] - a[j] = 0`
  * - The goal is to minimize the number of splits
  *
  * @warning This function assumes certain invariants (see **bold**)
- * @param arrA array of **strictly positive** `> 0` **sorted** integers
- * @param arrB array of **strictly positive** `> 0` **sorted** integersr
+ * @param arrA array of **positive sorted** integers
+ * @param arrB array of **positive sorted** integersr
  * @param heuristic function that returns indices that are grouped as pair
  * @return list of tuples as `[[a_i, b_j, quantity], ...]`
  * @dev In practice, this algorithm is used to minimize the number of trades

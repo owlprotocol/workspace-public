@@ -1,5 +1,6 @@
 import { Address, Hex, PublicClient } from "viem";
 import { map, uniqBy, zip } from "lodash-es";
+import { BigNumber } from "bignumber.js";
 import { getPortfolioHoldings, PortfolioAsset } from "./getPortfolioHoldings.js";
 import { getBalancePortfolioAmounts } from "./getBalancePortfolioAmounts.js";
 import { getBalancePortfolioTrades } from "./getBalancePortfolioTrades.js";
@@ -31,6 +32,8 @@ export interface BalancePortfolioParams {
     quoteToken: Address;
     /** Swap expiry (defaults to 1hr) */
     deadline?: bigint;
+    /** Slippage tolerance % (defaults to 0.50) */
+    slippagePercent?: number;
 }
 
 /**
@@ -50,6 +53,7 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
         deadline,
     } = params;
     const weth = params.weth ?? "0x4200000000000000000000000000000000000006";
+    const slippagePercent = params.slippagePercent ?? 0.5; // 0.50%
 
     // unique addresses
     // portfolio weights
@@ -128,18 +132,23 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
     const approvalTransactions = approvals.filter((e) => e.transaction).map((e) => e.transaction!);
 
     // Get swap transactions
-    const swapTransactions = trades.map((t) =>
-        getSwapExactInputTransaction({
+    const swapTransactions = trades.map((t) => {
+        const amountOutMinimumBigNumber = BigNumber(t.quote.amountOut as any)
+            .times(BigNumber(100 - slippagePercent))
+            .div(BigNumber(100));
+
+        const amountOutMinimum = BigInt(amountOutMinimumBigNumber.integerValue().toString());
+
+        return getSwapExactInputTransaction({
             swapRouterAddress,
             path: t.path,
             amountIn: t.quote.amountIn,
-            //TODO: Add slippage params
-            amountOutMinimum: t.quote.amountOut,
+            amountOutMinimum,
             account,
             weth,
             deadline,
-        }),
-    );
+        });
+    });
 
     const transactions = [...approvalTransactions, ...swapTransactions];
 

@@ -1,4 +1,4 @@
-import { Address, Hex, encodeFunctionData } from "viem";
+import { Address, Hex, encodeFunctionData, zeroAddress } from "viem";
 import { exactInput, exactInputSingle } from "../artifacts/ISwapRouter.js";
 import { multicall } from "../artifacts/IMulticall.js";
 import { unwrapWNativeToken } from "../artifacts/IPeripheryPayments.js";
@@ -25,6 +25,9 @@ export interface GetSwapExactInputTransactionsParams {
 
 /**
  * Get transactions to swap ERC20 token using Algebra Swap Router
+ * @warning The following edge cases are good to know
+ * - WETH input: `amountIn` is used for the `value` field of the transaction
+ * - WETH output: swap call `recipient` is set to address(0) and unwrapped to `recipient` using multicall
  * @param params
  * @return necessary transactions to complete bridging
  */
@@ -34,13 +37,16 @@ export function getSwapExactInputTransaction(params: GetSwapExactInputTransactio
     data: Hex;
     value: bigint;
 } {
-    const { swapRouterAddress, path, amountIn, amountOutMinimum, account: from } = params;
-    const recipient = params.recipient ?? from; //default swap to self
+    const { swapRouterAddress, path, amountIn, amountOutMinimum, account } = params;
+    const recipient = params.recipient ?? account; //default swap to self
     const deadline = params.deadline ?? BigInt((Date.now() + 600) * 1000); //default expire in 10min
     const weth = params.weth ?? "0x4200000000000000000000000000000000000006";
 
     const tokenIn = path[0];
     const tokenOut = path[path.length - 1];
+
+    const isWethInput = tokenIn.toLowerCase() === weth.toLowerCase();
+    const isWethOutput = tokenOut.toLowerCase() === weth.toLowerCase();
 
     let data: Hex;
     if (path.length === 2) {
@@ -53,7 +59,8 @@ export function getSwapExactInputTransaction(params: GetSwapExactInputTransactio
                 {
                     tokenIn,
                     tokenOut,
-                    recipient,
+                    // WETH output, set recipient to address(0) (unwrapped later)
+                    recipient: isWethOutput ? zeroAddress : recipient,
                     deadline,
                     amountIn,
                     amountOutMinimum,
@@ -69,7 +76,8 @@ export function getSwapExactInputTransaction(params: GetSwapExactInputTransactio
             args: [
                 {
                     path: encodeTradePath(path),
-                    recipient,
+                    // WETH output, set recipient to address(0) (unwrapped later)
+                    recipient: isWethOutput ? zeroAddress : recipient,
                     deadline,
                     amountIn,
                     amountOutMinimum,
@@ -81,7 +89,7 @@ export function getSwapExactInputTransaction(params: GetSwapExactInputTransactio
     }
 
     // Token output WETH
-    if (tokenOut.toLowerCase() === weth.toLowerCase()) {
+    if (isWethOutput) {
         // Encode unwrap
         const unwrapData = encodeFunctionData({
             abi: [unwrapWNativeToken],
@@ -96,10 +104,10 @@ export function getSwapExactInputTransaction(params: GetSwapExactInputTransactio
     }
 
     // Token input WETH
-    const value = tokenIn.toLowerCase() === weth.toLowerCase() ? amountIn : 0n;
+    const value = isWethInput ? amountIn : 0n;
 
     return {
-        account: from,
+        account,
         to: swapRouterAddress,
         data,
         value,
