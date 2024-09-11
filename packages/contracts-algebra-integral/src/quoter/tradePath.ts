@@ -21,7 +21,8 @@ export function getTradePaths(params: GetTradePathsParams): [[Address, Address],
 
     // Filter out input/output address from intermediateAddresses
     const intermediateAddresses = (params.intermediateAddresses ?? []).filter(
-        (address) => address != inputAddress && address != outputAddress,
+        (address) =>
+            address.toLowerCase() != inputAddress.toLowerCase() && address.toLowerCase() != outputAddress.toLowerCase(),
     );
 
     // Direct path

@@ -64,7 +64,6 @@ describe("getOptimalTrade.test.ts", function () {
 
         expect(trades).toBeDefined();
         expect(optimalTrade).toBeDefined();
-        console.debug(optimalTrade);
     });
 
     test("getOptimalTrade USDC > WETH", async () => {

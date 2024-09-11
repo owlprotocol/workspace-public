@@ -29,7 +29,9 @@ import { bigIntAbs } from "./bigIntAbs.js";
 export function bigIntFillBucket(
     a: bigint[],
     b: bigint[],
-    heuristic: (a: bigint[], b: bigint[]) => [aIdx: number, bIdx: number, ...any],
+    heuristic: (a: bigint[], b: bigint[]) => [aIdx: number, bIdx: number, ...any] = heuristicWithTrivialCase(
+        bigIntSmallestAbsDiff,
+    ),
 ): [number, number, bigint][] {
     /**
      * The algorithm works as follows

@@ -1,5 +1,4 @@
 import { describe, test, expect } from "vitest";
-import { parseEther } from "viem";
 import { decodeTradePath, encodeTradePath, getTradePaths } from "./tradePath.js";
 
 describe("quoteExact.test.ts", function () {

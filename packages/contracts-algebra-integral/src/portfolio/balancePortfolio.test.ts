@@ -1,7 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { createPublicClient, http } from "viem";
 import { getBalancePortfolioAmounts, getBalancePortfolioTrades } from "./balancePortfolio.js";
-import { quoteExact, quoteExactInput } from "../quoter/quoteExact.js";
 import { getOptimalTrade } from "../quoter/getOptimalTrade.js";
 
 describe("balancePortfolio.test.ts", function () {
@@ -66,7 +65,7 @@ describe("balancePortfolio.test.ts", function () {
         expect(trades).toBeDefined();
         expect(delta).toBeDefined();
 
-        // console.debug(trades);
-        // console.debug(delta);
+        console.debug(trades);
+        console.debug(delta);
     });
 });

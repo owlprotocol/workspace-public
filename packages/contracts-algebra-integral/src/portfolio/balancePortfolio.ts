@@ -29,6 +29,7 @@ import { Prettify } from "@owlprotocol/utils/types";
 import { Portfolio } from "./getPortfolio.js";
 import { bigIntPredicate } from "../utils/bigIntPredicate.js";
 import { getOptimalTradeExactInput, getOptimalTradeExactOutput, Trade } from "../quoter/getOptimalTrade.js";
+import { bigIntFillBucket } from "../utils/bigIntFillBucket.js";
 
 export interface BalancePortfolioParams extends Portfolio {
     /** Network public client */
@@ -82,78 +83,54 @@ export async function getBalancePortfolioTrades(params: GetBalancePortfolioTrade
     const { publicClient, quoterV2Address, intermediateAddresses, gasPrice, wethAddress } = params;
 
     const portfolio = cloneDeep(params.assets);
-    // inputs, balance will decrease
-    const inputs = filter(portfolio, (a) => a.balanceDelta < 0);
-    // outputs, balance will increase
-    const outputs = filter(portfolio, (a) => a.balanceDelta > 0);
+    // inputs, balance will decrease (valueDelta < 0)
+    // sort descending (ascending absolute value)
+    const inputs = filter(portfolio, (e) => e.valueDelta < 0n).sort((a, b) =>
+        bigIntPredicate(b.valueDelta, a.valueDelta),
+    );
+    // outputs, balance will increase (valueDelta > 0)
+    // sort ascending
+    const outputs = filter(portfolio, (e) => e.valueDelta > 0n).sort((a, b) =>
+        bigIntPredicate(a.valueDelta, b.valueDelta),
+    );
 
-    const trades: Trade[] = [];
+    // prepare for trade matching algo
+    const inputValues = inputs.map((e) => -1n * e.valueDelta);
+    const outputValues = outputs.map((e) => e.valueDelta);
+    const tradeIndices = bigIntFillBucket(inputValues, outputValues);
+    const tradeData = tradeIndices.map(([inputIdx, outputIdx, value]) => {
+        const input = inputs[inputIdx];
+        const amountIn = (input.balanceDelta * value) / input.valueDelta;
+        input.balanceDelta += amountIn;
+        input.valueDelta += value;
 
-    while (true) {
-        console.debug(portfolio);
-        if (inputs.length === 0 || outputs.length === 0) {
-            // No more assets left to trade
-            break;
-        }
+        const output = outputs[outputIdx];
+        const amountOut = (output.balanceDelta * value) / output.valueDelta;
+        output.balanceDelta -= amountOut;
+        output.valueDelta -= value;
 
-        // Greedy algorithm, match smallest input to smallest output
-        // smallest input, values are negative so sort ascending
-        const smallestInput = inputs.sort((a, b) => bigIntPredicate(a.valueDelta, b.valueDelta))[inputs.length - 1];
-        // smallest output, values are positive so sort descending
-        const smallestOutput = outputs.sort((a, b) => bigIntPredicate(b.valueDelta, a.valueDelta))[outputs.length - 1];
-
-        const tradeExactInput = await getOptimalTradeExactInput({
-            publicClient,
-            quoterV2Address,
-            amountIn: smallestInput.balanceDelta * -1n,
-            inputAddress: smallestInput.address,
-            outputAddress: smallestOutput.address,
-            intermediateAddresses,
-            gasPrice,
-            wethAddress,
-        });
-
-        if (tradeExactInput.optimalTrade.quote.amountOut < smallestOutput.balanceDelta) {
-            // Add trade
-            trades.push(tradeExactInput.optimalTrade);
-            // All inputs consumed
-            smallestInput.valueDelta = 0n;
-            smallestInput.balanceDelta = 0n;
-            inputs.pop();
-            // Update output value delta proportionally
-            smallestOutput.valueDelta -=
-                (smallestOutput.valueDelta * tradeExactInput.optimalTrade.quote.amountOut) /
-                smallestOutput.balanceDelta;
-            // Update output balance delta
-            smallestOutput.balanceDelta -= tradeExactInput.optimalTrade.quote.amountOut;
-            continue;
-        }
-
-        // Too large trade, use getOptimalTradeExactOutput
-        const tradeExactOutput = await getOptimalTradeExactOutput({
-            publicClient,
-            quoterV2Address,
-            amountOut: smallestOutput.balanceDelta,
-            inputAddress: smallestInput.address,
-            outputAddress: smallestOutput.address,
-            intermediateAddresses,
-            gasPrice,
-            wethAddress,
-        });
-
-        // Add trade
-        trades.push(tradeExactOutput.optimalTrade);
-        // Update input balance delta proportionally
-        smallestInput.valueDelta +=
-            (smallestInput.valueDelta * tradeExactInput.optimalTrade.quote.amountIn) / smallestInput.balanceDelta;
-        // Update input balance delta
-        smallestInput.balanceDelta += tradeExactOutput.optimalTrade.quote.amountIn;
-        // All outputs consumed
-        smallestOutput.valueDelta = 0n;
-        smallestOutput.balanceDelta = 0n;
-        outputs.pop();
-        continue;
-    }
+        return {
+            input,
+            output,
+            amountIn,
+            amountOut,
+        };
+    });
+    const trades: Trade[] = await Promise.all(
+        tradeData.map(async (t) => {
+            const estimate = await getOptimalTradeExactInput({
+                publicClient,
+                quoterV2Address,
+                amountIn: t.amountIn,
+                inputAddress: t.input.address,
+                outputAddress: t.output.address,
+                intermediateAddresses,
+                gasPrice,
+                wethAddress,
+            });
+            return estimate.optimalTrade;
+        }),
+    );
 
     return { trades, delta: portfolio };
 }
