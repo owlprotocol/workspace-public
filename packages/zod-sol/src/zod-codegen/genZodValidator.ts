@@ -19,7 +19,13 @@ import { Abi, abiWithFunctionsOnly } from "../abi/abi.js";
  * @returns
  */
 export function genZodForAbiParamNonTuple(t: NonTupleType): string {
-    return `zSol.${t}Zod`;
+    if (t === "address") return "zSol.addressZod";
+    else if (t === "string") return "zSol.stringZod";
+    else if (t === "bool") return "zSol.boolZod";
+    else if (t.startsWith("bytes")) return `zSol.getSolidityBytesZod("${t}")`;
+    else if (t.startsWith("uint") || t.startsWith("int")) return `zSol.getSolidityIntStringToDecimalZod("${t}")`;
+
+    throw Error(`Invalid NonTuple param ${t}`);
 }
 
 /**
