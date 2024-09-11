@@ -5,8 +5,12 @@ import { getPortfolioHoldings, PortfolioAsset } from "./getPortfolioHoldings.js"
 import { getBalancePortfolioAmounts } from "./getBalancePortfolioAmounts.js";
 import { getBalancePortfolioTrades } from "./getBalancePortfolioTrades.js";
 import { getERC20ApprovalTransaction } from "../swaprouter/getERC20ApprovalTransaction.js";
-import { getSwapExactInputTransaction } from "../swaprouter/getSwapTransaction.js";
+import {
+    getMulticallSwapTransaction,
+    prepareMulticallSwapExactInput,
+} from "../swaprouter/getMulticallSwapTransaction.js";
 import { getAlgebraWeth } from "../constants.js";
+import { getSwapExactInputTransaction } from "../swaprouter/getSwapTransaction.js";
 
 export interface BalancePortfolioParams {
     /** Network public client */
@@ -141,13 +145,21 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
             path: t.path,
             amountIn: t.quote.amountIn,
             amountOutMinimum,
-            account,
+            recipient: account,
             weth,
             deadline,
         });
     });
 
     const transactions = [...approvalTransactions, ...swapTransactions];
+
+    // const multicallTransaction = getMulticallSwapTransaction({
+    // swapRouterAddress,
+    // recipient: account,
+    // transactions: swapTransactions,
+    // });
+    //
+    // const transactions = [...approvalTransactions, multicallTransaction];
 
     return {
         ...holdings,

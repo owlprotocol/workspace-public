@@ -13,12 +13,10 @@ export interface GetSwapExactInputTransactionsParams {
     amountIn: bigint;
     /** Output token minimum amount */
     amountOutMinimum: bigint;
-    /** Account */
-    account: Address;
     /** WETH address for wrap/unwrap */
     weth: Address;
-    /** Swap output recipient (defaults to account) */
-    recipient?: Address;
+    /** Swap output recipient */
+    recipient: Address;
     /** Swap expiry (defaults to 1hr) */
     deadline?: bigint;
 }
@@ -32,13 +30,11 @@ export interface GetSwapExactInputTransactionsParams {
  * @return necessary transactions to complete bridging
  */
 export function getSwapExactInputTransaction(params: GetSwapExactInputTransactionsParams): {
-    account: Address;
     to: Address;
     data: Hex;
     value: bigint;
 } {
-    const { swapRouterAddress, path, amountIn, amountOutMinimum, account } = params;
-    const recipient = params.recipient ?? account; //default swap to self
+    const { swapRouterAddress, path, amountIn, amountOutMinimum, recipient } = params;
     const deadline = params.deadline ?? BigInt((Date.now() + 600) * 1000); //default expire in 10min
     const weth = params.weth;
 
@@ -107,7 +103,6 @@ export function getSwapExactInputTransaction(params: GetSwapExactInputTransactio
     const value = isWethInput ? amountIn : 0n;
 
     return {
-        account,
         to: swapRouterAddress,
         data,
         value,
