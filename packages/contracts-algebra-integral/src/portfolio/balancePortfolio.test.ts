@@ -22,14 +22,12 @@ describe("balancePortfolio.test.ts", function () {
             poolDeployer,
             quoterV2Address,
             swapRouterAddress,
-            intermediateAddresses: [WETH],
             account: "0xfE732ca712C695Ee14a8A015E65997dD9189C31b",
             assets: [
                 { address: USDC, weight: 0 },
                 { address: WETH, weight: 1 },
                 { address: MODE, weight: 0 },
             ],
-            quoteToken: USDC,
         });
 
         expect(portfolio).toBeDefined();

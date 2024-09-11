@@ -22,7 +22,6 @@ describe("getPortfolioHoldings.test.ts", function () {
             weth: WETH,
             account: "0xfE732ca712C695Ee14a8A015E65997dD9189C31b",
             tokens: [USDC, WETH, MODE],
-            quoteToken: USDC,
         });
 
         expect(portfolio).toBeDefined();

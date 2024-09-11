@@ -46,7 +46,7 @@ export interface GetPortfolioParams {
     /** Portfolio tokens */
     tokens: Address[];
     /** Unit of account (eg. WETH, USDC) */
-    quoteToken: Address;
+    quoteToken?: Address;
 }
 
 /**
@@ -57,8 +57,9 @@ export interface GetPortfolioParams {
  * @returns portfolio data
  */
 export async function getPortfolioHoldings(params: GetPortfolioParams): Promise<Prettify<PortfolioHoldings>> {
-    const { publicClient, poolDeployer, poolInitCodeHash, account, tokens, quoteToken } = params;
+    const { publicClient, poolDeployer, poolInitCodeHash, account, tokens } = params;
     const weth = params.weth;
+    const quoteToken = params.quoteToken ?? weth;
 
     const balances = await Promise.all(
         tokens.map(async (address) => {

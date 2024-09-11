@@ -22,16 +22,16 @@ export interface BalancePortfolioParams {
     quoterV2Address: Address;
     /** Algebra Integral swap router address */
     swapRouterAddress: Address;
-    /** Intermediate trading assets */
-    intermediateAddresses?: Address[];
-    /** WETH address for native token wrapping/unwrapping */
-    weth?: Address;
     /** Account */
     account: Address;
     /** Portfolio tokens */
     assets: { address: Address; weight: number }[];
-    /** Unit of account (eg. WETH, USDC) */
-    quoteToken: Address;
+    /** WETH address for native token wrapping/unwrapping */
+    weth?: Address;
+    /** Unit of account (defaults to `weth`) */
+    quoteToken?: Address;
+    /** Intermediate trading assets (defaults to `weth`) */
+    intermediateAddresses?: Address[];
     /** Swap expiry (defaults to 1hr) */
     deadline?: bigint;
     /** Slippage tolerance % (defaults to 0.50) */
@@ -42,18 +42,12 @@ export interface BalancePortfolioParams {
  * Get necessary trades to balance portfolio to target basis points
  */
 export async function balancePortfolio(params: BalancePortfolioParams) {
-    const {
-        publicClient,
-        account,
-        poolInitCodeHash,
-        poolDeployer,
-        swapRouterAddress,
-        quoterV2Address,
-        intermediateAddresses,
-        quoteToken,
-        deadline,
-    } = params;
+    const { publicClient, account, poolInitCodeHash, poolDeployer, swapRouterAddress, quoterV2Address, deadline } =
+        params;
     const weth = params.weth ?? (await getAlgebraWeth({ publicClient, swapRouterAddress }));
+    const quoteToken = params.quoteToken ?? weth;
+    // use weth as source of potential liquidity
+    const intermediateAddresses = params.intermediateAddresses ?? [weth];
     const slippagePercent = params.slippagePercent ?? 0.5; // 0.50%
 
     // unique addresses
