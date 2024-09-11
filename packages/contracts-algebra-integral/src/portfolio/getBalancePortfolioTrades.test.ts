@@ -44,7 +44,7 @@ describe("getBalancePortfolioTrades.test.ts", function () {
         });
 
         // Spend $100
-        const { trades, dust: delta } = await getBalancePortfolioTrades({
+        const { trades, deficit: delta } = await getBalancePortfolioTrades({
             publicClient,
             quoterV2Address,
             intermediateAddresses: [WETH],

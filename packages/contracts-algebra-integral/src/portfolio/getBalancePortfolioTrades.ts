@@ -31,7 +31,7 @@ export interface GetBalancePortfolioTradesParams {
  */
 export async function getBalancePortfolioTrades(params: GetBalancePortfolioTradesParams): Promise<{
     trades: Trade[];
-    dust: { balanceDust: bigint; valueDust: bigint }[];
+    deficit: { balanceDeficit: bigint; valueDeficit: bigint }[];
 }> {
     const { publicClient, quoterV2Address, intermediateAddresses, gasPrice, wethAddress } = params;
 
@@ -87,8 +87,8 @@ export async function getBalancePortfolioTrades(params: GetBalancePortfolioTrade
 
     return {
         trades,
-        dust: portfolio.map((a) => {
-            return { balanceDust: a.balanceDelta, valueDust: a.valueDelta };
+        deficit: portfolio.map((a) => {
+            return { balanceDeficit: a.balanceDelta, valueDeficit: a.valueDelta };
         }),
     };
 }
