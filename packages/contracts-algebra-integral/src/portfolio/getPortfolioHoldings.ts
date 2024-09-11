@@ -5,6 +5,18 @@ import { BigNumber } from "bignumber.js";
 import { getPoolAddress, getPoolState } from "../pool/getPool.js";
 import { quoteWithPrice, sqrtPriceToInstantPrice } from "../pool/getPoolPrice.js";
 
+export interface PortfolioAsset {
+    /** Address */
+    address: Address;
+    /** Balance */
+    balance: bigint;
+    /** Value denominated in `quoteToken` */
+    value: bigint;
+    /** Price denominatd in `quoteToken` */
+    price: BigNumber;
+    /** Basis points of portfolio */
+    bips: number;
+}
 /**
  * Manage a portfolio of assets
  */
@@ -15,18 +27,7 @@ export interface PortfolioHoldings {
      **/
     quoteToken: Address;
     /** Assets */
-    assets: {
-        /** Address */
-        address: Address;
-        /** Balance */
-        balance: bigint;
-        /** Value denomicated in `quoteToken` */
-        value: bigint;
-        /** Price address/quoteToken */
-        price: BigNumber;
-        /** Basis points of portfolio */
-        bips: number;
-    }[];
+    assets: PortfolioAsset[];
     /** Total value of portfolio */
     totalValue: bigint;
 }

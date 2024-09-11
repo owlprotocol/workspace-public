@@ -1,69 +1,66 @@
 import { describe, test, expect } from "vitest";
 import { createPublicClient, http } from "viem";
+import { BigNumber } from "bignumber.js";
 import { getBalancePortfolioTrades } from "./getBalancePortfolioTrades.js";
-import { getBalancePortfolioAmounts } from "./getBalancePortfolioAmounts.js";
-import { getOptimalTrade } from "../quoter/getOptimalTrade.js";
+import { getPoolAddress, getPoolState } from "../pool/getPool.js";
+import { sqrtPriceToInstantPrice } from "../pool/getPoolPrice.js";
 
 describe("getBalancePortfolioTrades.test.ts", function () {
     const publicClient = createPublicClient({
         transport: http("https://mode.drpc.org/"),
     });
+    const poolInitCodeHash = "0xf96d2474815c32e070cd63233f06af5413efc5dcb430aee4ff18cc29007c562d";
+    const poolDeployer = "0x6414A461B19726410E52488d9D5ff33682701635";
     const quoterV2Address = "0x7c5aaa464f736740156fd69171505d344855d1e5";
 
     const USDC = "0xd988097fb8612cc24eeC14542bC03424c656005f";
     const WETH = "0x4200000000000000000000000000000000000006";
     const MODE = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
-    test("getBalancePortfolioAmounts", async () => {
-        const portfolio = await getBalancePortfolioAmounts({
-            assets: [
-                { balance: 100n, value: 100n, targetRatio: 50 },
-                { balance: 100n, value: 100n, targetRatio: 25 },
-                { balance: 100n, value: 100n, targetRatio: 10 },
-            ],
-        });
-        expect(portfolio).toBeDefined();
-    });
-
     test("getBalancePortfolioTrades", async () => {
-        const usdcWethTrade = await getOptimalTrade({
+        const poolWethUsdc = await getPoolState({
             publicClient,
-            quoterV2Address,
-            inputAddress: USDC,
-            outputAddress: WETH,
-            amountIn: 50_000_000n,
+            address: getPoolAddress({
+                token0: WETH,
+                token1: USDC,
+                poolDeployer,
+                poolInitCodeHash,
+            }),
         });
+        const priceWethUsdc = sqrtPriceToInstantPrice({ sqrtPrice: poolWethUsdc.sqrtPrice, base: WETH, quote: USDC });
 
-        const usdcModeTrade = await getOptimalTrade({
+        const poolUsdcMode = await getPoolState({
             publicClient,
-            quoterV2Address,
-            inputAddress: USDC,
-            outputAddress: MODE,
-            intermediateAddresses: [WETH],
-            amountIn: 50_000_000n,
+            address: getPoolAddress({
+                token0: USDC,
+                token1: MODE,
+                poolDeployer,
+                poolInitCodeHash,
+            }),
         });
+        const priceModeUsdc = sqrtPriceToInstantPrice({ sqrtPrice: poolUsdcMode.sqrtPrice, base: MODE, quote: USDC });
 
         // Spend $100
-        const { trades, deficit: delta } = await getBalancePortfolioTrades({
+        const trades = await getBalancePortfolioTrades({
             publicClient,
             quoterV2Address,
             intermediateAddresses: [WETH],
             assets: [
-                { address: USDC, balanceDelta: -90_000_000n, valueDelta: -90_000_000n },
+                { address: USDC, price: BigNumber(1), valueDelta: -90_000_000n },
                 {
                     address: WETH,
-                    balanceDelta: usdcWethTrade.optimalTrade.quote.amountOut,
-                    valueDelta: usdcWethTrade.optimalTrade.quote.amountIn,
+                    price: priceWethUsdc,
+                    valueDelta: 40_000_000n,
                 },
                 {
                     address: MODE,
-                    balanceDelta: usdcModeTrade.optimalTrade.quote.amountOut,
-                    valueDelta: usdcModeTrade.optimalTrade.quote.amountIn,
+                    price: priceModeUsdc,
+                    valueDelta: 40_000_000n,
                 },
             ],
         });
 
         expect(trades).toBeDefined();
-        expect(delta).toBeDefined();
+        console.debug(trades);
     });
 });

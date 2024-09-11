@@ -1,14 +1,9 @@
 import { Address, PublicClient } from "viem";
 import { cloneDeep, filter } from "lodash-es";
+import { BigNumber } from "bignumber.js";
 import { bigIntPredicate } from "../utils/bigIntPredicate.js";
 import { getOptimalTradeExactInput, Trade } from "../quoter/getOptimalTrade.js";
 import { bigIntFillBucket } from "../utils/bigIntFillBucket.js";
-
-export interface GetBalancePortfolioTradesAsset {
-    address: Address;
-    balanceDelta: bigint;
-    valueDelta: bigint;
-}
 
 export interface GetBalancePortfolioTradesParams {
     /** Network public client */
@@ -21,18 +16,22 @@ export interface GetBalancePortfolioTradesParams {
     gasPrice?: bigint | null;
     /** WETH address for gas valuation */
     weth?: Address;
-    /** Target asset values */
-    assets: GetBalancePortfolioTradesAsset[];
+    /** Assets **/
+    assets: {
+        /** Address */
+        address: Address;
+        /** Price denominated in `quoteToken` */
+        price: BigNumber;
+        /** Change in value for trade */
+        valueDelta: bigint;
+    }[];
 }
 
 /**
  * Get optimal trades to rebalance portfolio
  * @param params
  */
-export async function getBalancePortfolioTrades(params: GetBalancePortfolioTradesParams): Promise<{
-    trades: Trade[];
-    deficit: { balanceDeficit: bigint; valueDeficit: bigint }[];
-}> {
+export async function getBalancePortfolioTrades(params: GetBalancePortfolioTradesParams): Promise<Trade[]> {
     const { publicClient, quoterV2Address, intermediateAddresses, gasPrice, weth } = params;
 
     const portfolio = cloneDeep(params.assets);
@@ -51,34 +50,24 @@ export async function getBalancePortfolioTrades(params: GetBalancePortfolioTrade
     const inputValues = inputs.map((e) => -1n * e.valueDelta);
     const outputValues = outputs.map((e) => e.valueDelta);
     const tradeIndices = bigIntFillBucket(inputValues, outputValues);
-    const tradeData = tradeIndices.map(([inputIdx, outputIdx, value]) => {
-        const input = inputs[inputIdx];
-        //TODO: Fix division by zero
-        const amountIn = (input.balanceDelta * value) / input.valueDelta;
-        input.balanceDelta += amountIn;
-        input.valueDelta += value;
 
-        const output = outputs[outputIdx];
-        //TODO: Fix division by zero
-        const amountOut = (output.balanceDelta * value) / output.valueDelta;
-        output.balanceDelta -= amountOut;
-        output.valueDelta -= value;
+    return Promise.all(
+        tradeIndices.map(async ([inputIdx, outputIdx, value]) => {
+            const input = inputs[inputIdx];
+            const output = outputs[outputIdx];
+            const amountIn = BigInt(
+                BigNumber(value as any)
+                    .div(input.price)
+                    .integerValue()
+                    .toString(),
+            );
 
-        return {
-            input,
-            output,
-            amountIn,
-            amountOut,
-        };
-    });
-    const trades: Trade[] = await Promise.all(
-        tradeData.map(async (t) => {
             const estimate = await getOptimalTradeExactInput({
                 publicClient,
                 quoterV2Address,
-                amountIn: t.amountIn,
-                inputAddress: t.input.address,
-                outputAddress: t.output.address,
+                amountIn,
+                inputAddress: input.address,
+                outputAddress: output.address,
                 intermediateAddresses,
                 gasPrice,
                 weth,
@@ -86,11 +75,4 @@ export async function getBalancePortfolioTrades(params: GetBalancePortfolioTrade
             return estimate.optimalTrade;
         }),
     );
-
-    return {
-        trades,
-        deficit: portfolio.map((a) => {
-            return { balanceDeficit: a.balanceDelta, valueDeficit: a.valueDelta };
-        }),
-    };
 }

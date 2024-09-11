@@ -1,6 +1,6 @@
 import { Address, Hex, PublicClient } from "viem";
-import { uniqBy, zip } from "lodash-es";
-import { getPortfolioHoldings } from "./getPortfolioHoldings.js";
+import { map, uniqBy, zip } from "lodash-es";
+import { getPortfolioHoldings, PortfolioAsset } from "./getPortfolioHoldings.js";
 import { getBalancePortfolioAmounts } from "./getBalancePortfolioAmounts.js";
 import { getBalancePortfolioTrades } from "./getBalancePortfolioTrades.js";
 import { getERC20ApprovalTransaction } from "../swaprouter/getERC20ApprovalTransaction.js";
@@ -26,7 +26,7 @@ export interface BalancePortfolioParams {
     /** Account */
     account: Address;
     /** Portfolio tokens */
-    assets: { address: Address; targetRatio: number }[];
+    assets: { address: Address; weight: number }[];
     /** Unit of account (eg. WETH, USDC) */
     quoteToken: Address;
     /** Swap expiry (defaults to 1hr) */
@@ -38,39 +38,58 @@ export interface BalancePortfolioParams {
  */
 export async function balancePortfolio(params: BalancePortfolioParams) {
     // unique addresses
-    const assets = uniqBy(params.assets, (a) => a.address);
+    // portfolio weights
+    const paramsAssetsUniq = uniqBy(params.assets, (a) => a.address);
+    const tokens = paramsAssetsUniq.map((a) => a.address);
+    const weights = paramsAssetsUniq.map((a) => a.weight);
 
-    const holdings = await getPortfolioHoldings({ ...params, tokens: assets.map((a) => a.address) });
-    const { targetBalances } = getBalancePortfolioAmounts({
-        assets: zip(assets, holdings.assets).map(([a, b]) => {
-            return { ...a!, ...b! };
+    // portfolio holdings
+    const holdings = await getPortfolioHoldings({ ...params, tokens });
+    // portfolio target distribution
+    const targets = getBalancePortfolioAmounts({
+        totalValue: holdings.totalValue,
+        assets: map(zip(holdings.assets, weights) as [PortfolioAsset, number][], ([{ price }, weight]) => {
+            return { price, weight };
         }),
     });
+    // portfolio change t1 (future) - t0 (current)
+    // negative delta: outflow, sell (input)
+    // positive delta: inflow, buy (output)
+    const deltas = map(
+        zip(holdings.assets, targets) as [PortfolioAsset, { targetValue: bigint; targetBalance: bigint }][],
+        ([asset, { targetValue, targetBalance }]) => {
+            return {
+                balanceDelta: targetBalance - asset.balance,
+                valueDelta: targetValue - asset.value,
+            };
+        },
+    );
+
     const totalTradeValue =
         -1n *
-        targetBalances
+        deltas
             // filter outflows
             .filter(({ valueDelta }) => valueDelta < 0)
             .reduce((acc, { valueDelta }) => acc + valueDelta, 0n);
 
-    const { trades, deficit } = await getBalancePortfolioTrades({
+    const trades = await getBalancePortfolioTrades({
         ...params,
-        assets: zip(assets, targetBalances).map(([a, b]) => {
-            return { ...a!, ...b! };
-        }),
+        assets: map(
+            zip(holdings.assets, deltas) as [PortfolioAsset, { valueDelta: bigint }][],
+            ([{ address, price }, { valueDelta }]) => {
+                return { address, price, valueDelta };
+            },
+        ),
     });
 
     const { publicClient, account, swapRouterAddress, weth, deadline } = params;
     // Get approvals
     const approvals = await Promise.all(
-        zip(assets, targetBalances)
-            .map(([a, b]) => {
-                return { ...a!, ...b! };
-            })
-            // filter outflows
-            .filter(({ balanceDelta }) => balanceDelta < 0)
+        (zip(holdings.assets, deltas) as [PortfolioAsset, { balanceDelta: bigint }][])
+            // outflows
+            .filter(([, { balanceDelta }]) => balanceDelta < 0)
             // get approval transaction
-            .map(({ address, balanceDelta }) =>
+            .map(([{ address }, { balanceDelta }]) =>
                 getERC20ApprovalTransaction({
                     publicClient,
                     address,
@@ -100,10 +119,9 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
 
     return {
         ...holdings,
-        targetBalances,
+        targetBalances: deltas,
         trades,
         totalTradeValue,
-        deficit,
         transactions,
     };
 }

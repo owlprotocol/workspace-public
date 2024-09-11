@@ -25,9 +25,9 @@ describe("balancePortfolio.test.ts", function () {
             intermediateAddresses: [WETH],
             account: "0xfE732ca712C695Ee14a8A015E65997dD9189C31b",
             assets: [
-                { address: USDC, targetRatio: 0 },
-                { address: WETH, targetRatio: 1 },
-                { address: MODE, targetRatio: 0 },
+                { address: USDC, weight: 0 },
+                { address: WETH, weight: 1 },
+                { address: MODE, weight: 0 },
             ],
             quoteToken: USDC,
         });
