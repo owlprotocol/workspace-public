@@ -18,6 +18,7 @@ hardhatArtifactsExport("./src/artifacts", "./cache", [
     join(cryptoAlgebraCoreInterfaces, "IAlgebraPool.sol/IAlgebraPool.json"),
     join(cryptoAlgebraCoreInterfaces, "IAlgebraPoolDeployer.sol/IAlgebraPoolDeployer.json"),
     // Periphery
+    join(cryptoAlgebraPeripheryInterfaces, "external/IWNativeToken.sol/IWNativeToken.json"),
     join(cryptoAlgebraPeripheryInterfaces, "IQuoterV2.sol/IQuoterV2.json"),
     join(cryptoAlgebraPeripheryInterfaces, "ISwapRouter.sol/ISwapRouter.json"),
     join(cryptoAlgebraPeripheryInterfaces, "IMulticall.sol/IMulticall.json"),

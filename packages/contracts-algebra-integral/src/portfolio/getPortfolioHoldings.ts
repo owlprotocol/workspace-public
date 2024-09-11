@@ -52,6 +52,7 @@ export interface GetPortfolioParams {
 /**
  * Get portfolio information for a list of tokens such as balances, valuations, and distribution
  * @warning Valuations use pool prices and do not account for transaction costs (price impact, fees etc...)
+ * @warning WETH ERC20 balance is ignored in favor of native balance, WETH balance should be unwrapped manually
  * @param params
  * @returns portfolio data
  */
@@ -61,19 +62,17 @@ export async function getPortfolioHoldings(params: GetPortfolioParams): Promise<
 
     const balances = await Promise.all(
         tokens.map(async (address) => {
-            let balance = await publicClient.readContract({
+            // Native token
+            if (address.toLowerCase() === weth.toLowerCase()) {
+                return publicClient.getBalance({ address: account });
+            }
+
+            return publicClient.readContract({
                 address,
                 abi: erc20Abi,
                 functionName: "balanceOf",
                 args: [account],
             });
-
-            // Native token
-            if (address.toLowerCase() === weth.toLowerCase()) {
-                balance += await publicClient.getBalance({ address: account });
-            }
-
-            return balance;
         }),
     );
 

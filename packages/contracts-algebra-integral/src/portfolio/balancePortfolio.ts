@@ -37,6 +37,20 @@ export interface BalancePortfolioParams {
  * Get necessary trades to balance portfolio to target basis points
  */
 export async function balancePortfolio(params: BalancePortfolioParams) {
+    const {
+        publicClient,
+        account,
+        poolInitCodeHash,
+        poolDeployer,
+        swapRouterAddress,
+        quoterV2Address,
+        intermediateAddresses,
+        quoteToken,
+        gasPrice,
+        deadline,
+    } = params;
+    const weth = params.weth ?? "0x4200000000000000000000000000000000000006";
+
     // unique addresses
     // portfolio weights
     const paramsAssetsUniq = uniqBy(params.assets, (a) => a.address);
@@ -44,7 +58,14 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
     const weights = paramsAssetsUniq.map((a) => a.weight);
 
     // portfolio holdings
-    const holdings = await getPortfolioHoldings({ ...params, tokens });
+    const holdings = await getPortfolioHoldings({
+        publicClient,
+        poolDeployer,
+        poolInitCodeHash,
+        account,
+        quoteToken,
+        tokens,
+    });
     // portfolio target distribution
     const targets = getBalancePortfolioAmounts({
         totalValue: holdings.totalValue,
@@ -73,7 +94,11 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
             .reduce((acc, { valueDelta }) => acc + valueDelta, 0n);
 
     const trades = await getBalancePortfolioTrades({
-        ...params,
+        publicClient,
+        quoterV2Address,
+        intermediateAddresses,
+        gasPrice,
+        weth,
         assets: map(
             zip(holdings.assets, deltas) as [PortfolioAsset, { valueDelta: bigint }][],
             ([{ address, price }, { valueDelta }]) => {
@@ -82,12 +107,13 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
         ),
     });
 
-    const { publicClient, account, swapRouterAddress, weth, deadline } = params;
     // Get approvals
     const approvals = await Promise.all(
         (zip(holdings.assets, deltas) as [PortfolioAsset, { balanceDelta: bigint }][])
-            // outflows
-            .filter(([, { balanceDelta }]) => balanceDelta < 0)
+            // outflows, skip WETH
+            .filter(
+                ([{ address }, { balanceDelta }]) => balanceDelta < 0 && address.toLowerCase() != weth.toLowerCase(),
+            )
             // get approval transaction
             .map(([{ address }, { balanceDelta }]) =>
                 getERC20ApprovalTransaction({
