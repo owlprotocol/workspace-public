@@ -17,9 +17,9 @@ describe("getBalancePortfolioTrades.test.ts", function () {
     test("getBalancePortfolioAmounts", async () => {
         const portfolio = await getBalancePortfolioAmounts({
             assets: [
-                { address: USDC, balance: 100n, value: 100n, targetRatio: 50 },
-                { address: WETH, balance: 100n, value: 100n, targetRatio: 25 },
-                { address: MODE, balance: 100n, value: 100n, targetRatio: 10 },
+                { balance: 100n, value: 100n, targetRatio: 50 },
+                { balance: 100n, value: 100n, targetRatio: 25 },
+                { balance: 100n, value: 100n, targetRatio: 10 },
             ],
         });
         expect(portfolio).toBeDefined();

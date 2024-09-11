@@ -78,7 +78,7 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
     );
     const approvalTransactions = approvals.filter((e) => e.transaction).map((e) => e.transaction!);
 
-    //TODO: Get swap transactions
+    // Get swap transactions
     const swapTransactions = trades.map((t) =>
         getSwapExactInputTransaction({
             swapRouterAddress,
