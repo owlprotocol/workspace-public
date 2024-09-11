@@ -1,4 +1,5 @@
-import { Address, getCreate2Address, encodeAbiParameters, keccak256, hexToBigInt, Hex } from "viem";
+import { Address, getCreate2Address, encodeAbiParameters, keccak256, hexToBigInt, Hex, PublicClient } from "viem";
+import { safelyGetStateOfAMM } from "../artifacts/IAlgebraPool.js";
 
 /**
  * Get the base/quote address pair for pool
@@ -51,6 +52,26 @@ export function getPoolAddress({
 }
 
 /**
- *   pool = address(uint160(uint256(keccak256(abi.encodePacked(hex'ff', poolDeployer, keccak256(abi.encode(token0, token1)), POOL_INIT_CODE_HASH)))));
-
+ * Get pool state using `safelyGetStateOfAMM` call
+ * @see https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/integration-process/interaction-with-pools/getting-data-from-pools#how-to-get-current-price-in-pool
+ * @param params publicClient, address
+ * @returns pool data
  */
+export async function getPoolState({ publicClient, address }: { publicClient: PublicClient; address: Address }) {
+    const [sqrtPrice, tick, lastFee, pluginConfig, activeLiquidity, nextTick, previousTick] =
+        await publicClient.readContract({
+            address,
+            abi: [safelyGetStateOfAMM],
+            functionName: "safelyGetStateOfAMM",
+        });
+
+    return {
+        sqrtPrice,
+        tick,
+        lastFee,
+        pluginConfig,
+        activeLiquidity,
+        nextTick,
+        previousTick,
+    };
+}

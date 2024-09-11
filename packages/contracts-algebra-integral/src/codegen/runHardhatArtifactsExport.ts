@@ -1,17 +1,26 @@
 import { hardhatArtifactsExport } from "@owlprotocol/viem-utils/codegen";
 import { join } from "path";
 
-const cryptoAlgebraPath = "node_modules/@cryptoalgebra/integral-periphery/artifacts/contracts";
-const cryptoAlgebraPathInterfaces = join(cryptoAlgebraPath, "interfaces");
+const cryptoAlgebra = "node_modules/@cryptoalgebra";
+
+const cryptoAlgebraCore = join(cryptoAlgebra, "integral-core/artifacts/contracts");
+const cryptoAlgebraCoreInterfaces = join(cryptoAlgebraCore, "interfaces");
+
+const cryptoAlgebraPeriphery = join(cryptoAlgebra, "integral-periphery/artifacts/contracts");
+const cryptoAlgebraPeripheryInterfaces = join(cryptoAlgebraPeriphery, "interfaces");
 
 hardhatArtifactsExport("./src/artifacts", "./cache", [
     //EntryPoint Simulation Contracts
     //TODO: hardhatArtifactsExport caching doesn't work anymore 'EntryPoint', 'IEntryPoint' getting recompiled
     // "artifacts/contracts/**/*.json",
-    //Cached official builds
-    join(cryptoAlgebraPathInterfaces, "IQuoterV2.sol/IQuoterV2.json"),
-    join(cryptoAlgebraPathInterfaces, "ISwapRouter.sol/ISwapRouter.json"),
-    join(cryptoAlgebraPathInterfaces, "IMulticall.sol/IMulticall.json"),
-    join(cryptoAlgebraPathInterfaces, "IPeripheryPayments.sol/IPeripheryPayments.json"),
-    join(cryptoAlgebraPath, "SwapRouter.sol/SwapRouter.json"),
+    // Core
+    join(cryptoAlgebraCoreInterfaces, "IAlgebraFactory.sol/IAlgebraFactory.json"),
+    join(cryptoAlgebraCoreInterfaces, "IAlgebraPool.sol/IAlgebraPool.json"),
+    join(cryptoAlgebraCoreInterfaces, "IAlgebraPoolDeployer.sol/IAlgebraPoolDeployer.json"),
+    // Periphery
+    join(cryptoAlgebraPeripheryInterfaces, "IQuoterV2.sol/IQuoterV2.json"),
+    join(cryptoAlgebraPeripheryInterfaces, "ISwapRouter.sol/ISwapRouter.json"),
+    join(cryptoAlgebraPeripheryInterfaces, "IMulticall.sol/IMulticall.json"),
+    join(cryptoAlgebraPeripheryInterfaces, "IPeripheryPayments.sol/IPeripheryPayments.json"),
+    join(cryptoAlgebraPeriphery, "SwapRouter.sol/SwapRouter.json"),
 ]);

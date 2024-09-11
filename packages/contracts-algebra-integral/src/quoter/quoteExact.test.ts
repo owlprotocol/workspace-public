@@ -1,6 +1,5 @@
 import { describe, test, expect } from "vitest";
 import { createPublicClient, http, parseEther } from "viem";
-import { BigNumber } from "bignumber.js";
 import { quoteExactInput, quoteExactOutput, quoteExact } from "./quoteExact.js";
 import { encodeTradePath } from "./tradePath.js";
 
@@ -13,7 +12,7 @@ describe("quoteExact.test.ts", function () {
     const USDC = "0xd988097fb8612cc24eeC14542bC03424c656005f";
     const WETH = "0x4200000000000000000000000000000000000006";
 
-    test.only("quoteExactInput USDC > WETH", async () => {
+    test("quoteExactInput USDC > WETH", async () => {
         const quote = await quoteExactInput({
             publicClient,
             quoterV2Address,
@@ -21,11 +20,6 @@ describe("quoteExact.test.ts", function () {
             path: encodeTradePath([USDC, WETH]),
         });
         expect(quote).toBeDefined();
-        const pricePool = BigNumber(quote.sqrtPriceX96AfterList[0] as any);
-        const priceInstant = pricePool.div(BigNumber(2).pow(96)).pow(2);
-        const ETH_TO_USDC = BigNumber(1).times(BigNumber(10).pow(18)).times(priceInstant).div(BigNumber(10).pow(6));
-        // const priceInstant = (pricePool / 2n ** 96n) ** 2n;
-        console.debug({ pricePool, priceInstant, ETH_TO_USDC });
     });
 
     test("quoteExactInput WETH > USDC", async () => {
