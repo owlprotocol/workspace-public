@@ -27,7 +27,7 @@ export type GetOptimalTradePathParams = {
     /** Gas price override */
     gasPrice?: bigint;
     /** WETH address for gas valuation */
-    wethAddress?: Address;
+    weth?: Address;
 } & ({ amountIn: bigint; amountOut?: undefined } | { amountIn?: undefined; amountOut: bigint });
 
 /**
@@ -57,7 +57,7 @@ export interface GetOptimalTradePathExactInputParams {
     /** Gas price override */
     gasPrice?: bigint | null;
     /** WETH address for gas valuation */
-    wethAddress?: Address;
+    weth?: Address;
 }
 
 /**
@@ -85,20 +85,20 @@ export async function getOptimalTradeExactInput(params: GetOptimalTradePathExact
         amountOutWithGas = quotes.map((q) => q.amountOut);
     } else {
         const gasPrice = params.gasPrice ?? (await publicClient.getGasPrice());
-        const wethAddress = params.wethAddress ?? "0x4200000000000000000000000000000000000006";
+        const weth = params.weth ?? "0x4200000000000000000000000000000000000006";
         amountOutWithGas = await Promise.all(
             quotes.map(async (q) => {
                 const gasCostEth = q.gasEstimate * gasPrice;
                 let gasCostAmountOut: bigint;
 
-                if (outputAddress.toLowerCase() === wethAddress.toLowerCase()) {
+                if (outputAddress.toLowerCase() === weth.toLowerCase()) {
                     gasCostAmountOut = gasCostEth; // Same
                 } else {
                     const opportunityCost = await quoteExactInput({
                         publicClient,
                         quoterV2Address,
                         amountIn: gasCostEth,
-                        path: encodeTradePath([wethAddress, outputAddress]),
+                        path: encodeTradePath([weth, outputAddress]),
                     });
                     gasCostAmountOut = opportunityCost.amountOut;
                 }
@@ -137,7 +137,7 @@ export interface GetOptimalTradePathExactOutputParams {
     /** Gas price override */
     gasPrice?: bigint | null;
     /** WETH address for gas valuation */
-    wethAddress?: Address;
+    weth?: Address;
 }
 
 /**
@@ -170,20 +170,20 @@ export async function getOptimalTradeExactOutput(params: GetOptimalTradePathExac
         amountInWithGas = quotes.map((q) => q.amountOut);
     } else {
         const gasPrice = params.gasPrice ?? (await publicClient.getGasPrice());
-        const wethAddress = params.wethAddress ?? "0x4200000000000000000000000000000000000006";
+        const weth = params.weth ?? "0x4200000000000000000000000000000000000006";
         amountInWithGas = await Promise.all(
             quotes.map(async (q) => {
                 const gasCostEth = q.gasEstimate * gasPrice;
                 let gasCostAmountIn: bigint;
 
-                if (inputAddress.toLowerCase() === wethAddress.toLowerCase()) {
+                if (inputAddress.toLowerCase() === weth.toLowerCase()) {
                     gasCostAmountIn = gasCostEth; // Same
                 } else {
                     const opportunityCost = await quoteExactOutput({
                         publicClient,
                         quoterV2Address,
                         amountOut: gasCostEth,
-                        path: encodeTradePath([wethAddress, inputAddress]),
+                        path: encodeTradePath([weth, inputAddress]),
                     });
                     gasCostAmountIn = opportunityCost.amountIn;
                 }

@@ -16,7 +16,7 @@ export interface GetSwapExactInputTransactionsParams {
     /** Account */
     account: Address;
     /** WETH address for wrap/unwrap */
-    wethAddress?: Address;
+    weth?: Address;
     /** Swap output recipient (defaults to account) */
     recipient?: Address;
     /** Swap expiry (defaults to 1hr) */
@@ -37,7 +37,7 @@ export function getSwapExactInputTransaction(params: GetSwapExactInputTransactio
     const { swapRouterAddress, path, amountIn, amountOutMinimum, account: from } = params;
     const recipient = params.recipient ?? from; //default swap to self
     const deadline = params.deadline ?? BigInt((Date.now() + 600) * 1000); //default expire in 10min
-    const wethAddress = params.wethAddress ?? "0x4200000000000000000000000000000000000006";
+    const weth = params.weth ?? "0x4200000000000000000000000000000000000006";
 
     const tokenIn = path[0];
     const tokenOut = path[path.length - 1];
@@ -81,7 +81,7 @@ export function getSwapExactInputTransaction(params: GetSwapExactInputTransactio
     }
 
     // Token output WETH
-    if (tokenOut.toLowerCase() === wethAddress.toLowerCase()) {
+    if (tokenOut.toLowerCase() === weth.toLowerCase()) {
         // Encode unwrap
         const unwrapData = encodeFunctionData({
             abi: [unwrapWNativeToken],
@@ -96,7 +96,7 @@ export function getSwapExactInputTransaction(params: GetSwapExactInputTransactio
     }
 
     // Token input WETH
-    const value = tokenIn.toLowerCase() === wethAddress.toLowerCase() ? amountIn : 0n;
+    const value = tokenIn.toLowerCase() === weth.toLowerCase() ? amountIn : 0n;
 
     return {
         account: from,

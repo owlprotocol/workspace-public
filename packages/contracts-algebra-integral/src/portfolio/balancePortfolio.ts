@@ -18,13 +18,13 @@ export interface BalancePortfolioParams {
     /** Gas price override */
     gasPrice?: bigint | null;
     /** WETH address for gas valuation */
-    wethAddress?: Address;
+    weth?: Address;
     /** Account */
     account: Address;
     /** Portfolio tokens */
     assets: { address: Address; targetRatio: number }[];
     /** Unit of account (eg. WETH, USDC) */
-    valueTokenAddress: Address;
+    quoteToken: Address;
     /** Swap expiry (defaults to 1hr) */
     deadline?: bigint;
 }
@@ -56,7 +56,7 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
         }),
     });
 
-    const { publicClient, account, swapRouterAddress, wethAddress, deadline } = params;
+    const { publicClient, account, swapRouterAddress, weth, deadline } = params;
     // Get approvals
     const approvals = await Promise.all(
         zip(assets, targetBalances)
@@ -87,7 +87,7 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
             //TODO: Add slippage params
             amountOutMinimum: t.quote.amountOut,
             account,
-            wethAddress,
+            weth,
             deadline,
         }),
     );

@@ -19,7 +19,7 @@ describe("getPortfolioHoldings.test.ts", function () {
             intermediateAddresses: [WETH],
             account: "0xfE732ca712C695Ee14a8A015E65997dD9189C31b",
             tokens: [USDC, WETH, MODE],
-            valueTokenAddress: USDC,
+            quoteToken: USDC,
         });
 
         expect(portfolio).toBeDefined();

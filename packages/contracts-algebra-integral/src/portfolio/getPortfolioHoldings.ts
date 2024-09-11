@@ -8,7 +8,7 @@ import { getOptimalTradeExactInput } from "../quoter/getOptimalTrade.js";
  */
 export interface PortfolioHoldings {
     /** Unit of account (eg. WETH, USDC) */
-    valueTokenAddress: Address;
+    quoteToken: Address;
     /** Assets */
     assets: { address: Address; balance: bigint; value: bigint; basisPoints: number; percentage: number }[];
     /** Total value of portfolio */
@@ -25,13 +25,13 @@ export interface GetPortfolioParams {
     /** Gas price override */
     gasPrice?: bigint | null;
     /** WETH address for gas valuation */
-    wethAddress?: Address;
+    weth?: Address;
     /** Account */
     account: Address;
     /** Portfolio tokens */
     tokens: Address[];
     /** Unit of account (eg. WETH, USDC) */
-    valueTokenAddress: Address;
+    quoteToken: Address;
 }
 
 /**
@@ -40,9 +40,8 @@ export interface GetPortfolioParams {
  * @returns portfolio data
  */
 export async function getPortfolioHoldings(params: GetPortfolioParams): Promise<Prettify<PortfolioHoldings>> {
-    const { publicClient, quoterV2Address, intermediateAddresses, gasPrice, account, tokens, valueTokenAddress } =
-        params;
-    const wethAddress = params.wethAddress ?? "0x4200000000000000000000000000000000000006";
+    const { publicClient, quoterV2Address, intermediateAddresses, gasPrice, account, tokens, quoteToken } = params;
+    const weth = params.weth ?? "0x4200000000000000000000000000000000000006";
 
     const balances = await Promise.all(
         tokens.map(async (address) => {
@@ -54,7 +53,7 @@ export async function getPortfolioHoldings(params: GetPortfolioParams): Promise<
             });
 
             // Native token
-            if (address.toLowerCase() === wethAddress.toLowerCase()) {
+            if (address.toLowerCase() === weth.toLowerCase()) {
                 balance += await publicClient.getBalance({ address: account });
             }
 
@@ -64,7 +63,7 @@ export async function getPortfolioHoldings(params: GetPortfolioParams): Promise<
     const values = await Promise.all(
         map(zip(tokens, balances) as [Address, bigint][], async ([address, balance]) => {
             // No need to convert
-            if (address.toLowerCase() === valueTokenAddress.toLowerCase()) return balance;
+            if (address.toLowerCase() === quoteToken.toLowerCase()) return balance;
             if (balance === 0n) return balance;
 
             const { optimalTrade } = await getOptimalTradeExactInput({
@@ -72,10 +71,10 @@ export async function getPortfolioHoldings(params: GetPortfolioParams): Promise<
                 quoterV2Address,
                 amountIn: balance,
                 inputAddress: address as Address,
-                outputAddress: valueTokenAddress,
+                outputAddress: quoteToken,
                 intermediateAddresses,
                 gasPrice,
-                wethAddress,
+                weth,
             });
 
             return optimalTrade.quote.amountOut;
@@ -97,7 +96,7 @@ export async function getPortfolioHoldings(params: GetPortfolioParams): Promise<
     );
 
     return {
-        valueTokenAddress,
+        quoteToken,
         assets,
         totalValue,
     };

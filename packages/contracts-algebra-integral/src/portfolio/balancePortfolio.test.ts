@@ -25,7 +25,7 @@ describe("balancePortfolio.test.ts", function () {
                 { address: WETH, targetRatio: 1 },
                 { address: MODE, targetRatio: 0 },
             ],
-            valueTokenAddress: USDC,
+            quoteToken: USDC,
         });
 
         expect(portfolio).toBeDefined();
