@@ -14,19 +14,23 @@ import { fnAbis } from "../fnAbis.js";
 describe("genZodValidatorTest", function () {
     describe("genZodForAbiParamNonTuple", () => {
         test("uint256", () => {
-            assert.equal(genZodForAbiParamNonTuple("uint256"), "zSol.uint256Zod");
+            assert.equal(genZodForAbiParamNonTuple("uint256"), 'zSol.getSolidityIntStringToDecimalZod("uint256")');
         });
     });
 
     describe("genZodForAbiParamArray", () => {
         test("uint256[]", () => {
-            assert.equal(genZodForAbiParamArray("uint256[]"), "z.array(zSol.uint256Zod)");
+            assert.equal(
+                genZodForAbiParamArray("uint256[]"),
+                'z.array(zSol.getSolidityIntStringToDecimalZod("uint256"))',
+            );
         });
     });
 
     describe("genZodForAbiParamTuple", () => {
         test("(address, uint256)", () => {
-            const expected = 'z.object({ "0": zSol.addressZod, "1": zSol.uint256Zod })';
+            const expected =
+                'z.object({ "0": zSol.addressZod, "1": zSol.getSolidityIntStringToDecimalZod("uint256") })';
             assert.equal(
                 genZodForAbiParamTuple({
                     type: "tuple",
@@ -37,7 +41,7 @@ describe("genZodValidatorTest", function () {
         });
 
         test("(address to, uint256 amount)", () => {
-            const expected = `z.object({ "to": zSol.addressZod, "amount": zSol.uint256Zod })`;
+            const expected = `z.object({ "to": zSol.addressZod, "amount": zSol.getSolidityIntStringToDecimalZod(\"uint256\") })`;
             assert.equal(
                 genZodForAbiParamTuple({
                     type: "tuple",
@@ -53,7 +57,8 @@ describe("genZodValidatorTest", function () {
 
     describe("genZodForAbiParamTupleArray", () => {
         test("(address, uint256)", () => {
-            const expected = 'z.array(z.object({ "0": zSol.addressZod, "1": zSol.uint256Zod }))';
+            const expected =
+                'z.array(z.object({ "0": zSol.addressZod, "1": zSol.getSolidityIntStringToDecimalZod("uint256") }))';
             assert.equal(
                 genZodForAbiParamTupleArray({
                     type: "tuple[]",
@@ -64,7 +69,7 @@ describe("genZodValidatorTest", function () {
         });
 
         test("(address to, uint256 amount)", () => {
-            const expected = `z.array(z.object({ "to": zSol.addressZod, "amount": zSol.uint256Zod }))`;
+            const expected = `z.array(z.object({ "to": zSol.addressZod, "amount": zSol.getSolidityIntStringToDecimalZod(\"uint256\") }))`;
             assert.equal(
                 genZodForAbiParamTupleArray({
                     type: "tuple[]",
@@ -80,10 +85,10 @@ describe("genZodValidatorTest", function () {
 
     describe("genZodValidatorForFunction", () => {
         test("fnAbis.uint256", () => {
-            const expected = `{ inputs: z.object({ "amount": zSol.uint256Zod }),
-    inputsArrayify: z.object({ "amount": zSol.uint256Zod }).transform((val) => [val["amount"]] as const),
-    inputsDefined: z.object({ "amount": zSol.uint256Zod }),
-    inputsDefinedArrayify: z.object({ "amount": zSol.uint256Zod }).transform((val) => [val["amount"]] as const),
+            const expected = `{ inputs: z.object({ "amount": zSol.getSolidityIntStringToDecimalZod(\"uint256\") }),
+    inputsArrayify: z.object({ "amount": zSol.getSolidityIntStringToDecimalZod(\"uint256\") }).transform((val) => [val["amount"]] as const),
+    inputsDefined: z.object({ "amount": zSol.getSolidityIntStringToDecimalZod(\"uint256\") }),
+    inputsDefinedArrayify: z.object({ "amount": zSol.getSolidityIntStringToDecimalZod(\"uint256\") }).transform((val) => [val["amount"]] as const),
     inputsExample: {"amount":"0"},
     outputs: z.object({  }),
     outputsExample: {}
@@ -135,7 +140,7 @@ describe("genZodValidatorTest", function () {
 
     describe("genZodValidatorForAbi", () => {
         test.skip("[fnAbis.uint256, fnAbis.address]", () => {
-            const expectedUInt256 = `{ inputs: z.object({ amount: zSol.uint256Zod }), inputsExample: {"amount":"0"}, outputs: z.object({  }), outputsExample: {} }`;
+            const expectedUInt256 = `{ inputs: z.object({ amount: zSol.getSolidityIntStringToDecimalZod(\"uint256\") }), inputsExample: {"amount":"0"}, outputs: z.object({  }), outputsExample: {} }`;
             const expectedAddress = `{ inputs: z.object({ to: zSol.addressZod }), inputsExample: {"to":"${zeroAddress}"}, outputs: z.object({  }), outputsExample: {} }`;
             const expected = `{ fnUInt256: ${expectedUInt256},\nfnAddress: ${expectedAddress} }`;
             assert.equal(genZodValidatorForAbi([fnAbis.uint256, fnAbis.address]), expected);
@@ -146,7 +151,7 @@ describe("genZodValidatorTest", function () {
         test.skip("[fnAbis.uint256, fnAbis.address]", () => {
             const name = "MyContract";
             const zSolPackage = "../solidity/index.js";
-            const expectedUInt256 = `{ inputs: z.object({ amount: zSol.uint256Zod }), inputsExample: {"amount":"0"}, outputs: z.object({  }), outputsExample: {} }`;
+            const expectedUInt256 = `{ inputs: z.object({ amount: zSol.getSolidityIntStringToDecimalZod(\"uint256\") }), inputsExample: {"amount":"0"}, outputs: z.object({  }), outputsExample: {} }`;
             const expectedAddress = `{ inputs: z.object({ to: zSol.addressZod }), inputsExample: {"to":"${zeroAddress}"}, outputs: z.object({  }), outputsExample: {} }`;
             const expected = `import { z } from "zod";\n\
 import * as zSol from "${zSolPackage}";\n\
