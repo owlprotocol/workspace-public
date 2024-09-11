@@ -2,5 +2,7 @@ ignores: [
     "@types/node",
     "vite",
     "zod",
-    "@openzeppelin/contracts"
+    "@openzeppelin/contracts",
+    "@cryptoalgebra/integral-core",
+    "@cryptoalgebra/integral-periphery"
 ]

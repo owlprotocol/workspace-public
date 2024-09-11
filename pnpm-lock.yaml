@@ -523,6 +523,9 @@ importers:
 
   packages/contracts-algebra-integral:
     dependencies:
+      '@cryptoalgebra/integral-core':
+        specifier: 1.1.0
+        version: 1.1.0
       '@cryptoalgebra/integral-periphery':
         specifier: 1.0.2
         version: 1.0.2
@@ -535,6 +538,9 @@ importers:
       '@owlprotocol/zod-sol':
         specifier: workspace:*
         version: link:../zod-sol
+      bignumber.js:
+        specifier: ^9.1.1
+        version: 9.1.2
       viem:
         specifier: 2.9.20
         version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(zod@3.22.4)
@@ -2094,6 +2100,10 @@ packages:
   '@cryptoalgebra/integral-core@1.0.0':
     resolution: {integrity: sha512-1cUooKmmeNDdubiTcosXQ0vQ7qszgBiFxkJFue4rqSzNQs47wrCHnyA0tC86D+mOQFssZ1DDaK7ghNFb5+OPzA==}
     engines: {node: '>=14.0.0', npm: '>=8.0.0'}
+
+  '@cryptoalgebra/integral-core@1.1.0':
+    resolution: {integrity: sha512-SESM8dIrNd2vkLsiYDBZxewmsz4ZyhfuVIe2SNTCCayl14W2dUbZ1y4qWRqSZ6JPKIFOHdrdLoNk+fFIC7Ukvg==}
+    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
 
   '@cryptoalgebra/integral-periphery@1.0.2':
     resolution: {integrity: sha512-mh7mpKrxTYE7p177Cmh9dBRV2MclJj8+ISoZ6uPjU0KaPUp0HIzeFnrwMyFscaQu6Y7OM54jWxvwIbOIn8xA5g==}
@@ -11177,6 +11187,10 @@ snapshots:
   '@colors/colors@1.6.0': {}
 
   '@cryptoalgebra/integral-core@1.0.0':
+    dependencies:
+      '@openzeppelin/contracts': 4.9.3
+
+  '@cryptoalgebra/integral-core@1.1.0':
     dependencies:
       '@openzeppelin/contracts': 4.9.3
 
