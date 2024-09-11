@@ -24,7 +24,7 @@ export interface Quote {
 export type QuoteExactParams = {
     /** Network params */
     publicClient: PublicClient;
-    quoterV2Address: Address;
+    quoterV2: Address;
     /** Trade Params */
     tokens: [Address, Address, ...Address[]];
 } & ({ amountIn: bigint; amountOut?: undefined } | { amountIn?: undefined; amountOut: bigint });
@@ -45,7 +45,7 @@ export async function quoteExact(params: QuoteExactParams): Promise<Quote> {
 export interface QuoteExactInputParams {
     /** Network params */
     publicClient: PublicClient;
-    quoterV2Address: Address;
+    quoterV2: Address;
     /** Trade Params */
     path: Hex;
     amountIn: bigint;
@@ -56,10 +56,10 @@ export interface QuoteExactInputParams {
  * @returns return values of `quoteExactInput`
  */
 export async function quoteExactInput(params: QuoteExactInputParams): Promise<Quote> {
-    const { publicClient, quoterV2Address, path } = params;
+    const { publicClient, quoterV2, path } = params;
 
     const { result } = await publicClient.simulateContract({
-        address: quoterV2Address,
+        address: quoterV2,
         abi: [quoteExactInputAbi],
         functionName: "quoteExactInput",
         args: [path, params.amountIn],
@@ -79,7 +79,7 @@ export async function quoteExactInput(params: QuoteExactInputParams): Promise<Qu
 export interface QuoteExactOutputParams {
     /** Network params */
     publicClient: PublicClient;
-    quoterV2Address: Address;
+    quoterV2: Address;
     /** Trade Params */
     path: Hex;
     amountOut: bigint;
@@ -91,10 +91,10 @@ export interface QuoteExactOutputParams {
  * @returns return values of `quoteExactOutput`
  */
 export async function quoteExactOutput(params: QuoteExactOutputParams): Promise<Quote> {
-    const { publicClient, quoterV2Address, path } = params;
+    const { publicClient, quoterV2, path } = params;
 
     const { result } = await publicClient.simulateContract({
-        address: quoterV2Address,
+        address: quoterV2,
         abi: [quoteExactOutputAbi],
         functionName: "quoteExactOutput",
         args: [path, params.amountOut],

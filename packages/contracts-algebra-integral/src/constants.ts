@@ -11,12 +11,12 @@ export interface GetAlgebraSwapRouterConstantParams {
     /** Network public client */
     publicClient: PublicClient;
     /** Algebra Integral swap router address */
-    swapRouterAddress: Address;
+    swapRouter: Address;
 }
 
 /**
  * Get Algebra constants for `swapRouter`
- * @param params publicClient, swapRouterAddress
+ * @param params publicClient, swapRouter
  * @returns `weth`, `poolDeployer`, `factory`
  */
 export async function getAlgebraSwapRouterConstants(params: GetAlgebraSwapRouterConstantParams) {
@@ -31,14 +31,14 @@ export async function getAlgebraSwapRouterConstants(params: GetAlgebraSwapRouter
 
 /**
  * Get Algebra `weth` constant for `swapRouter`
- * @param params publicClient, swapRouterAddress
+ * @param params publicClient, swapRouter
  * @returns address
  */
 export function getAlgebraWeth(params: GetAlgebraSwapRouterConstantParams): Promise<Address> {
-    const { publicClient, swapRouterAddress } = params;
+    const { publicClient, swapRouter } = params;
 
     return publicClient.readContract({
-        address: swapRouterAddress,
+        address: swapRouter,
         abi: [getWethAbi],
         functionName: "WNativeToken",
     });
@@ -46,14 +46,14 @@ export function getAlgebraWeth(params: GetAlgebraSwapRouterConstantParams): Prom
 
 /**
  * Get Algebra `poolDeployer` constant for `swapRouter`
- * @param params publicClient, swapRouterAddress
+ * @param params publicClient, swapRouter
  * @returns address
  */
 export function getAlgebraPoolDeployer(params: GetAlgebraSwapRouterConstantParams): Promise<Address> {
-    const { publicClient, swapRouterAddress } = params;
+    const { publicClient, swapRouter } = params;
 
     return publicClient.readContract({
-        address: swapRouterAddress,
+        address: swapRouter,
         abi: [getPoolDeployerAbi],
         functionName: "poolDeployer",
     });
@@ -61,14 +61,14 @@ export function getAlgebraPoolDeployer(params: GetAlgebraSwapRouterConstantParam
 
 /**
  * Get Algebra `factory` constant for `swapRouter`
- * @param params publicClient, swapRouterAddress
+ * @param params publicClient, swapRouter
  * @returns address
  */
 export function getAlgebraFactory(params: GetAlgebraSwapRouterConstantParams): Promise<Address> {
-    const { publicClient, swapRouterAddress } = params;
+    const { publicClient, swapRouter } = params;
 
     return publicClient.readContract({
-        address: swapRouterAddress,
+        address: swapRouter,
         abi: [getFactoryAbi],
         functionName: "factory",
     });
@@ -83,7 +83,7 @@ export interface GetAlgebraFactoryConstantParams {
 }
 /**
  * Get Algebra `factory` constant for `swapRouter`
- * @param params publicClient, swapRouterAddress
+ * @param params publicClient, swapRouter
  * @returns address
  */
 export function getAlgebraPoolInitCodeHash(params: GetAlgebraFactoryConstantParams): Promise<Address> {

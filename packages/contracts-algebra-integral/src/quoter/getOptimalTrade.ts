@@ -14,7 +14,7 @@ export type GetOptimalTradePathParams = {
     /** Network public client */
     publicClient: PublicClient;
     /** Algebra Integral quoter address */
-    quoterV2Address: Address;
+    quoterV2: Address;
     /** Input token address */
     inputAddress: Address;
     /** Output token address */
@@ -38,7 +38,7 @@ export interface GetOptimalTradePathExactInputParams {
     /** Network public client */
     publicClient: PublicClient;
     /** Algebra Integral quoter address */
-    quoterV2Address: Address;
+    quoterV2: Address;
     /** Input token amount */
     amountIn: bigint;
     /** Input token address */
@@ -57,13 +57,13 @@ export async function getOptimalTradeExactInput(params: GetOptimalTradePathExact
     trades: Trade[];
     optimalTrade: Trade;
 }> {
-    const { publicClient, quoterV2Address, amountIn, inputAddress, outputAddress, liquidityTokens } = params;
+    const { publicClient, quoterV2, amountIn, inputAddress, outputAddress, liquidityTokens } = params;
     const paths = getTradePaths({ inputAddress, outputAddress, liquidityTokens });
 
     //TODO: Should we use allSettled to handle when trade path is not supported (liquidity pool doesnt exist) ?
     const quotes = await Promise.all(
         paths.map((tokens) =>
-            quoteExactInput({ publicClient, quoterV2Address, amountIn, path: encodeTradePath(tokens) }),
+            quoteExactInput({ publicClient, quoterV2, amountIn, path: encodeTradePath(tokens) }),
         ),
     );
 
@@ -84,7 +84,7 @@ export interface GetOptimalTradePathExactOutputParams {
     /** Network public client */
     publicClient: PublicClient;
     /** Algebra Integral quoter address */
-    quoterV2Address: Address;
+    quoterV2: Address;
     /** Output token amount */
     amountOut: bigint;
     /** Input token address */
@@ -103,7 +103,7 @@ export async function getOptimalTradeExactOutput(params: GetOptimalTradePathExac
     trades: Trade[];
     optimalTrade: Trade;
 }> {
-    const { publicClient, quoterV2Address, amountOut, inputAddress, outputAddress, liquidityTokens } = params;
+    const { publicClient, quoterV2, amountOut, inputAddress, outputAddress, liquidityTokens } = params;
     const paths = getTradePaths({ inputAddress, outputAddress, liquidityTokens });
 
     //TODO: Should we use allSettled to handle when trade path is not supported (liquidity pool doesnt exist) ?
@@ -111,7 +111,7 @@ export async function getOptimalTradeExactOutput(params: GetOptimalTradePathExac
         paths.map((tokens) =>
             quoteExactOutput({
                 publicClient,
-                quoterV2Address,
+                quoterV2,
                 amountOut,
                 path: encodeTradePath([...tokens].reverse()),
             }),
@@ -153,7 +153,7 @@ export async function getOptimalTradeExactOutput(params: GetOptimalTradePathExac
                 } else {
                     const opportunityCost = await quoteExactInput({
                         publicClient,
-                        quoterV2Address,
+                        quoterV2,
                         amountIn: gasCostEth,
                         path: encodeTradePath([weth, outputAddress]),
                     });
@@ -184,7 +184,7 @@ export async function getOptimalTradeExactOutput(params: GetOptimalTradePathExac
                 } else {
                     const opportunityCost = await quoteExactOutput({
                         publicClient,
-                        quoterV2Address,
+                        quoterV2,
                         amountOut: gasCostEth,
                         path: encodeTradePath([weth, inputAddress]),
                     });

@@ -19,9 +19,9 @@ export interface BalancePortfolioParams {
     /** Algebra Integral pool init code hash */
     poolInitCodeHash: Hex;
     /** Algebra Integral quoter address */
-    quoterV2Address: Address;
+    quoterV2: Address;
     /** Algebra Integral swap router address */
-    swapRouterAddress: Address;
+    swapRouter: Address;
     /** Account */
     account: Address;
     /** Portfolio tokens */
@@ -42,9 +42,8 @@ export interface BalancePortfolioParams {
  * Get necessary trades to balance portfolio to target basis points
  */
 export async function balancePortfolio(params: BalancePortfolioParams) {
-    const { publicClient, account, poolInitCodeHash, poolDeployer, swapRouterAddress, quoterV2Address, deadline } =
-        params;
-    const weth = params.weth ?? (await getAlgebraWeth({ publicClient, swapRouterAddress }));
+    const { publicClient, account, poolInitCodeHash, poolDeployer, swapRouter, quoterV2, deadline } = params;
+    const weth = params.weth ?? (await getAlgebraWeth({ publicClient, swapRouter }));
     const quoteToken = params.quoteToken ?? weth;
     // use weth as source of potential liquidity
     const liquidityTokens = params.liquidityTokens ?? [weth];
@@ -95,7 +94,7 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
 
     const trades = await getBalancePortfolioTrades({
         publicClient,
-        quoterV2Address,
+        quoterV2,
         liquidityTokens,
         assets: map(
             zip(holdings.assets, deltas) as [PortfolioAsset, { valueDelta: bigint }][],
@@ -118,7 +117,7 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
                     publicClient,
                     address,
                     owner: account,
-                    spender: swapRouterAddress,
+                    spender: swapRouter,
                     amount: -1n * balanceDelta,
                 }),
             ),
@@ -134,7 +133,7 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
         const amountOutMinimum = BigInt(amountOutMinimumBigNumber.integerValue().toString());
 
         return prepareMulticallSwapExactInput({
-            swapRouterAddress,
+            swapRouter,
             path: t.path,
             amountIn: t.quote.amountIn,
             amountOutMinimum,
@@ -145,7 +144,7 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
     });
 
     const multicallTransaction = getMulticallSwapTransaction({
-        swapRouterAddress,
+        swapRouter,
         recipient: account,
         transactions: swapTransactions,
     });

@@ -7,7 +7,7 @@ import { encodeTradePath } from "../quoter/tradePath.js";
 /** Combine transactions as multicall and add `unwrapWNativeToken` if necessary */
 export interface GetMulticallSwapTransactionParams {
     /** Algebra Integral swap router address */
-    swapRouterAddress: Address;
+    swapRouter: Address;
     /** Weth unwrap recipient */
     recipient: Address;
     /** Transactions with wethIn/wethOutMinimum info */
@@ -32,7 +32,7 @@ export function getMulticallSwapTransaction(params: GetMulticallSwapTransactionP
     data: Hex;
     value: bigint;
 } {
-    const { swapRouterAddress, transactions, recipient } = params;
+    const { swapRouter, transactions, recipient } = params;
     if (transactions.length === 0) {
         throw new Error(`getMulticallSwapTransactionData transactions.length === 0`);
     }
@@ -48,7 +48,7 @@ export function getMulticallSwapTransaction(params: GetMulticallSwapTransactionP
     if (transactions.length === 1 && wethOutMinimum === 0n) {
         // Simple transaction, no multicall necessary
         return {
-            to: swapRouterAddress,
+            to: swapRouter,
             data: transactions[0].data,
             value,
         };
@@ -74,7 +74,7 @@ export function getMulticallSwapTransaction(params: GetMulticallSwapTransactionP
     });
 
     return {
-        to: swapRouterAddress,
+        to: swapRouter,
         data,
         value,
     };
@@ -83,7 +83,7 @@ export function getMulticallSwapTransaction(params: GetMulticallSwapTransactionP
 /** Get transaction data for swap */
 export interface GetSwapExactInputTransactionParams {
     /** Algebra Integral swap router address */
-    swapRouterAddress: Address;
+    swapRouter: Address;
     /** Swap path, if only 2 tokens, will use `exactInputSingle` */
     path: [Address, ...Address[]];
     /** Input token amount */
@@ -113,7 +113,7 @@ export function prepareMulticallSwapExactInput(params: GetSwapExactInputTransact
     value: bigint;
     wethOutMinimum: bigint;
 } {
-    const { swapRouterAddress, path, amountIn, amountOutMinimum, recipient } = params;
+    const { swapRouter, path, amountIn, amountOutMinimum, recipient } = params;
     const deadline = params.deadline ?? BigInt((Date.now() + 600) * 1000); //default expire in 10min
     const weth = params.weth;
 
@@ -167,7 +167,7 @@ export function prepareMulticallSwapExactInput(params: GetSwapExactInputTransact
     const value = isWethInput ? amountIn : 0n;
 
     return {
-        to: swapRouterAddress,
+        to: swapRouter,
         data,
         value,
         wethOutMinimum: isWethOutput ? amountOutMinimum : 0n,

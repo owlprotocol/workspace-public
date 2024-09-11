@@ -6,7 +6,7 @@ import { encodeTradePath } from "../quoter/tradePath.js";
 
 export interface GetSwapExactInputTransactionsParams {
     /** Algebra Integral swap router address */
-    swapRouterAddress: Address;
+    swapRouter: Address;
     /** Swap path, if only 2 tokens, will use `exactInputSingle` */
     path: [Address, ...Address[]];
     /** Input token amount */
@@ -34,7 +34,7 @@ export function getSwapExactInputTransaction(params: GetSwapExactInputTransactio
     data: Hex;
     value: bigint;
 } {
-    const { swapRouterAddress, path, amountIn, amountOutMinimum, recipient } = params;
+    const { swapRouter, path, amountIn, amountOutMinimum, recipient } = params;
     const deadline = params.deadline ?? BigInt((Date.now() + 600) * 1000); //default expire in 10min
     const weth = params.weth;
 
@@ -103,7 +103,7 @@ export function getSwapExactInputTransaction(params: GetSwapExactInputTransactio
     const value = isWethInput ? amountIn : 0n;
 
     return {
-        to: swapRouterAddress,
+        to: swapRouter,
         data,
         value,
     };
