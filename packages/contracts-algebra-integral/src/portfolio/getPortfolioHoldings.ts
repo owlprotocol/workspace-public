@@ -40,7 +40,7 @@ export interface GetPortfolioParams {
     /** Algebra Integral pool init code hash */
     poolInitCodeHash: Hex;
     /** WETH address for gas valuation */
-    weth?: Address;
+    weth: Address;
     /** Account */
     account: Address;
     /** Portfolio tokens */
@@ -58,7 +58,7 @@ export interface GetPortfolioParams {
  */
 export async function getPortfolioHoldings(params: GetPortfolioParams): Promise<Prettify<PortfolioHoldings>> {
     const { publicClient, poolDeployer, poolInitCodeHash, account, tokens, quoteToken } = params;
-    const weth = params.weth ?? "0x4200000000000000000000000000000000000006";
+    const weth = params.weth;
 
     const balances = await Promise.all(
         tokens.map(async (address) => {

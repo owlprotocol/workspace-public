@@ -6,6 +6,7 @@ import { getBalancePortfolioAmounts } from "./getBalancePortfolioAmounts.js";
 import { getBalancePortfolioTrades } from "./getBalancePortfolioTrades.js";
 import { getERC20ApprovalTransaction } from "../swaprouter/getERC20ApprovalTransaction.js";
 import { getSwapExactInputTransaction } from "../swaprouter/getSwapTransaction.js";
+import { getAlgebraWeth } from "../constants.js";
 
 export interface BalancePortfolioParams {
     /** Network public client */
@@ -20,9 +21,7 @@ export interface BalancePortfolioParams {
     swapRouterAddress: Address;
     /** Intermediate trading assets */
     intermediateAddresses?: Address[];
-    /** Gas price override */
-    gasPrice?: bigint | null;
-    /** WETH address for gas valuation */
+    /** WETH address for native token wrapping/unwrapping */
     weth?: Address;
     /** Account */
     account: Address;
@@ -49,10 +48,9 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
         quoterV2Address,
         intermediateAddresses,
         quoteToken,
-        gasPrice,
         deadline,
     } = params;
-    const weth = params.weth ?? "0x4200000000000000000000000000000000000006";
+    const weth = params.weth ?? (await getAlgebraWeth({ publicClient, swapRouterAddress }));
     const slippagePercent = params.slippagePercent ?? 0.5; // 0.50%
 
     // unique addresses
@@ -66,6 +64,7 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
         publicClient,
         poolDeployer,
         poolInitCodeHash,
+        weth,
         account,
         quoteToken,
         tokens,
@@ -101,8 +100,6 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
         publicClient,
         quoterV2Address,
         intermediateAddresses,
-        gasPrice,
-        weth,
         assets: map(
             zip(holdings.assets, deltas) as [PortfolioAsset, { valueDelta: bigint }][],
             ([{ address, price }, { valueDelta }]) => {

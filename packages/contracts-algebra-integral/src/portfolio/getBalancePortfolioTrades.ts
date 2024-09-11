@@ -12,10 +12,6 @@ export interface GetBalancePortfolioTradesParams {
     quoterV2Address: Address;
     /** Intermediate trading assets */
     intermediateAddresses?: Address[];
-    /** Gas price override */
-    gasPrice?: bigint | null;
-    /** WETH address for gas valuation */
-    weth?: Address;
     /** Assets **/
     assets: {
         /** Address */
@@ -32,7 +28,7 @@ export interface GetBalancePortfolioTradesParams {
  * @param params
  */
 export async function getBalancePortfolioTrades(params: GetBalancePortfolioTradesParams): Promise<Trade[]> {
-    const { publicClient, quoterV2Address, intermediateAddresses, gasPrice, weth } = params;
+    const { publicClient, quoterV2Address, intermediateAddresses } = params;
 
     const portfolio = cloneDeep(params.assets);
     // inputs, balance will decrease (valueDelta < 0)
@@ -69,8 +65,6 @@ export async function getBalancePortfolioTrades(params: GetBalancePortfolioTrade
                 inputAddress: input.address,
                 outputAddress: output.address,
                 intermediateAddresses,
-                gasPrice,
-                weth,
             });
             return estimate.optimalTrade;
         }),

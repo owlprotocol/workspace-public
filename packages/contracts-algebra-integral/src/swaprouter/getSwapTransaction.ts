@@ -16,7 +16,7 @@ export interface GetSwapExactInputTransactionsParams {
     /** Account */
     account: Address;
     /** WETH address for wrap/unwrap */
-    weth?: Address;
+    weth: Address;
     /** Swap output recipient (defaults to account) */
     recipient?: Address;
     /** Swap expiry (defaults to 1hr) */
@@ -40,7 +40,7 @@ export function getSwapExactInputTransaction(params: GetSwapExactInputTransactio
     const { swapRouterAddress, path, amountIn, amountOutMinimum, account } = params;
     const recipient = params.recipient ?? account; //default swap to self
     const deadline = params.deadline ?? BigInt((Date.now() + 600) * 1000); //default expire in 10min
-    const weth = params.weth ?? "0x4200000000000000000000000000000000000006";
+    const weth = params.weth;
 
     const tokenIn = path[0];
     const tokenOut = path[path.length - 1];
