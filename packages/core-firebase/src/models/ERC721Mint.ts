@@ -16,14 +16,14 @@ import { TypeOf, expectType } from "ts-expect";
 export interface ERC721MintId {
     address: Address;
     userOpHash: Hash;
-    tokenIdOffset: number;
+    tokenIdOffset: string;
 }
 
 export const erc721MintIdZod = z
     .object({
         address: addressZod,
         userOpHash: bytes32Zod.describe("userOp hash"),
-        tokenIdOffset: z.number().describe("token id offset"),
+        tokenIdOffset: z.string().describe("token id offset"),
     })
     .transform(({ address, userOpHash, tokenIdOffset }) => `${address}-${userOpHash}-${tokenIdOffset}`);
 export const encodeERC721MintId: (id: ERC721MintId) => string = erc721MintIdZod.parse;
@@ -40,6 +40,7 @@ export interface ERC721MintData {
     metadata?: ERC721Metadata;
     tokenId?: string;
     projectId: string;
+    tokenIdOffsetInt: number;
 }
 
 export const erc721MintDataZod = z
@@ -49,6 +50,7 @@ export const erc721MintDataZod = z
         tokenId: tokenIdZod.optional(),
         metadata: z.any().optional(),
         projectId: z.string().describe("projectId"),
+        tokenIdOffsetInt: z.number().describe("tokenIdOffset as an integer"),
     })
     .describe("erc721 pending mint");
 export const encodeERC721MintData: (data: ERC721MintData) => ERC721MintData = erc721MintDataZod.parse;
