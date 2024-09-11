@@ -39,7 +39,7 @@ export interface GetPortfolioParams {
     poolDeployer: Address;
     /** Algebra Integral pool init code hash */
     poolInitCodeHash: Hex;
-    /** WETH address for gas valuation */
+    /** WETH address for native balance fetching */
     weth: Address;
     /** Account */
     account: Address;
