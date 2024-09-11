@@ -1,7 +1,6 @@
 import { describe, test, expect } from "vitest";
-import { createPublicClient, formatUnits, http, parseUnits } from "viem";
+import { createPublicClient, http } from "viem";
 import { getPortfolioHoldings } from "./getPortfolioHoldings.js";
-import { quoteWithPrice } from "../pool/getPoolPrice.js";
 
 describe("getPortfolioHoldings.test.ts", function () {
     const publicClient = createPublicClient({
@@ -26,6 +25,7 @@ describe("getPortfolioHoldings.test.ts", function () {
 
         expect(portfolio).toBeDefined();
 
+        /*
         console.debug(
             portfolio.assets.map(({ address, value, price }) => {
                 const units = address === USDC ? 6 : 18;
@@ -38,6 +38,7 @@ describe("getPortfolioHoldings.test.ts", function () {
                 )}`;
             }),
         );
-        console.debug(`Total Value $${formatUnits(portfolio.totalValue, 6)}`);
+        */
+        // console.debug(`Total Value $${formatUnits(portfolio.totalValue, 6)}`);
     });
 });

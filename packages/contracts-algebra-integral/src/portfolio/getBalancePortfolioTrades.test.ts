@@ -61,6 +61,6 @@ describe("getBalancePortfolioTrades.test.ts", function () {
         });
 
         expect(trades).toBeDefined();
-        console.debug(trades);
+        // console.debug(trades);
     });
 });

@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { createPublicClient, formatEther, formatUnits, http, parseEther, parseUnits } from "viem";
+import { createPublicClient, http, parseEther, parseUnits } from "viem";
 import { getPoolBaseQuotePair, getPoolAddress, getPoolState } from "./getPool.js";
 import { quoteWithPrice, sqrtPriceToInstantPrice } from "./getPoolPrice.js";
 
@@ -50,14 +50,14 @@ describe("getPool.test.ts", function () {
             price: sqrtPriceToInstantPrice({ sqrtPrice, base: WETH, quote: USDC }),
         });
         expect(quoteWethUsdc).toBeDefined();
-        console.debug(`1 ETH = ${formatUnits(quoteWethUsdc, 6)} USDC`);
+        // console.debug(`1 ETH = ${formatUnits(quoteWethUsdc, 6)} USDC`);
 
         const quoteUsdcWeth = quoteWithPrice({
             amount: parseUnits("2500", 6),
             price: sqrtPriceToInstantPrice({ sqrtPrice, base: USDC, quote: WETH }),
         });
         expect(quoteUsdcWeth).toBeDefined();
-        console.debug(`2500 USDC = ${formatEther(quoteUsdcWeth)} ETH`);
+        // console.debug(`2500 USDC = ${formatEther(quoteUsdcWeth)} ETH`);
     });
 
     test("USDC/MODE (single-hop) vs USDC/WETH/MODE (multi-hop)", async () => {
@@ -104,7 +104,8 @@ describe("getPool.test.ts", function () {
             amount: parseUnits("1", 6),
             price: priceUsdcMode,
         });
-        console.debug(`USDC/MODE: 1 USDC = ${formatEther(quoteUsdcMode)} MODE`);
+        expect(quoteUsdcMode).toBeDefined();
+        // console.debug(`USDC/MODE: 1 USDC = ${formatEther(quoteUsdcMode)} MODE`);
 
         // multi-hop USDC > WETH > MODE
         const priceWethUsdc = sqrtPriceToInstantPrice({ sqrtPrice: poolWethUsdc.sqrtPrice, base: WETH, quote: USDC });
@@ -114,7 +115,8 @@ describe("getPool.test.ts", function () {
             amount: parseUnits("1", 6),
             price: priceUsdcWethMode,
         });
-        console.debug(`USDC/WETH/MODE: 1 USDC = ${formatEther(quoteUsdcWethMode)} MODE`);
+        expect(quoteUsdcWethMode).toBeDefined();
+        // console.debug(`USDC/WETH/MODE: 1 USDC = ${formatEther(quoteUsdcWethMode)} MODE`);
 
         // Conclusion: single-hop **appears** cheaper since it does not account for price impact
     });

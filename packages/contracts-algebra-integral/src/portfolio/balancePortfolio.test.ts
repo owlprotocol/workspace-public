@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { createPublicClient, formatUnits, http } from "viem";
+import { createPublicClient, http } from "viem";
 import { balancePortfolio } from "./balancePortfolio.js";
 
 describe("balancePortfolio.test.ts", function () {
@@ -32,8 +32,8 @@ describe("balancePortfolio.test.ts", function () {
 
         expect(portfolio).toBeDefined();
 
-        console.debug(portfolio);
-        console.debug(`Total Holding Value $${formatUnits(portfolio.totalValue, 6)}`);
-        console.debug(`Total Trade Value $${formatUnits(portfolio.totalTradeValue, 6)}`);
+        // console.debug(portfolio);
+        // console.debug(`Total Holding Value $${formatUnits(portfolio.totalValue, 6)}`);
+        // console.debug(`Total Trade Value $${formatUnits(portfolio.totalTradeValue, 6)}`);
     });
 });
