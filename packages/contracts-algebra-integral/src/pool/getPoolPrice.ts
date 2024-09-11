@@ -26,7 +26,7 @@ export function sqrtPriceToInstantPrice(sqrtPrice: bigint): BigNumber {
 }
 
 /**
- * Quote converting `amount` `base` tokens into `quote`
+ * Quote converting `amount` `base` (input) tokens into `quote` (output)
  * Internally we check the pool invariant `token0 (base) < token1 (quote)` and adjust the calculation accordingly
  * @param param tokens, amount, price
  * @returns quote token amount
@@ -35,19 +35,17 @@ export function quoteWithPrice({
     base,
     quote,
     amount,
-    sqrtPrice,
+    price,
 }: {
     base: Address;
     quote: Address;
     amount: bigint;
-    sqrtPrice: bigint;
+    price: BigNumber;
 }): bigint {
-    const instantPrice = sqrtPriceToInstantPrice(sqrtPrice);
-
     if (hexToBigInt(base) < hexToBigInt(quote)) {
         return BigInt(
             BigNumber(amount as any)
-                .times(instantPrice)
+                .times(price)
                 .integerValue()
                 .toString(),
         );
@@ -56,7 +54,7 @@ export function quoteWithPrice({
     // reverse
     return BigInt(
         BigNumber(amount as any)
-            .div(instantPrice)
+            .div(price)
             .integerValue()
             .toString(),
     );
