@@ -1,4 +1,4 @@
-import { Address, PublicClient } from "viem";
+import { Address, Hex, PublicClient } from "viem";
 import { uniqBy, zip } from "lodash-es";
 import { getPortfolioHoldings } from "./getPortfolioHoldings.js";
 import { getBalancePortfolioAmounts } from "./getBalancePortfolioAmounts.js";
@@ -9,6 +9,10 @@ import { getSwapExactInputTransaction } from "../swaprouter/getSwapTransaction.j
 export interface BalancePortfolioParams {
     /** Network public client */
     publicClient: PublicClient;
+    /** Algebra Integral pool deployer */
+    poolDeployer: Address;
+    /** Algebra Integral pool init code hash */
+    poolInitCodeHash: Hex;
     /** Algebra Integral quoter address */
     quoterV2Address: Address;
     /** Algebra Integral swap router address */

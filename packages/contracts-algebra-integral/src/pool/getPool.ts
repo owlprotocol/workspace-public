@@ -10,7 +10,7 @@ import { safelyGetStateOfAMM } from "../artifacts/IAlgebraPool.js";
  * @param params token0, token1
  * @returns base, quote address
  */
-export function getBaseQuotePair({ token0, token1 }: { token0: Address; token1: Address }) {
+export function getPoolBaseQuotePair({ token0, token1 }: { token0: Address; token1: Address }) {
     // numerical comparison
     if (hexToBigInt(token0) < hexToBigInt(token1)) {
         return {
@@ -42,7 +42,7 @@ export function getPoolAddress({
     poolDeployer: Address;
     poolInitCodeHash: Hex;
 }) {
-    const { base, quote } = getBaseQuotePair({ token0, token1 });
+    const { base, quote } = getPoolBaseQuotePair({ token0, token1 });
     const salt = keccak256(encodeAbiParameters([{ type: "address" }, { type: "address" }], [base, quote]));
     return getCreate2Address({
         bytecodeHash: poolInitCodeHash,

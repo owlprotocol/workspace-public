@@ -9,52 +9,47 @@ import { Address, hexToBigInt } from "viem";
  */
 
 /**
- * Convert `sqrtPrice` to an instant price as a `BigNumber` (native bigint won't work).
- * Instant price is the quote price of base/quote currency pair
+ * Convert `sqrtPrice` (returned by pool state) to an instant price for base/quote
+ * Internally we check the invariant `token0 (base) < token1 (quote)`
+ * - if base < quote: simply convert (this is the main price)
+ * - else: return 1 / price (since trading the reverse)
  * Useful for off-chain financial modelling (eg. portfolio rebalancing) but **NOT** for trade execution
  *
  * @warning **NOT** reliable for trade execution as multiple factors such as liquidity, fees, on-chain activity can
  * vary **actual** execution price. Use `quoter` functions for accurate trade quoting.
  * @see https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/integration-process/interaction-with-pools/getting-data-from-pools#how-to-get-current-price-in-pool
  * @param sqrtPrice
- * @returns instantPrice as a `BigNumber`
+ * @returns base/quote price
  */
-export function sqrtPriceToInstantPrice(sqrtPrice: bigint): BigNumber {
-    return BigNumber(sqrtPrice as any)
-        .div(BigNumber(2).pow(96))
-        .pow(2);
-}
-
-/**
- * Quote converting `amount` `base` (input) tokens into `quote` (output)
- * Internally we check the pool invariant `token0 (base) < token1 (quote)` and adjust the calculation accordingly
- * @param param tokens, amount, price
- * @returns quote token amount
- */
-export function quoteWithPrice({
+export function sqrtPriceToInstantPrice({
     base,
     quote,
-    amount,
-    price,
+    sqrtPrice,
 }: {
     base: Address;
     quote: Address;
-    amount: bigint;
-    price: BigNumber;
-}): bigint {
+    sqrtPrice: bigint;
+}): BigNumber {
+    const price = BigNumber(sqrtPrice as any)
+        .div(BigNumber(2).pow(96))
+        .pow(2);
+
     if (hexToBigInt(base) < hexToBigInt(quote)) {
-        return BigInt(
-            BigNumber(amount as any)
-                .times(price)
-                .integerValue()
-                .toString(),
-        );
+        return price;
     }
 
-    // reverse
+    return BigNumber(1).div(price);
+}
+
+/**
+ * Simple wrapper to multiply amount*price to get quote amount
+ * @param param amount, price
+ * @returns amount * price
+ */
+export function quoteWithPrice({ amount, price }: { amount: bigint; price: BigNumber }): bigint {
     return BigInt(
         BigNumber(amount as any)
-            .div(price)
+            .times(price)
             .integerValue()
             .toString(),
     );

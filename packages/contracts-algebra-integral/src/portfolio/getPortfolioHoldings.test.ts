@@ -1,12 +1,14 @@
 import { describe, test, expect } from "vitest";
-import { createPublicClient, http } from "viem";
+import { createPublicClient, formatUnits, http, parseUnits } from "viem";
 import { getPortfolioHoldings } from "./getPortfolioHoldings.js";
+import { quoteWithPrice } from "../pool/getPoolPrice.js";
 
 describe("getPortfolioHoldings.test.ts", function () {
     const publicClient = createPublicClient({
         transport: http("https://mode.drpc.org/"),
     });
-    const quoterV2Address = "0x7c5aaa464f736740156fd69171505d344855d1e5";
+    const poolInitCodeHash = "0xf96d2474815c32e070cd63233f06af5413efc5dcb430aee4ff18cc29007c562d";
+    const poolDeployer = "0x6414A461B19726410E52488d9D5ff33682701635";
 
     const USDC = "0xd988097fb8612cc24eeC14542bC03424c656005f";
     const WETH = "0x4200000000000000000000000000000000000006";
@@ -15,8 +17,8 @@ describe("getPortfolioHoldings.test.ts", function () {
     test("getPortfolioHoldings", async () => {
         const portfolio = await getPortfolioHoldings({
             publicClient,
-            quoterV2Address,
-            intermediateAddresses: [WETH],
+            poolInitCodeHash,
+            poolDeployer,
             account: "0xfE732ca712C695Ee14a8A015E65997dD9189C31b",
             tokens: [USDC, WETH, MODE],
             quoteToken: USDC,
@@ -24,6 +26,18 @@ describe("getPortfolioHoldings.test.ts", function () {
 
         expect(portfolio).toBeDefined();
 
-        // console.debug(`Total Value $${formatUnits(portfolio.totalValue, 6)}`);
+        console.debug(
+            portfolio.assets.map(({ address, value, price }) => {
+                const units = address === USDC ? 6 : 18;
+                return `${address} $${formatUnits(value, 6)} at $${formatUnits(
+                    quoteWithPrice({
+                        amount: parseUnits("1", units),
+                        price,
+                    }),
+                    6,
+                )}`;
+            }),
+        );
+        console.debug(`Total Value $${formatUnits(portfolio.totalValue, 6)}`);
     });
 });

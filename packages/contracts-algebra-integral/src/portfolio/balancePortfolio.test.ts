@@ -6,6 +6,8 @@ describe("balancePortfolio.test.ts", function () {
     const publicClient = createPublicClient({
         transport: http("https://mode.drpc.org/"),
     });
+    const poolInitCodeHash = "0xf96d2474815c32e070cd63233f06af5413efc5dcb430aee4ff18cc29007c562d";
+    const poolDeployer = "0x6414A461B19726410E52488d9D5ff33682701635";
     const quoterV2Address = "0x7c5aaa464f736740156fd69171505d344855d1e5";
     const swapRouterAddress = "0xAc48FcF1049668B285f3dC72483DF5Ae2162f7e8";
 
@@ -16,6 +18,8 @@ describe("balancePortfolio.test.ts", function () {
     test("balancePortfolio", async () => {
         const portfolio = await balancePortfolio({
             publicClient,
+            poolInitCodeHash,
+            poolDeployer,
             quoterV2Address,
             swapRouterAddress,
             intermediateAddresses: [WETH],

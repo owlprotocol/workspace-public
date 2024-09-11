@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { createPublicClient, formatEther, formatUnits, http, parseEther, parseUnits } from "viem";
-import { getBaseQuotePair, getPoolAddress, getPoolState } from "./getPool.js";
+import { getPoolBaseQuotePair, getPoolAddress, getPoolState } from "./getPool.js";
 import { quoteWithPrice, sqrtPriceToInstantPrice } from "./getPoolPrice.js";
 
 describe("getPool.test.ts", function () {
@@ -20,11 +20,11 @@ describe("getPool.test.ts", function () {
 
     test("getBaseQuotePair WETH/USDC", () => {
         // correct order WETH / USDC
-        const regular = getBaseQuotePair({ token0: WETH, token1: USDC });
+        const regular = getPoolBaseQuotePair({ token0: WETH, token1: USDC });
         expect(regular.base).toBe(WETH);
         expect(regular.quote).toBe(USDC);
         // fixed by analyzing invariant internally WETH / USDC
-        const reverse = getBaseQuotePair({ token0: USDC, token1: WETH });
+        const reverse = getPoolBaseQuotePair({ token0: USDC, token1: WETH });
         expect(reverse.base).toBe(WETH);
         expect(reverse.quote).toBe(USDC);
     });
@@ -46,19 +46,15 @@ describe("getPool.test.ts", function () {
         const { sqrtPrice } = state;
 
         const quoteWethUsdc = quoteWithPrice({
-            base: WETH,
-            quote: USDC,
             amount: parseEther("1"),
-            price: sqrtPriceToInstantPrice(sqrtPrice),
+            price: sqrtPriceToInstantPrice({ sqrtPrice, base: WETH, quote: USDC }),
         });
         expect(quoteWethUsdc).toBeDefined();
         console.debug(`1 ETH = ${formatUnits(quoteWethUsdc, 6)} USDC`);
 
         const quoteUsdcWeth = quoteWithPrice({
-            base: USDC,
-            quote: WETH,
             amount: parseUnits("2500", 6),
-            price: sqrtPriceToInstantPrice(sqrtPrice),
+            price: sqrtPriceToInstantPrice({ sqrtPrice, base: USDC, quote: WETH }),
         });
         expect(quoteUsdcWeth).toBeDefined();
         console.debug(`2500 USDC = ${formatEther(quoteUsdcWeth)} ETH`);
@@ -103,22 +99,18 @@ describe("getPool.test.ts", function () {
         // Compare USDC/MODE vs WETH/MODE / WETH/USDC
 
         // single-hop USDC > MODE
-        const priceUsdcMode = sqrtPriceToInstantPrice(poolUsdcMode.sqrtPrice);
+        const priceUsdcMode = sqrtPriceToInstantPrice({ sqrtPrice: poolUsdcMode.sqrtPrice, base: USDC, quote: MODE });
         const quoteUsdcMode = quoteWithPrice({
-            base: USDC,
-            quote: MODE,
             amount: parseUnits("1", 6),
             price: priceUsdcMode,
         });
         console.debug(`USDC/MODE: 1 USDC = ${formatEther(quoteUsdcMode)} MODE`);
 
         // multi-hop USDC > WETH > MODE
-        const priceWethUsdc = sqrtPriceToInstantPrice(poolWethUsdc.sqrtPrice);
-        const priceWethMode = sqrtPriceToInstantPrice(poolWethMode.sqrtPrice);
+        const priceWethUsdc = sqrtPriceToInstantPrice({ sqrtPrice: poolWethUsdc.sqrtPrice, base: WETH, quote: USDC });
+        const priceWethMode = sqrtPriceToInstantPrice({ sqrtPrice: poolWethMode.sqrtPrice, base: WETH, quote: MODE });
         const priceUsdcWethMode = priceWethMode.div(priceWethUsdc);
         const quoteUsdcWethMode = quoteWithPrice({
-            base: USDC,
-            quote: MODE,
             amount: parseUnits("1", 6),
             price: priceUsdcWethMode,
         });
