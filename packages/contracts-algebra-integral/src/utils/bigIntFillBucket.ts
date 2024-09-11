@@ -144,7 +144,7 @@ export function heuristicWithTrivialCase(
 export function bigIntSmallestAbsDiff(a: bigint[], b: bigint[]): [number, number, bigint] {
     // initial min diff
     let minDiff = bigIntAbs(a[0] - b[0]);
-    if (minDiff == 0n) return [0, 0, 0n];
+    if (minDiff === 0n) return [0, 0, 0n];
 
     // a-index
     let aIdx = 0;
@@ -194,7 +194,7 @@ export function bigIntArrInsertIntoSorted(arr: bigint[], n: bigint): number {
     // index of first element greater than `n`
     let idx = arr.findIndex((e) => e > n);
     // insert to end of array if `n >= arr[i]` for all `i`
-    if (idx == -1) idx = arr.length;
+    if (idx === -1) idx = arr.length;
     // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice
     arr.splice(idx, 0, n);
 

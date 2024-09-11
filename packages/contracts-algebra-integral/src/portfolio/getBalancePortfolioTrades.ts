@@ -53,11 +53,13 @@ export async function getBalancePortfolioTrades(params: GetBalancePortfolioTrade
     const tradeIndices = bigIntFillBucket(inputValues, outputValues);
     const tradeData = tradeIndices.map(([inputIdx, outputIdx, value]) => {
         const input = inputs[inputIdx];
+        //TODO: Fix division by zero
         const amountIn = (input.balanceDelta * value) / input.valueDelta;
         input.balanceDelta += amountIn;
         input.valueDelta += value;
 
         const output = outputs[outputIdx];
+        //TODO: Fix division by zero
         const amountOut = (output.balanceDelta * value) / output.valueDelta;
         output.balanceDelta -= amountOut;
         output.valueDelta -= value;

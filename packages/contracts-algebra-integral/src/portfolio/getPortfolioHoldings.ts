@@ -109,6 +109,7 @@ export async function getPortfolioHoldings(params: GetPortfolioParams): Promise<
  */
 export function getPortfolioDistribution(values: bigint[]) {
     const totalValue = values.reduce((acc, curr) => acc + curr, 0n);
+    if (totalValue === 0n) throw new Error("getPortfolioDistribution: sum of values MUST be > 0");
 
     const basisPoints = map(values, (balance) => {
         return Number((balance * 10_000n) / totalValue);
