@@ -10,7 +10,6 @@ import {
     prepareMulticallSwapExactInput,
 } from "../swaprouter/getMulticallSwapTransaction.js";
 import { getAlgebraWeth } from "../constants.js";
-import { getSwapExactInputTransaction } from "../swaprouter/getSwapTransaction.js";
 
 export interface BalancePortfolioParams {
     /** Network public client */
@@ -140,7 +139,7 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
 
         const amountOutMinimum = BigInt(amountOutMinimumBigNumber.integerValue().toString());
 
-        return getSwapExactInputTransaction({
+        return prepareMulticallSwapExactInput({
             swapRouterAddress,
             path: t.path,
             amountIn: t.quote.amountIn,
@@ -151,15 +150,13 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
         });
     });
 
-    const transactions = [...approvalTransactions, ...swapTransactions];
+    const multicallTransaction = getMulticallSwapTransaction({
+        swapRouterAddress,
+        recipient: account,
+        transactions: swapTransactions,
+    });
 
-    // const multicallTransaction = getMulticallSwapTransaction({
-    // swapRouterAddress,
-    // recipient: account,
-    // transactions: swapTransactions,
-    // });
-    //
-    // const transactions = [...approvalTransactions, multicallTransaction];
+    const transactions = [...approvalTransactions, multicallTransaction];
 
     return {
         ...holdings,
