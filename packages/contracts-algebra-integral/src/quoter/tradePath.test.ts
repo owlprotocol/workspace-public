@@ -22,7 +22,7 @@ describe("quoteExact.test.ts", function () {
     });
 
     test("getTradePaths", () => {
-        const paths = getTradePaths({ inputAddress: ONE, outputAddress: TWO, intermediateAddresses: [THREE] });
+        const paths = getTradePaths({ inputAddress: ONE, outputAddress: TWO, liquidityTokens: [THREE] });
         expect(paths.length).toBe(2);
         expect(paths[0]).toStrictEqual([ONE, TWO]);
         expect(paths[1]).toStrictEqual([ONE, THREE, TWO]);

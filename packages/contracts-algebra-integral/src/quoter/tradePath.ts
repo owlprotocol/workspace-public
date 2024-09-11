@@ -8,8 +8,8 @@ export interface GetTradePathsParams {
     inputAddress: Address;
     /** Output token address */
     outputAddress: Address;
-    /** Intermediate token addresses for multi-hop swaps */
-    intermediateAddresses?: Address[];
+    /** Liquidity token addresses for multi-hop swaps */
+    liquidityTokens?: Address[];
 }
 /**
  * Compute permutations of trade paths
@@ -19,8 +19,8 @@ export interface GetTradePathsParams {
 export function getTradePaths(params: GetTradePathsParams): [[Address, Address], ...[Address, Address, Address][]] {
     const { inputAddress, outputAddress } = params;
 
-    // Filter out input/output address from intermediateAddresses
-    const intermediateAddresses = (params.intermediateAddresses ?? []).filter(
+    // Filter out input/output address from liquidityTokens
+    const liquidityTokens = (params.liquidityTokens ?? []).filter(
         (address) =>
             address.toLowerCase() != inputAddress.toLowerCase() && address.toLowerCase() != outputAddress.toLowerCase(),
     );
@@ -29,7 +29,7 @@ export function getTradePaths(params: GetTradePathsParams): [[Address, Address],
     const paths = [[inputAddress, outputAddress]] as Address[][];
 
     // Add intermediate paths
-    intermediateAddresses.forEach((c) => {
+    liquidityTokens.forEach((c) => {
         paths.push([inputAddress, c, outputAddress]);
     });
 

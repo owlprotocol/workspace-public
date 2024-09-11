@@ -30,8 +30,8 @@ export interface BalancePortfolioParams {
     weth?: Address;
     /** Unit of account (defaults to `weth`) */
     quoteToken?: Address;
-    /** Intermediate trading assets (defaults to `weth`) */
-    intermediateAddresses?: Address[];
+    /** Liquidity trading assets (defaults to `weth`) */
+    liquidityTokens?: Address[];
     /** Swap expiry (defaults to 1hr) */
     deadline?: bigint;
     /** Slippage tolerance % (defaults to 0.50) */
@@ -47,7 +47,7 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
     const weth = params.weth ?? (await getAlgebraWeth({ publicClient, swapRouterAddress }));
     const quoteToken = params.quoteToken ?? weth;
     // use weth as source of potential liquidity
-    const intermediateAddresses = params.intermediateAddresses ?? [weth];
+    const liquidityTokens = params.liquidityTokens ?? [weth];
     const slippagePercent = params.slippagePercent ?? 0.5; // 0.50%
 
     // unique addresses
@@ -96,7 +96,7 @@ export async function balancePortfolio(params: BalancePortfolioParams) {
     const trades = await getBalancePortfolioTrades({
         publicClient,
         quoterV2Address,
-        intermediateAddresses,
+        liquidityTokens,
         assets: map(
             zip(holdings.assets, deltas) as [PortfolioAsset, { valueDelta: bigint }][],
             ([{ address, price }, { valueDelta }]) => {

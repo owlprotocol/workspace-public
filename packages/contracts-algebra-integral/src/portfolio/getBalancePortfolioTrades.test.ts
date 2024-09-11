@@ -44,7 +44,7 @@ describe("getBalancePortfolioTrades.test.ts", function () {
         const trades = await getBalancePortfolioTrades({
             publicClient,
             quoterV2Address,
-            intermediateAddresses: [WETH],
+            liquidityTokens: [WETH],
             assets: [
                 { address: USDC, price: BigNumber(1), valueDelta: -90_000_000n },
                 {

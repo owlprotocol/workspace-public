@@ -10,8 +10,8 @@ export interface GetBalancePortfolioTradesParams {
     publicClient: PublicClient;
     /** Algebra Integral quoter address */
     quoterV2Address: Address;
-    /** Intermediate trading assets */
-    intermediateAddresses?: Address[];
+    /** Liquidity trading assets */
+    liquidityTokens?: Address[];
     /** Assets **/
     assets: {
         /** Address */
@@ -28,7 +28,7 @@ export interface GetBalancePortfolioTradesParams {
  * @param params
  */
 export async function getBalancePortfolioTrades(params: GetBalancePortfolioTradesParams): Promise<Trade[]> {
-    const { publicClient, quoterV2Address, intermediateAddresses } = params;
+    const { publicClient, quoterV2Address, liquidityTokens } = params;
 
     const portfolio = cloneDeep(params.assets);
     // inputs, balance will decrease (valueDelta < 0)
@@ -64,7 +64,7 @@ export async function getBalancePortfolioTrades(params: GetBalancePortfolioTrade
                 amountIn,
                 inputAddress: input.address,
                 outputAddress: output.address,
-                intermediateAddresses,
+                liquidityTokens,
             });
             return estimate.optimalTrade;
         }),

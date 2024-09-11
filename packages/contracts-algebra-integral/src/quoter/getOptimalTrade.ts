@@ -19,8 +19,8 @@ export type GetOptimalTradePathParams = {
     inputAddress: Address;
     /** Output token address */
     outputAddress: Address;
-    /** Intermediate trading assets */
-    intermediateAddresses?: Address[];
+    /** Liquidity trading assets */
+    liquidityTokens?: Address[];
 } & ({ amountIn: bigint; amountOut?: undefined } | { amountIn?: undefined; amountOut: bigint });
 
 /**
@@ -45,8 +45,8 @@ export interface GetOptimalTradePathExactInputParams {
     inputAddress: Address;
     /** Output token address */
     outputAddress: Address;
-    /** Intermediate trading assets */
-    intermediateAddresses?: Address[];
+    /** Liquidity trading assets */
+    liquidityTokens?: Address[];
 }
 
 /**
@@ -57,8 +57,8 @@ export async function getOptimalTradeExactInput(params: GetOptimalTradePathExact
     trades: Trade[];
     optimalTrade: Trade;
 }> {
-    const { publicClient, quoterV2Address, amountIn, inputAddress, outputAddress, intermediateAddresses } = params;
-    const paths = getTradePaths({ inputAddress, outputAddress, intermediateAddresses });
+    const { publicClient, quoterV2Address, amountIn, inputAddress, outputAddress, liquidityTokens } = params;
+    const paths = getTradePaths({ inputAddress, outputAddress, liquidityTokens });
 
     //TODO: Should we use allSettled to handle when trade path is not supported (liquidity pool doesnt exist) ?
     const quotes = await Promise.all(
@@ -91,8 +91,8 @@ export interface GetOptimalTradePathExactOutputParams {
     inputAddress: Address;
     /** Output token address */
     outputAddress: Address;
-    /** Intermediate trading assets */
-    intermediateAddresses?: Address[];
+    /** Liquidity trading assets */
+    liquidityTokens?: Address[];
 }
 
 /**
@@ -103,8 +103,8 @@ export async function getOptimalTradeExactOutput(params: GetOptimalTradePathExac
     trades: Trade[];
     optimalTrade: Trade;
 }> {
-    const { publicClient, quoterV2Address, amountOut, inputAddress, outputAddress, intermediateAddresses } = params;
-    const paths = getTradePaths({ inputAddress, outputAddress, intermediateAddresses });
+    const { publicClient, quoterV2Address, amountOut, inputAddress, outputAddress, liquidityTokens } = params;
+    const paths = getTradePaths({ inputAddress, outputAddress, liquidityTokens });
 
     //TODO: Should we use allSettled to handle when trade path is not supported (liquidity pool doesnt exist) ?
     const quotes = await Promise.all(

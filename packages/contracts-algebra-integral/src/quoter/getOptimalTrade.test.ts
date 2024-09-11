@@ -32,7 +32,7 @@ describe("getOptimalTrade.test.ts", function () {
             amountIn: 10_000_000n, //1 USDC
             inputAddress: USDC,
             outputAddress: MODE,
-            intermediateAddresses: [WETH],
+            liquidityTokens: [WETH],
         });
 
         expect(trades).toBeDefined();
@@ -59,7 +59,7 @@ describe("getOptimalTrade.test.ts", function () {
             amountOut: parseEther("90"), // ~ $1 of MODE
             inputAddress: USDC,
             outputAddress: MODE,
-            intermediateAddresses: [WETH],
+            liquidityTokens: [WETH],
         });
 
         expect(trades).toBeDefined();
