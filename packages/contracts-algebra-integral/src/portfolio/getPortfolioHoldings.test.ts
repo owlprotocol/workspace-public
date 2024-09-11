@@ -1,8 +1,8 @@
-import { describe, test } from "vitest";
-import { createPublicClient, formatUnits, http } from "viem";
-import { getPortfolio } from "./getPortfolio.js";
+import { describe, test, expect } from "vitest";
+import { createPublicClient, http } from "viem";
+import { getPortfolioHoldings } from "./getPortfolioHoldings.js";
 
-describe("getPortfolio.test.ts", function () {
+describe("getPortfolioHoldings.test.ts", function () {
     const publicClient = createPublicClient({
         transport: http("https://mode.drpc.org/"),
     });
@@ -12,8 +12,8 @@ describe("getPortfolio.test.ts", function () {
     const WETH = "0x4200000000000000000000000000000000000006";
     const MODE = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
-    test("getOptimalTradeExactInput USDC - WETH", async () => {
-        const portfolio = await getPortfolio({
+    test("getPortfolioHoldings", async () => {
+        const portfolio = await getPortfolioHoldings({
             publicClient,
             quoterV2Address,
             intermediateAddresses: [WETH],
@@ -22,7 +22,8 @@ describe("getPortfolio.test.ts", function () {
             valueTokenAddress: USDC,
         });
 
-        console.debug(portfolio);
-        console.debug(`Total Value $${formatUnits(portfolio.totalValue, 6)}`);
+        expect(portfolio).toBeDefined();
+
+        // console.debug(`Total Value $${formatUnits(portfolio.totalValue, 6)}`);
     });
 });

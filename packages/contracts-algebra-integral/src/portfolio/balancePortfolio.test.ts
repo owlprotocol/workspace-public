@@ -1,7 +1,6 @@
 import { describe, test, expect } from "vitest";
-import { createPublicClient, http } from "viem";
-import { getBalancePortfolioAmounts, getBalancePortfolioTrades } from "./balancePortfolio.js";
-import { getOptimalTrade } from "../quoter/getOptimalTrade.js";
+import { createPublicClient, formatUnits, http } from "viem";
+import { balancePortfolio } from "./balancePortfolio.js";
 
 describe("balancePortfolio.test.ts", function () {
     const publicClient = createPublicClient({
@@ -13,59 +12,23 @@ describe("balancePortfolio.test.ts", function () {
     const WETH = "0x4200000000000000000000000000000000000006";
     const MODE = "0xDfc7C877a950e49D2610114102175A06C2e3167a";
 
-    test("getBalancePortfolioAmounts", async () => {
-        const portfolio = await getBalancePortfolioAmounts({
+    test("balancePortfolio", async () => {
+        const portfolio = await balancePortfolio({
+            publicClient,
+            quoterV2Address,
+            intermediateAddresses: [WETH],
+            account: "0xfE732ca712C695Ee14a8A015E65997dD9189C31b",
             assets: [
-                { address: USDC, balance: 100n, value: 100n, targetRatio: 50 },
-                { address: WETH, balance: 100n, value: 100n, targetRatio: 25 },
-                { address: MODE, balance: 100n, value: 100n, targetRatio: 10 },
+                { address: USDC, targetRatio: 1 },
+                { address: WETH, targetRatio: 1 },
+                { address: MODE, targetRatio: 1 },
             ],
+            valueTokenAddress: USDC,
         });
+
         expect(portfolio).toBeDefined();
-    });
 
-    test("getBalancePortfolioTrades", async () => {
-        const usdcWethTrade = await getOptimalTrade({
-            publicClient,
-            quoterV2Address,
-            inputAddress: USDC,
-            outputAddress: WETH,
-            amountIn: 50_000_000n,
-        });
-
-        const usdcModeTrade = await getOptimalTrade({
-            publicClient,
-            quoterV2Address,
-            inputAddress: USDC,
-            outputAddress: MODE,
-            intermediateAddresses: [WETH],
-            amountIn: 50_000_000n,
-        });
-
-        // Spend $100
-        const { trades, delta } = await getBalancePortfolioTrades({
-            publicClient,
-            quoterV2Address,
-            intermediateAddresses: [WETH],
-            assets: [
-                { address: USDC, balanceDelta: -90_000_000n, valueDelta: -90_000_000n },
-                {
-                    address: WETH,
-                    balanceDelta: usdcWethTrade.optimalTrade.quote.amountOut,
-                    valueDelta: usdcWethTrade.optimalTrade.quote.amountIn,
-                },
-                {
-                    address: MODE,
-                    balanceDelta: usdcModeTrade.optimalTrade.quote.amountOut,
-                    valueDelta: usdcModeTrade.optimalTrade.quote.amountIn,
-                },
-            ],
-        });
-
-        expect(trades).toBeDefined();
-        expect(delta).toBeDefined();
-
-        console.debug(trades);
-        console.debug(delta);
+        console.debug(portfolio);
+        console.debug(`Total Value $${formatUnits(portfolio.totalValue, 6)}`);
     });
 });

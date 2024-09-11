@@ -1,18 +1,16 @@
-import { mapValues, zip } from "lodash-es";
+import { map, zip } from "lodash-es";
 import { Address, erc20Abi, PublicClient } from "viem";
-import { awaitAllObj } from "@owlprotocol/utils";
+import { Prettify } from "@owlprotocol/utils/types";
 import { getOptimalTradeExactInput } from "../quoter/getOptimalTrade.js";
 
 /**
  * Manage a portfolio of assets
  */
-export interface Portfolio {
-    /** Tokens */
-    tokens: Address[];
+export interface PortfolioHoldings {
     /** Unit of account (eg. WETH, USDC) */
     valueTokenAddress: Address;
     /** Assets */
-    assets: Record<Address, { balance: bigint; value: bigint; basisPoints: number; percentage: number }>;
+    assets: { address: Address; balance: bigint; value: bigint; basisPoints: number; percentage: number }[];
     /** Total value of portfolio */
     totalValue: bigint;
 }
@@ -41,7 +39,7 @@ export interface GetPortfolioParams {
  * @param params
  * @returns portfolio data
  */
-export async function getPortfolio(params: GetPortfolioParams): Promise<Portfolio> {
+export async function getPortfolioHoldings(params: GetPortfolioParams): Promise<Prettify<PortfolioHoldings>> {
     const { publicClient, quoterV2Address, intermediateAddresses, gasPrice, account, tokens, valueTokenAddress } =
         params;
     const wethAddress = params.wethAddress ?? "0x4200000000000000000000000000000000000006";
@@ -63,9 +61,8 @@ export async function getPortfolio(params: GetPortfolioParams): Promise<Portfoli
             return balance;
         }),
     );
-    const balanceOf = Object.fromEntries(zip(tokens, balances)) as Record<Address, bigint>;
-    const balanceOfValue = await awaitAllObj(
-        mapValues(balanceOf, async (balance, address) => {
+    const values = await Promise.all(
+        map(zip(tokens, balances) as [Address, bigint][], async ([address, balance]) => {
             // No need to convert
             if (address.toLowerCase() === valueTokenAddress.toLowerCase()) return balance;
             if (balance === 0n) return balance;
@@ -84,19 +81,22 @@ export async function getPortfolio(params: GetPortfolioParams): Promise<Portfoli
             return optimalTrade.quote.amountOut;
         }),
     );
-    const { totalValue, balanceOfBasisPoints, balanceOfPercentage } = getPortfolioDistribution(balanceOfValue);
+    const { totalValue, basisPoints, percentages } = getPortfolioDistribution(values);
 
-    const assets = mapValues(balanceOf, (balance: bigint, address: Address) => {
-        return {
-            balance,
-            value: balanceOfValue[address],
-            basisPoints: balanceOfBasisPoints[address],
-            percentage: balanceOfPercentage[address],
-        };
-    }) as unknown as Record<Address, { balance: bigint; value: bigint; basisPoints: number; percentage: number }>;
+    const assets = map(
+        zip(tokens, balances, values, basisPoints, percentages) as [Address, bigint, bigint, number, number][],
+        ([address, balance, value, basisPoints, percentage]) => {
+            return {
+                address,
+                balance,
+                value,
+                basisPoints,
+                percentage,
+            };
+        },
+    );
 
     return {
-        tokens,
         valueTokenAddress,
         assets,
         totalValue,
@@ -105,19 +105,19 @@ export async function getPortfolio(params: GetPortfolioParams): Promise<Portfoli
 
 /**
  * Compute portfolio distribution
- * @param balanceOfValue
+ * @param values
  */
-export function getPortfolioDistribution(balanceOfValue: Record<Address, bigint>) {
-    const totalValue = Object.values(balanceOfValue).reduce((acc, curr) => acc + curr, 0n);
+export function getPortfolioDistribution(values: bigint[]) {
+    const totalValue = values.reduce((acc, curr) => acc + curr, 0n);
 
-    const balanceOfBasisPoints = mapValues(balanceOfValue, (balance) => {
+    const basisPoints = map(values, (balance) => {
         return Number((balance * 10_000n) / totalValue);
     });
-    const balanceOfPercentage = mapValues(balanceOfBasisPoints, (balance) => balance / 100);
+    const percentages = map(basisPoints, (balance) => balance / 100);
 
     return {
         totalValue,
-        balanceOfBasisPoints,
-        balanceOfPercentage,
+        basisPoints,
+        percentages,
     };
 }
