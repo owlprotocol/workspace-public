@@ -10,6 +10,10 @@ on:
   pull_request:
     types: [assigned, opened, synchronize, reopened]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -22,9 +26,6 @@ jobs:
     steps:
       # Git Checkout
       - uses: actions/checkout@v3
-        # TODO: Add submodule support if needed for build/test, currently this breaks pnpm cache
-        #with:
-        #  submodules: true
       # Foundry Setup (anvil)
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
@@ -90,3 +91,10 @@ jobs:
       # Lint
       - run: pnpm run lint
         name: Lint All
+      # TODO: https://github.com/changesets/action
+      # Create Release PR
+      # - if: ${{ github.ref == 'refs/heads/main' }}
+      # name: Create Release Pull Request
+      # uses: changesets/action@v1
+      # env:
+      # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
