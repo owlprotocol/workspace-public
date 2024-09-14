@@ -1,4 +1,3 @@
-import { parseEther } from "viem/utils";
 import { defineNetwork } from "../defineChain.js";
 
 export const bitfinityTestnet = /*#__PURE__*/ defineNetwork({
@@ -28,10 +27,4 @@ export const bitfinityTestnet = /*#__PURE__*/ defineNetwork({
     },
     enabled: false,
     rank: 9999,
-    minUtilityBalance: parseEther("1"),
-    targetUtilityBalance: parseEther("8"),
-    minPaymasterBalance: parseEther("0.1"),
-    targetPaymasterBalance: parseEther("2"),
-    minRelayerBalance: parseEther("0.1"),
-    targetRelayerBalance: parseEther("1"),
 });

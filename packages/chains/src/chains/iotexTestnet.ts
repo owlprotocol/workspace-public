@@ -1,4 +1,3 @@
-import { parseEther } from "viem";
 import { iotx } from "../currencies/iotx.js";
 import { defineNetwork } from "../defineChain.js";
 
@@ -23,11 +22,4 @@ export const iotexTestnet = /*#__PURE__*/ defineNetwork({
     },
     enabled: false,
     rank: 0,
-    minUtilityBalance: parseEther("1"),
-    //TODO: Topup code what if utility < target?
-    targetUtilityBalance: parseEther("8"),
-    minPaymasterBalance: parseEther("1"),
-    targetPaymasterBalance: parseEther("20"),
-    minRelayerBalance: parseEther("1"),
-    targetRelayerBalance: parseEther("5"),
 });

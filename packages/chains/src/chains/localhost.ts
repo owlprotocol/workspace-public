@@ -1,5 +1,4 @@
 import { localhost as localhostViem } from "viem/chains";
-import { parseEther } from "viem";
 import { defineNetwork } from "../defineChain.js";
 
 export const localhost = /*#__PURE__*/ defineNetwork({
@@ -9,5 +8,4 @@ export const localhost = /*#__PURE__*/ defineNetwork({
     ...localhostViem,
     enabled: true,
     rank: -1,
-    targetPaymasterBalance: parseEther("1"),
 });

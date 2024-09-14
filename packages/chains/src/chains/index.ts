@@ -22,6 +22,7 @@ export * from "./hedwigTestnet.js";
 export * from "./holesky.js";
 export * from "./iotex.js";
 export * from "./iotexTestnet.js";
+export * from "./kaiaTestnet.js";
 export * from "./linea.js";
 export * from "./lineaSepolia.js";
 export * from "./localhost.js";

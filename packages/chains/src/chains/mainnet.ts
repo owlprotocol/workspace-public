@@ -1,5 +1,4 @@
 import { mainnet as mainnetViem } from "viem/chains";
-import { parseEther } from "viem";
 import { defineNetwork } from "../defineChain.js";
 
 export const mainnet = /*#__PURE__*/ defineNetwork({
@@ -14,9 +13,4 @@ export const mainnet = /*#__PURE__*/ defineNetwork({
     slug: "mainnet",
     slugAnkr: "eth",
     slugDrpc: "ethereum",
-    //~500 USD / chain
-    minPaymasterBalance: parseEther("0.5"),
-    targetPaymasterBalance: parseEther("1"),
-    minRelayerBalance: parseEther("0.05"),
-    targetRelayerBalance: parseEther("0.1"),
 });
