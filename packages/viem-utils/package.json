@@ -7,7 +7,7 @@
     "trpc",
     "react-query"
   ],
-  "private": true,
+  "private": false,
   "type": "module",
   "homepage": "https://owlprotocol.github.io/viem-utils",
   "repository": {
