@@ -15,7 +15,11 @@ import { Auth, getAuth } from "firebase-admin/auth";
 import { Storage, getStorage } from "firebase-admin/storage";
 import type { AppOptions } from "firebase-admin";
 import { cert } from "firebase-admin/app";
-import { FIRESTORE_EMULATOR_HOST, FIREBASE_STORAGE_EMULATOR_HOST, FIREBASE_AUTH_EMULATOR_HOST } from "../common.js";
+import {
+    DEFAULT_FIRESTORE_EMULATOR_HOST,
+    DEFAULT_FIREBASE_STORAGE_EMULATOR_HOST,
+    DEFAULT_FIREBASE_AUTH_EMULATOR_HOST,
+} from "../common.js";
 
 export function getFirebaseConfig() {
     let firebaseConfig: AppOptions = {};
@@ -54,9 +58,9 @@ export function getFirebaseConfig() {
             storageBucket: FIREBASE_STORAGE_BUCKET,
         };
         // Connect to emulator (if test). Do NOT use localhost as breaks in CI
-        process.env["FIRESTORE_EMULATOR_HOST"] = FIRESTORE_EMULATOR_HOST;
-        process.env["FIREBASE_STORAGE_EMULATOR_HOST"] = FIREBASE_STORAGE_EMULATOR_HOST;
-        process.env["FIREBASE_AUTH_EMULATOR_HOST"] = FIREBASE_AUTH_EMULATOR_HOST;
+        process.env["FIRESTORE_EMULATOR_HOST"] = DEFAULT_FIRESTORE_EMULATOR_HOST;
+        process.env["FIREBASE_STORAGE_EMULATOR_HOST"] = DEFAULT_FIREBASE_STORAGE_EMULATOR_HOST;
+        process.env["FIREBASE_AUTH_EMULATOR_HOST"] = DEFAULT_FIREBASE_AUTH_EMULATOR_HOST;
     }
 
     return firebaseConfig;
@@ -65,19 +69,24 @@ export function getFirebaseConfig() {
 /**
  * Get default app, initialize or get current.
  */
-export function getAppInitialized(config: AppOptions): App {
+export function getAppInitialized(config?: AppOptions): App {
     if (getApps().length === 0) {
         if (GCLOUD_PROJECT) {
-            const app = initializeApp();
             console.debug(
-                "Initialized Firebase App in Google environment using Default Credentials (ignoring envvars). Read more https://firebase.google.com/docs/admin/setup#initialize-sdk",
+                "Initializing Firebase App in Google/Emulator environment using Default Credentials (ignoring envvars). Read more https://firebase.google.com/docs/admin/setup#initialize-sdk",
             );
+            const app = initializeApp();
             return app;
         } else {
-            const app = initializeApp(config);
+            // This is only relevant when not being run in Google / Emulator (eg. TRPC Express)
+            // TODO: Note this assumes the Emulator is on 18080 and sets the environment var
             console.debug(
-                "Initialized Firebase App in non-Google environment using Service Account. Read more https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments",
+                "Initializing Firebase App in non-Google environment using Service Account envvars/Emulator defaults. Read more https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments",
             );
+            if (!config) {
+                throw new Error(`GCLOUD_PROJECT undefined, config must be defined`);
+            }
+            const app = initializeApp(config);
             return app;
         }
     }
@@ -111,12 +120,9 @@ export function getFirebaseApp(): {
     firestore: Firestore;
     auth: Auth;
     storage: Storage;
-    config: AppOptions;
 } {
-    // Init the firebase app if not in test environment
-    const config = getFirebaseConfig();
     //Initialize firestore
-    const firebaseApp = getAppInitialized(config);
+    const firebaseApp = GCLOUD_PROJECT ? getAppInitialized() : getAppInitialized(getFirebaseConfig());
     const firestore = getFirestoreInitialized(firebaseApp);
     const auth = getAuthInitialized(firebaseApp);
 
@@ -124,5 +130,5 @@ export function getFirebaseApp(): {
     // NOTE: storage.apiEndponit stores the prefix of each file's publicUrl
     const storage = getStorage(firebaseApp);
 
-    return { firebaseApp, firestore, auth, storage, config };
+    return { firebaseApp, firestore, auth, storage };
 }
