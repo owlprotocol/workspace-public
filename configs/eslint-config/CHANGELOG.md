@@ -1,5 +1,11 @@
 # @owlprotocol/eslint-config
 
+## 3.1.0
+
+### Minor Changes
+
+- d72ac67: Updated release
+
 ## 2.0.2
 
 ### Patch Changes

@@ -1,19 +1,16 @@
 {
   "name": "@owlprotocol/prettier-config",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "keywords": [
-    "web3",
-    "solidity",
-    "trpc",
-    "react-query"
+    "prettier"
   ],
   "private": false,
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/owlprotocol/owlprotocol.git"
+    "url": "https://github.com/owlprotocol/workspace-public.git"
   },
-  "copyright": "Copyright 2021 Owl Protocol",
+  "copyright": "Copyright 2024 Owl Protocol",
   "license": "MIT",
   "author": {
     "name": "Leo Vigna",
@@ -33,7 +30,7 @@
     "depcheck": "^1.4.7"
   },
   "bugs": {
-    "url": "https://github.com/owlprotocol/owlprotocol/issues",
+    "url": "https://github.com/owlprotocol/workspace-public/issues",
     "email": "leo@owlprotocol.xyz"
   },
   "funding": "https://owlprotocol.xyz",

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.1/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [
+    [
+      "@owlprotocol/contracts-account-abstraction",
+      "@owlprotocol/contracts-algebra-integral",
+      "@owlprotocol/contracts-create2factory",
+      "@owlprotocol/contracts-diamond"
+    ],
+    [
+      "@owlprotocol/crud-firebase",
+      "@owlprotocol/eth-firebase",
+      "@owlprotocol/core-firebase"
+    ]
+  ],
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "develop",
+  "updateInternalDependencies": "patch",
+  "ignore": ["@owlprotocol/docs"]
+}

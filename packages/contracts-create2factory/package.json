@@ -1,20 +1,20 @@
 {
   "name": "@owlprotocol/contracts-create2factory",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "keywords": [
+    "blockchain",
     "web3",
     "solidity",
-    "trpc",
-    "react-query"
+    "create2"
   ],
   "private": false,
   "type": "module",
-  "homepage": "https://github.com/owlprotocol/owlprotocol.git",
+  "homepage": "https://github.com/owlprotocol/workspace-public",
   "repository": {
     "type": "git",
-    "url": "https://github.com/owlprotocol/owlprotocol.git"
+    "url": "https://github.com/owlprotocol/workspace-public.git"
   },
-  "copyright": "Copyright 2023 Owl Protocol",
+  "copyright": "Copyright 2024 Owl Protocol",
   "license": "MIT",
   "author": {
     "name": "Leo Vigna",
@@ -151,7 +151,7 @@
     "vitest": "^1.4.0"
   },
   "bugs": {
-    "url": "https://github.com/owlprotocol/owlprotocol/issues",
+    "url": "https://github.com/owlprotocol/workspace-public/issues",
     "email": "leo@owlprotocol.xyz"
   },
   "funding": "https://owlprotocol.xyz",

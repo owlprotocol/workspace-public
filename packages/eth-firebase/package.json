@@ -1,20 +1,20 @@
 {
   "name": "@owlprotocol/eth-firebase",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "keywords": [
+    "database",
+    "blockchain",
     "web3",
-    "solidity",
-    "trpc",
-    "react-query"
+    "indexing"
   ],
   "private": false,
   "type": "module",
-  "homepage": "https://owlprotocol.github.io/eth-firebase",
+  "homepage": "https://github.com/owlprotocol/workspace-public",
   "repository": {
     "type": "git",
-    "url": "https://github.com/owlprotocol/owlprotocol.git"
+    "url": "https://github.com/owlprotocol/workspace-public.git"
   },
-  "copyright": "Copyright 2023 Owl Protocol",
+  "copyright": "Copyright 2024 Owl Protocol",
   "license": "MIT",
   "author": {
     "name": "Leo Vigna",
@@ -115,7 +115,7 @@
     "depcheck": "^1.4.7"
   },
   "bugs": {
-    "url": "https://github.com/owlprotocol/owlprotocol/issues",
+    "url": "https://github.com/owlprotocol/workspace-public/issues",
     "email": "leo@owlprotocol.xyz"
   },
   "funding": "https://owlprotocol.xyz",

@@ -1,16 +1,11 @@
 {
   "name": "@owlprotocol/docs",
   "version": "3.0.0",
-  "keywords": [
-    "web3",
-    "solidity",
-    "trpc",
-    "react-query"
-  ],
+  "keywords": [],
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/owlprotocol/owlprotocol.git"
+    "url": "https://github.com/owlprotocol/workspace-public.git"
   },
   "license": "MIT",
   "author": {
@@ -48,7 +43,7 @@
     "depcheck": "^1.4.7"
   },
   "bugs": {
-    "url": "https://github.com/owlprotocol/owlprotocol/issues",
+    "url": "https://github.com/owlprotocol/workspace-public/issues",
     "email": "leo@owlprotocol.xyz"
   },
   "funding": "https://owlprotocol.xyz",
