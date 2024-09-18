@@ -1,5 +1,5 @@
 {
-  "name": "@owlprotocol/provider-wallet",
+  "name": "@owlprotocol/backend-wallet",
   "version": "3.0.0",
   "keywords": [],
   "private": true,

@@ -35,8 +35,8 @@ import {
     topupPaymaster,
 } from "@owlprotocol/contracts-account-abstraction";
 import { deleteEmulatorData } from "@owlprotocol/eth-firebase/admin";
-import { createLocalBundlerClient } from "@owlprotocol/provider-bundler";
-import { createLocalPaymasterClient } from "@owlprotocol/provider-paymaster";
+import { createLocalBundlerClient } from "./createLocalBundler.js";
+import { createLocalPaymasterClient } from "./createLocalPaymaster.js";
 import { port } from "./test/constants.js";
 
 describe("userOp.test.ts", function () {
