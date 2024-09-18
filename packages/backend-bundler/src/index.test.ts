@@ -35,8 +35,8 @@ import {
     topupPaymaster,
 } from "@owlprotocol/contracts-account-abstraction";
 import { deleteEmulatorData } from "@owlprotocol/eth-firebase/admin";
-import { createLocalBundlerClient } from "./createLocalBundler.js";
-import { createLocalPaymasterClient } from "./createLocalPaymaster.js";
+import { createBundlerBackend } from "./createBundlerBackend.js";
+import { createPaymasterBackend } from "./createPaymasterBackend.js";
 import { port } from "./test/constants.js";
 
 describe("userOp.test.ts", function () {
@@ -114,7 +114,7 @@ describe("userOp.test.ts", function () {
             minBalance: parseEther("1"),
         });
 
-        bundlerClient = createLocalBundlerClient({
+        bundlerClient = createBundlerBackend({
             chain: localhost,
             transport,
             walletClient: bundlerWalletClient,
@@ -137,7 +137,7 @@ describe("userOp.test.ts", function () {
             minBalance: parseEther("1"),
         });
 
-        paymasterClient = createLocalPaymasterClient({
+        paymasterClient = createPaymasterBackend({
             chain: localhost,
             transport,
             paymasterSigner: getPaymasterSignerAccount(),

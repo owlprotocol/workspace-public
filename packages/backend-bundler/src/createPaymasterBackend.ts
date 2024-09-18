@@ -31,19 +31,6 @@ import {
     EstimateUserOperationGasResponseResult,
 } from "@owlprotocol/contracts-account-abstraction";
 
-export type PaymasterRpcMethod = (typeof paymasterRpcMethods)[number];
-
-export const paymasterRpcMethods = ["pm_sponsorUserOperation", "pm_validateSponsorshipPolicies"] as const;
-
-/**
- * Check if RPC method is for paymaster.
- * @param method
- * @returns true if paymaster rpc method
- */
-export function isPaymasterRpcMethod(method: string): method is PaymasterRpcMethod {
-    return paymasterRpcMethods.includes(method as any);
-}
-
 /**
  * Paymaster configuration, extends `ClientConfig` with defined Transport, Chain, but no account
  * @field entryPoint contract address
@@ -55,7 +42,7 @@ export function isPaymasterRpcMethod(method: string): method is PaymasterRpcMeth
  * @field minBalance for topup trigger
  * @field targetBalance for topup
  */
-export type LocalPaymasterConfig = ClientConfig<Transport, Chain, undefined> & {
+export type PaymasterBackendConfig = ClientConfig<Transport, Chain, undefined> & {
     /** EntryPoint address (only v0.7 supported) */
     entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
     /** EntryPoint simulations addres (only v0.7 supported) */
@@ -73,8 +60,8 @@ export type LocalPaymasterConfig = ClientConfig<Transport, Chain, undefined> & {
  * local testing or to get a minimal in-memory ERC4337 solution.
  * Needs an account to sign paymaster transactions.
  */
-export function createLocalPaymasterClient(
-    parameters: LocalPaymasterConfig,
+export function createPaymasterBackend(
+    parameters: PaymasterBackendConfig,
 ): PimlicoPaymasterClient<ENTRYPOINT_ADDRESS_V07_TYPE> {
     const { key = "public", name = "Local Paymaster Client" } = parameters;
     //Remove non-standard keys from config, doesn't break anything but more aligned with original
@@ -89,7 +76,7 @@ export function createLocalPaymasterClient(
         name,
         type: "bundlerClient",
     }) as unknown as PimlicoPaymasterClient<ENTRYPOINT_ADDRESS_V07_TYPE>;
-    client.request = createLocalPaymasterEIP1193Request({ ...parameters, request: client.request });
+    client.request = createPaymasterBackendEIP1193Request({ ...parameters, request: client.request });
 
     return client.extend(pimlicoPaymasterActions(parameters.entryPoint)) as any;
 }
@@ -100,8 +87,8 @@ export function createLocalPaymasterClient(
  * local testing or to get a minimal in-memory ERC4337 solution.
  * Needs an account to sign paymaster transactions.
  */
-export function createLocalPaymasterEIP1193Request(
-    parameters: Omit<LocalPaymasterConfig, "key" | "name"> & { request: EIP1193RequestFn },
+export function createPaymasterBackendEIP1193Request(
+    parameters: Omit<PaymasterBackendConfig, "key" | "name"> & { request: EIP1193RequestFn },
 ): EIP1193RequestFn {
     const entryPointVersion = getEntryPointVersion(parameters.entryPoint);
     if (entryPointVersion != "v0.7" && entryPointVersion != "v0.6") {

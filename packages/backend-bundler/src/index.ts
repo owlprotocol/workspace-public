@@ -1,1 +1,5 @@
-export * from "./createLocalBundler.js";
+export * from "./createBundlerBackend.js";
+export * from "./createPaymasterBackend.js";
+
+export * from "./isBundlerRpcMethod.js";
+export * from "./isPaymasterRpcMethod.js";

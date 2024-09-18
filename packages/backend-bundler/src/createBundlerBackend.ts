@@ -42,32 +42,6 @@ import {
     estimateUserOperationGas,
 } from "@owlprotocol/contracts-account-abstraction";
 
-export type BundlerRpcMethod = (typeof bundlerRpcMethods)[number];
-
-export const bundlerRpcMethods = [
-    "eth_sendUserOperation",
-    "eth_estimateUserOperationGas",
-    "eth_supportedEntryPoints",
-    "eth_getUserOperationByHash",
-    "eth_getUserOperationReceipt",
-    //pimlico
-    "eth_getUserOperationGasPrice",
-    "pimlico_getUserOperationGasPrice",
-    "eth_getUserOperationStatus",
-    "pimlico_getUserOperationStatus",
-    "eth_sendCompressedUserOperation",
-    "pimlico_sendCompressedUserOperation",
-] as const;
-
-/**
- * Check if RPC method is for bundler.
- * @param method
- * @returns true if bundler rpc method
- */
-export function isBundlerRpcMethod(method: string): method is BundlerRpcMethod {
-    return bundlerRpcMethods.includes(method as any);
-}
-
 /**
  * Local bundler config
  * @field entryPoint contract address
@@ -79,7 +53,7 @@ export function isBundlerRpcMethod(method: string): method is BundlerRpcMethod {
  * @field minBalance for topup trigger
  * @field targetBalance for topup
  */
-export type LocalBundlerConfig = ClientConfig<Transport, Chain, Account> & {
+export type BundlerBackendConfig = ClientConfig<Transport, Chain, Account> & {
     /** EntryPoint address (only v0.7 supported) */
     entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
     /** EntryPoint simulations addres (only v0.7 supported) */
@@ -99,8 +73,8 @@ export type LocalBundlerConfig = ClientConfig<Transport, Chain, Account> & {
  * local testing or to get a minimal in-memory ERC4337 solution.
  * Needs an account to submit transactions.
  */
-export function createLocalBundlerClient(
-    parameters: LocalBundlerConfig,
+export function createBundlerBackend(
+    parameters: BundlerBackendConfig,
 ): PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE> {
     const { key = "public", name = "Local Bundler Client" } = parameters;
 
@@ -117,7 +91,7 @@ export function createLocalBundlerClient(
         name,
         type: "bundlerClient",
     }) as unknown as PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE>;
-    client.request = createLocalBundlerEIP1193Request({ ...parameters, request: client.request });
+    client.request = createBundlerBackendEIP1193Request({ ...parameters, request: client.request });
 
     return client.extend(bundlerActions(parameters.entryPoint)).extend(pimlicoBundlerActions(parameters.entryPoint));
 }
@@ -129,8 +103,8 @@ export function createLocalBundlerClient(
  * Needs an account to submit transactions.
  * Account is **assumed** to have unlimited funding.
  */
-export function createLocalBundlerEIP1193Request(
-    parameters: Omit<LocalBundlerConfig, "key" | "name"> & { request: EIP1193RequestFn },
+export function createBundlerBackendEIP1193Request(
+    parameters: Omit<BundlerBackendConfig, "key" | "name"> & { request: EIP1193RequestFn },
 ): EIP1193RequestFn {
     const entryPointVersion = getEntryPointVersion(parameters.entryPoint);
     if (entryPointVersion != "v0.7" && entryPointVersion != "v0.6") {

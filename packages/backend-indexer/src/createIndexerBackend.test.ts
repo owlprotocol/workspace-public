@@ -19,7 +19,7 @@ import {
     ethTransactionReceiptResource,
     ethTransactionResource,
 } from "@owlprotocol/eth-firebase/admin";
-import { createIndexerPublicClient } from "./createIndexerClient.js";
+import { createIndexerBackend } from "./createIndexerBackend.js";
 import { port } from "./test/constants.js";
 
 /**
@@ -68,7 +68,7 @@ describe("createIndexerClient.test.ts", function () {
             transport,
         });
 
-        publicIndexerClient = await createIndexerPublicClient({ chain: localhost, transport });
+        publicIndexerClient = await createIndexerBackend({ chain: localhost, transport });
 
         walletClient = createWalletClient({
             chain: localhost,

@@ -43,10 +43,9 @@ import { updateStateForLog } from "./controllers/updateStateForLog.js";
  * @param sdk ethBlockResource, ethTransactionResource, ethTransactionReceiptResource, ethLogResource to read/write from firebase cache
  * @returns same client but with overriden actions
  */
-export async function createIndexerPublicClient<
-    transport extends Transport,
-    chain extends Chain | undefined = undefined,
->(parameters: PublicClientConfig<transport, chain> & { chainId?: number }): Promise<PublicClient<transport, chain>> {
+export async function createIndexerBackend<transport extends Transport, chain extends Chain | undefined = undefined>(
+    parameters: PublicClientConfig<transport, chain> & { chainId?: number },
+): Promise<PublicClient<transport, chain>> {
     //TODO: Override getTransaction This does not return same data as receipt
     const { key = "public", name = "Indexer Public Client" } = parameters;
 
@@ -56,7 +55,7 @@ export async function createIndexerPublicClient<
         name,
         type: "publicClient",
     });
-    client.request = await createIndexerEIP1193Request({
+    client.request = await createIndexerBackendEIP1193Request({
         request: client.request,
         chain: parameters.chain,
         chainId: parameters.chainId,
@@ -95,7 +94,7 @@ export async function createIndexerPublicClient<
  * @param resources ethBlockResource, ethTransactionResource, ethTransactionReceiptResource, ethLogResource to read/write from firebase cache
  * @returns same client but with overriden actions
  */
-export async function createIndexerEIP1193Request(parameters: {
+export async function createIndexerBackendEIP1193Request(parameters: {
     request: EIP1193RequestFn<PublicRpcSchema>;
     chain?: Chain;
     chainId?: number;

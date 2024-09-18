@@ -5,10 +5,10 @@
   },
   "emulators": {
     "firestore": {
-      "port": 8101
+      "port": 8102
     },
     "hub": {
-      "port": 8201
+      "port": 8202
     },
     "singleProjectMode": true
   }
