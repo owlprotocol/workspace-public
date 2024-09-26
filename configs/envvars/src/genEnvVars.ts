@@ -59,6 +59,8 @@ const README_ENVVARS: EnvVarDef[] = [
 ];
 //Intercom config
 const INTERCOM_ENVVARS: EnvVarDef[] = [{ name: "INTERCOM_APP_ID", platform: "browser", defaultValue: "ndx9cj0b" }];
+//Fathom config
+const FATHOM_ENVVARS: EnvVarDef[] = [{ name: "FATHOM_SITE_ID", platform: "browser", defaultValue: "HXLIOEAX" }];
 //Resend config
 const RESEND_ENVVARS: EnvVarDef[] = [
     { name: "RESEND_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
@@ -219,6 +221,7 @@ export const ENVVARS: EnvVarDef[] = [
     ...FIREBASE_ENVVARS,
     ...GCLOUD_ENVVARS,
     ...INTERCOM_ENVVARS,
+    ...FATHOM_ENVVARS,
     ...SHOPIFY_ENVVARS,
     ...BLOCKCHAIN_ENVVARS,
     ...INDEXER_ENVVARS,
