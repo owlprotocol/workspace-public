@@ -17,6 +17,9 @@ importers:
       dotenv-vault:
         specifier: 1.25.0
         version: 1.25.0(@swc/core@1.6.5)(@types/node@22.5.1)(typescript@5.4.5)
+      firebase-tools:
+        specifier: ^13.16.0
+        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)
       husky:
         specifier: ^7.0.4
         version: 7.0.4
