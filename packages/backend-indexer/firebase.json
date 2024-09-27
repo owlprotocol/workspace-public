@@ -10,6 +10,9 @@
     "hub": {
       "port": 8203
     },
+    "ui": {
+      "enabled": false
+    },
     "singleProjectMode": true
   }
 }

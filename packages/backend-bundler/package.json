@@ -44,9 +44,9 @@
     "lint:fix": "eslint --fix 'src/**/*.ts'",
     "lint:staged": "lint-staged",
     "madge": "madge src/index.ts -c",
-    "test": "firebase emulators:exec --only firestore --project demo-owl-protocol 'pnpm run test:ci'",
+    "test": "firebase emulators:exec --project demo-owl-protocol 'pnpm run test:ci'",
     "test:ci": "vitest --run",
-    "test:watch": "firebase emulators:exec --only firestore --project demo-owl-protocol 'vitest'",
+    "test:watch": "firebase emulators:exec --project demo-owl-protocol 'vitest'",
     "tsc": "tsc",
     "tsc:trace": "tsc --generateTrace lib/trace && analyze-trace lib/trace",
     "tsc:watch": "tsc -w"
