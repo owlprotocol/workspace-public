@@ -579,6 +579,79 @@ importers:
         specifier: ^1.4.0
         version: 1.6.0(@types/node@20.14.8)
 
+  packages/chains-deploy:
+    dependencies:
+      '@latticexyz/common':
+        specifier: 2.0.9
+        version: 2.0.9(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.23.8)
+      '@owlprotocol/chains':
+        specifier: workspace:*
+        version: link:../chains
+      '@owlprotocol/contracts-account-abstraction':
+        specifier: workspace:*
+        version: link:../contracts-account-abstraction
+      '@owlprotocol/contracts-create2factory':
+        specifier: workspace:*
+        version: link:../contracts-create2factory
+      '@owlprotocol/contracts-diamond':
+        specifier: workspace:*
+        version: link:../contracts-diamond
+      '@owlprotocol/core-firebase':
+        specifier: workspace:*
+        version: link:../core-firebase
+      '@owlprotocol/envvars':
+        specifier: workspace:*
+        version: link:../../configs/envvars
+      '@owlprotocol/viem-utils':
+        specifier: workspace:*
+        version: link:../viem-utils
+      viem:
+        specifier: 2.9.20
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.23.8)
+    devDependencies:
+      '@owlprotocol/esbuild-config':
+        specifier: workspace:*
+        version: link:../../configs/esbuild-config
+      '@owlprotocol/eslint-config':
+        specifier: workspace:*
+        version: link:../../configs/eslint-config
+      '@owlprotocol/prettier-config':
+        specifier: workspace:*
+        version: link:../../configs/prettier-config
+      '@owlprotocol/tsconfig':
+        specifier: workspace:*
+        version: link:../../configs/tsconfig
+      '@types/node':
+        specifier: ^20.11.10
+        version: 20.14.8
+      '@typescript/analyze-trace':
+        specifier: ^0.10.1
+        version: 0.10.1
+      depcheck:
+        specifier: ^1.4.7
+        version: 1.4.7
+      lint-staged:
+        specifier: ^11.2.6
+        version: 11.2.6
+      madge:
+        specifier: ^5.0.2
+        version: 5.0.2
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+      vite:
+        specifier: ^5.1.6
+        version: 5.3.1(@types/node@20.14.8)
+      vitest:
+        specifier: ^1.4.0
+        version: 1.6.0(@types/node@20.14.8)
+
   packages/clients:
     dependencies:
       '@owlprotocol/envvars':
