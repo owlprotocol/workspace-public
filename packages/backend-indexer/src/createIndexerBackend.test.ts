@@ -62,7 +62,7 @@ describe("createIndexerClient.test.ts", function () {
     let walletClient: WalletClient<Transport, Chain>;
 
     beforeAll(async () => {
-        const transport = http(`http://127.0.0.1:${port}/1`);
+        const transport = http(`http://127.0.0.1:${port}`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,
