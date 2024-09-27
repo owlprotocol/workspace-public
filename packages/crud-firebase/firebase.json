@@ -7,11 +7,15 @@
     "rules": "storage.rules"
   },
   "emulators": {
-    "firestore": {
+    "hub": {
       "port": 8100
     },
-    "hub": {
+    "logging": {
       "port": 8200
+    },
+    "firestore": {
+      "port": 8300,
+      "websocketPort": 8400
     },
     "ui": {
       "enabled": false

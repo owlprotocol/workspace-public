@@ -4,11 +4,15 @@
     "indexes": "firestore.indexes.json"
   },
   "emulators": {
-    "firestore": {
+    "hub": {
       "port": 8102
     },
-    "hub": {
+    "logging": {
       "port": 8202
+    },
+    "firestore": {
+      "port": 8302,
+      "websocketPort": 8402
     },
     "ui": {
       "enabled": false
