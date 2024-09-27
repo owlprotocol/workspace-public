@@ -48,7 +48,7 @@ describe.skip("facets.test.ts", function () {
     let walletClient: WalletClient<Transport, Chain, Account>;
 
     beforeAll(async () => {
-        transport = http(`http://127.0.0.1:${port}/1`);
+        transport = http(`http://127.0.0.1:${port}`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,

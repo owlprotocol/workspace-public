@@ -25,7 +25,7 @@ describe("index.test.ts", function () {
 
     beforeEach(async () => {
         //Does NOT work with ganache
-        const httpTransport = http(`http://127.0.0.1:${port}/1`);
+        const httpTransport = http(`http://127.0.0.1:${port}`);
         const provider = httpTransport({ chain: localhost, retryCount: 0 });
 
         //We override the transport to always return nonce = 0
