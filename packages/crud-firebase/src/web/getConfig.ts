@@ -95,9 +95,14 @@ export function getFirestoreInitialized(app: FirebaseApp, settings: FirestoreSet
             }
         }
         const firestore = initializeFirestore(app, settings);
+        const host = process.env.FIRESTORE_EMULATOR_HOST ?? "127.0.0.1:18100";
+        const [hostname, hostportStr] = host.split(":", 2);
+
+        const hostport = parseInt(hostportStr);
+
         //Initialize Emulator
         if (NODE_ENV !== "production" && NODE_ENV !== "staging") {
-            connectFirestoreEmulator(firestore, "127.0.0.1", 18080);
+            connectFirestoreEmulator(firestore, hostname, hostport);
         }
         console.debug("Initialized Firebase Firestore", settings);
         return firestore;
@@ -105,6 +110,17 @@ export function getFirestoreInitialized(app: FirebaseApp, settings: FirestoreSet
         //console.debug(error);
         return getFirestore(app);
     }
+}
+
+export function getFirestoreSettings(firestore: Firestore) {
+    //@ts-expect-error
+    const host = firestore._settings.host as string;
+    //@ts-expect-error
+    const projectId = firestore._databaseId.projectId as string;
+    //@ts-expect-error
+    const databaseId = firestore._databaseId.database as string;
+
+    return { host, projectId, databaseId };
 }
 
 const defaultAuthSettings = {

@@ -1,10 +1,10 @@
-import { getFirebaseApp } from "./getConfig.js";
-import { DEFAULT_FIRESTORE_EMULATOR_HOST } from "../common.js";
+import { getFirebaseApp, getFirestoreSettings } from "./getConfig.js";
 
 export const { firebaseApp, firestore, auth, storage, config } = getFirebaseApp();
 
-export const projectUrl = `http://${DEFAULT_FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/${config.projectId}/databases/(default)/documents`;
-
 export function deleteEmulatorData(): Promise<Response> {
-    return fetch(projectUrl, { method: "DELETE" });
+    const { host, projectId, databaseId } = getFirestoreSettings(firestore);
+
+    const url = `http://${host}/emulator/v1/projects/${projectId}/databases/${databaseId}/documents`;
+    return fetch(url, { method: "DELETE" });
 }

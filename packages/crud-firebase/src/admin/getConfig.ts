@@ -108,6 +108,20 @@ export function getFirestoreInitialized(app: App, settings: FirestoreSettings = 
     }
 }
 
+export function getFirestoreSettings(firestore: Firestore) {
+    //@ts-expect-error
+    const hostname = firestore._settings.servicePath as string;
+    //@ts-expect-error
+    const hostport = firestore._settings.port as number;
+    const host = `${hostname}:${hostport}`;
+    //@ts-expect-error
+    const projectId = firestore._projectId as string;
+    //@ts-expect-error
+    const databaseId = firestore._databaseId as string;
+
+    return { host, hostname, hostport, projectId, databaseId };
+}
+
 /**
  * Get default auth
  */
