@@ -45,7 +45,7 @@ describe.skip("SimpleAccount.test.ts", function () {
     // let verifyingPaymaster: Address;
 
     beforeAll(async () => {
-        transport = http(`http://127.0.0.1:${port}/1`);
+        transport = http(`http://127.0.0.1:${port}`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,

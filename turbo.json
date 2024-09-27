@@ -60,23 +60,11 @@
       "cache": false,
       "outputs": []
     },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
     "clean": {
       "cache": false
     },
-    "start": {
-      "cache": false,
-      "persistent": true
-    },
     "test": {
       "dependsOn": ["build", "^test"],
-      "outputs": []
-    },
-    "test-integration": {
-      "dependsOn": ["build"],
       "outputs": []
     },
     "lint": {
@@ -87,18 +75,6 @@
       "outputs": []
     },
     "lint:staged": {
-      "cache": false,
-      "outputs": []
-    },
-    "deploy": {
-      "cache": false,
-      "outputs": []
-    },
-    "node": {
-      "cache": false,
-      "outputs": []
-    },
-    "serve": {
       "cache": false,
       "outputs": []
     }

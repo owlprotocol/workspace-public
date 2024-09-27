@@ -37,6 +37,7 @@
     "@changesets/cli": "^2.26.2",
     "depcheck": "^1.4.7",
     "dotenv-vault": "1.25.0",
+    "firebase-tools": "^13.16.0",
     "husky": "^7.0.4",
     "rimraf": "^3.0.2",
     "syncpack": "^12.3.3",
