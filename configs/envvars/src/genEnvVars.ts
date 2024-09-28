@@ -30,15 +30,19 @@ const DFNS_ENVVARS: EnvVarDef[] = [
 //Firebase config (admin & web sdks)
 const FIREBASE_ENVVARS: EnvVarDef[] = [
     { name: "FIREBASE_MOCK", platform: "neutral", defaultValue: "true", enumValues: ["true", "false"] },
-    { name: "FIREBASE_API_KEY", platform: "neutral" },
-    { name: "FIREBASE_AUTH_DOMAIN", platform: "neutral" },
+    // Isomorphic SDK (both web & admin)
     { name: "FIREBASE_PROJECT_ID", platform: "neutral", defaultValue: "owl-protocol" },
-    { name: "FIREBASE_APP_ID", platform: "neutral", defaultValue: "owl-protocol" },
-    { name: "FIREBASE_MEASUREMENT_ID", platform: "neutral" },
-    { name: "FIREBASE_SERVICE_EMAIL", platform: "node" },
-    { name: "FIREBASE_PRIVATE_KEY", platform: "node" },
     { name: "FIREBASE_DATABASE_URL", platform: "neutral" },
     { name: "FIREBASE_STORAGE_BUCKET", platform: "neutral", defaultValue: "owl-protocol" },
+    // Web SDK
+    { name: "FIREBASE_APP_ID", platform: "neutral", defaultValue: "owl-protocol" },
+    { name: "FIREBASE_API_KEY", platform: "neutral" },
+    { name: "FIREBASE_AUTH_DOMAIN", platform: "neutral" },
+    { name: "FIREBASE_MEASUREMENT_ID", platform: "neutral" },
+    // Admin SDK
+    { name: "FIREBASE_SERVICE_EMAIL", platform: "node" },
+    { name: "FIREBASE_PRIVATE_KEY", platform: "node" },
+    // Caching
     { name: "FIREBASE_LOCAL_CACHE_SIZE", platform: "neutral", defaultValue: "-1" },
     {
         name: "FIREBASE_LOCAL_CACHE_MANAGER",
@@ -46,6 +50,13 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
         defaultValue: "MEMORY",
         enumValues: ["MEMORY", "SINGLE_TAB", "MULTIPLE_TAB"],
     },
+    // Emulator (auto-set by emulator or can be overwritten)
+    // https://firebase.google.com/docs/emulator-suite/connect_firestore#admin_sdks
+    { name: "FIRESTORE_EMULATOR_HOST", platform: "neutral" },
+    // https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks
+    { name: "FIREBASE_AUTH_EMULATOR_HOST", platform: "neutral" },
+    // https://firebase.google.com/docs/emulator-suite/connect_storage#admin_sdks
+    { name: "FIREBASE_STORAGE_EMULATOR_HOST", platform: "neutral" }
 ];
 
 //GCloud config
