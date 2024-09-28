@@ -109,7 +109,7 @@ export function getFirebaseApp(): {
     auth: Auth;
     storage: Storage;
 } {
-    let firebaseApp: App
+    let firebaseApp: App;
     let firestore: Firestore;
     let auth: Auth;
     let storage: Storage;
@@ -122,9 +122,11 @@ export function getFirebaseApp(): {
             //@ts-expect-error admin sdk only supports envvars
             process.env["FIRESTORE_EMULATOR_HOST"] = FIRESTORE_EMULATOR_HOST ?? DEFAULT_FIRESTORE_EMULATOR_HOST;
             //@ts-expect-error admin sdk only supports envvars
-            process.env["FIREBASE_AUTH_EMULATOR_HOST"] = FIREBASE_AUTH_EMULATOR_HOST ?? DEFAULT_FIREBASE_AUTH_EMULATOR_HOST;
+            process.env["FIREBASE_AUTH_EMULATOR_HOST"] =
+                FIREBASE_AUTH_EMULATOR_HOST ?? DEFAULT_FIREBASE_AUTH_EMULATOR_HOST;
             //@ts-expect-error admin sdk only supports envvars
-            process.env["FIREBASE_STORAGE_EMULATOR_HOST"] = FIREBASE_STORAGE_EMULATOR_HOST ?? DEFAULT_FIREBASE_STORAGE_EMULATOR_HOST;
+            process.env["FIREBASE_STORAGE_EMULATOR_HOST"] =
+                FIREBASE_STORAGE_EMULATOR_HOST ?? DEFAULT_FIREBASE_STORAGE_EMULATOR_HOST;
         }
 
         // Initialize App
@@ -134,7 +136,7 @@ export function getFirebaseApp(): {
         // NOTE: storage.apiEndponit stores the prefix of each file's publicUrl
         storage = getStorage(firebaseApp);
 
-        return { firebaseApp, firestore, auth, storage }
+        return { firebaseApp, firestore, auth, storage };
     } else {
         // Existing App
         firebaseApp = getApp();
@@ -142,7 +144,7 @@ export function getFirebaseApp(): {
         auth = getAuth(firebaseApp);
         storage = getStorage(firebaseApp);
 
-        return { firebaseApp, firestore, auth, storage }
+        return { firebaseApp, firestore, auth, storage };
     }
 }
 

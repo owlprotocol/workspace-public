@@ -34,7 +34,11 @@ import {
     // browserLocalPersistence,
 } from "firebase/auth";
 import { getStorage, connectStorageEmulator, FirebaseStorage } from "firebase/storage";
-import { DEFAULT_FIREBASE_AUTH_EMULATOR_HOST, DEFAULT_FIREBASE_STORAGE_EMULATOR_HOST, DEFAULT_FIRESTORE_EMULATOR_HOST } from "../common.js";
+import {
+    DEFAULT_FIREBASE_AUTH_EMULATOR_HOST,
+    DEFAULT_FIREBASE_STORAGE_EMULATOR_HOST,
+    DEFAULT_FIRESTORE_EMULATOR_HOST,
+} from "../common.js";
 
 function getFirebaseConfig() {
     let firebaseConfig: FirebaseOptions = {};
@@ -109,8 +113,8 @@ function initializeFirestoreForEnv(app: FirebaseApp, settings: FirestoreSettings
 // for dependencies between Web / React Native (AsyncStorage)
 // Conclusion => not critical
 // const defaultAuthSettings = {
-    // persistence: browserLocalPersistence,
-    // popupRedirectResolver: browserPopupRedirectResolver,
+// persistence: browserLocalPersistence,
+// popupRedirectResolver: browserPopupRedirectResolver,
 // };
 
 /**
@@ -129,7 +133,7 @@ function initializeAuthForEnv(app: FirebaseApp, settings: Dependencies = {}): Au
 
         if (!host.startsWith("http")) {
             //Hack: Emulator sets HOST without `http://`
-            host = `http://${host}`
+            host = `http://${host}`;
         }
         connectAuthEmulator(auth, host);
     }
@@ -160,30 +164,25 @@ function initializeStorageForEnv(app: FirebaseApp): FirebaseStorage {
 /**
  * Get singleton Firebase app, and underlying sdk modules
  */
-export function getFirebaseApp(settings?: {
-    firestore?: FirestoreSettings
-    auth?: Dependencies,
-}): {
+export function getFirebaseApp(settings?: { firestore?: FirestoreSettings; auth?: Dependencies }): {
     firebaseApp: FirebaseApp;
     firestore: Firestore;
     auth: Auth;
     storage: FirebaseStorage;
 } {
-
-    let firebaseApp: FirebaseApp
+    let firebaseApp: FirebaseApp;
     let firestore: Firestore;
     let auth: Auth;
     let storage: FirebaseStorage;
-
 
     if (getApps().length === 0) {
         // Initialize App
         const config = getFirebaseConfig();
         firebaseApp = initializeApp(config);
-        firestore = initializeFirestoreForEnv(firebaseApp, settings?.firestore ?? {})
-        auth = initializeAuthForEnv(firebaseApp, settings?.auth ?? {})
-        storage = initializeStorageForEnv(firebaseApp)
-        return { firebaseApp, firestore, auth, storage }
+        firestore = initializeFirestoreForEnv(firebaseApp, settings?.firestore ?? {});
+        auth = initializeAuthForEnv(firebaseApp, settings?.auth ?? {});
+        storage = initializeStorageForEnv(firebaseApp);
+        return { firebaseApp, firestore, auth, storage };
     } else {
         // Existing App
         firebaseApp = getApp();
@@ -191,10 +190,9 @@ export function getFirebaseApp(settings?: {
         auth = getAuth(firebaseApp);
         storage = getStorage(firebaseApp);
 
-        return { firebaseApp, firestore, auth, storage }
+        return { firebaseApp, firestore, auth, storage };
     }
 }
-
 
 /**
  * Get firestore instance settings for usage in custom api calls
