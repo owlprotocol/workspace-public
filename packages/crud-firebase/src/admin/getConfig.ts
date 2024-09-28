@@ -1,11 +1,14 @@
 import {
     FIREBASE_AUTH_DOMAIN,
+    FIREBASE_AUTH_EMULATOR_HOST,
     FIREBASE_DATABASE_URL,
     FIREBASE_MOCK,
     FIREBASE_PRIVATE_KEY,
     FIREBASE_PROJECT_ID,
     FIREBASE_SERVICE_EMAIL,
     FIREBASE_STORAGE_BUCKET,
+    FIREBASE_STORAGE_EMULATOR_HOST,
+    FIRESTORE_EMULATOR_HOST,
     GCLOUD_PROJECT,
     NODE_ENV,
 } from "@owlprotocol/envvars";
@@ -57,57 +60,98 @@ export function getFirebaseConfig() {
             projectId: FIREBASE_PROJECT_ID.startsWith("demo-") ? FIREBASE_PROJECT_ID : `demo-${FIREBASE_PROJECT_ID}`,
             storageBucket: FIREBASE_STORAGE_BUCKET,
         };
-        // Connect to emulator (if test). Do NOT use localhost as breaks in CI
-        process.env["FIRESTORE_EMULATOR_HOST"] = DEFAULT_FIRESTORE_EMULATOR_HOST;
-        process.env["FIREBASE_STORAGE_EMULATOR_HOST"] = DEFAULT_FIREBASE_STORAGE_EMULATOR_HOST;
-        process.env["FIREBASE_AUTH_EMULATOR_HOST"] = DEFAULT_FIREBASE_AUTH_EMULATOR_HOST;
     }
 
     return firebaseConfig;
 }
 
 /**
- * Get default app, initialize or get current.
+ * Calls `initializeApp` with custom overrides for settings
+ * @warning Can only be called **once** (see `initializeApp` docs)
+ * @returns firebase app instance
  */
-export function getAppInitialized(config?: AppOptions): App {
-    if (getApps().length === 0) {
-        if (GCLOUD_PROJECT) {
-            console.debug(
-                "Initializing Firebase App in Google/Emulator environment using Default Credentials (ignoring envvars). Read more https://firebase.google.com/docs/admin/setup#initialize-sdk",
-            );
-            const app = initializeApp();
-            return app;
-        } else {
-            // This is only relevant when not being run in Google / Emulator (eg. TRPC Express)
-            // TODO: Note this assumes the Emulator is on 18080 and sets the environment var
-            console.debug(
-                "Initializing Firebase App in non-Google environment using Service Account envvars/Emulator defaults. Read more https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments",
-            );
-            if (!config) {
-                throw new Error(`GCLOUD_PROJECT undefined, config must be defined`);
-            }
-            const app = initializeApp(config);
-            return app;
-        }
+export function initializeAppForEnv(): App {
+    if (GCLOUD_PROJECT) {
+        console.debug(
+            "Initializing Firebase App in Google/Emulator environment using Default Credentials (ignoring envvars). Read more https://firebase.google.com/docs/admin/setup#initialize-sdk",
+        );
+        const app = initializeApp();
+        return app;
+    } else {
+        // This is only relevant when not being run in Google / Emulator (eg. TRPC Express)
+        console.debug(
+            "Initializing Firebase App in non-Google environment using Service Account envvars/Emulator defaults. Read more https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments",
+        );
+        const app = initializeApp(getFirebaseConfig());
+        return app;
     }
-
-    return getApp();
 }
 
 /**
- * Get default firestore
+ * Calls `initializeFirestore` with custom overrides for settings
+ * @warning Can only be called **once** (see `initializeFirestore` docs)
+ * @param app
+ * @param settings
+ * @returns firestore instance
  */
-export function getFirestoreInitialized(app: App, settings: FirestoreSettings = {}): Firestore {
-    try {
-        const firestore = initializeFirestore(app, settings);
-        firestore.settings({ ignoreUndefinedProperties: true });
-        console.debug("Initialized Firebase Firestore", { settings });
-        return firestore;
-    } catch (error) {
-        return getFirestore(app);
+function initializeFirestoreForEnv(app: App, settings: FirestoreSettings = {}): Firestore {
+    const firestore = initializeFirestore(app, settings);
+    firestore.settings({ ignoreUndefinedProperties: true });
+    return firestore;
+}
+
+/**
+ * Get singleton Firebase app, and underlying sdk modules
+ */
+export function getFirebaseApp(): {
+    firebaseApp: App;
+    firestore: Firestore;
+    auth: Auth;
+    storage: Storage;
+} {
+    let firebaseApp: App
+    let firestore: Firestore;
+    let auth: Auth;
+    let storage: Storage;
+
+    if (getApps().length === 0) {
+        // Override envvars if needed
+        // Admin SDK can only be connected to emulator using envvars
+        // FIREBASE_MOCK envvar is used as a flag to set *_EMULATOR_HOST envvars to default values if needed
+        if (FIREBASE_MOCK === "true") {
+            //@ts-expect-error admin sdk only supports envvars
+            process.env["FIRESTORE_EMULATOR_HOST"] = FIRESTORE_EMULATOR_HOST ?? DEFAULT_FIRESTORE_EMULATOR_HOST;
+            //@ts-expect-error admin sdk only supports envvars
+            process.env["FIREBASE_AUTH_EMULATOR_HOST"] = FIREBASE_AUTH_EMULATOR_HOST ?? DEFAULT_FIREBASE_AUTH_EMULATOR_HOST;
+            //@ts-expect-error admin sdk only supports envvars
+            process.env["FIREBASE_STORAGE_EMULATOR_HOST"] = FIREBASE_STORAGE_EMULATOR_HOST ?? DEFAULT_FIREBASE_STORAGE_EMULATOR_HOST;
+        }
+
+        // Initialize App
+        firebaseApp = initializeAppForEnv();
+        firestore = initializeFirestoreForEnv(firebaseApp);
+        auth = getAuth(firebaseApp);
+        // NOTE: storage.apiEndponit stores the prefix of each file's publicUrl
+        storage = getStorage(firebaseApp);
+
+        return { firebaseApp, firestore, auth, storage }
+    } else {
+        // Existing App
+        firebaseApp = getApp();
+        firestore = getFirestore(firebaseApp);
+        auth = getAuth(firebaseApp);
+        storage = getStorage(firebaseApp);
+
+        return { firebaseApp, firestore, auth, storage }
     }
 }
 
+/**
+ * Get firestore instance settings for usage in custom api calls
+ * Currently used to clear the emulator
+ * @param firestore
+ * @returns host, projectId, databaseId
+ */
 export function getFirestoreSettings(firestore: Firestore) {
     //@ts-expect-error
     const hostname = firestore._settings.servicePath as string;
@@ -120,29 +164,4 @@ export function getFirestoreSettings(firestore: Firestore) {
     const databaseId = firestore._databaseId as string;
 
     return { host, hostname, hostport, projectId, databaseId };
-}
-
-/**
- * Get default auth
- */
-export function getAuthInitialized(app: App): Auth {
-    return getAuth(app);
-}
-
-export function getFirebaseApp(): {
-    firebaseApp: App;
-    firestore: Firestore;
-    auth: Auth;
-    storage: Storage;
-} {
-    //Initialize firestore
-    const firebaseApp = GCLOUD_PROJECT ? getAppInitialized() : getAppInitialized(getFirebaseConfig());
-    const firestore = getFirestoreInitialized(firebaseApp);
-    const auth = getAuthInitialized(firebaseApp);
-
-    //No way to tell if storage is initialized
-    // NOTE: storage.apiEndponit stores the prefix of each file's publicUrl
-    const storage = getStorage(firebaseApp);
-
-    return { firebaseApp, firestore, auth, storage };
 }
