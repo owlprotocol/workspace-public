@@ -95,13 +95,13 @@ jobs:
       - run: pnpm run lint
         name: Lint All
       ### Release ###
-      - if: ${{ github.ref == 'refs/heads/main' }}
+      - if: ${{ github.ref == 'refs/heads/develop' }}
         name: Set publishing config
         run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
       # Create Release PR
-      - if: ${{ github.ref == 'refs/heads/main' }}
+      - if: ${{ github.ref == 'refs/heads/develop' }}
         name: Create and publish versions
         uses: changesets/action@v1
         with:
