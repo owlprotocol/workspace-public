@@ -5,6 +5,12 @@
       "dependencies": ["$LOCAL"],
       "dependencyTypes": ["prod", "dev"],
       "pinVersion": "workspace:*"
+    },
+    {
+      "dependencies": [
+        "@openzeppelin/contracts"
+      ],
+      "isIgnored": true
     }
   ]
 }
