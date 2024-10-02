@@ -1,5 +1,11 @@
 # @owlprotocol/backend-wallet
 
+## 3.1.3
+
+### Patch Changes
+
+-   ae14867: backend packages make public
+
 ## 3.1.2
 
 ### Patch Changes
