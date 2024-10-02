@@ -11,6 +11,28 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "lib/**", "src/envvars.ts", "src/envvars.browser.ts"]
     },
+    "@owlprotocol/contracts-account-abstraction#build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        "artifacts/**",
+        "dist/**",
+        "lib/**",
+        "src/artifacts/**",
+        "src/zsol/**",
+        "docs-contracts-reference/**"
+      ]
+    },
+    "@owlprotocol/contracts-algebra-integral#build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        "artifacts/**",
+        "dist/**",
+        "lib/**",
+        "src/artifacts/**",
+        "src/zsol/**",
+        "docs-contracts-reference/**"
+      ]
+    },
     "@owlprotocol/contracts-create2factory#build": {
       "dependsOn": ["^build"],
       "outputs": [
@@ -33,7 +55,7 @@
         "docs-contracts-reference/**"
       ]
     },
-    "@owlprotocol/contracts-account-abstraction#build": {
+    "@owlprotocol/contracts-hyperlane#build": {
       "dependsOn": ["^build"],
       "outputs": [
         "artifacts/**",
