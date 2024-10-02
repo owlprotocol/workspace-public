@@ -1,5 +1,14 @@
 # @owlprotocol/eth-firebase
 
+## 3.1.2
+
+### Patch Changes
+
+-   951cfb5: Test our changeset/action
+-   Updated dependencies [951cfb5]
+    -   @owlprotocol/crud-firebase@3.1.2
+    -   @owlprotocol/zod-sol@3.1.2
+
 ## 3.1.1
 
 ### Patch Changes
