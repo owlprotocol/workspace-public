@@ -1,5 +1,14 @@
 # @owlprotocol/chains
 
+## 3.1.2
+
+### Patch Changes
+
+-   951cfb5: Test our changeset/action
+-   Updated dependencies [951cfb5]
+    -   @owlprotocol/envvars@3.1.2
+    -   @owlprotocol/eth-firebase@3.1.2
+
 ## 3.1.1
 
 ### Patch Changes

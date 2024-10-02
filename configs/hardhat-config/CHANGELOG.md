@@ -1,5 +1,11 @@
 # @owlprotocol/hardhat-config
 
+## 3.1.2
+
+### Patch Changes
+
+-   951cfb5: Test our changeset/action
+
 ## 3.1.1
 
 ### Patch Changes
