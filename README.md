@@ -132,5 +132,44 @@ Other packages used by Owl Protocol.
 | [utils]                                               | ![utils-npm]                     |                                                         |
 | [dfns-sdk-mock]                                       | ![dfns-sdk-mock-npm]                     | Mock DFNS SDK for testing                                                         |
 
+
+## Release
+
+The process for releaseing new packages is as follows.
+
+### Create Changeset
+
+> ⚠️ Do **not** manually bump package versions
+
+We first create a changeset markdown file that specifies which packages will be version bumped.
+
+* Create a changeset with `pnpm run changeset:add` this will prompt you on which packages should be version bumped (major, minor, patch).
+* Changeset will create a markdown file in the `.changeset` folder.
+* Commit this markdown file
+* If not on `develop` create a PR to merge
+
+### Consume Changeset
+
+> ⚠️ This should **only** be done on `develop` branch
+
+Once the changeset markdown file is merged into `develop` we will merge into `main` and have the `changeset/action` create a PR for us.
+
+* Create a PR to merge `develop` into `main`
+* Merge the `develop > main` PR
+* A new PR will be created called `chore: update versions` which modifies `package.json` versions, and `CHANGELOG.md` files
+* Merge the `chore: update versions > main` PR
+* CI will now autopublish all necessary packages to [npmjs](https://www.npmjs.com/)
+
+### Merge Develop
+
+**TODO**: This should not be necessary if `develop` was actually forked from `main`?
+
+Finally, update `develop` branch with latest code from `main`
+
+* Update local version `git checkout main && git pull main`
+* Merge diff `git checkout develop && git merge main --strategy-option=theirs`
+* Push changes `git commit . && git push`
+
+
 ## LICENSE
 MIT License
