@@ -1,5 +1,6 @@
 import { z } from "zod";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { fromPairs, map } from "lodash-es";
 import { type ZodForArrayType, type AbiParamArray, zodForAbiParamArray, ArrayType } from "./abiParamArray.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {
@@ -8,7 +9,6 @@ import {
     type ZodForNonTupleType,
     NonTupleType,
 } from "./abiParamNonTuple.js";
-import { fromPairs, map } from "../lodash.js";
 
 //Tuple type (used for structs)
 export type TupleType = "tuple";

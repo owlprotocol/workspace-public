@@ -7,14 +7,33 @@ import { ProjectId } from "./Project.js";
 import { chainIdZod } from "../Network.js";
 
 /**
- * Token attributes/properties as documented
+ * Token attributes as documented
  *  by OpenSea https://docs.opensea.io/docs/metadata-standards
- *  by EIP1155 https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1155.md#erc-1155-metadata-uri-json-schema
  *  by Lens Protocol https://docs.lens.xyz/docs/metadata-standards
  */
 export interface TokenMetadataAttribute {
     /** Name of attribute */
     readonly trait_type?: string;
+    /** Description of attribute */
+    readonly description?: string;
+    /** Value of attribute */
+    readonly value?: any;
+    /** Max value of attribute */
+    readonly max_value?: number;
+    /** Display type on marketplace */
+    readonly display_type?: "number" | "boost_number" | "boost_percentage" | "date" | string;
+    /** Display value */
+    readonly display_value?: string;
+    /** Custom keys */
+    readonly [key: string]: unknown;
+}
+
+/**
+ * Token properties as documented
+ *  by OpenSea https://docs.opensea.io/docs/metadata-standards
+ *  by EIP1155 https://eips.ethereum.org/EIPS/eip-1155#metadata
+ */
+export interface TokenMetadataProperty {
     /** Name of attribute */
     readonly name?: string;
     /** Description of attribute */
@@ -30,15 +49,14 @@ export interface TokenMetadataAttribute {
     /** Custom keys */
     readonly [key: string]: unknown;
 }
+
 /**
- * Token attributes/properties as documented
+ * Token attributes as documented
  *  by OpenSea https://docs.opensea.io/docs/metadata-standards
- *  by EIP1155 https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1155.md#erc-1155-metadata-uri-json-schema
  *  by Lens Protocol https://docs.lens.xyz/docs/metadata-standards
  */
 export const tokenMetadataAttributeZod = z
     .object({
-        name: z.string().describe("name of attribute").optional(),
         trait_type: z.string().describe("name of attribute").optional(),
         description: z.string().describe("description of attribute").optional(),
         value: z.any().describe("value of attribute").optional(),
@@ -48,6 +66,23 @@ export const tokenMetadataAttributeZod = z
     })
     .passthrough()
     .describe("token attribute metadata according to https://docs.opensea.io/docs/metadata-standards");
+
+/**
+ * Token properties as documented
+ *  by EIP1155 https://eips.ethereum.org/EIPS/eip-1155#metadata
+ *  by OpenSea https://docs.opensea.io/docs/metadata-standards
+ */
+export const tokenMetadataPropertyZod = z
+    .object({
+        name: z.string().describe("name of attribute").optional(),
+        description: z.string().describe("description of attribute").optional(),
+        value: z.any().describe("value of attribute").optional(),
+        max_value: z.number().describe("max_value of attribute").optional(),
+        display_type: z.string().describe("display type on marketplace").optional(),
+        display_value: z.string().describe("display value of attribute").optional(),
+    })
+    .passthrough()
+    .describe("token attribute metadata according to https://eips.ethereum.org/EIPS/eip-1155#metadata");
 
 export interface TokenMetadataLocalization {
     //TODO: make read-only
@@ -127,10 +162,10 @@ export interface TokenMetadata {
      */
     readonly attributes?: TokenMetadataAttribute[];
     /**
-     * Asset properties as recommended by ERC1155 standard https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1155.md#erc-1155-metadata-uri-json-schema
+     * Asset properties as recommended by ERC1155 standard https://eips.ethereum.org/EIPS/eip-1155#metadata
      */
     readonly properties?: {
-        [property: string]: TokenMetadataAttribute;
+        [property: string]: TokenMetadataProperty;
     };
     /** Localization info https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1155.md#localization */
     readonly localization?: TokenMetadataLocalization;
@@ -155,7 +190,7 @@ export const tokenMetadataZod = z
         external_url: z.string().describe("Custom link to view item").optional(),
         decimals: z.number().describe("Decimals of token for ERC1155").optional(),
         attributes: z.array(tokenMetadataAttributeZod).describe("Item attributes as array").optional(),
-        properties: z.record(tokenMetadataAttributeZod).describe("Item properties as key-value").optional(),
+        properties: z.record(tokenMetadataPropertyZod).describe("Item properties as key-value").optional(),
         localization: tokenMetadataLocalizationZod.optional(),
     })
     .describe("metadata of a single token")

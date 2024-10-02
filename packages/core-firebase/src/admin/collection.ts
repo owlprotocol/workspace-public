@@ -26,6 +26,10 @@ import {
     projectTokenTemplatePath,
     projectWalletDfnsGroupPath,
     projectWalletSafeGroupPath,
+    projectUserManagedPath,
+    projectUserManagedGroupPath,
+    erc721MintGroupPath,
+    erc721MintPath,
 } from "../collections.js";
 import {
     NetworkDataEncoded,
@@ -36,6 +40,7 @@ import {
     ProjectId,
     ProjectTokenData,
     ProjectTokenTemplateData,
+    ProjectUserManagedData,
     ProjectUserData,
     ProjectUserListData,
     ProjectUserListId,
@@ -48,6 +53,8 @@ import {
     TeamId,
     TeamMemberData,
     UserData,
+    ERC721MintData,
+    NetworkId,
 } from "../models/index.js";
 
 //users
@@ -72,6 +79,13 @@ export const projectApiKeyCol = (collectionId: ProjectId) =>
 export const projectUserColGroup = getColGroupRef<ProjectUserData>(firestore, projectUserGroupPath);
 export const projectUserCol = (collectionId: ProjectId) =>
     getColRef<ProjectUserData>(firestore, projectUserPath(collectionId));
+
+export const projectUserManagedColGroup = getColGroupRef<ProjectUserManagedData>(
+    firestore,
+    projectUserManagedGroupPath,
+);
+export const projectUserManagedCol = (collectionId: ProjectId) =>
+    getColRef<ProjectUserManagedData>(firestore, projectUserManagedPath(collectionId));
 
 export const projectUserListCol = (collectionId: ProjectId) =>
     getColRef<ProjectUserListData>(firestore, projectUserListPath(collectionId));
@@ -111,3 +125,7 @@ export const projectTokenCol = (collectionId: ProjectId) =>
     getColRef<ProjectTokenData>(firestore, projectTokenPath(collectionId));
 export const projectTokenTemplateCol = (collectionId: ProjectId) =>
     getColRef<ProjectTokenTemplateData>(firestore, projectTokenTemplatePath(collectionId));
+
+//networks
+export const erc721MintColGroup = getColGroupRef<ERC721MintData>(firestore, erc721MintGroupPath);
+export const erc721MintCol = (netowrkId: NetworkId) => getColRef<ERC721MintData>(firestore, erc721MintPath(netowrkId));

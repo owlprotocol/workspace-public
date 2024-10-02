@@ -2,20 +2,19 @@ import { Steps, Callout } from "nextra/components";
 import { Screenshot } from "components/screenshot";
 
 # Gasless Transactions
-In this tutorial, you will submit your first fully-gasless transaction from a smart account using the Owl Protocol [ERC4337](https://www.erc4337.io/docs) Account Abstraction API & [permissionless](https://docs.pimlico.io/permissionless)
+In this tutorial, you will submit your first fully-gasless transaction from a smart account using the Owl Protocol [ERC4337](https://www.erc4337.io/docs) Account Abstraction API and [permissionless](https://docs.pimlico.io/permissionless).
 
 You will set up the necessary permissionless clients, create a [user operation](https://www.erc4337.io/docs/understanding-ERC-4337/user-operation) (aka ERC4337 transaction), ask the Owl Protocol verifying paymaster to sponsor it, and then submit it on-chain with the Owl Protocol bundler.
 
 <Steps>
 
-### Tutorials Repository
+### Clone The Repo
 <Callout>
-    The tutorials repository contains a basic `index.ts` file to follow along tutorials as well as the final code of all Owl Protocol tutorials under the `/tutorials` folder.
+    The [tutorials repository](https://github.com/owlprotocol/tutorials.git) contains a basic `index.ts` file to follow along tutorials as well as the final code of all Owl Protocol tutorials under the `/tutorials` folder.
 </Callout>
 
-#### Clone the repo
 
-We have created the Owl Protocol [tutorials repository](https://github.com/owlprotocol/tutorials.git) to quickly get started. It comes set up with Typescript, viem, permissionless, and Owl Protocol SDKs.
+We have created the Owl Protocol [tutorials repository](https://github.com/owlprotocol/tutorials.git) to get you started quickly. It comes set up with Typescript, viem, permissionless, and Owl Protocol SDKs.
 
 ```bash
 git clone https://github.com/owlprotocol/tutorials.git owlprotocol-tutorials
@@ -35,14 +34,14 @@ npm start
 ```
 
 If everything has been set up correctly, you should see something similar to this printed to the console.
-```bash
+```
 Welcome to Owl Protocol!
-API_KEY_SECRET not found! Ensure it\'s correctly set in your .env file.
+API_KEY_SECRET not found! Ensure it's correctly set in your .env file.
 ```
 
 To fix the error you will **need an API Key**.
 
-#### Get Your API Key
+### Get Your API Key
 <Callout type="warning">
   **API Key**
 
@@ -58,7 +57,7 @@ import projectApiKey from "../../public/assets/projectApiKey.png";
 
 <Screenshot src={projectApiKey} alt="projectApiKey" />
 
-### Create the public, paymaster, bundler clients
+### Create The Public, Paymaster, Bundler Clients
 <Callout type="info">
     **Clients** provide access to sets of actions using the [viem](https://viem.sh/docs/clients/intro) library. For example, a **public** client provides access to readable data such as transactions and blocks.
 </Callout>
@@ -70,7 +69,7 @@ To send gasless transactions using ERC4337 Account Abstraction, we will need **3
 
 Let's open up `index.ts`, and add the following to the bottom
 
-```ts copy showLineNumbers
+```ts
 /***** Create Clients *****/
 // The id of the blockchain we wish to connect to, replace this with any
 // chainId supported by Owl Protocol.
@@ -118,18 +117,18 @@ const bundlerClient = createBundlerClient({
 })
 ```
 
-### Create the Smart Wallet
+### Create The Smart Wallet
 <Callout type="info">
     To learn more about different types of wallets check out [Wallets](../learn-wallets.mdx)
 </Callout>
 
-For the purposes of this guide, we will be using [Simple Account](https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/SimpleAccount.sol) as a smart wallet implementation. This is an ERC-4337 wallet controlled by a single owner (eg. Metamask, Owl Developer Wallet).
+For the purposes of this guide, we will be using [Simple Account](https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/SimpleAccount.sol) as a smart wallet implementation. This is an ERC4337 wallet controlled by a single owner (eg. Metamask, Owl Developer Wallet).
 
 #### Create Smart Wallet Owner
 In this tutorial, we'll simply use a private key as the owner.
 
 Add the following to the bottom of `index.ts`
-```ts copy showLineNumbers
+```ts
 /***** Create Smart Wallet Owner *****/
 // Load private key from .env or generate a new one (and save it)
 // Warning: Do NOT use such logic in production, for tutorial purposes ONLY
@@ -151,11 +150,11 @@ const owner = privateKeyToAccount(privateKey)
     A **Smart Account** mimics the interface of a viem [Account](https://viem.sh/docs/accounts/custom) but also extends it with smart wallet specific info such as how to sign (but not send) ERC4337 user operations.
 </Callout>
 
-We now create a **Smart Account**. Use [signerToSimpleSmartAccount](https://docs.pimlico.io/permissionless/reference/accounts/signerToSimpleSmartAccount) from permissionless. We need to specify the `factoryAddress` we are using as well as the global ERC-4337 `entryPoint` address. For the `signer`, we use the `owner` we just created.
+We now create a **Smart Account**. Use [signerToSimpleSmartAccount](https://docs.pimlico.io/permissionless/reference/accounts/signerToSimpleSmartAccount) from permissionless. We need to specify the `factoryAddress` we are using as well as the global ERC4337 `entryPoint` address. For the `signer`, we use the `owner` we just created.
 
 Add the following to the bottom of `index.ts`
 
-```ts copy showLineNumbers
+```ts
 /***** Create Smart Account *****/
 // Simple smart account owned by signer
 const smartAccount = await signerToSimpleSmartAccount(publicClient, {
@@ -174,7 +173,7 @@ Smart account address: https://explorer-testnet.hedwig.build/address/<address>
 ```
 
 <Callout>
-If you visit the address on the block explorer, you might notice that no contract is actually deployed to this address yet. This is because smart accounts are counterfactual, meaning that they are only deployed on-chain the first time you send a transaction through the account.
+If you visit the address on the block explorer, you might notice that no contract is actually deployed to this address yet. This is because smart accounts are counterfactual: they are only deployed on-chain the first time you send a transaction through them.
 </Callout>
 
 #### Create Smart Account Client
@@ -188,7 +187,7 @@ Finally, we specify the `gasPrice` middleware function to fetch the gas price us
 
 Add the following to the bottom of `index.ts`
 
-```ts copy showLineNumbers
+```ts
 /***** Create Smart Account Client *****/
 const smartAccountClient = createSmartAccountClient({
     account: smartAccount,
@@ -204,18 +203,18 @@ const smartAccountClient = createSmartAccountClient({
 })
 ```
 
-### Submit a gasless transaction
+### Submit A Gasless Transaction
 
-Finally, let's submit a transaction from our smart wallet. We will send a transaction to the `0xd8da6bf26964af9d7eed9e03e53415d37aa96045` (vitalik.eth) address with `0x1234` as example `callData`
+Finally, let's submit a transaction from our smart wallet. We will send a transaction to the `0xd8da6bf26964af9d7eed9e03e53415d37aa96045` (vitalik.eth) address with `0x1234` as example `callData`.
 
-Under the hood, the Smart Account Client will build a user operation, request  paymaster sponsorship, sign it with the smart wallet owner's private key, and then submit it to the bundler. The bundler will then query for receipts until it sees the user operation included on-chain.
+Under the hood, the Smart Account Client will build a user operation, request paymaster sponsorship, sign it with the smart wallet owner's private key, and then submit it to the bundler. The bundler will then query for receipts until it sees the user operation included on-chain.
 
-Add the following to the bottom of `index.ts`
+Add the following to the bottom of `index.ts`:
 
-```ts copy showLineNumbers
+```ts
 /***** Submit Gasless Transaction *****/
 const txHash = await smartAccountClient.sendTransaction({
-    to: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045", //vitalik.eth
+    to: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045", // vitalik.eth
     value: 0n,
     data: "0x1234",
 })
@@ -223,7 +222,7 @@ const txHash = await smartAccountClient.sendTransaction({
 console.log(`User operation included: ${blockExplorer}/tx/${txHash}`)
 ```
 
-Let's run this code again with `npm start`. You should see the transaction hash bundling the user operation on-chain printed to the console.
+Let's run this code again with `npm start`. This should output the transaction hash that contains the user operation.
 
 ```txt
 User operation included: https://explorer-testnet.hedwig.build/tx/<hash>
@@ -233,9 +232,9 @@ You can now view the transaction on the blockchain explorer.
 
 ### Summary
 By sending this user operation, you have:
-- Deployed the counterfactual smart account contract
+- Deployed a counterfactual smart account contract
 - Had this newly-deployed smart account verify the private key's signature
-- Made the Owl Protocol verifying paymaster sponsor the user operation's gas fees
+- Sponsored a user operation's gas fees with the Owl Protocol verifying paymaster
 - Executed a simple transaction to `vitalik.eth`'s address
 
 All in a couple lines of code.

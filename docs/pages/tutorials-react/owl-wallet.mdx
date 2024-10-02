@@ -1,0 +1,208 @@
+import { Steps } from "nextra/components";
+
+# Using The Owl Wallet
+
+In this tutorial, you will create a basic React app that lets you connect to an Owl Protocol wallet and send a gasless transaction with a smart account using the Owl Protocol [ERC4337](https://www.erc4337.io/docs) Account Abstraction API, [Wagmi](https://wagmi.sh/) hooks and a [RainbowKit](https://www.rainbowkit.com/) wallet connector.
+
+<Steps>
+
+### Clone The Repo
+
+We have created the Owl Protocol [tutorials-react repository](https://github.com/owlprotocol/tutorials-react.git) to get you started quickly.
+
+```bash
+git clone https://github.com/owlprotocol/tutorials-react.git owlprotocol-tutorials-react
+cd owlprotocol-tutorials-react
+```
+
+Now, let's install the dependencies (we recommend using [pnpm](https://pnpm.io/))
+
+```sh npm2yarn
+npm install
+```
+
+Then, copy the example environment variables. You do not need to change these.
+
+```bash
+cp .env.example .env
+```
+
+The main file we will be working with is `App.tsx`. Let's run `vite` to make sure everything is working
+
+```sh npm2yarn
+npm run dev
+```
+
+### Create A Project On The Owl Dashboard
+
+Owl Wallets are tied to a project. Head to the [Owl Dashboard](https://dashboard.owlprotocol.xyz) to create a project. Note that you can also use the default one created for you. Then, take note of the project id.
+
+### Initialize The Owl Provider
+
+Initialize the Owl Provider in `App.tsx` to enable the Owl Wallet and gasless transactions.
+
+Note that this is already done for you in the starter repository.
+
+This provider is used to interact with our API.
+
+Make sure to also import `@owlprotocol/ui-components/style.css`. This CSS file styles Owl UI components.
+
+```tsx
+import { OwlProvider } from "@owlprotocol/ui-components";
+
+import "./App.css";
+import "@owlprotocol/ui-components/style.css";
+
+export const App = () => {
+  return (
+    <>
+      <h1>Owl React Tutorials</h1>
+
+      <OwlProvider>
+        {/* Add tutorial snippets below */}
+      </OwlProvider>
+    </>
+  );
+};
+```
+
+### Create The Owl Wallet Test Component
+
+In this step, we will initialize wrappers to create blockchain interactions.
+
+We first set the Owl project id, from the environment variable `VITE_PROJECT_ID`. Make sure to set your project id inside of a `.env` file.
+
+We will connect to the Hedwig Testnet chain, which has chain id `150150`.
+
+We start by fetching data about that chain by making a tRPC call to the Owl API.
+
+We then set up two providers:
+
+-   `WagmiProvider`: enables hooks for blockchain interactions such as sending transactions
+
+```tsx
+import { trpc } from "@owlprotocol/core-trpc/react-query";
+import { Chain, http } from "viem";
+import { createConfig, WagmiProvider } from "wagmi";
+
+const projectId = import.meta.env.VITE_PROJECT_ID;
+
+if (!projectId || projectId === "PROJECT_ID")
+    throw new Error("VITE_PROJECT_ID must be defined!");
+
+export const OwlWalletTest = () => {
+    const [hedwigTestnetChain] = trpc.network.get.useSuspenseQuery({
+        chainId: 150150,
+    });
+
+    const chains = [hedwigTestnetChain] as readonly [Chain];
+
+    const config = createConfig({
+        chains,
+        transports: {
+            [hedwigTestnetChain.id]: http(hedwigTestnetChain.rpcDefault),
+        },
+    });
+
+    return (
+        <WagmiProvider config={config}>
+            {/* We will be writing this component next */}
+            <OwlWalletTestInner />
+        </WagmiProvider>
+    );
+};
+```
+
+### Create The Owl Wallet Test Inner Component
+
+We now create the inner component, which consists of the RainbowKit button to connect a wallet, and a button to send a transaction. We also add the `useOwlSimpleSmartAccount` hook. This automatically overrides the basic Owl wallet the users connects with to use a smart wallet.
+
+Notice that when you send a transaction, the transaction hash will be displayed under. The `data` attribute of `useSendTransaction` gets populated once the transaction has successfully been sent.
+
+```tsx
+import { trpc } from "@owlprotocol/core-trpc/react-query";
+import {
+    OwlConnectButton,
+    useOwlSimpleSmartAccount,
+} from "@owlprotocol/ui-components";
+import { Chain, http, zeroAddress } from "viem";
+import {
+    createConfig,
+    useConnectors,
+    useSendTransaction,
+    WagmiProvider,
+} from "wagmi";
+
+const projectId = import.meta.env.VITE_PROJECT_ID;
+
+if (!projectId || projectId === "PROJECT_ID")
+    throw new Error("VITE_PROJECT_ID must be defined!");
+
+export const OwlWalletTestInner = () => {
+    const { sendTransaction, data: txHash } = useSendTransaction();
+
+    const connectors = useConnectors();
+
+    useOwlSimpleSmartAccount();
+
+    return (
+        <>
+            <button
+                onClick={() =>
+                    sendTransaction({
+                        to: zeroAddress,
+                        value: 0n,
+                        data: "0x",
+                    })
+                }
+            >
+                Send test transaction
+            </button>
+            <br />
+            <br />
+            {!!txHash && <p>Transaction Hash: {txHash}</p>}
+            <button onClick={() => connectors.forEach((c) => c.disconnect())}>
+                Disconnect All
+            </button>
+            <br />
+            <br />
+            <OwlConnectButton projectId={projectId} />
+        </>
+    );
+};
+
+export const OwlWalletTest = () => {
+    // ...
+};
+```
+
+### Add The Owl Wallet Test Component To The App
+
+Back in `App.tsx`, import and add the `OwlWalletTest`.
+
+```tsx
+import { OwlProvider } from "@owlprotocol/ui-components";
+import { OwlWalletTest } from "./tutorials/owl-wallet.jsx";
+
+import "./App.css";
+import "@owlprotocol/ui-components/style.css";
+
+export const App = () => {
+  return (
+    <>
+      <h1>Owl React Tutorials</h1>
+
+      <OwlProvider>
+        {/* Add tutorial snippets below */}
+        <OwlWalletTest />
+      </OwlProvider>
+    </>
+  );
+};
+```
+
+</Steps>
+
+And voilà! Run `pnpm dev` again if needed, and check out your first app with a gasless transaction. Make sure to connect your wallet, and then click on `Send Test Transaction`.
+
+To see the final component, go to our [GitHub](https://github.com/owlprotocol/tutorials-react/blob/main/src/tutorials/owl-wallet.tsx)

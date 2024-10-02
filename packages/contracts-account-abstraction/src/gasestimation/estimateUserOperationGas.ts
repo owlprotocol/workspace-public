@@ -87,6 +87,7 @@ export async function estimateUserOperationGas(
         throw new Error("user operation max fee per gas must be larger than 0 during gas estimation");
     }
 
+    //TODO: This defines minimum paymaster balance required for initial gas estimation
     const userOperation: UserOperation<"v0.7"> = {
         ...userOperationData,
         preVerificationGas: 1_000_000n,

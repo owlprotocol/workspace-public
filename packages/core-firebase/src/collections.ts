@@ -1,6 +1,8 @@
 //TODO: Use join to concat path. Disabled for web compatibility for now
 // import { join } from "path";
+import { encodeNetworkId, networkPath } from "@owlprotocol/eth-firebase";
 import {
+    NetworkId,
     ProjectId,
     ProjectUserListId,
     TeamId,
@@ -36,6 +38,10 @@ export const projectApiKeyPath = (collectionId: ProjectId) => {
 export const projectUserGroupPath = "projectUser";
 export const projectUserPath = (collectionId: ProjectId) => {
     return join(projectPath, encodeProjectId(collectionId), projectUserGroupPath);
+};
+export const projectUserManagedGroupPath = "projectUserManaged";
+export const projectUserManagedPath = (collectionId: ProjectId) => {
+    return join(projectPath, encodeProjectId(collectionId), projectUserManagedGroupPath);
 };
 export const projectUserListGroupPath = "projectUserList";
 export const projectUserListPath = (collectionId: ProjectId) => {
@@ -98,4 +104,10 @@ export const projectMintRulePath = (collectionId: ProjectId) => {
 export const projectMintClaimGroupPath = "projectMintClaim";
 export const projectMintClaimPath = (collectionId: ProjectId) => {
     return join(projectPath, encodeProjectId(collectionId), projectMintClaimGroupPath);
+};
+
+// networks
+export const erc721MintGroupPath = "erc721Mint";
+export const erc721MintPath = (networkId: NetworkId) => {
+    return join(networkPath, encodeNetworkId(networkId), erc721MintGroupPath);
 };

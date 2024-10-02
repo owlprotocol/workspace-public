@@ -1,4 +1,3 @@
-import { parseEther } from "viem/utils";
 import { ether } from "../currencies/ether.js";
 import { defineNetwork } from "../defineChain.js";
 
@@ -41,11 +40,4 @@ export const hedwigTestnet = /*#__PURE__*/ defineNetwork({
     enabled: true,
     stack: "opstack-bedrock",
     rank: 0,
-    minUtilityBalance: parseEther("1"),
-    //TODO: Topup code what if utility < target?
-    targetUtilityBalance: parseEther("8"),
-    minPaymasterBalance: parseEther("0.1"),
-    targetPaymasterBalance: parseEther("2"),
-    minRelayerBalance: parseEther("0.1"),
-    targetRelayerBalance: parseEther("1"),
 });

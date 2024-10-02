@@ -1,10 +1,10 @@
 import { z } from "zod";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { fromPairs, map } from "lodash-es";
 import type { AbiParam, ZodForAbiParam } from "./abiParam.js";
 import { zodForAbiParam } from "./abiParam.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { TupleIndices } from "../types/TupleIndices.js";
-import { fromPairs, map } from "../lodash.js";
 
 export type StateMutabilityType = "pure" | "view" | "nonpayable" | "payable";
 

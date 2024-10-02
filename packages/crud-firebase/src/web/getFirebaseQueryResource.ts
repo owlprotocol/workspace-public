@@ -18,6 +18,5 @@ import { getFirebaseQueryResourceForSdk } from "../getFirebaseQueryResource.js";
 export const getFirebaseQueryResource = getFirebaseQueryResourceForSdk<"web">({
     getWhereQuery,
     getDocs,
-    //@ts-expect-error
     count,
 });

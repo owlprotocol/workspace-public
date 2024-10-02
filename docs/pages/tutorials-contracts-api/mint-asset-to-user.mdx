@@ -36,9 +36,9 @@ npm start
 
 If everything has been set up correctly, you should see something similar to this printed to the console.
 
-```bash
+```
 Welcome to Owl Protocol!
-API_KEY_SECRET not found! Ensure it\'s correctly set in your .env file.
+API_KEY_SECRET not found! Ensure it's correctly set in your .env file.
 ```
 
 To fix the error you will **need an API Key**.
@@ -70,7 +70,7 @@ import projectApiKey from "../../public/assets/projectApiKey.png";
 Create the client with your API key using the following command:
 
 ```ts copy showLineNumbers
-import { createClient } from "@owlprotocol/core-trpc";
+import { createClient } from "@owlprotocol/core-trpc/client";
 
 // Initialize the Owl Protocol client with your API key
 const client = createClient({ apiKey: API_KEY_SECRET });

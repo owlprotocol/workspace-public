@@ -7,18 +7,18 @@
     "rules": "storage.rules"
   },
   "emulators": {
-    "auth": {
-      "port": 9099
+    "hub": {
+      "port": 8100
+    },
+    "logging": {
+      "port": 8200
     },
     "firestore": {
-      "port": 18080
-    },
-    "storage": {
-      "port": 9199
+      "port": 8300,
+      "websocketPort": 8400
     },
     "ui": {
-      "enabled": true,
-      "port": 4000
+      "enabled": false
     },
     "singleProjectMode": true
   }

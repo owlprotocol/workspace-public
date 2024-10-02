@@ -7,6 +7,10 @@
     "title": "Quickstart",
     "display": "normal"
   },
+  "use-cases": {
+    "title": "Use Cases",
+    "display": "normal"
+  },
   "-- Learn": {
     "type": "separator",
     "title": "Learn"
@@ -39,9 +43,13 @@
     "title": "Account Abstraction API",
     "display": "normal"
   },
+  "tutorials-react": {
+    "title": "React",
+    "display": "normal"
+  },
   "tutorials-dashboard": {
     "title": "No Code Dashboard",
-    "display": "hidden"
+    "display": "normal"
   },
   "tutorials-zapier":{
     "title": "Web2 Plugins (Zapier)",
@@ -100,10 +108,6 @@
     "title": "Support ↗",
     "href": "https://discord.owl.build",
     "newWindow": true
-  },
-  "dashboard-docs": {
-    "type": "page",
-    "display":"hidden"
   },
   "other": {
     "type": "page",

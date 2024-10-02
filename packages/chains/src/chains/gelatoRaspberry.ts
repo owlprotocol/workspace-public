@@ -25,7 +25,7 @@ export const gelatoRaspberry = /*#__PURE__*/ defineNetwork({
             webSocket: ["wss://ws.opcelestia-raspberry.gelato.digital"],
         },
     },
-    enabled: true,
+    enabled: false,
     stack: "opstack-bedrock",
     rank: 9999,
 });

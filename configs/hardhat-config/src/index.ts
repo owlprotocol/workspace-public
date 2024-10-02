@@ -1,25 +1,14 @@
-//@ts-expect-error
-import { PRIVATE_KEY_CONTRACT_DEPLOYER } from "@owlprotocol/envvars";
+import { Address } from "viem";
 import { localhost } from "viem/chains";
 
 //TODO: Add more networks (removed since was causing issues with Typescript)
 //TODO: Return type or as const
-export function getHardhatConfig(
-    accountsProduction: string[] = PRIVATE_KEY_CONTRACT_DEPLOYER ? [PRIVATE_KEY_CONTRACT_DEPLOYER] : [],
-) {
+export function getHardhatConfig() {
     //const chains = networkIds.map((id) => getChainWithDataByChainId(id)).filter((c) => c.rpcDefault != undefined);
     const chains = [localhost];
     const networkEntries = chains.map((c) => {
-        const accounts =
-            c.name.toLowerCase() === "localhost"
-                ? {
-                      mnemonic: "test test test test test test test test test test test junk",
-                      path: "m/44'/60'/0'/0",
-                      initialIndex: 0,
-                      count: 10,
-                      passphrase: "",
-                  }
-                : accountsProduction;
+        //TODO: For now we do not use hardhat for deployment
+        const accounts = [] as Address[];
         //TODO: Using localhost viem
         const eip1559 = true; //!!c.features?.find((f: any) => f.name === "EIP1559");
         const slug = c.name.toLowerCase();

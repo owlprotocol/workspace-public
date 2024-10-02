@@ -1,4 +1,3 @@
-import { parseEther } from "viem/utils";
 import { defineNetwork } from "../defineChain.js";
 import { btc } from "../currencies/index.js";
 
@@ -45,11 +44,4 @@ export const bitlayer = /*#__PURE__*/ defineNetwork({
     },
     enabled: true,
     rank: 9999,
-    minUtilityBalance: parseEther("0.001"),
-    //TODO: Topup code what if utility < target?
-    targetUtilityBalance: parseEther("0.01"),
-    minPaymasterBalance: parseEther("0.001"),
-    targetPaymasterBalance: parseEther("0.004"),
-    minRelayerBalance: parseEther("0.001"),
-    targetRelayerBalance: parseEther("0.002"),
 });

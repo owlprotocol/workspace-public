@@ -1,17 +1,17 @@
 {
   "name": "@owlprotocol/hardhat-config",
-  "version": "3.0.0",
+  "version": "3.1.1",
   "keywords": [
+    "blockchain",
     "web3",
     "solidity",
-    "trpc",
-    "react-query"
+    "hardhat"
   ],
-  "private": true,
+  "private": false,
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/owlprotocol/owlprotocol.git"
+    "url": "https://github.com/owlprotocol/workspace-public.git"
   },
   "license": "MIT",
   "author": {
@@ -40,6 +40,7 @@
     "build": "npm-run-all -p tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
     "clean": "rimraf dist lib",
+    "depcheck": "depcheck",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "lint": "eslint 'src/**/*.ts'",
@@ -47,22 +48,20 @@
     "tsc": "tsc",
     "tsc:watch": "tsc -w"
   },
-  "dependencies": {
-    "@owlprotocol/envvars": "workspace:*",
-    "viem": "2.9.20"
-  },
   "devDependencies": {
+    "viem": "2.9.20",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
-    "@types/node": "^20.5.6",
+    "@types/node": "^20.11.10",
     "npm-run-all": "^4.1.5",
-    "typescript": "5.4.2",
+    "typescript": "5.4.5",
+    "depcheck": "^1.4.7",
     "vite": "^5.1.6"
   },
   "bugs": {
-    "url": "https://github.com/owlprotocol/owlprotocol/issues",
+    "url": "https://github.com/owlprotocol/workspace-public/issues",
     "email": "leo@owlprotocol.xyz"
   },
   "funding": "https://owlprotocol.xyz",

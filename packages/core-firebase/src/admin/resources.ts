@@ -11,6 +11,7 @@ import {
     encodeNetworkId,
 } from "@owlprotocol/eth-firebase/models";
 import {
+    erc721MintCol,
     projectApiKeyCol,
     projectCol,
     projectContractCol,
@@ -18,6 +19,7 @@ import {
     projectTokenCol,
     projectTokenTemplateCol,
     projectUserCol,
+    projectUserManagedCol,
     projectUserWalletDfnsCol,
     projectUserWalletSafeCol,
     projectWalletDfnsCol,
@@ -109,6 +111,18 @@ import {
     encodeProjectWalletSafeData,
     encodeProjectWalletSafeDataPartial,
     encodeProjectWalletSafeId,
+    ProjectUserManagedData,
+    ProjectUserManagedId,
+    decodeProjectUserManagedId,
+    encodeProjectUserManagedData,
+    encodeProjectUserManagedDataPartial,
+    encodeProjectUserManagedId,
+    ERC721MintData,
+    ERC721MintId,
+    encodeERC721MintId,
+    decodeERC721MintId,
+    encodeERC721MintDataPartial,
+    encodeERC721MintData,
 } from "../models/index.js";
 
 //user & team
@@ -232,6 +246,20 @@ export const projectUserResource = getFirebaseResource<ProjectUserData, ProjectU
     },
 );
 
+//project users
+export const projectUserManagedResource = getFirebaseResource<ProjectUserManagedData, ProjectUserManagedId, ProjectId>(
+    firestore,
+    projectUserManagedCol,
+    {
+        encodeId: encodeProjectUserManagedId,
+        decodeId: decodeProjectUserManagedId,
+        encodeDataPartial: encodeProjectUserManagedDataPartial,
+        encodeData: encodeProjectUserManagedData,
+        encodeParentDocId: encodeProjectId,
+        decodeParentDocId: decodeProjectId,
+    },
+);
+
 //project wallets
 export const projectWalletDfnsResource = getFirebaseResource<ProjectWalletDfnsData, ProjectWalletDfnsId, ProjectId>(
     firestore,
@@ -283,3 +311,17 @@ export const projectUserWalletSafeResource = getFirebaseResource<
     encodeParentDocId: encodeProjectId,
     decodeParentDocId: decodeProjectId,
 });
+
+// networks
+export const erc721MintResource = getFirebaseResource<ERC721MintData, ERC721MintId, NetworkId>(
+    firestore,
+    erc721MintCol,
+    {
+        encodeId: encodeERC721MintId,
+        decodeId: decodeERC721MintId,
+        encodeDataPartial: encodeERC721MintDataPartial,
+        encodeData: encodeERC721MintData,
+        encodeParentDocId: encodeNetworkId,
+        decodeParentDocId: decodeNetworkId,
+    },
+);

@@ -1,0 +1,106 @@
+import { Screenshot } from "components/screenshot";
+import { Callout, Steps } from "nextra/components";
+
+# Create a Custom Project
+
+In this tutorial, we'll guide you through setting up a new project with Owl Protocol. You'll learn how to create a project, add users, create a collection, set up a template, and mint tokens. Whether you're new to NFT projects or looking to optimize your process, this tutorial will help you get started in no time.
+
+<Steps>
+### Create a Project
+
+1. Visit the [Owl Dashboard](https://dashboard.owlprotocol.xyz/).
+2. Select an existing Team or create a new one.
+3. On the Team page, click the `Create Project` button.
+
+import createProject from "../../public/assets/create-custom-project/createProject.png";
+
+<Screenshot src={createProject} alt="createProject" />
+
+Name your project, add a description, and choose a network. This choice is final, so pick wisely. For this tutorial, we'll use the **Hedwig Testnet** (Chain ID: 150150), the official Owl Protocol Testnet. Feel free to choose the network that best suits your needs.
+
+import createProject2 from "../../public/assets/create-custom-project/createProject2.png";
+
+<Screenshot src={createProject2} alt="createProject2" />
+
+After creating the project, view your Project Overview page.
+
+import projectOverview from "../../public/assets/create-custom-project/projectOverview.png";
+
+<Screenshot src={projectOverview} alt="projectOverview" />
+
+### Add a User
+
+Scroll to the Users Table at the bottom of the Project Overview page and click `Add Users`.
+
+Add a user by entering an email and optionally a name and external ID. Click `Add User` when you're done.
+
+import addUser from "../../public/assets/create-custom-project/addUser.png";
+
+<Screenshot src={addUser} alt="addUser" />
+
+For now, we'll only add one user. You can add more users manually by clicking `Add Another User`, or import a list of users via CSV. Download our **sample CSV** and follow the format to ensure proper user import.
+
+Click the `Create 1 user` button to add the user.
+
+import confirmAddUser from "../../public/assets/create-custom-project/confirmAddUser.png";
+
+<Screenshot src={confirmAddUser} alt="confirmAddUser" />
+
+### Create a Collection
+
+Next, create an ERC721 collection. On the Project Overview page, click `Create Collection`. A modal will appear; name your collection, choose a symbol, and add a picture. Click `Create` when ready.
+
+import createCollection from "../../public/assets/create-custom-project/createCollection.png";
+
+<Screenshot src={createCollection} alt="createCollection" />
+
+### Create a Template
+
+Your collection will now appear in the Project Overview. Click `Show Templates` and then `Add New Template` to create a template.
+
+import viewCollection from "../../public/assets/create-custom-project/viewCollection.png";
+
+<Screenshot src={viewCollection} alt="viewCollection" />
+
+Set the metadata for your template. Give it a name, add some optional attributes, and upload an image. Customize as needed, then click `Create`.
+
+import createTemplate from "../../public/assets/create-custom-project/createTemplate.png";
+
+<Screenshot src={createTemplate} alt="createTemplate" />
+
+### Mint a Token
+
+Your template now appears in the Templates table. Click the `Mint` button at the end of the row.
+
+import mintFromTemplate from "../../public/assets/create-custom-project/mintFromTemplate.png";
+
+<Screenshot src={mintFromTemplate} alt="mintFromTemplate" />
+
+Select the user you want to mint the item to and click `Mint`.
+
+import mintToUser from "../../public/assets/create-custom-project/mintToUser.png";
+
+<Screenshot src={mintToUser} alt="mintToUser" />
+
+### Verify Minting
+
+To verify that the asset was properly minted to the user, go to the Users Table, click the three dots next to the user's entry, and select `View User`.
+
+import viewUser from "../../public/assets/create-custom-project/viewUser.png";
+
+<Screenshot src={viewUser} alt="viewUser" />
+
+You will see the user's wallet address and the assets he owns, including the newly minted Siamese Cat token.
+
+import userAssets from "../../public/assets/create-custom-project/userAssets.png";
+
+<Screenshot src={userAssets} alt="userAssets" />
+
+</Steps>
+
+Congratulations! You've successfully set up a new project with Owl Protocol, added users, created a collection, set up a template, and minted a token. You are ready to launch your own project!
+
+**Next Steps**
+
+-   **Build Your Project:** Start building your project using the Owl Protocol API.
+-   **Explore Integrations:** Integrate with other tools and platforms to enhance your project's capabilities.

@@ -1,4 +1,5 @@
 export * from "./contractmodels/index.js";
+export * from "./validators/index.js";
 
 export * from "./EthBlock.js";
 export * from "./EthBytecode.js";

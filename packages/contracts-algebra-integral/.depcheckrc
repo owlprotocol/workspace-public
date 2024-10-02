@@ -1,0 +1,8 @@
+ignores: [
+    "@types/node",
+    "vite",
+    "zod",
+    "@openzeppelin/contracts",
+    "@cryptoalgebra/integral-core",
+    "@cryptoalgebra/integral-periphery"
+]

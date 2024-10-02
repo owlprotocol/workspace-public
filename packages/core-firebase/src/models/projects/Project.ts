@@ -26,6 +26,7 @@ export interface ProjectData {
     defaultChainId: number;
     coverImage?: string;
     projectType?: ProjectType;
+    isArchived?: boolean;
 }
 export const projectDataZod = z
     .object({
@@ -37,6 +38,7 @@ export const projectDataZod = z
         defaultChainId: z.number().describe("defaultChainId"),
         coverImage: z.string().describe("URL for cover image").optional(),
         projectType: z.nativeEnum(ProjectType).describe("only used for DEMO projects, DEFAULT = undefined").optional(),
+        isArchived: z.boolean().describe("is project archived").optional(),
     })
     .describe("project");
 export const encodeProjectData: (data: ProjectData) => ProjectData = projectDataZod.parse;

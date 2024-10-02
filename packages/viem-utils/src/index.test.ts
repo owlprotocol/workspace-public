@@ -14,6 +14,7 @@ import {
 import { localhost } from "viem/chains";
 import { transactionQueue } from "@latticexyz/common/actions";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { port } from "./test/constants.js";
 import { getLocalAccount } from "./accounts.js";
 import { numberToAddress } from "./utils.js";
 
@@ -24,7 +25,7 @@ describe("index.test.ts", function () {
 
     beforeEach(async () => {
         //Does NOT work with ganache
-        const httpTransport = http("http://127.0.0.1:8545");
+        const httpTransport = http(`http://127.0.0.1:${port}`);
         const provider = httpTransport({ chain: localhost, retryCount: 0 });
 
         //We override the transport to always return nonce = 0

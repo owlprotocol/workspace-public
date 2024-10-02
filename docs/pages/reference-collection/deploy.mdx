@@ -7,7 +7,7 @@ import { Tabs } from "nextra/components";
 <Tabs items={['Typescript (tRPC)', 'JavaScript (fetch)', 'cURL']}>
   <Tabs.Tab>
     ```ts copy showLineNumbers
-    import { createClient } from "@owlprotocol/core-trpc";
+    import { createClient } from "@owlprotocol/core-trpc/client";
     const API_KEY_SECRET = "<API_KEY_SECRET>" //Replace this with your API Key Secret
     const client = createClient({ apiKey: API_KEY_SECRET });
 

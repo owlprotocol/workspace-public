@@ -1,17 +1,14 @@
 {
   "name": "@owlprotocol/vite-config",
-  "version": "3.0.0",
+  "version": "3.1.1",
   "keywords": [
-    "web3",
-    "solidity",
-    "trpc",
-    "react-query"
+    "vite"
   ],
-  "private": true,
+  "private": false,
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/owlprotocol/owlprotocol.git"
+    "url": "https://github.com/owlprotocol/workspace-public.git"
   },
   "license": "MIT",
   "author": {
@@ -40,6 +37,7 @@
     "build": "npm-run-all -p tsc esbuild",
     "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
     "clean": "rimraf dist lib",
+    "depcheck": "depcheck",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "lint": "eslint 'src/**/*.ts'",
@@ -49,28 +47,23 @@
     "tsc:watch": "tsc -w"
   },
   "devDependencies": {
-    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
-    "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
-    "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
-    "@rollup/plugin-inject": "^5.0.3",
-    "@types/node": "^20.5.6",
-    "@vitejs/plugin-react-swc": "^3.3.2",
+    "@types/node": "^20.11.10",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "eslint": "^8.55.0",
+    "madge": "^5.0.2",
     "npm-run-all": "^4.1.5",
-    "rollup": "^3.29.0",
-    "rollup-plugin-node-polyfills": "^0.2.1",
-    "typescript": "5.4.2",
+    "typescript": "5.4.5",
     "vite": "^5.1.6",
-    "vitest": "^1.4.0",
     "vite-plugin-dts": "^3.5.3",
     "vite-plugin-checker": "^0.6.2",
-    "vite-plugin-node-polyfills": "^0.14.1",
-    "vite-plugin-svgr": "^3.2.0"
+    "vite-plugin-svgr": "^3.2.0",
+    "depcheck": "^1.4.7"
   },
   "bugs": {
-    "url": "https://github.com/owlprotocol/owlprotocol/issues",
+    "url": "https://github.com/owlprotocol/workspace-public/issues",
     "email": "leo@owlprotocol.xyz"
   },
   "funding": "https://owlprotocol.xyz",

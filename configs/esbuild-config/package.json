@@ -1,16 +1,13 @@
 {
   "name": "@owlprotocol/esbuild-config",
-  "version": "3.0.0",
+  "version": "3.1.1",
   "keywords": [
-    "web3",
-    "solidity",
-    "trpc",
-    "react-query"
+    "esbuild"
   ],
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/owlprotocol/owlprotocol.git"
+    "url": "https://github.com/owlprotocol/workspace-public.git"
   },
   "license": "MIT",
   "author": {
@@ -30,24 +27,20 @@
     }
   },
   "scripts": {
+    "depcheck": "depcheck",
     "lint": "eslint index.mjs",
     "lint:fix": "eslint index.mjs --fix"
   },
-  "dependencies": {
+  "devDependencies": {
     "@esbuild-plugins/node-resolve": "^0.1.4",
     "esbuild": "^0.19.2",
-    "esbuild-copy-static-files": "^0.1.0",
-    "esbuild-plugin-alias": "^0.2.1",
-    "esbuild-plugin-babel": "^0.2.3",
-    "esbuild-plugin-copy": "^1.1.0",
-    "glob": "^7.2.0"
-  },
-  "devDependencies": {
+    "glob": "10.3.10",
     "@owlprotocol/eslint-config": "workspace:*",
-    "@owlprotocol/prettier-config": "workspace:*"
+    "@owlprotocol/prettier-config": "workspace:*",
+    "depcheck": "^1.4.7"
   },
   "bugs": {
-    "url": "https://github.com/owlprotocol/owlprotocol/issues",
+    "url": "https://github.com/owlprotocol/workspace-public/issues",
     "email": "leo@owlprotocol.xyz"
   },
   "funding": "https://owlprotocol.xyz",

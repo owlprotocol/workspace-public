@@ -1,6 +1,7 @@
 import { getFirebaseQueryResource } from "@owlprotocol/crud-firebase/web";
 import { Query } from "@owlprotocol/crud-firebase";
 import {
+    erc721MintColGroup,
     projectApiKeyColGroup,
     projectContractColGroup,
     projectUserColGroup,
@@ -12,6 +13,8 @@ import {
     teamNetworkColGroup,
 } from "./collection.js";
 import {
+    ERC721MintData,
+    ERC721MintId,
     NetworkDataDecoded,
     NetworkDataEncoded,
     NetworkDataInput,
@@ -34,6 +37,7 @@ import {
     TeamId,
     TeamMemberData,
     TeamMemberId,
+    decodeERC721MintId,
     decodeNetworkId,
     decodeProjectApiKeyId,
     decodeProjectContractId,
@@ -45,6 +49,9 @@ import {
     decodeProjectWalletSafeId,
     decodeTeamId,
     decodeTeamMemberId,
+    encodeERC721MintData,
+    encodeERC721MintDataPartial,
+    encodeNetworkId,
     encodeProjectApiKeyData,
     encodeProjectApiKeyDataPartial,
     encodeProjectContractData,
@@ -202,4 +209,20 @@ export const projectContractGroupQuery = getFirebaseQueryResource<
     decodeData: encodeProjectContractData,
     encodeParentDocId: encodeProjectId,
     decodeParentDocId: decodeProjectId,
+});
+
+//Search erc721 mints across networks
+export const erc721MintsGroupQuery = getFirebaseQueryResource<
+    ERC721MintData,
+    ERC721MintId,
+    NetworkId,
+    ERC721MintData,
+    ERC721MintData,
+    Query<"web", ERC721MintData>
+>(erc721MintColGroup, {
+    decodeId: decodeERC721MintId,
+    encodeDataPartial: encodeERC721MintDataPartial,
+    decodeData: encodeERC721MintData,
+    encodeParentDocId: encodeNetworkId,
+    decodeParentDocId: decodeNetworkId,
 });

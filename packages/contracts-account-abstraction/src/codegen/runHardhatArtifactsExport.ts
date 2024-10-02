@@ -1,4 +1,4 @@
-import { hardhatArtifactsExport, getArtifactImplementationFactory } from "@owlprotocol/viem-utils";
+import { hardhatArtifactsExport, getArtifactImplementationFactory } from "@owlprotocol/viem-utils/codegen";
 import {
     ENTRYPOINT_ADDRESS_V07,
     SIMPLE_ACCOUNT_FACTORY_ADDRESS,
@@ -31,8 +31,11 @@ hardhatArtifactsExport(
         "node_modules/@account-abstraction/contracts/artifacts/IEntryPointSimulation.json",
     ],
     getArtifactImplementationFactory({
+        //Deployed using vanity salt
         Entrypoint: ENTRYPOINT_ADDRESS_V07,
+        //Deployed using EntryPoint address
         SimpleAccountFactory: SIMPLE_ACCOUNT_FACTORY_ADDRESS,
+        //Deployed using SimpleAccountFactory + 0
         SimpleAccount: SIMPLE_ACCOUNT_IMPLEMENTATION_ADDRESS,
     }),
 );

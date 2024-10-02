@@ -30,15 +30,19 @@ const DFNS_ENVVARS: EnvVarDef[] = [
 //Firebase config (admin & web sdks)
 const FIREBASE_ENVVARS: EnvVarDef[] = [
     { name: "FIREBASE_MOCK", platform: "neutral", defaultValue: "true", enumValues: ["true", "false"] },
-    { name: "FIREBASE_API_KEY", platform: "neutral" },
-    { name: "FIREBASE_AUTH_DOMAIN", platform: "neutral" },
+    // Isomorphic SDK (both web & admin)
     { name: "FIREBASE_PROJECT_ID", platform: "neutral", defaultValue: "owl-protocol" },
-    { name: "FIREBASE_APP_ID", platform: "neutral", defaultValue: "owl-protocol" },
-    { name: "FIREBASE_MEASUREMENT_ID", platform: "neutral" },
-    { name: "FIREBASE_SERVICE_EMAIL", platform: "node" },
-    { name: "FIREBASE_PRIVATE_KEY", platform: "node" },
     { name: "FIREBASE_DATABASE_URL", platform: "neutral" },
     { name: "FIREBASE_STORAGE_BUCKET", platform: "neutral", defaultValue: "owl-protocol" },
+    // Web SDK
+    { name: "FIREBASE_APP_ID", platform: "neutral", defaultValue: "owl-protocol" },
+    { name: "FIREBASE_API_KEY", platform: "neutral" },
+    { name: "FIREBASE_AUTH_DOMAIN", platform: "neutral" },
+    { name: "FIREBASE_MEASUREMENT_ID", platform: "neutral" },
+    // Admin SDK
+    { name: "FIREBASE_SERVICE_EMAIL", platform: "node" },
+    { name: "FIREBASE_PRIVATE_KEY", platform: "node" },
+    // Caching
     { name: "FIREBASE_LOCAL_CACHE_SIZE", platform: "neutral", defaultValue: "-1" },
     {
         name: "FIREBASE_LOCAL_CACHE_MANAGER",
@@ -46,17 +50,19 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
         defaultValue: "MEMORY",
         enumValues: ["MEMORY", "SINGLE_TAB", "MULTIPLE_TAB"],
     },
+    // Emulator (auto-set by emulator or can be overwritten)
+    // https://firebase.google.com/docs/emulator-suite/connect_firestore#admin_sdks
+    { name: "FIRESTORE_EMULATOR_HOST", platform: "neutral" },
+    // https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks
+    { name: "FIREBASE_AUTH_EMULATOR_HOST", platform: "neutral" },
+    // https://firebase.google.com/docs/emulator-suite/connect_storage#admin_sdks
+    { name: "FIREBASE_STORAGE_EMULATOR_HOST", platform: "neutral" }
 ];
 
-//Clerk config
-const CLERK_ENVVARS: EnvVarDef[] = [
-    { name: "CLERK_PUBLISHABLE_KEY", platform: "browser" },
-    { name: "CLERK_SECRET_KEY", platform: "node" },
-    { name: "CLERK_WEBHOOK_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
-    { name: "CLERK_WEBHOOK_SECRET_KEY", platform: "node" },
-    { name: "CLERK_JWT_KEY", platform: "node" },
-    { name: "CLERK_LOGGING", platform: "neutral", defaultValue: "true" },
-];
+//GCloud config
+//Detect if running in a GCloud environment such as Firebase Functions or CloudRun
+const GCLOUD_ENVVARS: EnvVarDef[] = [{ name: "GCLOUD_PROJECT", platform: "node" }];
+
 //Readme config
 const README_ENVVARS: EnvVarDef[] = [
     { name: "README_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
@@ -64,6 +70,8 @@ const README_ENVVARS: EnvVarDef[] = [
 ];
 //Intercom config
 const INTERCOM_ENVVARS: EnvVarDef[] = [{ name: "INTERCOM_APP_ID", platform: "browser", defaultValue: "ndx9cj0b" }];
+//Fathom config
+const FATHOM_ENVVARS: EnvVarDef[] = [{ name: "FATHOM_SITE_ID", platform: "browser", defaultValue: "HXLIOEAX" }];
 //Resend config
 const RESEND_ENVVARS: EnvVarDef[] = [
     { name: "RESEND_MOCK", platform: "node", defaultValue: "true", enumValues: ["true", "false"] },
@@ -79,20 +87,6 @@ const SHOPIFY_ENVVARS: EnvVarDef[] = [
     { name: "SHOPIFY_API_SECRET", platform: "node" },
     { name: "SHOPIFY_SCOPES", platform: "node", defaultValue: "read_customers,read_orders,write_price_rules" },
     { name: "SHOPIFY_HOSTNAME", platform: "neutral" },
-];
-const SCRIPT_ENVVARS: EnvVarDef[] = [
-    //Hardhat wallet (TODO: Deprecate this?)
-    { name: "PRIVATE_KEY_CONTRACT_DEPLOYER", platform: "node" },
-    //For networks that enforce EIP151, we deploy Create2Factory with 1 key
-    {
-        name: "PRIVATE_KEY_CREATE2FACTORY_DEPLOYER",
-        platform: "node",
-    },
-    {
-        name: "PUBLIC_ADDRESS_CREATE2FACTORY_DEPLOYER",
-        platform: "node",
-        defaultValue: "0x6efA2F40d59e3DA02e56Ff5a1daB6201b86f8aCF",
-    },
 ];
 /** Add public defaults that are free */
 const BLOCKCHAIN_ENVVARS: EnvVarDef[] = [
@@ -129,11 +123,6 @@ const INDEXER_ENVVARS: EnvVarDef[] = [
     { name: "INDEXER_NETWORK_ID", platform: "node", defaultValue: "1337" },
     { name: "INDEXER_MAX_ADDRESSES", platform: "node", defaultValue: "100" },
     { name: "INDEXER_MAX_FILTERS", platform: "node", defaultValue: "10" },
-];
-const TELEGRAM_BOT_ENVVARS: EnvVarDef[] = [
-    { name: "TELEGRAM_BOT_TOKEN", platform: "node" },
-    { name: "TELEGRAM_BOT_HANDLE", platform: "node", defaultValue: "@easywallet" },
-    { name: "TELEGRAM_BOT_NAME", platform: "node", defaultValue: "Easy Wallet" },
 ];
 
 const POH_ENVVARS: EnvVarDef[] = [{ name: "POH_NETWORK_ID", platform: "node", defaultValue: "1337" }];
@@ -241,17 +230,17 @@ export const ENVVARS: EnvVarDef[] = [
     ...RESEND_ENVVARS,
     ...DFNS_ENVVARS,
     ...FIREBASE_ENVVARS,
-    ...CLERK_ENVVARS,
+    ...GCLOUD_ENVVARS,
     ...INTERCOM_ENVVARS,
+    ...FATHOM_ENVVARS,
     ...SHOPIFY_ENVVARS,
-    ...SCRIPT_ENVVARS,
     ...BLOCKCHAIN_ENVVARS,
     ...INDEXER_ENVVARS,
     ...POH_ENVVARS,
-    ...TELEGRAM_BOT_ENVVARS,
     ...NETWORK_ENVVARS,
     { name: "OPENAI_SECRET_KEY", platform: "node" },
     { name: "OWL_DOMAINS", platform: "node", defaultValue: "*" },
+    { name: "OWL_DASHBOARD_URL", platform: "browser", defaultValue: "http://localhost:5173" },
 ];
 
 const NODE_ENV_VAR = {

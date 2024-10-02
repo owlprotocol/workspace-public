@@ -10,13 +10,14 @@ import {
 } from "@owlprotocol/crud-firebase";
 import { Address } from "viem";
 import { NetworkId } from "../Network.js";
+import { tokenIdZod } from "../validators/tokenId.js";
 
 /** ERC1155 id components */
 export interface ERC1155Id {
     readonly address: Address;
     readonly id: string;
 }
-const tokenIdZod = z.string().regex(/^\d+$/).describe("tokenId");
+
 export const erc1155IdRegex = /^(?<address>0x[a-fA-F0-9]{40})-(?<id>\d+$)/;
 export const erc1155IdZod = z
     .union([z.string().regex(erc1155IdRegex), z.object({ address: addressZod, id: tokenIdZod })])

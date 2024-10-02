@@ -48,26 +48,23 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "lib/**", ".next/**"]
     },
-    "dev": {
+    "depcheck": {
       "cache": false,
-      "persistent": true
+      "outputs": []
+    },
+    "syncpack": {
+      "cache": false,
+      "outputs": []
+    },
+    "madge": {
+      "cache": false,
+      "outputs": []
     },
     "clean": {
       "cache": false
     },
-    "start": {
-      "cache": false,
-      "persistent": true
-    },
     "test": {
       "dependsOn": ["build", "^test"],
-      "outputs": []
-    },
-    "test-integration": {
-      "dependsOn": ["build"],
-      "outputs": []
-    },
-    "madge": {
       "outputs": []
     },
     "lint": {
@@ -78,18 +75,6 @@
       "outputs": []
     },
     "lint:staged": {
-      "cache": false,
-      "outputs": []
-    },
-    "deploy": {
-      "cache": false,
-      "outputs": []
-    },
-    "node": {
-      "cache": false,
-      "outputs": []
-    },
-    "serve": {
       "cache": false,
       "outputs": []
     }

@@ -1,5 +1,4 @@
-import { parseGwei, getCreateAddress, Address } from "viem";
-import { PUBLIC_ADDRESS_CREATE2FACTORY_DEPLOYER } from "@owlprotocol/envvars";
+import { parseGwei, Address } from "viem";
 
 /**
  * Create2Factory address when deployed using DeterministicDeployer
@@ -18,10 +17,3 @@ export const CREATE2_FACTORY_PRESIGN_GAS_PRICE = parseGwei("100");
 /** Create2Factory presign max eth cost */
 export const CREATE2_FACTORY_PRESIGN_ETH_COST =
     CREATE2_FACTORY_PRESIGN_GAS_PRICE * (CREATE2_FACTORY_PRESIGN_GAS_LIMIT + ETH_TX_BASE_GAS);
-
-//0xfcf1a16de45ab581b0117befb9416a4a86629629
-/** Create2Factory address when deployed using pre-signed transction */
-export const CREATE2_FACTORY_ADDRESS_PRESIGN = getCreateAddress({
-    from: PUBLIC_ADDRESS_CREATE2FACTORY_DEPLOYER as `0x${string}`,
-    nonce: 0n,
-});

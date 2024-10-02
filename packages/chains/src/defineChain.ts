@@ -1,33 +1,7 @@
-import type { Network, NetworkBalanceConfig } from "@owlprotocol/eth-firebase";
+import type { Network, NetworkBalanceConfig } from "@owlprotocol/eth-firebase/models";
 import { ANKR_API_KEY, DRPC_API_KEY } from "@owlprotocol/envvars";
-import { parseEther } from "viem/utils";
 import { getAnkrEndpoints } from "./providers/ankr.js";
 import { getDrpcEndpoints } from "./providers/drpc.js";
-
-/** Default balance config for networks */
-export const DEFAULT_BALANCE_CONFIG: {
-    testnet: NetworkBalanceConfig<bigint>;
-    mainnet: NetworkBalanceConfig<bigint>;
-} = {
-    testnet: {
-        minUtilityBalance: parseEther("0.3"),
-        targetUtilityBalance: parseEther("1"),
-        minPaymasterBalance: parseEther("0.05"),
-        targetPaymasterBalance: parseEther("0.1"),
-        minRelayerBalance: parseEther("0.05"),
-        targetRelayerBalance: parseEther("0.1"),
-    },
-    mainnet: {
-        //x0.1 of testnet values, ~180 USD / chain
-        minUtilityBalance: parseEther("0.01"),
-        //TODO: Topup code what if utility < target?
-        targetUtilityBalance: parseEther("0.05"),
-        minPaymasterBalance: parseEther("0.005"),
-        targetPaymasterBalance: parseEther("0.01"),
-        minRelayerBalance: parseEther("0.005"),
-        targetRelayerBalance: parseEther("0.01"),
-    },
-};
 
 /**
  * Define network config from viem chain config
@@ -62,18 +36,21 @@ export function defineNetwork(chain: Omit<Network, "chainId"> & ({ chainId: numb
         // rpcUrls.thirdweb = getThirdwebEndpoints({ network: chain.slug });
     }
 
-    //Override private rpc drpc => ankr
+    //Override private rpc: drpc, ankr
     if (ANKR_API_KEY && rpcUrls.drpc) rpcUrls.private = rpcUrls.drpc;
     else if (DRPC_API_KEY && rpcUrls.ankr) rpcUrls.private = rpcUrls.ankr;
 
-    const networkBalanceConfigDefault = chain.testnet ? DEFAULT_BALANCE_CONFIG.testnet : DEFAULT_BALANCE_CONFIG.mainnet;
+    //Override default rpc: drpcPublic, ankrPublic
+    if (rpcUrls.drpcPublic) rpcUrls.default = rpcUrls.drpcPublic;
+    else if (rpcUrls.ankrPublic) rpcUrls.default = rpcUrls.ankrPublic;
+
     const networkBalanceConfig: NetworkBalanceConfig<`0x${string}` | bigint> = {
-        minUtilityBalance: chain.minUtilityBalance ?? networkBalanceConfigDefault.minUtilityBalance,
-        targetUtilityBalance: chain.targetUtilityBalance ?? networkBalanceConfigDefault.targetUtilityBalance,
-        minPaymasterBalance: chain.minPaymasterBalance ?? networkBalanceConfigDefault.minPaymasterBalance,
-        targetPaymasterBalance: chain.targetPaymasterBalance ?? networkBalanceConfigDefault.targetPaymasterBalance,
-        minRelayerBalance: chain.minRelayerBalance ?? networkBalanceConfigDefault.minRelayerBalance,
-        targetRelayerBalance: chain.targetRelayerBalance ?? networkBalanceConfigDefault.targetRelayerBalance,
+        minUtilityBalance: chain.minUtilityBalance,
+        targetUtilityBalance: chain.targetUtilityBalance,
+        minPaymasterBalance: chain.minPaymasterBalance,
+        targetPaymasterBalance: chain.targetPaymasterBalance,
+        minRelayerBalance: chain.minRelayerBalance,
+        targetRelayerBalance: chain.targetRelayerBalance,
     };
 
     const network: Network = {
