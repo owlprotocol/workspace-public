@@ -2,5 +2,7 @@ ignores: [
     "@types/node",
     "vite",
     "zod",
-    "@openzeppelin/contracts"
+    "@hyperlane-xyz/core",
+    "@openzeppelin/contracts",
+    "@openzeppelin/contracts-upgradeable"
 ]
