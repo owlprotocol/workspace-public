@@ -1,0 +1,8 @@
+ignores: [
+    "@types/node",
+    "vite",
+    "zod",
+    "@hyperlane-xyz/core",
+    "@openzeppelin/contracts",
+    "@openzeppelin/contracts-upgradeable"
+]
