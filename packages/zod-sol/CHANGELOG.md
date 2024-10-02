@@ -1,5 +1,13 @@
 # @owlprotocol/zod-sol
 
+## 3.1.1
+
+### Patch Changes
+
+-   81c8454: Updated release with all dependencies used by ui-components (soon to release)
+-   Updated dependencies [81c8454]
+    -   @owlprotocol/utils@3.1.1
+
 ## 3.1.0
 
 ### Minor Changes

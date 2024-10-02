@@ -1,5 +1,15 @@
 # @owlprotocol/contracts-diamond
 
+## 3.1.1
+
+### Patch Changes
+
+-   81c8454: Updated release with all dependencies used by ui-components (soon to release)
+-   Updated dependencies [81c8454]
+    -   @owlprotocol/contracts-create2factory@3.1.1
+    -   @owlprotocol/viem-utils@3.1.1
+    -   @owlprotocol/zod-sol@3.1.1
+
 ## 3.1.0
 
 ### Minor Changes
