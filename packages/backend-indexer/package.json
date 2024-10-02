@@ -2,7 +2,7 @@
   "name": "@owlprotocol/backend-indexer",
   "version": "3.1.2",
   "keywords": [],
-  "private": true,
+  "private": false,
   "type": "module",
   "homepage": "https://github.com/owlprotocol/workspace-public",
   "repository": {
