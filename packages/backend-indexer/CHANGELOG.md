@@ -1,5 +1,19 @@
 # @owlprotocol/backend-indexer
 
+## 3.1.2
+
+### Patch Changes
+
+-   951cfb5: Test our changeset/action
+-   Updated dependencies [951cfb5]
+    -   @owlprotocol/envvars@3.1.2
+    -   @owlprotocol/contracts-account-abstraction@3.1.2
+    -   @owlprotocol/contracts-create2factory@3.1.2
+    -   @owlprotocol/contracts-diamond@3.1.2
+    -   @owlprotocol/eth-firebase@3.1.2
+    -   @owlprotocol/utils@3.1.2
+    -   @owlprotocol/zod-sol@3.1.2
+
 ## 3.0.1
 
 ### Patch Changes
