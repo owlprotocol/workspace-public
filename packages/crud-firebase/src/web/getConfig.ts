@@ -30,8 +30,8 @@ import {
     connectAuthEmulator,
     Auth,
     Dependencies,
-    // browserPopupRedirectResolver,
-    // browserLocalPersistence,
+    browserPopupRedirectResolver,
+    browserLocalPersistence,
 } from "firebase/auth";
 import { getStorage, connectStorageEmulator, FirebaseStorage } from "firebase/storage";
 import {
@@ -93,6 +93,11 @@ function initializeFirestoreForEnv(app: FirebaseApp, settings: FirestoreSettings
         }
     }
 
+    if (settings.localCache) {
+        // setting `localCache` field and `cacheSizeBytes` at the same time will throw exception
+        delete settings.cacheSizeBytes;
+    }
+
     // Initialize Firestore
     const firestore = initializeFirestore(app, settings);
 
@@ -107,16 +112,6 @@ function initializeFirestoreForEnv(app: FirebaseApp, settings: FirestoreSettings
     return firestore;
 }
 
-// Default Auth Settings
-// TODO: Are these relevant in a web context? This breaks in NodeJS
-// From `initializeAuth` docs settings are for tree shaking only
-// for dependencies between Web / React Native (AsyncStorage)
-// Conclusion => not critical
-// const defaultAuthSettings = {
-// persistence: browserLocalPersistence,
-// popupRedirectResolver: browserPopupRedirectResolver,
-// };
-
 /**
  * Calls `initializeAuth` with custom overrides for handling emulator settings
  * @warning Can only be called **once** (see `initializeAuth` docs)
@@ -126,7 +121,15 @@ function initializeFirestoreForEnv(app: FirebaseApp, settings: FirestoreSettings
  */
 function initializeAuthForEnv(app: FirebaseApp, settings: Dependencies = {}): Auth {
     // Initialize Auth
-    const auth = initializeAuth(app, settings);
+    let defaultAuthSettings: Dependencies = {};
+    if (typeof window != "undefined") {
+        defaultAuthSettings = {
+            persistence: browserLocalPersistence,
+            popupRedirectResolver: browserPopupRedirectResolver,
+        };
+    }
+
+    const auth = initializeAuth(app, { ...defaultAuthSettings, ...settings });
     // Connect to emulator
     if (FIREBASE_AUTH_EMULATOR_HOST || FIREBASE_MOCK === "true") {
         let host = FIRESTORE_EMULATOR_HOST ?? DEFAULT_FIREBASE_AUTH_EMULATOR_HOST;
