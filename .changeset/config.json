@@ -13,6 +13,15 @@
       "@owlprotocol/crud-firebase",
       "@owlprotocol/eth-firebase",
       "@owlprotocol/core-firebase"
+    ],
+    [
+      "@owlprotocol/backend-bundler",
+      "@owlprotocol/backend-indexer",
+      "@owlprotocol/backend-wallet"
+    ],
+    [
+      "@owlprotocol/chains",
+      "@owlprotocol/chains-deploy"
     ]
   ],
   "linked": [],
