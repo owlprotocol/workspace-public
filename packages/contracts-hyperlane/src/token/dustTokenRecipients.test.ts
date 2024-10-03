@@ -35,9 +35,7 @@ describe("dustTokenRecipients.test.ts", function () {
     let tokenRouterAddress: Address;
 
     beforeAll(async () => {
-        // const transport = http(`http://127.0.0.1:${port}`);
-        const transport = http(`http://127.0.0.1:8545`);
-
+        const transport = http(`http://127.0.0.1:${port}`);
         publicClient = createPublicClient({
             chain: localhost,
             transport,
@@ -66,16 +64,14 @@ describe("dustTokenRecipients.test.ts", function () {
         if (tokenRouter.hash) {
             await publicClient.waitForTransactionReceipt({ hash: tokenRouter.hash });
         }
-        console.debug({ tokenRouterAddress });
     });
 
     test("dust tokens", async () => {
         // Hacky test but works
-        const receiverAddress = padHex("0x102", { size: 20 });
+        const receiverAddress = padHex("0x100", { size: 20 });
         const receiverBytes32 = padHex(receiverAddress, { size: 32 });
 
         // Watch Remote Transfers
-        /*
         const stopWatching = dustTokenRecipientsForChain({
             publicClient,
             walletClient,
@@ -88,7 +84,6 @@ describe("dustTokenRecipients.test.ts", function () {
                 expect(balance).toBe(1n);
             },
         });
-        */
 
         // Mock receive transfer
         const hash = await walletClient.writeContract({
@@ -102,6 +97,6 @@ describe("dustTokenRecipients.test.ts", function () {
 
         //Wait for dust tx confirmation
         await sleep(5000);
-        // stopWatching();
+        stopWatching();
     });
 });
