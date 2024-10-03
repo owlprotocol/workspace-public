@@ -1,7 +1,7 @@
 {
   "name": "@owlprotocol/hyperlane-duster",
   "description": "Watch Hyperlane Warp routes and dust recipients",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Leo Vigna",
   "private": false,
   "bin": {

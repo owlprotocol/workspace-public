@@ -20,7 +20,7 @@ $ npm install -g @owlprotocol/hyperlane-duster
 $ hyperlane-duster COMMAND
 running command...
 $ hyperlane-duster (--version)
-@owlprotocol/hyperlane-duster/0.0.0 linux-x64 node-v18.20.4
+@owlprotocol/hyperlane-duster/0.1.0 linux-x64 node-v18.20.4
 $ hyperlane-duster --help [COMMAND]
 USAGE
   $ hyperlane-duster COMMAND
@@ -29,8 +29,7 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`hyperlane-duster hello PERSON`](#hyperlane-duster-hello-person)
-* [`hyperlane-duster hello world`](#hyperlane-duster-hello-world)
+* [`hyperlane-duster dust`](#hyperlane-duster-dust)
 * [`hyperlane-duster help [COMMAND]`](#hyperlane-duster-help-command)
 * [`hyperlane-duster plugins`](#hyperlane-duster-plugins)
 * [`hyperlane-duster plugins add PLUGIN`](#hyperlane-duster-plugins-add-plugin)
@@ -43,47 +42,28 @@ USAGE
 * [`hyperlane-duster plugins unlink [PLUGIN]`](#hyperlane-duster-plugins-unlink-plugin)
 * [`hyperlane-duster plugins update`](#hyperlane-duster-plugins-update)
 
-## `hyperlane-duster hello PERSON`
+## `hyperlane-duster dust`
 
-Say hello
+Dust Hyperlane Token Receivers
 
 ```
 USAGE
-  $ hyperlane-duster hello PERSON -f <value>
-
-ARGUMENTS
-  PERSON  Person to say hello to
+  $ hyperlane-duster dust --amount <value> --chainId <value> --privateKey <value> --token <value>
 
 FLAGS
-  -f, --from=<value>  (required) Who is saying hello
+  --amount=<value>      (required) amount to dust in wei
+  --chainId=<value>     (required) chainId
+  --privateKey=<value>  (required) private key
+  --token=<value>       (required) token address
 
 DESCRIPTION
-  Say hello
+  Dust Hyperlane Token Receivers
 
 EXAMPLES
-  $ hyperlane-duster hello friend --from oclif
-  hello friend from oclif! (./src/commands/hello/index.ts)
+  $ hyperlane-duster dust
 ```
 
-_See code: [src/commands/hello/index.ts](https://github.com/owlprotocol/workspace-public/blob/v0.0.0/src/commands/hello/index.ts)_
-
-## `hyperlane-duster hello world`
-
-Say hello world
-
-```
-USAGE
-  $ hyperlane-duster hello world
-
-DESCRIPTION
-  Say hello world
-
-EXAMPLES
-  $ hyperlane-duster hello world
-  hello world! (./src/commands/hello/world.ts)
-```
-
-_See code: [src/commands/hello/world.ts](https://github.com/owlprotocol/workspace-public/blob/v0.0.0/src/commands/hello/world.ts)_
+_See code: [src/commands/dust.ts](https://github.com/owlprotocol/workspace-public/blob/v0.1.0/src/commands/dust.ts)_
 
 ## `hyperlane-duster help [COMMAND]`
 
