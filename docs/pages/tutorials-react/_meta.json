@@ -1,0 +1,12 @@
+{
+  "gasless-transactions": {
+    "title": "Gassless Transactions",
+    "display": "normal"
+  },
+  "transactions-owl-wallet": {
+    "title": "Transactions with Owl Wallet"
+  },
+  "owl-wallet": {
+    "title": "Owl Wallet UI"
+  }
+}
