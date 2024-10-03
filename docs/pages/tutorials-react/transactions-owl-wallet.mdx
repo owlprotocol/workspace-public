@@ -88,7 +88,7 @@ const projectId = import.meta.env.VITE_PROJECT_ID;
 if (!projectId || projectId === "PROJECT_ID")
     throw new Error("VITE_PROJECT_ID must be defined!");
 
-export const OwlWalletTest = () => {
+export const TransactionsOwlWalletTest = () => {
     const [hedwigTestnetChain] = trpc.network.get.useSuspenseQuery({
         chainId: 150150,
     });
@@ -105,7 +105,7 @@ export const OwlWalletTest = () => {
     return (
         <WagmiProvider config={config}>
             {/* We will be writing this component next */}
-            <OwlWalletTestInner />
+            <TransactionsOwlWalletTestInner />
         </WagmiProvider>
     );
 };
@@ -136,7 +136,7 @@ const projectId = import.meta.env.VITE_PROJECT_ID;
 if (!projectId || projectId === "PROJECT_ID")
     throw new Error("VITE_PROJECT_ID must be defined!");
 
-export const OwlWalletTestInner = () => {
+export const TransactionsOwlWalletTestInner = () => {
     const { sendTransaction, data: txHash } = useSendTransaction();
 
     const connectors = useConnectors();
@@ -169,18 +169,18 @@ export const OwlWalletTestInner = () => {
     );
 };
 
-export const OwlWalletTest = () => {
+export const TransactionsOwlWalletTest = () => {
     // ...
 };
 ```
 
-### Add The Owl Wallet Test Component To The App
+### Add The Transactions Owl Wallet Test Component To The App
 
-Back in `App.tsx`, import and add the `OwlWalletTest`.
+Back in `App.tsx`, import and add the `TransactionsOwlWalletTest`.
 
 ```tsx
 import { OwlProvider } from "@owlprotocol/ui-components";
-import { OwlWalletTest } from "./tutorials/owl-wallet.jsx";
+import { TransactionsOwlWalletTest } from "./tutorials/transactions-owl-wallet.jsx";
 
 import "./App.css";
 import "@owlprotocol/ui-components/style.css";
@@ -192,7 +192,7 @@ export const App = () => {
 
             <OwlProvider>
                 {/* Add tutorial snippets below */}
-                <OwlWalletTest />
+                <TransactionsOwlWalletTest />
             </OwlProvider>
         </>
     );
