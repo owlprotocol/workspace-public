@@ -20,7 +20,7 @@ $ npm install -g @owlprotocol/hyperlane-duster
 $ hyperlane-duster COMMAND
 running command...
 $ hyperlane-duster (--version)
-@owlprotocol/hyperlane-duster/0.1.0 linux-x64 node-v18.20.4
+@owlprotocol/hyperlane-duster/0.1.1 linux-x64 node-v18.20.4
 $ hyperlane-duster --help [COMMAND]
 USAGE
   $ hyperlane-duster COMMAND
@@ -63,7 +63,7 @@ EXAMPLES
   $ hyperlane-duster dust
 ```
 
-_See code: [src/commands/dust.ts](https://github.com/owlprotocol/workspace-public/blob/v0.1.0/src/commands/dust.ts)_
+_See code: [src/commands/dust.ts](https://github.com/owlprotocol/workspace-public/blob/v0.1.1/src/commands/dust.ts)_
 
 ## `hyperlane-duster help [COMMAND]`
 
