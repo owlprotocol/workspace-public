@@ -10,7 +10,9 @@
   "dependencies": {
     "@oclif/core": "^4",
     "@oclif/plugin-help": "^6",
-    "@oclif/plugin-plugins": "^5"
+    "@oclif/plugin-plugins": "^5",
+    "@owlprotocol/contracts-hyperlane": "workspace:*",
+    "viem": "2.9.20"
   },
   "devDependencies": {
     "@oclif/prettier-config": "^0.2.1",

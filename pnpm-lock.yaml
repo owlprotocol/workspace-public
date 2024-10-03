@@ -1591,6 +1591,12 @@ importers:
       '@oclif/plugin-plugins':
         specifier: ^5
         version: 5.4.10
+      '@owlprotocol/contracts-hyperlane':
+        specifier: workspace:*
+        version: link:../contracts-hyperlane
+      viem:
+        specifier: 2.9.20
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.23.8)
     devDependencies:
       '@oclif/prettier-config':
         specifier: ^0.2.1
