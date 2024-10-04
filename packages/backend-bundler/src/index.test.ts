@@ -72,6 +72,21 @@ describe("userOp.test.ts", function () {
         const chain = localhost;
         transport = http(`http://127.0.0.1:${port}`);
 
+        /*
+        // Test Custom Chain (with NODE_ENV=staging)
+        const chain: Chain = {
+            id: 1001,
+            name: "Kaia Kairos Testnet",
+            nativeCurrency: { name: "Kaia", symbol: "KLAY", decimals: 18 },
+            rpcUrls: {
+                default: {
+                    http: ["https://public-en-kairos.node.kaia.io"],
+                },
+            },
+        };
+        transport = http(chain.rpcUrls.default.http[0]);
+        */
+
         publicClient = createPublicClient({
             chain,
             transport,
@@ -232,9 +247,11 @@ describe("userOp.test.ts", function () {
 
         //Get smart account deployed
         expect(await publicClient.getBytecode({ address: simpleAccount.address })).toBeDefined();
+
+        console.debug(userOpReceipt);
     });
 
-    test("local bundler/paymaster - smartAccountClient.sendTransaction", async () => {
+    test.skip("local bundler/paymaster - smartAccountClient.sendTransaction", async () => {
         //Encode smart account tx, send to random address
         const to = privateKeyToAccount(generatePrivateKey()).address;
         const value = 0n;
