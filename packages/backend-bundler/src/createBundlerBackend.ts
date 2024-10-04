@@ -86,6 +86,8 @@ export type BundlerBackendConfig = ClientConfig<Transport, Chain, Account> & {
     publicClient?: PublicClient<Transport, Chain>;
     /** Wallet client override. Use this instead of instantiating a new one */
     walletClient?: WalletClient<Transport, Chain, Account>;
+    /** EIP1559 support */
+    eip1559?: boolean;
     /** Rpc max block range. Max block range for fetching logs. Used by `eth_getUserOperationByHash` */
     rpcMaxBlockRange?: bigint;
     /** Middleware for custom logic when user is created or fetched  */
@@ -141,7 +143,13 @@ export function createBundlerBackendEIP1193Request(
     }
     const supportedEntryPoints = [parameters.entryPoint];
 
-    const { entryPointSimulations: entryPointSimulationsAddress, chain, rpcMaxBlockRange, request } = parameters;
+    const {
+        entryPointSimulations: entryPointSimulationsAddress,
+        chain,
+        eip1559,
+        rpcMaxBlockRange,
+        request,
+    } = parameters;
     //Remove non-standard keys from config, doesn't break anything but more aligned with original
     const clientConfig: ClientConfig<Transport, Chain, Account> = omit(parameters, [
         "walletClient",
@@ -435,17 +443,11 @@ export function createBundlerBackendEIP1193Request(
                 args.method === "eth_getUserOperationGasPrice" ||
                 args.method === "pimlico_getUserOperationGasPrice"
             ) {
-                //TODO: patched for now for non EIP1559 IOTEX
+                // Default EIP1559
                 const gasPrice = await publicClient.estimateFeesPerGas({
-                    type: chain.id != 4690 && chain.id != 4689 ? "eip1559" : "legacy",
+                    type: eip1559 === false ? "legacy" : "eip1559",
                 });
                 if (gasPrice.gasPrice) {
-                    /*
-                    const gasPriceHex = {
-                        gasPrice: numberToHex(gasPrice.gasPrice),
-                    } as {
-                        gasPrice: Hex;
-                    };*/
                     const gasPriceHex = {
                         maxFeePerGas: numberToHex(gasPrice.gasPrice),
                         maxPriorityFeePerGas: numberToHex(gasPrice.gasPrice),

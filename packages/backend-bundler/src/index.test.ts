@@ -36,6 +36,7 @@ import {
     getVerifyingPaymaster,
     getERC4337Contracts,
 } from "@owlprotocol/contracts-account-abstraction";
+// import { UserOperationEvent } from "@owlprotocol/contracts-account-abstraction/artifacts/IEntryPoint";
 import { createBundlerBackend } from "./createBundlerBackend.js";
 import { createPaymasterBackend } from "./createPaymasterBackend.js";
 import { port } from "./test/constants.js";
@@ -69,12 +70,12 @@ describe("userOp.test.ts", function () {
     >;
 
     beforeAll(async () => {
-        const chain = localhost;
+        const chain: Chain<undefined, { eip1559?: boolean }> = localhost;
         transport = http(`http://127.0.0.1:${port}`);
 
-        /*
         // Test Custom Chain (with NODE_ENV=staging)
-        const chain: Chain = {
+        /*
+        const chain: Chain<undefined, { eip1559?: boolean }> = {
             id: 1001,
             name: "Kaia Kairos Testnet",
             nativeCurrency: { name: "Kaia", symbol: "KLAY", decimals: 18 },
@@ -82,6 +83,9 @@ describe("userOp.test.ts", function () {
                 default: {
                     http: ["https://public-en-kairos.node.kaia.io"],
                 },
+            },
+            custom: {
+                eip1559: false,
             },
         };
         transport = http(chain.rpcUrls.default.http[0]);
@@ -149,6 +153,7 @@ describe("userOp.test.ts", function () {
             walletClient: bundlerWalletClient,
             entryPoint,
             entryPointSimulations,
+            eip1559: chain.custom?.eip1559,
         });
 
         //Paymaster
@@ -213,6 +218,35 @@ describe("userOp.test.ts", function () {
             },
         });
     });
+
+    test.skip("Get user op", async () => {
+        //Note: user op
+        const smartAccountAddress = "0x49688d7b50ABfb224f137E2e83821518Dc50fd3A";
+        //Get smart account deployed
+        expect(await publicClient.getBytecode({ address: smartAccountAddress })).toBeDefined();
+
+        const userOpHash = "0x81f3b51ca3c884016c817fde91c77cdc08a79fec239b6545401809cf4495fa65";
+
+        /*
+        const logs = await publicClient.getLogs({
+            address: entryPoint,
+            event: UserOperationEvent,
+            fromBlock: 0n,
+            args: {
+                userOpHash,
+            },
+            strict: true,
+        });
+        console.debug(logs);
+
+        const receipt = await bundlerClient.getUserOperationReceipt({ hash: userOpHash });
+        console.debug(receipt);
+        */
+
+        const userOp = await bundlerClient.waitForUserOperationReceipt({ hash: userOpHash });
+        console.debug(userOp);
+    });
+
     /**
      * Create a UserOp with local bundler
      **/
@@ -247,11 +281,9 @@ describe("userOp.test.ts", function () {
 
         //Get smart account deployed
         expect(await publicClient.getBytecode({ address: simpleAccount.address })).toBeDefined();
-
-        console.debug(userOpReceipt);
     });
 
-    test.skip("local bundler/paymaster - smartAccountClient.sendTransaction", async () => {
+    test("local bundler/paymaster - smartAccountClient.sendTransaction", async () => {
         //Encode smart account tx, send to random address
         const to = privateKeyToAccount(generatePrivateKey()).address;
         const value = 0n;
