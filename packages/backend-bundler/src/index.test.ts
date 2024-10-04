@@ -34,7 +34,6 @@ import {
     getERC4337Nonce,
     topupPaymaster,
 } from "@owlprotocol/contracts-account-abstraction";
-import { deleteEmulatorData } from "@owlprotocol/eth-firebase/admin";
 import { createBundlerBackend } from "./createBundlerBackend.js";
 import { createPaymasterBackend } from "./createPaymasterBackend.js";
 import { port } from "./test/constants.js";
@@ -151,8 +150,6 @@ describe("userOp.test.ts", function () {
     });
 
     beforeEach(async () => {
-        await deleteEmulatorData();
-
         account = privateKeyToAccount(generatePrivateKey());
 
         // Smart Account Address
