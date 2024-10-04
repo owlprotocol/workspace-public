@@ -1,2 +1,2 @@
-export * from "./diamondSpec.js";
-export * from "./facets.js";
+export * from "./ERC721.js";
+export * from "./Diamond.js";
