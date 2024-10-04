@@ -21,8 +21,7 @@ import {
 import { port } from "./test/constants.js";
 import { EntryPointSimulations } from "./artifacts/EntryPointSimulations.js";
 
-// TODO: FIXME: connection to anvil in GitHub
-describe.skip("EntryPointSimulations.test.ts", function () {
+describe("EntryPointSimulations.test.ts", function () {
     test("EntryPointSimulations - codesize", async () => {
         const codeSize = hexToBytes(EntryPointSimulations.bytecode).length;
         expect(codeSize).toBeLessThanOrEqual(24576);

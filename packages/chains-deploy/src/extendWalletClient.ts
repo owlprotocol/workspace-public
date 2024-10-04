@@ -12,7 +12,7 @@ export function extendWalletClient(
     //TODO: Find way to detect this?
     // IOTEX do NOT use lattice, Polygon Blackberry
     // Non-EIP1559 Chains
-    const nonEIP1559 = [4690, 4689, 94204209];
+    const nonEIP1559 = [4690, 4689, 94204209, 1001];
     if (!nonEIP1559.includes(walletClient.chain.id)) {
         return walletClient.extend(transactionQueue());
     }
