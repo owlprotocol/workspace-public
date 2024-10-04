@@ -27,6 +27,7 @@ export interface ProjectData {
     coverImage?: string;
     projectType?: ProjectType;
     isArchived?: boolean;
+    hasPublicUsers?: boolean;
 }
 export const projectDataZod = z
     .object({
@@ -39,6 +40,10 @@ export const projectDataZod = z
         coverImage: z.string().describe("URL for cover image").optional(),
         projectType: z.nativeEnum(ProjectType).describe("only used for DEMO projects, DEFAULT = undefined").optional(),
         isArchived: z.boolean().describe("is project archived").optional(),
+        hasPublicUsers: z
+            .boolean()
+            .describe("project users can be publicly accessed. By default project users are private")
+            .optional(),
     })
     .describe("project");
 export const encodeProjectData: (data: ProjectData) => ProjectData = projectDataZod.parse;
