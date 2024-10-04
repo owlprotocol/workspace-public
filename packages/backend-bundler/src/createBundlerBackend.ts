@@ -16,14 +16,15 @@ import {
     StateOverride,
     decodeFunctionData,
     numberToHex,
+    Log,
+    GetTransactionReturnType,
 } from "viem";
 import { bundlerActions } from "permissionless";
 import { PimlicoBundlerClient } from "permissionless/clients/pimlico";
 import { pimlicoBundlerActions } from "permissionless/actions/pimlico";
-import { ENTRYPOINT_ADDRESS_V07_TYPE, GetEntryPointVersion } from "permissionless/types";
+import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { getEntryPointVersion, getUserOperationHash } from "permissionless/utils";
 import { omit } from "lodash-es";
-import { ethUserOpResource } from "@owlprotocol/eth-firebase/admin";
 import {
     IEntryPoint,
     UserOperationEvent,
@@ -41,6 +42,27 @@ import {
     BundlerRpcSchema,
     estimateUserOperationGas,
 } from "@owlprotocol/contracts-account-abstraction";
+
+export type OnSendUserOperation = (params: {
+    chainId: number;
+    userOpHash: Hash;
+    userOp: UserOperationWithBigIntAsHex<"v0.7">;
+}) => any;
+
+export type OnGetUserOperationByHash = (params: {
+    chainId: number;
+    userOpHash: Hash;
+    userOp: UserOperationWithBigIntAsHex<"v0.7">;
+    transaction: GetTransactionReturnType;
+}) => any;
+
+export type OnGetUserOperationReceipt = (params: {
+    chainId: number;
+    userOpHash: Hash;
+    userOpEvent: Log<bigint, number, false, typeof UserOperationEvent, true>;
+    logs: Log<Hex, Hex, false>[];
+    receipt: RpcTransactionReceipt;
+}) => any;
 
 /**
  * Local bundler config
@@ -66,6 +88,10 @@ export type BundlerBackendConfig = ClientConfig<Transport, Chain, Account> & {
     walletClient?: WalletClient<Transport, Chain, Account>;
     /** Rpc max block range. Max block range for fetching logs. Used by `eth_getUserOperationByHash` */
     rpcMaxBlockRange?: bigint;
+    /** Middleware for custom logic when user is created or fetched  */
+    onSendUserOperation?: OnSendUserOperation;
+    onGetUserOperationByHash?: OnGetUserOperationByHash;
+    onGetUserOperationReceipt?: OnGetUserOperationReceipt;
 };
 
 /**
@@ -166,13 +192,14 @@ export function createBundlerBackendEIP1193Request(
                     chainId: chain.id,
                 });
 
-                //Cache userOp
                 //To get transactionHash and other post-execution data, call `eth_getUserOperationReceipt`
-                ethUserOpResource.upsert({
-                    chainId: chain.id,
-                    userOpHash,
-                    ...userOp,
-                });
+                if (parameters.onSendUserOperation) {
+                    parameters.onSendUserOperation({
+                        chainId: chain.id,
+                        userOpHash,
+                        userOp,
+                    });
+                }
 
                 return userOpHash;
             } else if (args.method === "eth_estimateUserOperationGas") {
@@ -281,22 +308,21 @@ export function createBundlerBackendEIP1193Request(
                     blockHash: tx.blockHash ?? "0x",
                     blockNumber: numberToHex(tx.blockNumber ?? 0n),
                 } as {
-                    userOperation: UserOperationWithBigIntAsHex<GetEntryPointVersion<ENTRYPOINT_ADDRESS_V07_TYPE>>;
+                    userOperation: UserOperationWithBigIntAsHex<"v0.7">;
                     entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
                     transactionHash: Hash;
                     blockHash: Hash;
                     blockNumber: Hex;
                 };
 
-                //Cache userOp
-                ethUserOpResource.upsert({
-                    chainId: chain.id,
-                    userOpHash,
-                    transactionHash: txHash,
-                    blockHash: tx.blockHash ?? "0x",
-                    blockNumber: numberToHex(tx.blockNumber ?? 0n),
-                    ...result.userOperation,
-                });
+                if (parameters.onGetUserOperationByHash) {
+                    parameters.onGetUserOperationByHash({
+                        chainId: chain.id,
+                        userOpHash,
+                        userOp: result.userOperation,
+                        transaction: tx,
+                    });
+                }
 
                 return result;
             } else if (args.method === "eth_getUserOperationReceipt") {
@@ -320,6 +346,7 @@ export function createBundlerBackendEIP1193Request(
                     args: {
                         userOpHash,
                     },
+                    strict: true,
                 });
 
                 if (filterResult.length === 0) {
@@ -327,19 +354,6 @@ export function createBundlerBackendEIP1193Request(
                 }
 
                 const userOperationEvent = filterResult[0];
-                // throw if any of the members of userOperationEvent are undefined
-                if (
-                    userOperationEvent.args.actualGasCost === undefined ||
-                    userOperationEvent.args.sender === undefined ||
-                    userOperationEvent.args.nonce === undefined ||
-                    userOperationEvent.args.userOpHash === undefined ||
-                    userOperationEvent.args.success === undefined ||
-                    userOperationEvent.args.paymaster === undefined ||
-                    userOperationEvent.args.actualGasUsed === undefined
-                ) {
-                    throw new Error("userOperationEvent has undefined members");
-                }
-
                 const txHash = userOperationEvent.transactionHash;
                 if (!txHash) {
                     // transaction pending
@@ -406,21 +420,15 @@ export function createBundlerBackendEIP1193Request(
                     logs: filteredLogs,
                 };
 
-                //Cache userOp
-                ethUserOpResource.set(
-                    {
+                if (parameters.onGetUserOperationReceipt) {
+                    parameters.onGetUserOperationReceipt({
                         chainId: chain.id,
                         userOpHash,
-                        transactionHash: receipt.transactionHash,
-                        actualGasUsed: numberToHex(userOperationEvent.args.actualGasUsed),
-                        actualGasCost: numberToHex(userOperationEvent.args.actualGasCost),
-                        success: userOperationEvent.args.success,
-                        logIds: filteredLogs.map((l) => {
-                            return { blockHash: l.blockHash, logIndex: parseInt(l.logIndex) };
-                        }),
-                    },
-                    { merge: true },
-                );
+                        userOpEvent: userOperationEvent,
+                        logs: filteredLogs,
+                        receipt,
+                    });
+                }
 
                 return response;
             } else if (
