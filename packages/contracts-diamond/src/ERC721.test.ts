@@ -114,12 +114,18 @@ describe("ERC721.test.ts", function () {
         expect(resultDeploy.hash).toBeDefined();
         expect(resultDeploy.addresses[0].address).toBe(diamondAddress);
 
+        if (resultDeploy.hash) {
+            await publicClient.waitForTransactionReceipt({ hash: resultDeploy.hash });
+        }
+
+        const diamondBytecode2 = await publicClient.getBytecode({ address: diamondAddress });
+        expect(diamondBytecode2).toBeDefined();
+
         const symbol = await publicClient.readContract({
             address: diamondAddress,
             abi: [symbolAbi],
             functionName: "symbol",
         });
-
         expect(symbol).toBe("TEST");
     });
 });
