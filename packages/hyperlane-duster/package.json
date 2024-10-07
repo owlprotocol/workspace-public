@@ -20,17 +20,17 @@
     "@oclif/test": "^4",
     "@types/chai": "^4",
     "@types/mocha": "^10",
-    "@types/node": "^18",
+    "@types/node": "^20.11.10",
     "chai": "^4",
-    "eslint": "^8",
+    "eslint": "^8.55.0",
     "eslint-config-oclif": "^5",
     "eslint-config-oclif-typescript": "^3",
     "eslint-config-prettier": "^9",
     "mocha": "^10",
     "oclif": "^4",
     "shx": "^0.3.3",
-    "ts-node": "^10",
-    "typescript": "^5"
+    "ts-node": "^10.8.0",
+    "typescript": "5.4.5"
   },
   "engines": {
     "node": ">=18.0.0"
