@@ -111,6 +111,7 @@ describe("ERC721SinglePhase.test.ts", function () {
     // Generated account on each test
     let adminWalletClient: WalletClient<Transport, Chain, Account>;
     let contractAddress: Address;
+
     const userWalletClients: WalletClient<Transport, Chain, Account>[] = [];
 
     beforeAll(async () => {
@@ -300,11 +301,7 @@ describe("ERC721SinglePhase.test.ts", function () {
     test("should revert when minting exceeds maxClaimableSupply using a single mintBatch call", async () => {
         const userWalletClient = userWalletClients[0];
 
-        const recipients = [
-            ...new Array(3).fill(userWalletClients[0].account.address),
-            ...new Array(2).fill(userWalletClients[1].account.address),
-            ...new Array(2).fill(userWalletClients[2].account.address),
-        ];
+        const recipients = [...new Array(7).fill(userWalletClients[0].account.address)];
 
         await expect(
             publicClient.simulateContract({

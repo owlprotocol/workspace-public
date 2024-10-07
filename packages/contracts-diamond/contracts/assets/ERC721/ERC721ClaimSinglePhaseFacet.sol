@@ -89,4 +89,6 @@ contract ERC721ClaimSinglePhaseFacet is IERC721ClaimSinglePhase {
     function getClaimCondition() external view returns (ERC721ClaimLib.ClaimCondition memory) {
         return ERC721ClaimLib._getClaimCondition(0);
     }
+
+    //TODO: getWalletClaims
 }

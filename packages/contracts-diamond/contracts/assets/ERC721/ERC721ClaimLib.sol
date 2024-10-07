@@ -54,13 +54,7 @@ library ERC721ClaimLib {
 
         ClaimCondition storage existingCondition = ds.claimConditions[conditionId];
 
-        // Ensure the new maxClaimableSupply is not less than the supply already claimed
-        if (newCondition.maxClaimableSupply < existingCondition.supplyClaimed) {
-            revert InvalidClaimCondition(
-                "maxClaimableSupply cannot be less than the number of tokens already claimed."
-            );
-        }
-
+        // condition.supplyClaimed cannot be edited
         newCondition.supplyClaimed = existingCondition.supplyClaimed;
 
         ds.claimConditions[conditionId] = newCondition;
@@ -71,6 +65,8 @@ library ERC721ClaimLib {
         ERC721ClaimStorage storage ds = getData();
         return ds.claimConditions[conditionId];
     }
+
+    //TODO: Add getWalletClaims library conditionId, account, returns uint256
 
     function _conditionExists(bytes32 conditionId, ERC721ClaimStorage storage ds) internal view returns (bool) {
         return ds.claimConditions[conditionId].maxClaimableSupply != 0;
