@@ -8,7 +8,6 @@ import {IInterchainSecurityModule} from "@hyperlane-xyz/core/contracts/interface
 import {IMailbox} from "@hyperlane-xyz/core/contracts/interfaces/IMailbox.sol";
 import {IMessageRecipient} from "@hyperlane-xyz/core/contracts/interfaces/IMessageRecipient.sol";
 import {IRouter} from "@hyperlane-xyz/core/contracts/interfaces/IRouter.sol";
-
 import {IRoutingIsm} from "@hyperlane-xyz/core/contracts/interfaces/isms/IRoutingIsm.sol";
 
 //implementations
@@ -21,3 +20,5 @@ import {InterchainQueryRouter} from "@hyperlane-xyz/core/contracts/middleware/In
 import {OwnableMulticall} from "@hyperlane-xyz/core/contracts/middleware/libs/OwnableMulticall.sol";
 
 import {TrustedRelayerIsm} from "@hyperlane-xyz/core/contracts/isms/TrustedRelayerIsm.sol";
+
+import {TokenRouter} from "@hyperlane-xyz/core/contracts/token/libs/TokenRouter.sol";
