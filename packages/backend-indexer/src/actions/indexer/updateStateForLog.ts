@@ -8,7 +8,7 @@ import { ERC1155, ERC1155Balance, ERC20Allowance, ERC20Balance, ERC721 } from "@
 import { getERC20Allowance, getERC20Balance } from "./erc20.js";
 import { getERC1155Balance } from "./erc1155.js";
 import { getERC721Owner } from "./erc721.js";
-import { isStrictEventAbi } from "../controllers/isStrictEventAbi.js";
+import { isStrictEventAbi } from "../../controllers/isStrictEventAbi.js";
 
 type EthState = ERC20Balance | ERC20Allowance | ERC721 | ERC1155 | ERC1155Balance;
 

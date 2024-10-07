@@ -5,7 +5,7 @@ import { deleteEmulatorData, ethBlockResource } from "@owlprotocol/eth-firebase/
 import { omit } from "lodash-es";
 import { getBlock as getBlockViem } from "viem/actions";
 import { getBlock } from "./getBlock.js";
-import { port } from "../test/constants.js";
+import { port } from "../../test/constants.js";
 
 /**
  * For block comparisons between viem

@@ -17,11 +17,11 @@ import {
     GetTransactionReceiptReturnType,
     GetTransactionReturnType,
 } from "viem";
-import { getBlock } from "../actions/getBlock.js";
-import { getBytecode } from "../actions/getBytecode.js";
-import { getLogs } from "../actions/getLogs.js";
-import { getTransaction } from "../actions/getTransaction.js";
-import { getTransactionReceipt } from "../actions/getTransactionReceipt.js";
+import { getBlock } from "../../actions/public/getBlock.js";
+import { getBytecode } from "../../actions/public/getBytecode.js";
+import { getLogs } from "../../actions/public/getLogs.js";
+import { getTransaction } from "../../actions/public/getTransaction.js";
+import { getTransactionReceipt } from "../../actions/public/getTransactionReceipt.js";
 
 export type IndexerActions<
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

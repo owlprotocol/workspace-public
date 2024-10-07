@@ -14,7 +14,7 @@ import { deleteEmulatorData, ethTransactionReceiptResource } from "@owlprotocol/
 import { omit } from "lodash-es";
 import { getTransactionReceipt as getTransactionReceiptViem, waitForTransactionReceipt } from "viem/actions";
 import { getTransactionReceipt } from "./getTransactionReceipt.js";
-import { port } from "../test/constants.js";
+import { port } from "../../test/constants.js";
 
 /**
  * For transaction receipt comparisons between viem

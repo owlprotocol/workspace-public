@@ -10,7 +10,7 @@ import {
     Log,
 } from "viem";
 import { getLogs as getLogsViem } from "viem/actions";
-import { decodeLogWithAbis } from "../controllers/decodeLogWithAbis.js";
+import { decodeLogWithAbis } from "../../controllers/decodeLogWithAbis.js";
 
 export async function getLogsDecoded<
     chain extends Chain | undefined,
