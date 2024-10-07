@@ -24,7 +24,6 @@ library ERC721ClaimLib {
     struct ERC721ClaimStorage {
         mapping(bytes32 => ClaimCondition) claimConditions;
         mapping(bytes32 => mapping(address => uint256)) walletClaims;
-        uint256 totalClaims;
     }
 
     // Errors
@@ -62,21 +61,11 @@ library ERC721ClaimLib {
     function _removeClaimCondition(bytes32 conditionId) internal {
         AccessControlRecursiveLib._checkRoleRecursive(ERC721_CLAIM_ROLE, msg.sender);
         ERC721ClaimStorage storage ds = getData();
-
-        if (!_conditionExists(conditionId, ds)) {
-            revert ConditionDoesNotExist(conditionId);
-        }
-
         delete ds.claimConditions[conditionId];
     }
 
     function _getClaimCondition(bytes32 conditionId) internal view returns (ClaimCondition memory) {
         ERC721ClaimStorage storage ds = getData();
-
-        if (!_conditionExists(conditionId, ds)) {
-            revert ConditionDoesNotExist(conditionId);
-        }
-
         return ds.claimConditions[conditionId];
     }
 
@@ -84,7 +73,7 @@ library ERC721ClaimLib {
         return ds.claimConditions[conditionId].startTimestamp != 0;
     }
 
-    function _verifyClaim(ClaimCondition memory condition, uint256 quantity, uint256 userClaimed) internal view {
+    function _checkClaim(ClaimCondition memory condition, uint256 quantity, uint256 userClaimed) internal view {
         if (!_isWithinClaimPeriod(condition)) {
             revert ClaimPeriodNotActive(block.timestamp, condition.startTimestamp, condition.endTimestamp);
         }
@@ -113,33 +102,31 @@ library ERC721ClaimLib {
         return userClaimed + quantity <= condition.quantityLimitPerWallet;
     }
 
-    function _preClaim(
+    function _updateClaim(
         ClaimCondition storage condition,
-        ERC721ClaimStorage storage ds,
-        bytes32 conditionId,
+        mapping(address => uint256) storage conditionWalletClaims,
         address to,
         uint256 quantity
     ) internal {
-        _verifyClaim(condition, quantity, ds.walletClaims[conditionId][to]);
-
-        ds.walletClaims[conditionId][to] += quantity;
+        conditionWalletClaims[to] += quantity;
         condition.supplyClaimed += quantity;
-        ds.totalClaims += quantity;
     }
 
-    function _processPayment(ClaimCondition memory condition, uint256 quantity) internal {
+    function _payClaim(ClaimCondition memory condition, uint256 quantity) internal {
         uint256 totalPayment = condition.pricePerToken * quantity;
 
-        if (condition.currency == address(0)) {
-            if (msg.value < totalPayment) {
-                revert InsufficientPayment(totalPayment, msg.value);
-            }
+        if (totalPayment > 0) {
+            if (condition.currency == address(0)) {
+                if (msg.value < totalPayment) {
+                    revert InsufficientPayment(totalPayment, msg.value);
+                }
 
-            if (msg.value > totalPayment) {
-                payable(msg.sender).transfer(msg.value - totalPayment);
+                if (msg.value > totalPayment) {
+                    payable(msg.sender).transfer(msg.value - totalPayment);
+                }
+            } else {
+                IERC20(condition.currency).transferFrom(msg.sender, address(this), totalPayment);
             }
-        } else {
-            IERC20(condition.currency).transferFrom(msg.sender, address(this), totalPayment);
         }
     }
 
@@ -147,8 +134,9 @@ library ERC721ClaimLib {
         ERC721ClaimStorage storage ds = getData();
         ClaimCondition storage condition = ds.claimConditions[conditionId];
 
-        _preClaim(condition, ds, conditionId, to, quantity);
-        _processPayment(condition, quantity);
+        _checkClaim(condition, quantity, ds.walletClaims[conditionId][to]);
+        _updateClaim(condition, ds.walletClaims[conditionId], to, quantity);
+        _payClaim(condition, quantity);
 
         emit TokensClaimed(to, conditionId, quantity);
         return ds.walletClaims[conditionId][to];
