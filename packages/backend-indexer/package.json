@@ -31,6 +31,16 @@
       "types": "./lib/types/index.d.ts",
       "require": "./lib/cjs/index.js",
       "import": "./lib/esm/index.js"
+    },
+    "./actions": {
+      "types": "./lib/types/actions/index.d.ts",
+      "require": "./lib/cjs/actions/index.js",
+      "import": "./lib/esm/actions/index.js"
+    },
+    "./actions/*": {
+      "types": "./lib/types/actions/*.d.ts",
+      "require": "./lib/cjs/actions/*.js",
+      "import": "./lib/esm/actions/*.js"
     }
   },
   "scripts": {
