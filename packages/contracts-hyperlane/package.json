@@ -90,6 +90,7 @@
     "@hyperlane-xyz/registry": "^4.3.6",
     "@openzeppelin/contracts": "^4.9.3",
     "@openzeppelin/contracts-upgradeable": "^4.9.3",
+    "@owlprotocol/contracts-create2factory": "workspace:*",
     "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
     "dotenv": "^16.4.5",

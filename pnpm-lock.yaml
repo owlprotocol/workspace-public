@@ -1139,6 +1139,9 @@ importers:
       '@openzeppelin/contracts-upgradeable':
         specifier: ^4.9.3
         version: 4.9.6
+      '@owlprotocol/contracts-create2factory':
+        specifier: workspace:*
+        version: link:../contracts-create2factory
       '@owlprotocol/viem-utils':
         specifier: workspace:*
         version: link:../viem-utils
