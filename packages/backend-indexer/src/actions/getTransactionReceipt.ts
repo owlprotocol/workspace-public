@@ -77,7 +77,9 @@ export async function getTransactionReceipt<chain extends Chain | undefined>(
     //Decode logs
     const logsDecoded = await Promise.all(
         transactionReceiptViem.logs.map(async (l) => {
-            const { eventName, args } = decodeLogWithAbis(l) ?? (await decodeLogWithFirebase(l)) ?? {};
+            const { topics, data } = l as Log<bigint, number, false>;
+            const { eventName, args } =
+                decodeLogWithAbis({ topics, data }) ?? (await decodeLogWithFirebase({ topics, data })) ?? {};
 
             const logDecoded = l as Log<bigint, number, false> & {
                 eventName?: string;

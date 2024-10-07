@@ -8,5 +8,6 @@ export * from "./getLogs.js";
 export * from "./getLogsDecoded.js";
 export * from "./getTransaction.js";
 export * from "./getTransactionReceipt.js";
+export * from "./getTransactionReceiptDecoded.js";
 
 export * from "./updateStateForLog.js";

@@ -28,8 +28,16 @@ export async function getLogsDecoded<
     const logsViem = await getLogsViem<chain, abiEvent, abiEvents, strict, fromBlock, toBlock>(client, params);
     return logsViem.map((l) => {
         if (!(l as Log<bigint, number, boolean, AbiEvent>).eventName) {
-            const { address, topics, data } = l as Log<bigint, number, boolean, AbiEvent>;
-            return decodeLogWithAbis({ address, topics, data }) ?? l;
+            const { topics, data } = l as Log<bigint, number, false>;
+            const { eventName, args } = decodeLogWithAbis({ topics, data }) ?? {};
+
+            const logDecoded = l as Log<bigint, number, false> & {
+                eventName?: string;
+                args?: any;
+            };
+            if (eventName) logDecoded.eventName = eventName;
+            if (args) logDecoded.args = args;
+            return logDecoded;
         }
 
         return l;
