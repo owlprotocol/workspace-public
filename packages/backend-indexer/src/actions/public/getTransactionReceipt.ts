@@ -11,8 +11,8 @@ import {
 } from "viem";
 import { getChainId, getTransactionReceipt as getTransactionReceiptViem } from "viem/actions";
 import { getAction } from "viem/utils";
-import { updateStateForLog } from "./updateStateForLog.js";
-import { decodeLogWithAbis, decodeLogWithFirebase } from "../controllers/index.js";
+import { updateStateForLog } from "../indexer/updateStateForLog.js";
+import { decodeLogWithAbis, decodeLogWithFirebase } from "../../controllers/index.js";
 
 /**
  * Returns the [Transaction Receipt](https://viem.sh/docs/glossary/terms#transaction-receipt) given a [Transaction](https://viem.sh/docs/glossary/terms#transaction) hash.

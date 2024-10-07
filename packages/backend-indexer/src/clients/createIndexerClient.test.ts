@@ -19,7 +19,7 @@ import {
     ethTransactionReceiptResource,
     ethTransactionResource,
 } from "@owlprotocol/eth-firebase/admin";
-import { port } from "./test/constants.js";
+import { port } from "../test/constants.js";
 import { createIndexerClient } from "./createIndexerClient.js";
 
 /**

@@ -1,6 +1,6 @@
 import { Chain, Client, Transport, GetTransactionReceiptParameters, Log } from "viem";
 import { getTransactionReceipt as getTransactionReceiptViem } from "viem/actions";
-import { decodeLogWithAbis } from "../controllers/index.js";
+import { decodeLogWithAbis } from "../../controllers/index.js";
 
 /**
  * Returns the [Transaction Receipt](https://viem.sh/docs/glossary/terms#transaction-receipt) given a [Transaction](https://viem.sh/docs/glossary/terms#transaction) hash.

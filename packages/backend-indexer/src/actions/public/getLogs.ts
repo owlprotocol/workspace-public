@@ -4,8 +4,8 @@ import { getChainId, getLogs as getLogsViem } from "viem/actions";
 import { getAction } from "viem/utils";
 import { ethLogResource } from "@owlprotocol/eth-firebase/admin";
 import { GCLOUD_PROJECT } from "@owlprotocol/envvars";
-import { updateStateForLog } from "./updateStateForLog.js";
-import { decodeLogWithAbis, decodeLogWithFirebase } from "../controllers/index.js";
+import { updateStateForLog } from "../indexer/updateStateForLog.js";
+import { decodeLogWithAbis, decodeLogWithFirebase } from "../../controllers/index.js";
 
 /**
  * Returns a list of event logs matching the provided parameters.
