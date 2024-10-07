@@ -23,7 +23,7 @@ import { getLogs } from "../actions/getLogs.js";
 import { getTransaction } from "../actions/getTransaction.js";
 import { getTransactionReceipt } from "../actions/getTransactionReceipt.js";
 
-export type PublicIndexerActions<
+export type IndexerActions<
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _transport extends Transport = Transport,
     chain extends Chain | undefined = Chain | undefined,
@@ -160,11 +160,11 @@ export type PublicIndexerActions<
     getTransactionReceipt: (args: GetTransactionReceiptParameters) => Promise<GetTransactionReceiptReturnType<chain>>;
 };
 
-export function publicIndexerActions<
+export function indexerActions<
     transport extends Transport = Transport,
     chain extends Chain | undefined = Chain | undefined,
     account extends Account | undefined = Account | undefined,
->(client: Client<transport, chain, account>): PublicIndexerActions<transport, chain, account> {
+>(client: Client<transport, chain, account>): IndexerActions<transport, chain, account> {
     return {
         getBlock: (args) => getBlock(client, args),
         getBytecode: (args) => getBytecode(client, args),
