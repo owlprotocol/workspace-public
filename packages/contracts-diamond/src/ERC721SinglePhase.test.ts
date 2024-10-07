@@ -11,6 +11,7 @@ import {
     zeroAddress,
     parseEther,
     hexToBigInt,
+    Address,
 } from "viem";
 import { localhost } from "viem/chains";
 import { getLocalAccount } from "@owlprotocol/viem-utils";
@@ -109,7 +110,8 @@ describe("ERC721SinglePhase.test.ts", function () {
     let publicClient: PublicClient<Transport, Chain>;
     // Generated account on each test
     let adminWalletClient: WalletClient<Transport, Chain, Account>;
-    let userWalletClient: WalletClient<Transport, Chain, Account>;
+    let contractAddress: Address;
+    const userWalletClients: WalletClient<Transport, Chain, Account>[] = [];
 
     beforeAll(async () => {
         transport = http(`http://127.0.0.1:${port}`);
@@ -125,29 +127,31 @@ describe("ERC721SinglePhase.test.ts", function () {
     });
 
     beforeEach(async () => {
-        userWalletClient = createWalletClient({
-            account: privateKeyToAccount(generatePrivateKey()),
-            chain: localhost,
-            transport,
-        });
+        userWalletClients.length = 0;
 
-        const hash = await adminWalletClient.sendTransaction({
-            to: userWalletClient.account.address,
-            value: parseEther("1"),
-        });
+        // Create 3 user wallets
+        for (let i = 0; i < 3; i++) {
+            const userWalletClient = createWalletClient({
+                account: privateKeyToAccount(generatePrivateKey()),
+                chain: localhost,
+                transport,
+            });
+            userWalletClients.push(userWalletClient);
 
-        await publicClient.waitForTransactionReceipt({ hash });
-    });
+            const hash = await adminWalletClient.sendTransaction({
+                to: userWalletClient.account.address,
+                value: parseEther("10"),
+            });
+            await publicClient.waitForTransactionReceipt({ hash });
+        }
 
-    test("deploy ERC721SinglePhase", async () => {
-        // Deploy NFT
         const condition = {
             startTimestamp: 0n,
             endTimestamp: MAX_INT,
-            maxClaimableSupply: 100n,
+            maxClaimableSupply: 6n,
             supplyClaimed: 0n,
-            quantityLimitPerWallet: 10n,
-            pricePerToken: 1,
+            quantityLimitPerWallet: 3n,
+            pricePerToken: parseEther("1"),
             currency: zeroAddress,
         };
 
@@ -166,31 +170,151 @@ describe("ERC721SinglePhase.test.ts", function () {
             bytecode: ERC721SinglePhasePreset.bytecode,
         });
 
-        const receiptDeploy = await publicClient.waitForTransactionReceipt({
-            hash: hashDeploy,
+        const receiptDeploy = await publicClient.waitForTransactionReceipt({ hash: hashDeploy });
+        contractAddress = receiptDeploy.contractAddress!;
+    });
+
+    test("batch mint tokens and verify supplyClaimed", async () => {
+        const recipientAddresses = userWalletClients.map((client) => client.account.address);
+        const userWalletClient = userWalletClients[0];
+
+        const { request } = await publicClient.simulateContract({
+            account: userWalletClient.account,
+            address: contractAddress,
+            abi: ERC721SinglePhasePreset.abi,
+            functionName: "mintBatch",
+            args: [recipientAddresses],
+            value: parseEther("3"),
         });
 
-        const contractAddress = receiptDeploy.contractAddress!;
+        const hash = await userWalletClient.writeContract(request);
+        await publicClient.waitForTransactionReceipt({ hash });
 
-        // Mint token
-        const { request, result } = await publicClient.simulateContract({
+        for (let i = 0; i < recipientAddresses.length; i++) {
+            const ownerOf = await publicClient.readContract({
+                address: contractAddress,
+                abi: ERC721SinglePhasePreset.abi,
+                functionName: "ownerOf",
+                args: [BigInt(i + 1)],
+            });
+
+            expect(ownerOf).toBe(recipientAddresses[i]);
+        }
+
+        const claimCondition = await publicClient.readContract({
+            address: contractAddress,
+            abi: ERC721SinglePhasePreset.abi,
+            functionName: "getClaimCondition",
+        });
+
+        expect(claimCondition.supplyClaimed).toBe(BigInt(recipientAddresses.length));
+    });
+
+    test("should preserve supplyClaimed when updating claim conditions", async () => {
+        const userWalletClient = userWalletClients[0];
+
+        const { request } = await publicClient.simulateContract({
             account: userWalletClient.account,
             address: contractAddress,
             abi: ERC721SinglePhasePreset.abi,
             functionName: "mint",
             args: [userWalletClient.account.address],
-            value: 1n,
+            value: parseEther("1"),
         });
-        const hash = await userWalletClient.writeContract(request);
-        await publicClient.waitForTransactionReceipt({ hash });
 
-        // Check owner
-        const ownerOf = await publicClient.readContract({
+        const mintHash = await userWalletClient.writeContract(request);
+        await publicClient.waitForTransactionReceipt({ hash: mintHash });
+
+        const initialCondition = await publicClient.readContract({
             address: contractAddress,
             abi: ERC721SinglePhasePreset.abi,
-            functionName: "ownerOf",
-            args: [result],
+            functionName: "getClaimCondition",
         });
-        expect(ownerOf).toBe(userWalletClient.account.address);
+
+        expect(initialCondition.supplyClaimed).toBe(1n);
+
+        const updatedCondition = {
+            startTimestamp: 0n,
+            endTimestamp: MAX_INT,
+            maxClaimableSupply: 20n,
+            supplyClaimed: 0n,
+            quantityLimitPerWallet: 5n,
+            pricePerToken: parseEther("1"),
+            currency: zeroAddress,
+        };
+
+        await adminWalletClient.writeContract({
+            abi: ERC721SinglePhasePreset.abi,
+            address: contractAddress,
+            functionName: "setClaimCondition",
+            args: [updatedCondition],
+        });
+
+        const conditionFromContract = await publicClient.readContract({
+            address: contractAddress,
+            abi: ERC721SinglePhasePreset.abi,
+            functionName: "getClaimCondition",
+        });
+
+        expect(conditionFromContract.maxClaimableSupply).toBe(updatedCondition.maxClaimableSupply);
+        expect(conditionFromContract.quantityLimitPerWallet).toBe(updatedCondition.quantityLimitPerWallet);
+        expect(conditionFromContract.supplyClaimed).toBe(1n);
+    });
+
+    test("should revert when minting exceeds quantityLimitPerWallet", async () => {
+        const userWalletClient = userWalletClients[0];
+
+        await expect(
+            publicClient.simulateContract({
+                account: userWalletClient.account,
+                address: contractAddress,
+                abi: ERC721SinglePhasePreset.abi,
+                functionName: "mintBatch",
+                args: [new Array(4).fill(userWalletClient.account.address)],
+                value: parseEther("4"),
+            }),
+        ).rejects.toThrowError("ExceedsWalletLimit");
+    });
+    test("should revert when non-admin tries to update claim conditions", async () => {
+        const nonAdminWalletClient = userWalletClients[0];
+
+        await expect(
+            nonAdminWalletClient.writeContract({
+                abi: ERC721SinglePhasePreset.abi,
+                address: contractAddress,
+                functionName: "setClaimCondition",
+                args: [
+                    {
+                        startTimestamp: 0n,
+                        endTimestamp: MAX_INT,
+                        maxClaimableSupply: 10n,
+                        supplyClaimed: 0n,
+                        quantityLimitPerWallet: 5n,
+                        pricePerToken: 1n,
+                        currency: zeroAddress,
+                    },
+                ],
+            }),
+        ).rejects.toThrowError("AccessControlRecursive: account");
+    });
+    test("should revert when minting exceeds maxClaimableSupply using a single mintBatch call", async () => {
+        const userWalletClient = userWalletClients[0];
+
+        const recipients = [
+            ...new Array(3).fill(userWalletClients[0].account.address),
+            ...new Array(2).fill(userWalletClients[1].account.address),
+            ...new Array(2).fill(userWalletClients[2].account.address),
+        ];
+
+        await expect(
+            publicClient.simulateContract({
+                account: userWalletClient.account,
+                address: contractAddress,
+                abi: ERC721SinglePhasePreset.abi,
+                functionName: "mintBatch",
+                args: [recipients],
+                value: parseEther("7"),
+            }),
+        ).rejects.toThrowError("ExceedsMaxClaimableSupply");
     });
 });

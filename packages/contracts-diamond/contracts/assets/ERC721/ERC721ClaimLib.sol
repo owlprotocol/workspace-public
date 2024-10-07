@@ -28,12 +28,11 @@ library ERC721ClaimLib {
     }
 
     // Errors
-    error ConditionDoesNotExist(bytes32 conditionId);
     error ClaimPeriodNotActive(uint256 currentTimestamp, uint256 startTimestamp, uint256 endTimestamp);
     error ExceedsMaxClaimableSupply(uint256 requested, uint256 maxClaimableSupply);
     error ExceedsWalletLimit(uint256 requested, uint256 remainingLimit);
     error InsufficientPayment(uint256 required, uint256 provided);
-    error InvalidCurrencyTransfer(address currency, uint256 required, uint256 provided);
+    error InvalidClaimCondition(string reason);
 
     // Events
     event ClaimConditionSet(bytes32 indexed conditionId, ClaimCondition condition);
@@ -50,12 +49,18 @@ library ERC721ClaimLib {
         AccessControlRecursiveLib._checkRoleRecursive(ERC721_CLAIM_ROLE, msg.sender);
         ERC721ClaimStorage storage ds = getData();
         if (newCondition.maxClaimableSupply == 0) {
-            //TODO: Make this an error
-            revert("Condition cannot have zero max claimable supply");
+            revert InvalidClaimCondition("maxClaimableSupply cannot be zero.");
         }
 
         ClaimCondition storage existingCondition = ds.claimConditions[conditionId];
-        // condition.supplyClaimed cannot be edited and is always set to 0
+
+        // Ensure the new maxClaimableSupply is not less than the supply already claimed
+        if (newCondition.maxClaimableSupply < existingCondition.supplyClaimed) {
+            revert InvalidClaimCondition(
+                "maxClaimableSupply cannot be less than the number of tokens already claimed."
+            );
+        }
+
         newCondition.supplyClaimed = existingCondition.supplyClaimed;
 
         ds.claimConditions[conditionId] = newCondition;
@@ -114,13 +119,11 @@ library ERC721ClaimLib {
         if (condition.pricePerToken > 0) {
             uint256 totalPayment = condition.pricePerToken * quantity;
 
+            require(msg.value == totalPayment, "Incorrect payment value sent.");
+
             if (condition.currency == address(0)) {
                 if (msg.value < totalPayment) {
                     revert InsufficientPayment(totalPayment, msg.value);
-                }
-
-                if (msg.value > totalPayment) {
-                    payable(account).transfer(msg.value - totalPayment);
                 }
             } else {
                 IERC20(condition.currency).transferFrom(account, address(this), totalPayment);
