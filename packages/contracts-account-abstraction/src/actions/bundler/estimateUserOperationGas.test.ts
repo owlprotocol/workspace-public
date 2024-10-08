@@ -28,7 +28,7 @@ import {
 } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
-import { UserOperationGasFields, estimateUserOperationGas } from "./estimateUserOperationGas.js";
+import { estimateUserOperationGas, UserOperationGasLimitFields } from "./estimateUserOperationGas.js";
 import { port } from "../../test/constants.js";
 import { VerifyingPaymaster } from "../../artifacts/VerifyingPaymaster.js";
 import { getSimpleAccountAddress } from "../../SimpleAccount.js";
@@ -48,7 +48,7 @@ describe("estimateUserOperationGas.test.ts", function () {
     // Generated account on each test
     let account: PrivateKeyAccount;
 
-    let entryPoint: typeof entryPoint07Address;
+    let entryPointAddress: typeof entryPoint07Address;
     let entryPointSimulationsAddress: Address;
     let simpleAccountFactory: Address;
     let verifyingPaymaster: Address;
@@ -68,7 +68,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             publicClient,
             walletClient,
         });
-        entryPoint = contracts.entrypoint.address;
+        entryPointAddress = contracts.entrypoint.address;
         //TODO: we use the Pimlico simulator?
         entryPointSimulationsAddress = contracts.pimlicoEntrypointSimulations.address;
         simpleAccountFactory = contracts.simpleAccountFactory.address;
@@ -188,7 +188,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             });
 
             const gasPrice = await publicClient.estimateFeesPerGas();
-            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasFields> = {
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasLimitFields> = {
                 sender: simpleAccount.address,
                 nonce: 0n,
                 signature:
@@ -199,11 +199,10 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Estimate UserOp gas
-            const userOpGas = await estimateUserOperationGas(publicClient, {
-                userOperationData: userOpData,
-                entryPoint,
-                entryPointSimulationsAddress,
-            });
+            const userOpGas = await estimateUserOperationGas(
+                { ...publicClient, entryPointAddress: entryPointAddress, entryPointSimulationsAddress },
+                userOpData,
+            );
 
             expect(userOpGas).toBeDefined();
             //gas values > 0
@@ -223,7 +222,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             //Sign UserOp
             const userOpHash = getUserOperationHash({
                 userOperation: userOp,
-                entryPointAddress: entryPoint,
+                entryPointAddress: entryPointAddress,
                 entryPointVersion: "0.7",
                 chainId: localhost.id,
             });
@@ -239,7 +238,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             //Simulate handleOps
             const { request } = await publicClient.simulateContract({
                 account: walletClient.account,
-                address: entryPoint,
+                address: entryPointAddress,
                 abi: IEntryPoint.abi,
                 functionName: "handleOps",
                 args: handleOpsArgs,
@@ -298,7 +297,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             const dummySignatureBytes = hexToBytes(dummySignature);
             expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
             expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);
-            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasFields> = {
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasLimitFields> = {
                 sender: simpleAccount.address,
                 nonce: 0n,
                 signature: dummySignature,
@@ -311,11 +310,10 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Estimate UserOp gas
-            const userOpGas = await estimateUserOperationGas(publicClient, {
-                userOperationData: userOpData,
-                entryPoint,
-                entryPointSimulationsAddress,
-            });
+            const userOpGas = await estimateUserOperationGas(
+                { ...publicClient, entryPointAddress, entryPointSimulationsAddress },
+                userOpData,
+            );
 
             expect(userOpGas).toBeDefined();
             //gas values > 0
@@ -361,7 +359,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             //Sign UserOp
             const userOpHash = getUserOperationHash({
                 userOperation: userOp,
-                entryPointAddress: entryPoint,
+                entryPointAddress: entryPointAddress,
                 entryPointVersion: "0.7",
                 chainId: localhost.id,
             });
@@ -377,7 +375,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             //Simulate handleOps
             const { request } = await publicClient.simulateContract({
                 account: walletClient.account,
-                address: entryPoint,
+                address: entryPointAddress,
                 abi: IEntryPoint.abi,
                 functionName: "handleOps",
                 args: handleOpsArgs,
@@ -436,7 +434,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             const dummySignatureBytes = hexToBytes(dummySignature);
             expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
             expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);
-            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasFields> = {
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasLimitFields> = {
                 sender: simpleAccount.address,
                 nonce: 0n,
                 signature: dummySignature,
@@ -449,11 +447,10 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Estimate UserOp gas
-            const userOpGas = await estimateUserOperationGas(publicClient, {
-                userOperationData: userOpData,
-                entryPoint,
-                entryPointSimulationsAddress,
-            });
+            const userOpGas = await estimateUserOperationGas(
+                { ...publicClient, entryPointAddress: entryPointAddress, entryPointSimulationsAddress },
+                userOpData,
+            );
 
             expect(userOpGas).toBeDefined();
             //gas values > 0
@@ -499,7 +496,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             //Sign UserOp
             const userOpHash = getUserOperationHash({
                 userOperation: userOp,
-                entryPointAddress: entryPoint,
+                entryPointAddress: entryPointAddress,
                 entryPointVersion: "0.7",
                 chainId: localhost.id,
             });
@@ -515,7 +512,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             //Simulate handleOps
             const { request } = await publicClient.simulateContract({
                 account: walletClient.account,
-                address: entryPoint,
+                address: entryPointAddress,
                 abi: IEntryPoint.abi,
                 functionName: "handleOps",
                 args: handleOpsArgs,
@@ -598,7 +595,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             const dummySignatureBytes = hexToBytes(dummySignature);
             expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
             expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);
-            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasFields> = {
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasLimitFields> = {
                 sender: simpleAccount.address,
                 factory: simpleAccount.factoryAddress,
                 factoryData: simpleAccount.factoryData,
@@ -610,11 +607,10 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Estimate UserOp gas
-            const userOpGas = await estimateUserOperationGas(publicClient, {
-                userOperationData: userOpData,
-                entryPoint,
-                entryPointSimulationsAddress,
-            });
+            const userOpGas = await estimateUserOperationGas(
+                { ...publicClient, entryPointAddress, entryPointSimulationsAddress },
+                userOpData,
+            );
 
             expect(userOpGas).toBeDefined();
             //gas values > 0
@@ -638,7 +634,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             //Sign UserOp
             const userOpHash = getUserOperationHash({
                 userOperation: userOp,
-                entryPointAddress: entryPoint,
+                entryPointAddress: entryPointAddress,
                 entryPointVersion: "0.7",
                 chainId: localhost.id,
             });
@@ -654,7 +650,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             //Simulate handleOps
             const { request } = await publicClient.simulateContract({
                 account: walletClient.account,
-                address: entryPoint,
+                address: entryPointAddress,
                 abi: IEntryPoint.abi,
                 functionName: "handleOps",
                 args: handleOpsArgs,
@@ -735,7 +731,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             const dummySignatureBytes = hexToBytes(dummySignature);
             expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
             expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);
-            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasFields> = {
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasLimitFields> = {
                 sender: simpleAccount.address,
                 factory: simpleAccount.factoryAddress,
                 factoryData: simpleAccount.factoryData,
@@ -750,11 +746,10 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Estimate UserOp gas
-            const userOpGas = await estimateUserOperationGas(publicClient, {
-                userOperationData: userOpData,
-                entryPoint,
-                entryPointSimulationsAddress,
-            });
+            const userOpGas = await estimateUserOperationGas(
+                { ...publicClient, entryPointAddress: entryPointAddress, entryPointSimulationsAddress },
+                userOpData,
+            );
 
             expect(userOpGas).toBeDefined();
             //gas values > 0
@@ -800,7 +795,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             //Sign UserOp
             const userOpHash = getUserOperationHash({
                 userOperation: userOp,
-                entryPointAddress: entryPoint,
+                entryPointAddress: entryPointAddress,
                 entryPointVersion: "0.7",
                 chainId: localhost.id,
             });
@@ -816,7 +811,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             //Simulate handleOps
             const { request } = await publicClient.simulateContract({
                 account: walletClient.account,
-                address: entryPoint,
+                address: entryPointAddress,
                 abi: IEntryPoint.abi,
                 functionName: "handleOps",
                 args: handleOpsArgs,

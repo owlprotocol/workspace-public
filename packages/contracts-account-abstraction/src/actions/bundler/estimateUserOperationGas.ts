@@ -1,59 +1,92 @@
-import { Address, Client, StateOverride } from "viem";
+import { Address, Chain, Client, PartialBy, Transport } from "viem";
 import * as chains from "viem/chains";
-import { UserOperation } from "viem/account-abstraction";
+import { EstimateUserOperationGasReturnType, UserOperation } from "viem/account-abstraction";
 import { getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
 
 import { getExecutionResult } from "./simulateHandleOp.js";
 import { calcPreVerificationGas } from "./calcPreVerificationGas.js";
 import { calcVerificationGasAndCallGasLimit } from "../../gasestimation/calcVerificationGasAndCallGasLimit.js";
-import { encodeUserOp } from "../../models/UserOperation.js";
+import { dummySignature, encodeUserOp } from "../../models/UserOperation.js";
 import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
 import { maxBigInt } from "../../utils/bigint.js";
 
-export interface EstimateUserOperationGasResponseResult {
-    callGasLimit: bigint;
-    preVerificationGas: bigint;
-    verificationGasLimit: bigint;
-    paymasterVerificationGasLimit?: bigint;
-    paymasterPostOpGasLimit?: bigint;
-}
-
-export type UserOperationGasFields =
+export type UserOperationGasLimitFields =
     | "preVerificationGas"
     | "verificationGasLimit"
     | "callGasLimit"
     | "paymasterPostOpGasLimit"
     | "paymasterVerificationGasLimit";
 
+export type EstimateUserOperationGasParameters07 = PartialBy<
+    Pick<
+        UserOperation<"0.7">,
+        | "callData"
+        | "callGasLimit"
+        | "factory"
+        | "factoryData"
+        | "maxFeePerGas"
+        | "maxPriorityFeePerGas"
+        | "nonce"
+        | "sender"
+        | "preVerificationGas"
+        | "verificationGasLimit"
+        | "paymasterPostOpGasLimit"
+        | "paymasterVerificationGasLimit"
+    >,
+    | "callGasLimit"
+    | "factory"
+    | "factoryData"
+    // | "maxFeePerGas"
+    | "maxPriorityFeePerGas"
+    | "preVerificationGas"
+    | "verificationGasLimit"
+>;
+
 /**
- * Estimate UserOperation gas. Unlike Alto implementation, this does NOT mutate any parameters.
- * @param userOperationData `UserOperation` without any EXCLUDING gas fields
- * @param entryPoint
- * @param client
- * @param entryPointSimulationsAddress
- * @param stateOverride
- * @returns gas parameters of UserOperation
+ * Returns an estimate of gas values necessary to execute the User Operation.
+ *
+ * - Docs: https://viem.sh/actions/bundler/estimateUserOperationGas
+ *
+ * @param client - Client to use
+ * @param parameters - {@link EstimateUserOperationGasParameters}
+ * @returns The gas estimate (in wei). {@link EstimateUserOperationGasReturnType}
+ *
+ * @example
+ * import { createBundlerClient, http, parseEther } from 'viem'
+ * import { toSmartAccount } from 'viem/accounts'
+ * import { mainnet } from 'viem/chains'
+ * import { estimateUserOperationGas } from 'viem/actions'
+ *
+ * const account = await toSmartAccount({ ... })
+ *
+ * const bundlerClient = createBundlerClient({
+ *   chain: mainnet,
+ *   transport: http(),
+ * })
+ *
+ * const values = await estimateUserOperationGas(bundlerClient, {
+ *   account,
+ *   calls: [{ to: '0x...', value: parseEther('1') }],
+ * })
  */
 export async function estimateUserOperationGas(
-    //TODO: Omit gas fields
-    client: Client,
-    parameters: {
-        userOperationData: Omit<UserOperation<"0.7">, UserOperationGasFields>;
-        entryPoint: Address;
+    client: Client<Transport, Chain | undefined, undefined> & {
+        entryPointAddress: Address;
         entryPointSimulationsAddress: Address;
-        stateOverride?: StateOverride[number] | undefined;
     },
-): Promise<EstimateUserOperationGasResponseResult> {
-    const { userOperationData, entryPoint, entryPointSimulationsAddress, stateOverride } = parameters;
-
-    if (userOperationData.maxFeePerGas === 0n) {
+    parameters: EstimateUserOperationGasParameters07,
+): Promise<EstimateUserOperationGasReturnType<undefined, undefined, undefined, "0.7">> {
+    const { entryPointAddress, entryPointSimulationsAddress } = client;
+    //TODO: Get fee per gas if undefined???
+    if (parameters.maxFeePerGas === 0n) {
         throw new Error("user operation max fee per gas must be larger than 0 during gas estimation");
     }
 
     //TODO: This defines minimum paymaster balance required for initial gas estimation
     const userOperation: UserOperation<"0.7"> = {
-        ...userOperationData,
+        ...parameters,
+        signature: dummySignature,
         preVerificationGas: 1_000_000n,
         verificationGasLimit: 10_000_000n,
         callGasLimit: 10_000_000n,
@@ -61,9 +94,9 @@ export async function estimateUserOperationGas(
         // min(maxFeePerGas, baseFee + maxPriorityFeePerGas) for the verification
         // Since we don't want our estimations to depend upon baseFee, we set
         // maxFeePerGas to maxPriorityFeePerGas
-        maxPriorityFeePerGas: userOperationData.maxFeePerGas,
+        maxPriorityFeePerGas: parameters.maxFeePerGas,
     };
-    if (userOperationData.paymaster) {
+    if (userOperation.paymaster) {
         userOperation.paymasterVerificationGasLimit = 5_000_000n;
         userOperation.paymasterPostOpGasLimit = 2_000_000n;
     }
@@ -74,7 +107,8 @@ export async function estimateUserOperationGas(
     userOperation.preVerificationGas =
         ((await calcPreVerificationGas(client, {
             packedUserOperation: toPackedUserOperation(encodeUserOp(userOperation)),
-            entryPoint,
+            //TODO: Rename to entryPointAddress
+            entryPoint: entryPointAddress,
         })) *
             110n) /
         100n;
@@ -91,9 +125,8 @@ export async function estimateUserOperationGas(
 
     const executionResult = await getExecutionResult(client, {
         packedUserOperation: toPackedUserOperation(encodeUserOp(userOperation)),
-        entryPoint,
+        entryPoint: entryPointAddress,
         entryPointSimulationsAddress,
-        stateOverride,
     });
 
     const verificationGasAndCallGasLimit = calcVerificationGasAndCallGasLimit(
@@ -136,7 +169,7 @@ export async function estimateUserOperationGas(
         userOperation.paymasterPostOpGasLimit = 100_000n;
     }
 
-    const userOpGas: EstimateUserOperationGasResponseResult = {
+    const userOpGas: EstimateUserOperationGasReturnType<undefined, undefined, undefined, "0.7"> = {
         preVerificationGas: userOperation.preVerificationGas,
         verificationGasLimit: userOperation.verificationGasLimit,
         callGasLimit: userOperation.callGasLimit,
