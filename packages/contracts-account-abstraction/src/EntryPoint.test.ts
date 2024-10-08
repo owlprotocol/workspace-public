@@ -16,9 +16,10 @@ import {
     getDeployDeterministicAddress,
     getLocalAccount,
 } from "@owlprotocol/viem-utils";
+import { entryPoint07Address } from "viem/account-abstraction";
 import { port } from "./test/constants.js";
 import { EntryPoint } from "./artifacts/EntryPoint.js";
-import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./constants.js";
+import { ENTRYPOINT_SALT_V07 } from "./constants.js";
 
 describe("EntryPoint.test.ts", function () {
     let publicClient: PublicClient<Transport, Chain>;
@@ -31,13 +32,18 @@ describe("EntryPoint.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getLocalAccount(0),
+            //TODO: viem mismatch
+            account: getLocalAccount(0) as unknown as Account,
             chain: localhost,
             transport,
         });
 
         //Deploy DeterministicDeployer
-        const { hash } = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
+        //TODO: viem type mismatch
+        const { hash } = await getOrDeployDeterministicDeployer({
+            publicClient: publicClient as any,
+            walletClient: walletClient as any,
+        });
         if (hash) {
             await publicClient.waitForTransactionReceipt({ hash });
         }
@@ -49,10 +55,14 @@ describe("EntryPoint.test.ts", function () {
             bytecode: EntryPoint.bytecode,
         };
         const address = getDeployDeterministicAddress(deployParams);
-        expect(address).toBe(ENTRYPOINT_ADDRESS_V07);
+        expect(address).toBe(entryPoint07Address);
 
         //Deploy new
-        const resultDeploy = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
+        //TODO: viem type mismatch
+        const resultDeploy = await getOrDeployDeterministicContract(
+            { publicClient: publicClient as any, walletClient: walletClient as any },
+            deployParams,
+        );
         expect(resultDeploy.address).toBe(address);
 
         //Wait for receipt
@@ -64,7 +74,11 @@ describe("EntryPoint.test.ts", function () {
         }
 
         //Get existing
-        const resultGet = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
+        //TODO: viem type mismatch
+        const resultGet = await getOrDeployDeterministicContract(
+            { publicClient: publicClient as any, walletClient: walletClient as any },
+            deployParams,
+        );
         expect(resultGet.existed).toBe(true);
         expect(resultGet.hash).toBeUndefined();
         expect(resultGet.address).toBe(address);

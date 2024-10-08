@@ -17,9 +17,9 @@ import {
 import { localhost } from "viem/chains";
 import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { ENTRYPOINT_ADDRESS_V07_TYPE, UserOperation } from "permissionless/types";
-import { signUserOperationHashWithECDSA } from "permissionless/utils";
-import { getSenderAddress } from "permissionless";
+import { entryPoint07Address, UserOperation, getUserOperationHash } from "viem/account-abstraction";
+
+import { getSenderAddress } from "permissionless/actions";
 import { port } from "./test/constants.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { getSimpleAccountAddress } from "./SimpleAccount.js";
@@ -40,7 +40,7 @@ describe.skip("SimpleAccount.test.ts", function () {
     // Generated account on each test
     let account: PrivateKeyAccount;
 
-    let entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
+    let entryPoint: typeof entryPoint07Address;
     let simpleAccountFactory: Address;
     // let verifyingPaymaster: Address;
 
@@ -51,7 +51,8 @@ describe.skip("SimpleAccount.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getLocalAccount(0),
+            //TODO: viem type mismatch
+            account: getLocalAccount(0) as unknown as HDAccount,
             chain: localhost,
             transport,
         });
@@ -104,7 +105,7 @@ describe.skip("SimpleAccount.test.ts", function () {
             const simpleAccountAddressFromGetSender = await getSenderAddress(publicClient, {
                 factory: simpleAccountFactory,
                 factoryData,
-                entryPoint,
+                entryPointAddress: entryPoint07Address,
             });
             expect(simpleAccountAddressFromGetSender).toBe(simpleAccountAddressFromFactory);
 
@@ -226,7 +227,7 @@ describe.skip("SimpleAccount.test.ts", function () {
             });
 
             const gasPrice = await publicClient.estimateFeesPerGas();
-            const userOp: UserOperation<"v0.7"> = {
+            const userOp: UserOperation<"0.7"> = {
                 sender: simpleAccount.address,
                 //TODO: Update nonce
                 nonce: 0n,
@@ -239,11 +240,14 @@ describe.skip("SimpleAccount.test.ts", function () {
                 maxFeePerGas: gasPrice.maxFeePerGas!,
                 maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
             };
-            const signature = await signUserOperationHashWithECDSA({
-                account,
+            const userOpHash = getUserOperationHash({
                 userOperation: userOp,
+                entryPointAddress: entryPoint,
+                entryPointVersion: "0.7",
                 chainId: localhost.id,
-                entryPoint,
+            });
+            const signature = await account.signMessage({
+                message: { raw: userOpHash },
             });
             userOp.signature = signature;
 

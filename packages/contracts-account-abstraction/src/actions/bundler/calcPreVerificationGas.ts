@@ -2,11 +2,11 @@ import { Address, Client } from "viem";
 import * as chains from "viem/chains";
 import { getAction } from "viem/utils";
 import { getChainId } from "viem/actions";
-import { calcDefaultPreVerificationGas } from "./calcDefaultPreVerificationGas.js";
-import { GasOverheads } from "./GasOverheads.js";
 import { calcArbitrumPreVerificationGas } from "./calcArbitrumPreVerificationGas.js";
 import { calcOptimismPreVerificationGas } from "./calcOptimismPreVerificationGas.js";
-import { PackedUserOperation } from "../models/PackedUserOperation.js";
+import { calcDefaultPreVerificationGas } from "../../gasestimation/calcDefaultPreVerificationGas.js";
+import { GasOverheads } from "../../models/GasOverheads.js";
+import { PackedUserOperation } from "../../models/PackedUserOperation.js";
 
 /**
  * Calculates `preVerificationGas` using the following
@@ -24,10 +24,14 @@ import { PackedUserOperation } from "../models/PackedUserOperation.js";
  */
 export async function calcPreVerificationGas(
     client: Client,
-    packedUserOperation: PackedUserOperation,
-    entryPoint: Address,
-    overheads?: GasOverheads,
+    parameters: {
+        packedUserOperation: PackedUserOperation;
+        entryPoint: Address;
+        overheads?: GasOverheads;
+    },
 ): Promise<bigint> {
+    const { packedUserOperation, entryPoint, overheads } = parameters;
+
     const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
 
     //TODO: Refactor this logic if possible to make it more modular as chainIds are hard-coded rn
@@ -47,23 +51,21 @@ export async function calcPreVerificationGas(
         chainId === chains.opBNBTestnet.id ||
         chainId === 957 // Lyra chain
     ) {
-        preVerificationGas = await calcOptimismPreVerificationGas(
-            client,
+        preVerificationGas = await calcOptimismPreVerificationGas(client, {
             packedUserOperation,
             entryPoint,
-            preVerificationGas,
-        );
+            staticFee: preVerificationGas,
+        });
     } else if (
         chainId === chains.arbitrum.id ||
         chainId === chains.arbitrumNova.id ||
         chainId === chains.arbitrumSepolia.id
     ) {
-        preVerificationGas = await calcArbitrumPreVerificationGas(
-            client,
+        preVerificationGas = await calcArbitrumPreVerificationGas(client, {
             packedUserOperation,
             entryPoint,
-            preVerificationGas,
-        );
+            staticFee: preVerificationGas,
+        });
     }
 
     return preVerificationGas;

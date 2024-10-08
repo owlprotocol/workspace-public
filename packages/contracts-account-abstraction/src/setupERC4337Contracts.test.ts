@@ -25,20 +25,28 @@ describe("setupERC4337Contracts.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getLocalAccount(0),
+            //TODO: viem type mismatch
+            account: getLocalAccount(0) as unknown as Account,
             chain: localhost,
             transport,
         });
 
         //Deploy Deterministic Deployer first
-        const { hash } = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
+        const { hash } = await getOrDeployDeterministicDeployer({
+            //TOOD: viem type mismatch
+            publicClient: publicClient as any,
+            walletClient: walletClient as any,
+        });
         if (hash) {
             await publicClient.waitForTransactionReceipt({ hash });
         }
     });
 
     test("setupERC4337Contracts", async () => {
-        const result = await setupERC4337Contracts({ publicClient, walletClient });
+        const result = await setupERC4337Contracts({
+            publicClient,
+            walletClient,
+        });
 
         expect(await publicClient.getBytecode({ address: result.deterministicDeployer.address })).toBeDefined();
         expect(await publicClient.getBytecode({ address: result.entrypoint.address })).toBeDefined();
