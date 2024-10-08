@@ -104,8 +104,6 @@
     "@openzeppelin/contracts": "5.0.2",
     "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
-    "abitype": "1.0.6",
-    "permissionless": "0.2.5",
     "viem": "2.21.19",
     "zod": "3.22.4"
   },
