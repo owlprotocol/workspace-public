@@ -1,5 +1,5 @@
-import { Client, Transport, Address, LocalAccount, Hash, concatHex, PartialBy } from "viem";
-import { GetPaymasterDataReturnType, UserOperation, entryPoint07Address } from "viem/account-abstraction";
+import { Client, Transport, Address, LocalAccount, Hash, concatHex, PartialBy, Hex, Chain } from "viem";
+import { UserOperation, entryPoint07Address } from "viem/account-abstraction";
 import { getAction, encodeAbiParameters } from "viem/utils";
 import { readContract } from "viem/actions";
 
@@ -36,6 +36,13 @@ export type GetPaymasterDataParameters07 = PartialBy<
     entryPointAddress: Address;
 };
 
+export type GetPaymasterDataReturnType07 = {
+    paymaster: Address;
+    paymasterData: Hex;
+    paymasterVerificationGasLimit?: bigint | undefined;
+    paymasterPostOpGasLimit?: bigint | undefined;
+};
+
 /**
  * Retrieves paymaster-related User Operation properties to be used for sending the User Operation.
  *
@@ -66,7 +73,7 @@ export async function getPaymasterData(
         paymaster: Address;
     },
     parameters: GetPaymasterDataParameters07,
-): Promise<GetPaymasterDataReturnType> {
+): Promise<GetPaymasterDataReturnType07> {
     const { entryPointAddress, ...userOperation } = parameters;
     const { paymaster } = client;
 
@@ -123,5 +130,7 @@ export async function getPaymasterData(
     return {
         paymaster,
         paymasterData: paymasterDataSigned,
+        paymasterVerificationGasLimit: 100_000n,
+        paymasterPostOpGasLimit: 100_000n,
     };
 }

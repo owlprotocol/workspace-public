@@ -1,5 +1,5 @@
-import { Client, Transport, Address, LocalAccount, concatHex, PartialBy } from "viem";
-import { GetPaymasterStubDataReturnType, UserOperation, entryPoint07Address } from "viem/account-abstraction";
+import { Address, concatHex, PartialBy, Hex } from "viem";
+import { UserOperation, entryPoint07Address } from "viem/account-abstraction";
 import { encodeAbiParameters } from "viem/utils";
 
 import { dummySignature } from "../../models/UserOperation.js";
@@ -33,6 +33,15 @@ export type GetPaymasterStubDataParameters07 = PartialBy<
     entryPointAddress: Address;
 };
 
+export type GetPaymasterStubDataReturnType07 = {
+    paymaster: Address;
+    paymasterData: Hex;
+    paymasterVerificationGasLimit?: bigint | undefined;
+    paymasterPostOpGasLimit: bigint;
+    sponsor?: { name: string; icon?: string | undefined } | undefined;
+    isFinal?: boolean | undefined;
+};
+
 /**
  * Retrieves paymaster-related User Operation properties to be used for gas estimation.
  *
@@ -59,12 +68,12 @@ export type GetPaymasterStubDataParameters07 = PartialBy<
  * })
  */
 export async function getPaymasterStubData(
-    client: Client<Transport, undefined, LocalAccount> & {
+    client: {
         paymaster: Address;
     },
     parameters: GetPaymasterStubDataParameters07,
-): Promise<GetPaymasterStubDataReturnType> {
-    const { entryPointAddress, ...userOperation } = parameters;
+): Promise<GetPaymasterStubDataReturnType07> {
+    const { entryPointAddress } = parameters;
     const { paymaster } = client;
 
     if (entryPointAddress != entryPoint07Address) {
@@ -90,24 +99,12 @@ export async function getPaymasterStubData(
         icon: "https://example.com",
     };
 
-    if (userOperation.paymasterVerificationGasLimit && userOperation.paymasterPostOpGasLimit) {
-        //UserOperation provides its own paymaster gas limit
-        return {
-            paymaster,
-            paymasterData: paymasterDataSigned,
-            paymasterVerificationGasLimit: userOperation.paymasterVerificationGasLimit,
-            paymasterPostOpGasLimit: userOperation.paymasterPostOpGasLimit,
-            sponsor,
-        };
-    }
-
-    //TODO: Estimate gas limit
     return {
         paymaster,
         paymasterData: paymasterDataSigned,
-        //TODO: Fix this
-        paymasterVerificationGasLimit: userOperation.paymasterVerificationGasLimit,
-        paymasterPostOpGasLimit: userOperation.paymasterPostOpGasLimit!,
+        paymasterVerificationGasLimit: 100_000n,
+        paymasterPostOpGasLimit: 100_000n,
         sponsor,
+        isFinal: false,
     };
 }
