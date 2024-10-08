@@ -72,7 +72,7 @@ export type EstimateUserOperationGasParameters07 = PartialBy<
  * })
  */
 export async function estimateUserOperationGas(
-    client: Client<Transport, Chain | undefined, undefined> & {
+    client: Client<Transport, Chain | undefined> & {
         entryPointSimulationsAddress: Address;
     },
     parameters: EstimateUserOperationGasParameters07,

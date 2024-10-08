@@ -1,5 +1,5 @@
 import { Address, Client, Transport } from "viem";
-import { entryPoint07Address } from "viem/account-abstraction";
+import { entryPoint07Address, GetSupportedEntryPointsReturnType } from "viem/account-abstraction";
 
 /**
  * Returns the EntryPoints that the bundler supports.
@@ -24,6 +24,6 @@ import { entryPoint07Address } from "viem/account-abstraction";
  */
 export async function getSupportedEntryPoints(
     client: Client<Transport> & { supportedEntryPoints?: Address[] },
-): Promise<Address[]> {
+): Promise<GetSupportedEntryPointsReturnType> {
     return client.supportedEntryPoints ?? [entryPoint07Address];
 }

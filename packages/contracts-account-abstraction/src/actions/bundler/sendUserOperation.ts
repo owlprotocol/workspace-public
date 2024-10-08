@@ -1,7 +1,7 @@
-import { Client, Transport, Chain, Account, Hash } from "viem";
+import { Client, Transport, Chain, Account } from "viem";
 import { getAction } from "viem/utils";
 import { writeContract, simulateContract, getChainId } from "viem/actions";
-import { UserOperation, getUserOperationHash } from "viem/account-abstraction";
+import { SendUserOperationReturnType, UserOperation, getUserOperationHash } from "viem/account-abstraction";
 import { getSupportedEntryPoints } from "./getSupportedEntryPoints.js";
 import { handleOps, errors as IEntryPointErrors } from "../../artifacts/IEntryPoint.js";
 import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
@@ -37,7 +37,7 @@ import { encodeUserOp } from "../../models/UserOperation.js";
 export async function sendUserOperation(
     client: Client<Transport, Chain | undefined, Account>,
     parameters: UserOperation<"0.7">,
-): Promise<Hash> {
+): Promise<SendUserOperationReturnType> {
     const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
 
     const supportedEntryPoints = await getAction(client, getSupportedEntryPoints, "getSupportedEntryPoints")({});

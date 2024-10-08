@@ -1,6 +1,10 @@
 import { Client, GetLogsReturnType, GetTransactionReceiptReturnType, Transport } from "viem";
 
-import { UserOperationReceiptNotFoundError, GetUserOperationReceiptParameters } from "viem/account-abstraction";
+import {
+    UserOperationReceiptNotFoundError,
+    GetUserOperationReceiptParameters,
+    GetUserOperationReceiptReturnType,
+} from "viem/account-abstraction";
 import { getAction } from "viem/utils";
 import { getLogs, getTransactionReceipt } from "viem/actions";
 
@@ -30,7 +34,10 @@ import { UserOperationEvent } from "../../artifacts/IEntryPoint.js";
  *   hash: '0x4ca7ee652d57678f26e887c149ab0735f41de37bcad58c9f6d3ed5824f15b74d',
  * })
  */
-export async function getUserOperationReceipt(client: Client<Transport>, { hash }: GetUserOperationReceiptParameters) {
+export async function getUserOperationReceipt(
+    client: Client<Transport>,
+    { hash }: GetUserOperationReceiptParameters,
+): Promise<GetUserOperationReceiptReturnType> {
     // Default entryPoint
     const supportedEntryPoints = await getAction(client, getSupportedEntryPoints, "getSupportedEntryPoints")({});
     const entryPointAddress = supportedEntryPoints[0];
@@ -99,6 +106,7 @@ export async function getUserOperationReceipt(client: Client<Transport>, { hash 
     const filteredLogs = logs.slice(startIndex + 1, endIndex);
 
     return {
+        entryPoint: entryPointAddress,
         userOpHash: hash,
         sender: userOperationEvent.args.sender,
         nonce: userOperationEvent.args.nonce,

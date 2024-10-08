@@ -1,4 +1,4 @@
-import { Address, Hash, concatHex, PartialBy, Hex, Client, Transport, LocalAccount } from "viem";
+import { Address, Hash, concatHex, PartialBy, Hex, Client, Transport, LocalAccount, Chain } from "viem";
 import { UserOperation } from "viem/account-abstraction";
 import { getAction, encodeAbiParameters } from "viem/utils";
 import { readContract } from "viem/actions";
@@ -70,7 +70,7 @@ export type GetPaymasterDataReturnType07 = {
  * })
  */
 export async function getPaymasterData(
-    client: Client<Transport, undefined, LocalAccount> & {
+    client: Client<Transport, Chain | undefined, LocalAccount> & {
         paymaster: Address;
     },
     parameters: GetPaymasterDataParameters07,
