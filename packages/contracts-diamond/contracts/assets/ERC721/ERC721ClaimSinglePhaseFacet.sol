@@ -90,5 +90,11 @@ contract ERC721ClaimSinglePhaseFacet is IERC721ClaimSinglePhase {
         return ERC721ClaimLib._getClaimCondition(0);
     }
 
-    //TODO: getWalletClaims
+    /**
+     * @notice Get the number of claims for a given wallet address.
+     * @param account The wallet address to check.
+     */
+    function getWalletClaims(address account) external view returns (uint256) {
+        return ERC721ClaimLib._getWalletClaims(0, account);
+    }
 }

@@ -29,4 +29,11 @@ interface IERC721ClaimSinglePhase {
      * @return ClaimCondition The details of the condition.
      */
     function getClaimCondition() external view returns (ERC721ClaimLib.ClaimCondition memory);
+
+    /**
+     * @dev Returns the number of claims made by a specific wallet.
+     * @param account The address of the wallet to check.
+     * @return uint256 The number of claims made by the account.
+     */
+    function getWalletClaims(address account) external view returns (uint256);
 }

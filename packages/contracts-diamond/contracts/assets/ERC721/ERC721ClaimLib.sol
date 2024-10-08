@@ -66,7 +66,10 @@ library ERC721ClaimLib {
         return ds.claimConditions[conditionId];
     }
 
-    //TODO: Add getWalletClaims library conditionId, account, returns uint256
+    function _getWalletClaims(bytes32 conditionId, address account) internal view returns (uint256) {
+        ERC721ClaimStorage storage ds = getData();
+        return ds.walletClaims[conditionId][account];
+    }
 
     function _conditionExists(bytes32 conditionId, ERC721ClaimStorage storage ds) internal view returns (bool) {
         return ds.claimConditions[conditionId].maxClaimableSupply != 0;

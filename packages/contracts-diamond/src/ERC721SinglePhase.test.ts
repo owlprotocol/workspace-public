@@ -314,4 +314,28 @@ describe("ERC721SinglePhase.test.ts", function () {
             }),
         ).rejects.toThrowError("ExceedsMaxClaimableSupply");
     });
+    test("should correctly return the wallet claims count for a user", async () => {
+        const userWalletClient = userWalletClients[0];
+
+        const { request } = await publicClient.simulateContract({
+            account: userWalletClient.account,
+            address: contractAddress,
+            abi: ERC721SinglePhasePreset.abi,
+            functionName: "mint",
+            args: [userWalletClient.account.address],
+            value: parseEther("1"),
+        });
+
+        const hash = await userWalletClient.writeContract(request);
+        await publicClient.waitForTransactionReceipt({ hash });
+
+        const walletClaims = await publicClient.readContract({
+            address: contractAddress,
+            abi: ERC721SinglePhasePreset.abi,
+            functionName: "getWalletClaims",
+            args: [userWalletClient.account.address],
+        });
+
+        expect(walletClaims).toBe(1n);
+    });
 });
