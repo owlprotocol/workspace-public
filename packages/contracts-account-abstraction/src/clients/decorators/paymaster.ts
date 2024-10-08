@@ -1,5 +1,4 @@
 import { Transport, Client, Address, Chain, LocalAccount } from "viem";
-import { PaymasterActions } from "viem/account-abstraction";
 import {
     getPaymasterData,
     GetPaymasterDataParameters07,
@@ -24,7 +23,7 @@ export function backendPaymasterActions<
     client: Client<transport, chain, account> & {
         paymaster: Address;
     },
-): PaymasterActions {
+): BackendPaymasterActions {
     return {
         getPaymasterData: (parameters) => getPaymasterData(client, parameters),
         getPaymasterStubData: (parameters) => getPaymasterStubData(client, parameters),
