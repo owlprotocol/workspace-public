@@ -1,9 +1,8 @@
-import { Client, GetLogsReturnType, GetTransactionReceiptReturnType, Transport } from "viem";
+import { Address, Client, GetLogsReturnType, GetTransactionReceiptReturnType, Transport } from "viem";
 
 import {
     UserOperationReceiptNotFoundError,
     GetUserOperationReceiptParameters,
-    entryPoint07Address,
 } from "viem/account-abstraction";
 import { getAction } from "viem/utils";
 import { getLogs, getTransactionReceipt } from "viem/actions";
@@ -33,13 +32,13 @@ import { UserOperationEvent } from "../../artifacts/IEntryPoint.js";
  *   hash: '0x4ca7ee652d57678f26e887c149ab0735f41de37bcad58c9f6d3ed5824f15b74d',
  * })
  */
-export async function getUserOperationReceipt(client: Client<Transport>, { hash }: GetUserOperationReceiptParameters) {
+export async function getUserOperationReceipt(client: Client<Transport> & { entryPointAddress: Address }, { hash }: GetUserOperationReceiptParameters) {
     const filterResult = (await getAction(
         client,
         getLogs,
         "getLogs",
     )({
-        address: entryPoint07Address,
+        address: client.entryPointAddress,
         event: UserOperationEvent,
         //TODO: Filter smaller?
         fromBlock: 0n,
