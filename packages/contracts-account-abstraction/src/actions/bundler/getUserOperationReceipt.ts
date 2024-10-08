@@ -1,12 +1,10 @@
-import { Address, Client, GetLogsReturnType, GetTransactionReceiptReturnType, Transport } from "viem";
+import { Client, GetLogsReturnType, GetTransactionReceiptReturnType, Transport } from "viem";
 
-import {
-    UserOperationReceiptNotFoundError,
-    GetUserOperationReceiptParameters,
-} from "viem/account-abstraction";
+import { UserOperationReceiptNotFoundError, GetUserOperationReceiptParameters } from "viem/account-abstraction";
 import { getAction } from "viem/utils";
 import { getLogs, getTransactionReceipt } from "viem/actions";
 
+import { getSupportedEntryPoints } from "./getSupportedEntryPoints.js";
 import { UserOperationEvent } from "../../artifacts/IEntryPoint.js";
 
 /**
@@ -32,13 +30,17 @@ import { UserOperationEvent } from "../../artifacts/IEntryPoint.js";
  *   hash: '0x4ca7ee652d57678f26e887c149ab0735f41de37bcad58c9f6d3ed5824f15b74d',
  * })
  */
-export async function getUserOperationReceipt(client: Client<Transport> & { entryPointAddress: Address }, { hash }: GetUserOperationReceiptParameters) {
+export async function getUserOperationReceipt(client: Client<Transport>, { hash }: GetUserOperationReceiptParameters) {
+    // Default entryPoint
+    const supportedEntryPoints = await getAction(client, getSupportedEntryPoints, "getSupportedEntryPoints")({});
+    const entryPointAddress = supportedEntryPoints[0];
+
     const filterResult = (await getAction(
         client,
         getLogs,
         "getLogs",
     )({
-        address: client.entryPointAddress,
+        address: entryPointAddress,
         event: UserOperationEvent,
         //TODO: Filter smaller?
         fromBlock: 0n,

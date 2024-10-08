@@ -1,8 +1,9 @@
-import { Address, Client, GetLogsReturnType, GetTransactionReturnType, Transport } from "viem";
+import { Client, GetLogsReturnType, GetTransactionReturnType, Transport } from "viem";
 import { GetUserOperationParameters, UserOperationNotFoundError } from "viem/account-abstraction";
 import { getAction, decodeFunctionData } from "viem/utils";
 import { getLogs, getTransaction } from "viem/actions";
 
+import { getSupportedEntryPoints } from "./getSupportedEntryPoints.js";
 import { UserOperationEvent, handleOps } from "../../artifacts/IEntryPoint.js";
 import { PackedUserOperation, toUserOperationEncoded } from "../../models/PackedUserOperation.js";
 import { decodeUserOp } from "../../models/UserOperation.js";
@@ -30,14 +31,18 @@ import { decodeUserOp } from "../../models/UserOperation.js";
  *   hash: '0x4ca7ee652d57678f26e887c149ab0735f41de37bcad58c9f6d3ed5824f15b74d',
  * })
  */
-export async function getUserOperation(client: Client<Transport> & { entryPointAddress: Address }, { hash }: GetUserOperationParameters) {
+export async function getUserOperation(client: Client<Transport>, { hash }: GetUserOperationParameters) {
+    // Default entryPoint
+    const supportedEntryPoints = await getAction(client, getSupportedEntryPoints, "getSupportedEntryPoints")({});
+    const entryPointAddress = supportedEntryPoints[0];
+
     const filterResult = (await getAction(
         //TODO: Why type mismatch
         client,
         getLogs,
         "getLogs",
     )({
-        address: client.entryPointAddress,
+        address: entryPointAddress,
         event: UserOperationEvent,
         //TODO: Filter smaller?
         fromBlock: 0n,
@@ -92,7 +97,7 @@ export async function getUserOperation(client: Client<Transport> & { entryPointA
     return {
         blockHash: transaction.blockHash,
         blockNumber: transaction.blockNumber,
-        entryPoint: client.entryPointAddress,
+        entryPoint: entryPointAddress,
         transactionHash,
         userOperation,
     };

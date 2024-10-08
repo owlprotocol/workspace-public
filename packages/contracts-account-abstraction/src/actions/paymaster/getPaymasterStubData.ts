@@ -1,8 +1,9 @@
 import { Address, concatHex, PartialBy, Hex } from "viem";
-import { UserOperation, entryPoint07Address } from "viem/account-abstraction";
-import { encodeAbiParameters } from "viem/utils";
+import { UserOperation } from "viem/account-abstraction";
+import { encodeAbiParameters, getAction } from "viem/utils";
 
 import { dummySignature } from "../../models/UserOperation.js";
+import { getSupportedEntryPoints } from "../bundler/getSupportedEntryPoints.js";
 
 export type GetPaymasterStubDataParameters07 = PartialBy<
     Pick<
@@ -76,9 +77,11 @@ export async function getPaymasterStubData(
     const { entryPointAddress } = parameters;
     const { paymaster } = client;
 
-    if (entryPointAddress != entryPoint07Address) {
+    const supportedEntryPoints = await getAction(client as any, getSupportedEntryPoints, "getSupportedEntryPoints")({});
+
+    if (!supportedEntryPoints.includes(entryPointAddress)) {
         //TODO: Viem error for this?
-        throw new Error(`Unsupported entrypoint ${entryPointAddress}`);
+        throw new Error(`Unsupported entrypoint ${entryPointAddress}, expected one of ${supportedEntryPoints}`);
     }
 
     //Paymaster data
