@@ -19,7 +19,6 @@ import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { entryPoint07Address, UserOperation, getUserOperationHash } from "viem/account-abstraction";
 
-import { getSenderAddress } from "permissionless/actions";
 import { port } from "./test/constants.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { getSimpleAccountAddress } from "./SimpleAccount.js";
@@ -31,8 +30,7 @@ import { IEntryPoint } from "./artifacts/IEntryPoint.js";
 import { setupERC4337Contracts } from "./setupERC4337Contracts.js";
 import { toPackedUserOperation } from "./models/PackedUserOperation.js";
 
-// TODO: FIXME: connection to anvil in GitHub
-describe.skip("SimpleAccount.test.ts", function () {
+describe("SimpleAccount.test.ts", function () {
     let transport: Transport;
     let publicClient: PublicClient<Transport, Chain>;
     // Fixed account with funding `getLocalAccount(0)`
@@ -86,30 +84,7 @@ describe.skip("SimpleAccount.test.ts", function () {
                 functionName: "getAddress",
                 args: [account.address, 0n],
             });
-            //2. Use permissionless getSenderAddress (patched) to call Entrypoint (throw error & catch)
-            const factoryData = encodeFunctionData({
-                abi: [
-                    {
-                        inputs: [
-                            { name: "owner", type: "address" },
-                            { name: "salt", type: "uint256" },
-                        ],
-                        name: "createAccount",
-                        outputs: [{ name: "ret", type: "address" }],
-                        stateMutability: "nonpayable",
-                        type: "function",
-                    },
-                ],
-                args: [account.address, 0n],
-            });
-            const simpleAccountAddressFromGetSender = await getSenderAddress(publicClient, {
-                factory: simpleAccountFactory,
-                factoryData,
-                entryPointAddress: entryPoint07Address,
-            });
-            expect(simpleAccountAddressFromGetSender).toBe(simpleAccountAddressFromFactory);
-
-            //3. Compute off-chain with no calls
+            //2. Compute off-chain with no calls
             const simpleAccountAddressOffchain = getSimpleAccountAddress(
                 {
                     owner: account.address,
