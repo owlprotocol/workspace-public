@@ -19,7 +19,7 @@ import {
     padHex,
 } from "viem";
 import { localhost } from "viem/chains";
-import { UserOperation, entryPoint07Address, getUserOperationHash } from "viem/account-abstraction";
+import { UserOperation, entryPoint07Address, getUserOperationHash, waitForUserOperationReceipt } from "viem/account-abstraction";
 
 import {
     getLocalAccount,
@@ -36,9 +36,12 @@ import { ERC1967Proxy } from "../../artifacts/ERC1967Proxy.js";
 import { SimpleAccountFactory } from "../../artifacts/SimpleAccountFactory.js";
 import { IEntryPoint } from "../../artifacts/IEntryPoint.js";
 import { MyContract } from "../../artifacts/MyContract.js";
-import { setupERC4337Contracts, setupVerifyingPaymaster } from "../../setupERC4337Contracts.js";
+import { setupERC4337Contracts, setupVerifyingPaymaster, topupPaymaster } from "../../setupERC4337Contracts.js";
 import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
 import { encodeUserOp, dummySignature } from "../../models/UserOperation.js";
+
+import { sendUserOperation } from "./sendUserOperation.js";
+import { getUserOperationReceipt } from "./getUserOperationReceipt.js";
 
 describe("estimateUserOperationGas.test.ts", function () {
     let transport: Transport;
@@ -81,17 +84,16 @@ describe("estimateUserOperationGas.test.ts", function () {
                 verifyingSignerAddress: walletClient.account.address,
             })
         ).address;
-        //Pre-fund paymaster
-        const paymasterDeposit = await publicClient.simulateContract({
-            account: walletClient.account,
-            address: verifyingPaymaster,
-            abi: VerifyingPaymaster.abi,
-            functionName: "deposit",
-            value: parseEther("10"),
-            args: [],
+
+        const { hash: topupHash } = await topupPaymaster({
+            publicClient,
+            walletClient,
+            paymaster: verifyingPaymaster,
+            minBalance: parseEther("10")
         });
-        const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);
-        await publicClient.waitForTransactionReceipt({ hash: paymasterDepositHash });
+        if (topupHash) {
+            await publicClient.waitForTransactionReceipt({ hash: topupHash });
+        }
     });
 
     beforeEach(() => {
@@ -220,33 +222,27 @@ describe("estimateUserOperationGas.test.ts", function () {
             const userOp = { ...userOpData, ...userOpGas };
 
             //Sign UserOp
-            const userOpHash = getUserOperationHash({
+            const userOpHashExpected = getUserOperationHash({
                 userOperation: userOp,
                 entryPointAddress: entryPointAddress,
                 entryPointVersion: "0.7",
                 chainId: localhost.id,
             });
             const signature = await account.signMessage({
-                message: { raw: userOpHash },
+                message: { raw: userOpHashExpected },
             });
             userOp.signature = signature;
 
-            const userOpPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //types seem to be inferred as [never[], Address]
-            const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
+            const userOpHash = await sendUserOperation({...walletClient, entryPointAddress }, userOp)
+            expect(userOpHash).toBe(userOpHashExpected);
 
-            //Simulate handleOps
-            const { request } = await publicClient.simulateContract({
-                account: walletClient.account,
-                address: entryPointAddress,
-                abi: IEntryPoint.abi,
-                functionName: "handleOps",
-                args: handleOpsArgs,
-            });
-
-            //Submit UserOp
-            const handleOpsHash = await walletClient.writeContract(request as any);
-            await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
+            const bundler = publicClient.extend((client) => {
+                return {
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt({ ...client, entryPointAddress }, args)
+                }
+            })
+            const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHash })
+            expect(userOpReceipt).toBeDefined()
 
             //Get balanceOf
             const balance = await publicClient.getBalance({ address: to });
@@ -357,33 +353,27 @@ describe("estimateUserOperationGas.test.ts", function () {
             userOp.paymasterData = paymasterDataSigned;
 
             //Sign UserOp
-            const userOpHash = getUserOperationHash({
+            const userOpHashExpected = getUserOperationHash({
                 userOperation: userOp,
                 entryPointAddress: entryPointAddress,
                 entryPointVersion: "0.7",
                 chainId: localhost.id,
             });
             const signature = await account.signMessage({
-                message: { raw: userOpHash },
+                message: { raw: userOpHashExpected },
             });
             userOp.signature = signature;
 
-            const userOpPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //types seem to be inferred as [never[], Address]
-            const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
+            const userOpHash = await sendUserOperation({...walletClient, entryPointAddress }, userOp)
+            expect(userOpHash).toBe(userOpHashExpected);
 
-            //Simulate handleOps
-            const { request } = await publicClient.simulateContract({
-                account: walletClient.account,
-                address: entryPointAddress,
-                abi: IEntryPoint.abi,
-                functionName: "handleOps",
-                args: handleOpsArgs,
-            });
-
-            //Submit UserOp
-            const handleOpsHash = await walletClient.writeContract(request as any);
-            await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
+            const bundler = publicClient.extend((client) => {
+                return {
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt({ ...client, entryPointAddress }, args)
+                }
+            })
+            const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHash })
+            expect(userOpReceipt).toBeDefined()
 
             //Get balanceOf
             const balance = await publicClient.getBalance({ address: to });
@@ -494,33 +484,27 @@ describe("estimateUserOperationGas.test.ts", function () {
             userOp.paymasterData = paymasterDataSigned;
 
             //Sign UserOp
-            const userOpHash = getUserOperationHash({
+            const userOpHashExpected = getUserOperationHash({
                 userOperation: userOp,
                 entryPointAddress: entryPointAddress,
                 entryPointVersion: "0.7",
                 chainId: localhost.id,
             });
             const signature = await account.signMessage({
-                message: { raw: userOpHash },
+                message: { raw: userOpHashExpected },
             });
             userOp.signature = signature;
 
-            const userOpPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //types seem to be inferred as [never[], Address]
-            const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
+            const userOpHash = await sendUserOperation({...walletClient, entryPointAddress }, userOp)
+            expect(userOpHash).toBe(userOpHashExpected);
 
-            //Simulate handleOps
-            const { request } = await publicClient.simulateContract({
-                account: walletClient.account,
-                address: entryPointAddress,
-                abi: IEntryPoint.abi,
-                functionName: "handleOps",
-                args: handleOpsArgs,
-            });
-
-            //Submit UserOp
-            const handleOpsHash = await walletClient.writeContract(request as any);
-            await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
+            const bundler = publicClient.extend((client) => {
+                return {
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt({ ...client, entryPointAddress }, args)
+                }
+            })
+            const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHash })
+            expect(userOpReceipt).toBeDefined()
 
             const contractBytecode = await publicClient.getBytecode({ address: contractAddress });
             expect(contractBytecode).toBeDefined();
@@ -632,33 +616,27 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Sign UserOp
-            const userOpHash = getUserOperationHash({
+            const userOpHashExpected = getUserOperationHash({
                 userOperation: userOp,
                 entryPointAddress: entryPointAddress,
                 entryPointVersion: "0.7",
                 chainId: localhost.id,
             });
             const signature = await account.signMessage({
-                message: { raw: userOpHash },
+                message: { raw: userOpHashExpected },
             });
             userOp.signature = signature;
 
-            const userOpPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //types seem to be inferred as [never[], Address]
-            const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
+            const userOpHash = await sendUserOperation({...walletClient, entryPointAddress }, userOp)
+            expect(userOpHash).toBe(userOpHashExpected);
 
-            //Simulate handleOps
-            const { request } = await publicClient.simulateContract({
-                account: walletClient.account,
-                address: entryPointAddress,
-                abi: IEntryPoint.abi,
-                functionName: "handleOps",
-                args: handleOpsArgs,
-            });
-
-            //Submit UserOp
-            const handleOpsHash = await walletClient.writeContract(request as any);
-            await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
+            const bundler = publicClient.extend((client) => {
+                return {
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt({ ...client, entryPointAddress }, args)
+                }
+            })
+            const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHash })
+            expect(userOpReceipt).toBeDefined()
 
             const contractBytecode = await publicClient.getBytecode({ address: contractAddress });
             expect(contractBytecode).toBeDefined();
@@ -793,33 +771,27 @@ describe("estimateUserOperationGas.test.ts", function () {
             userOp.paymasterData = paymasterDataSigned;
 
             //Sign UserOp
-            const userOpHash = getUserOperationHash({
+            const userOpHashExpected = getUserOperationHash({
                 userOperation: userOp,
                 entryPointAddress: entryPointAddress,
                 entryPointVersion: "0.7",
                 chainId: localhost.id,
             });
             const signature = await account.signMessage({
-                message: { raw: userOpHash },
+                message: { raw: userOpHashExpected },
             });
             userOp.signature = signature;
 
-            const userOpPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //types seem to be inferred as [never[], Address]
-            const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
+            const userOpHash = await sendUserOperation({...walletClient, entryPointAddress }, userOp)
+            expect(userOpHash).toBe(userOpHashExpected);
 
-            //Simulate handleOps
-            const { request } = await publicClient.simulateContract({
-                account: walletClient.account,
-                address: entryPointAddress,
-                abi: IEntryPoint.abi,
-                functionName: "handleOps",
-                args: handleOpsArgs,
-            });
-
-            //Submit UserOp
-            const handleOpsHash = await walletClient.writeContract(request as any);
-            await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
+            const bundler = publicClient.extend((client) => {
+                return {
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt({ ...client, entryPointAddress }, args)
+                }
+            })
+            const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHash })
+            expect(userOpReceipt).toBeDefined()
 
             const contractBytecode = await publicClient.getBytecode({ address: contractAddress });
             expect(contractBytecode).toBeDefined();

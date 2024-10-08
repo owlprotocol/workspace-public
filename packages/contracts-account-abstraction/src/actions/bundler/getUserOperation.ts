@@ -1,5 +1,5 @@
-import { Client, GetLogsReturnType, GetTransactionReturnType, Transport } from "viem";
-import { GetUserOperationParameters, UserOperationNotFoundError, entryPoint07Address } from "viem/account-abstraction";
+import { Address, Client, GetLogsReturnType, GetTransactionReturnType, Transport } from "viem";
+import { GetUserOperationParameters, UserOperationNotFoundError } from "viem/account-abstraction";
 import { getAction, decodeFunctionData } from "viem/utils";
 import { getLogs, getTransaction } from "viem/actions";
 
@@ -30,14 +30,14 @@ import { decodeUserOp } from "../../models/UserOperation.js";
  *   hash: '0x4ca7ee652d57678f26e887c149ab0735f41de37bcad58c9f6d3ed5824f15b74d',
  * })
  */
-export async function getUserOperation(client: Client<Transport>, { hash }: GetUserOperationParameters) {
+export async function getUserOperation(client: Client<Transport> & { entryPointAddress: Address }, { hash }: GetUserOperationParameters) {
     const filterResult = (await getAction(
         //TODO: Why type mismatch
         client,
         getLogs,
         "getLogs",
     )({
-        address: entryPoint07Address,
+        address: client.entryPointAddress,
         event: UserOperationEvent,
         //TODO: Filter smaller?
         fromBlock: 0n,
@@ -92,7 +92,7 @@ export async function getUserOperation(client: Client<Transport>, { hash }: GetU
     return {
         blockHash: transaction.blockHash,
         blockNumber: transaction.blockNumber,
-        entryPoint: entryPoint07Address,
+        entryPoint: client.entryPointAddress,
         transactionHash,
         userOperation,
     };
