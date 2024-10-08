@@ -19,25 +19,26 @@ import {
     padHex,
 } from "viem";
 import { localhost } from "viem/chains";
+import { UserOperation, entryPoint07Address, getUserOperationHash } from "viem/account-abstraction";
+
 import {
     getLocalAccount,
     getDeployDeterministicAddress,
     getDeployDeterministicFunctionData,
 } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { ENTRYPOINT_ADDRESS_V07_TYPE, UserOperation } from "permissionless/types";
-import { signUserOperationHashWithECDSA } from "permissionless/utils";
+
 import { UserOperationGasFields, estimateUserOperationGas } from "./estimateUserOperationGas.js";
-import { port } from "../test/constants.js";
-import { VerifyingPaymaster } from "../artifacts/VerifyingPaymaster.js";
-import { getSimpleAccountAddress } from "../SimpleAccount.js";
-import { ERC1967Proxy } from "../artifacts/ERC1967Proxy.js";
-import { SimpleAccountFactory } from "../artifacts/SimpleAccountFactory.js";
-import { IEntryPoint } from "../artifacts/IEntryPoint.js";
-import { MyContract } from "../artifacts/MyContract.js";
-import { setupERC4337Contracts, setupVerifyingPaymaster } from "../setupERC4337Contracts.js";
-import { toPackedUserOperation } from "../models/PackedUserOperation.js";
-import { encodeUserOp, dummySignature } from "../models/UserOperation.js";
+import { port } from "../../test/constants.js";
+import { VerifyingPaymaster } from "../../artifacts/VerifyingPaymaster.js";
+import { getSimpleAccountAddress } from "../../SimpleAccount.js";
+import { ERC1967Proxy } from "../../artifacts/ERC1967Proxy.js";
+import { SimpleAccountFactory } from "../../artifacts/SimpleAccountFactory.js";
+import { IEntryPoint } from "../../artifacts/IEntryPoint.js";
+import { MyContract } from "../../artifacts/MyContract.js";
+import { setupERC4337Contracts, setupVerifyingPaymaster } from "../../setupERC4337Contracts.js";
+import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
+import { encodeUserOp, dummySignature } from "../../models/UserOperation.js";
 
 describe("estimateUserOperationGas.test.ts", function () {
     let transport: Transport;
@@ -47,7 +48,7 @@ describe("estimateUserOperationGas.test.ts", function () {
     // Generated account on each test
     let account: PrivateKeyAccount;
 
-    let entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
+    let entryPoint: typeof entryPoint07Address;
     let entryPointSimulationsAddress: Address;
     let simpleAccountFactory: Address;
     let verifyingPaymaster: Address;
@@ -59,11 +60,14 @@ describe("estimateUserOperationGas.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getLocalAccount(0),
+            account: getLocalAccount(0) as unknown as HDAccount,
             chain: localhost,
             transport,
         });
-        const contracts = await setupERC4337Contracts({ publicClient, walletClient });
+        const contracts = await setupERC4337Contracts({
+            publicClient,
+            walletClient,
+        });
         entryPoint = contracts.entrypoint.address;
         //TODO: we use the Pimlico simulator?
         entryPointSimulationsAddress = contracts.pimlicoEntrypointSimulations.address;
@@ -184,7 +188,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             });
 
             const gasPrice = await publicClient.estimateFeesPerGas();
-            const userOpData: Omit<UserOperation<"v0.7">, UserOperationGasFields> = {
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasFields> = {
                 sender: simpleAccount.address,
                 nonce: 0n,
                 signature:
@@ -195,12 +199,11 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Estimate UserOp gas
-            const userOpGas = await estimateUserOperationGas(
-                userOpData,
+            const userOpGas = await estimateUserOperationGas(publicClient, {
+                userOperationData: userOpData,
                 entryPoint,
-                publicClient,
                 entryPointSimulationsAddress,
-            );
+            });
 
             expect(userOpGas).toBeDefined();
             //gas values > 0
@@ -218,11 +221,14 @@ describe("estimateUserOperationGas.test.ts", function () {
             const userOp = { ...userOpData, ...userOpGas };
 
             //Sign UserOp
-            const signature = await signUserOperationHashWithECDSA({
-                account,
+            const userOpHash = getUserOperationHash({
                 userOperation: userOp,
+                entryPointAddress: entryPoint,
+                entryPointVersion: "0.7",
                 chainId: localhost.id,
-                entryPoint,
+            });
+            const signature = await account.signMessage({
+                message: { raw: userOpHash },
             });
             userOp.signature = signature;
 
@@ -292,7 +298,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             const dummySignatureBytes = hexToBytes(dummySignature);
             expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
             expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);
-            const userOpData: Omit<UserOperation<"v0.7">, UserOperationGasFields> = {
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasFields> = {
                 sender: simpleAccount.address,
                 nonce: 0n,
                 signature: dummySignature,
@@ -305,12 +311,11 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Estimate UserOp gas
-            const userOpGas = await estimateUserOperationGas(
-                userOpData,
+            const userOpGas = await estimateUserOperationGas(publicClient, {
+                userOperationData: userOpData,
                 entryPoint,
-                publicClient,
                 entryPointSimulationsAddress,
-            );
+            });
 
             expect(userOpGas).toBeDefined();
             //gas values > 0
@@ -354,11 +359,14 @@ describe("estimateUserOperationGas.test.ts", function () {
             userOp.paymasterData = paymasterDataSigned;
 
             //Sign UserOp
-            const signature = await signUserOperationHashWithECDSA({
-                account,
+            const userOpHash = getUserOperationHash({
                 userOperation: userOp,
+                entryPointAddress: entryPoint,
+                entryPointVersion: "0.7",
                 chainId: localhost.id,
-                entryPoint,
+            });
+            const signature = await account.signMessage({
+                message: { raw: userOpHash },
             });
             userOp.signature = signature;
 
@@ -428,7 +436,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             const dummySignatureBytes = hexToBytes(dummySignature);
             expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
             expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);
-            const userOpData: Omit<UserOperation<"v0.7">, UserOperationGasFields> = {
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasFields> = {
                 sender: simpleAccount.address,
                 nonce: 0n,
                 signature: dummySignature,
@@ -441,12 +449,11 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Estimate UserOp gas
-            const userOpGas = await estimateUserOperationGas(
-                userOpData,
+            const userOpGas = await estimateUserOperationGas(publicClient, {
+                userOperationData: userOpData,
                 entryPoint,
-                publicClient,
                 entryPointSimulationsAddress,
-            );
+            });
 
             expect(userOpGas).toBeDefined();
             //gas values > 0
@@ -490,11 +497,14 @@ describe("estimateUserOperationGas.test.ts", function () {
             userOp.paymasterData = paymasterDataSigned;
 
             //Sign UserOp
-            const signature = await signUserOperationHashWithECDSA({
-                account,
+            const userOpHash = getUserOperationHash({
                 userOperation: userOp,
+                entryPointAddress: entryPoint,
+                entryPointVersion: "0.7",
                 chainId: localhost.id,
-                entryPoint,
+            });
+            const signature = await account.signMessage({
+                message: { raw: userOpHash },
             });
             userOp.signature = signature;
 
@@ -588,7 +598,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             const dummySignatureBytes = hexToBytes(dummySignature);
             expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
             expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);
-            const userOpData: Omit<UserOperation<"v0.7">, UserOperationGasFields> = {
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasFields> = {
                 sender: simpleAccount.address,
                 factory: simpleAccount.factoryAddress,
                 factoryData: simpleAccount.factoryData,
@@ -600,12 +610,11 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Estimate UserOp gas
-            const userOpGas = await estimateUserOperationGas(
-                userOpData,
+            const userOpGas = await estimateUserOperationGas(publicClient, {
+                userOperationData: userOpData,
                 entryPoint,
-                publicClient,
                 entryPointSimulationsAddress,
-            );
+            });
 
             expect(userOpGas).toBeDefined();
             //gas values > 0
@@ -627,11 +636,14 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Sign UserOp
-            const signature = await signUserOperationHashWithECDSA({
-                account,
+            const userOpHash = getUserOperationHash({
                 userOperation: userOp,
+                entryPointAddress: entryPoint,
+                entryPointVersion: "0.7",
                 chainId: localhost.id,
-                entryPoint,
+            });
+            const signature = await account.signMessage({
+                message: { raw: userOpHash },
             });
             userOp.signature = signature;
 
@@ -723,7 +735,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             const dummySignatureBytes = hexToBytes(dummySignature);
             expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
             expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);
-            const userOpData: Omit<UserOperation<"v0.7">, UserOperationGasFields> = {
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasFields> = {
                 sender: simpleAccount.address,
                 factory: simpleAccount.factoryAddress,
                 factoryData: simpleAccount.factoryData,
@@ -738,12 +750,11 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Estimate UserOp gas
-            const userOpGas = await estimateUserOperationGas(
-                userOpData,
+            const userOpGas = await estimateUserOperationGas(publicClient, {
+                userOperationData: userOpData,
                 entryPoint,
-                publicClient,
                 entryPointSimulationsAddress,
-            );
+            });
 
             expect(userOpGas).toBeDefined();
             //gas values > 0
@@ -787,11 +798,14 @@ describe("estimateUserOperationGas.test.ts", function () {
             userOp.paymasterData = paymasterDataSigned;
 
             //Sign UserOp
-            const signature = await signUserOperationHashWithECDSA({
-                account,
+            const userOpHash = getUserOperationHash({
                 userOperation: userOp,
+                entryPointAddress: entryPoint,
+                entryPointVersion: "0.7",
                 chainId: localhost.id,
-                entryPoint,
+            });
+            const signature = await account.signMessage({
+                message: { raw: userOpHash },
             });
             userOp.signature = signature;
 

@@ -38,13 +38,18 @@ describe("EntryPointSimulations.test.ts", function () {
                 transport,
             });
             walletClient = createWalletClient({
-                account: getLocalAccount(0),
+                //TODO: viem type mismatch
+                account: getLocalAccount(0) as unknown as Account,
                 chain: localhost,
                 transport,
             });
 
             //Deploy Deterministic Deployer first
-            const { hash } = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
+            //TODO: viem type mismatch
+            const { hash } = await getOrDeployDeterministicDeployer({
+                publicClient: publicClient as any,
+                walletClient: walletClient as any,
+            });
             if (hash) {
                 await publicClient.waitForTransactionReceipt({ hash });
             }
@@ -58,7 +63,11 @@ describe("EntryPointSimulations.test.ts", function () {
             const address = getDeployDeterministicAddress(deployParams);
 
             //Deploy new
-            const resultDeploy = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
+            //TODO: viem type mismatch
+            const resultDeploy = await getOrDeployDeterministicContract(
+                { publicClient: publicClient as any, walletClient: walletClient as any },
+                deployParams,
+            );
             expect(resultDeploy.address).toBe(address);
 
             //Wait for receipt
@@ -70,7 +79,11 @@ describe("EntryPointSimulations.test.ts", function () {
             }
 
             //Get existing
-            const resultGet = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
+            //TODO: viem type mismatch
+            const resultGet = await getOrDeployDeterministicContract(
+                { publicClient: publicClient as any, walletClient: walletClient as any },
+                deployParams,
+            );
             expect(resultGet.existed).toBe(true);
             expect(resultGet.hash).toBeUndefined();
             expect(resultGet.address).toBe(address);

@@ -1,5 +1,5 @@
 import { hexToBytes, toHex } from "viem";
-import { DefaultGasOverheads, GasOverheads } from "./GasOverheads.js";
+import { DefaultGasOverheads, GasOverheads } from "../models/GasOverheads.js";
 import { PackedUserOperation } from "../models/PackedUserOperation.js";
 import { packUserOperation } from "../models/PackedUserOperation.js";
 

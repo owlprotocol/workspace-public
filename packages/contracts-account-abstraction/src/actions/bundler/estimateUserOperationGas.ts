@@ -1,14 +1,15 @@
-import { Address, Client, StateOverride, zeroAddress } from "viem";
+import { Address, Client, StateOverride } from "viem";
 import * as chains from "viem/chains";
-import { UserOperation } from "permissionless/types";
+import { UserOperation } from "viem/account-abstraction";
 import { getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
+
 import { getExecutionResult } from "./simulateHandleOp.js";
-import { calcVerificationGasAndCallGasLimit } from "./calcVerificationGasAndCallLimit.js";
-import { calcPreVerificationGas } from "../calcPreVerificationGas/calcPreVerificationGas.js";
-import { encodeUserOp } from "../models/UserOperation.js";
-import { toPackedUserOperation } from "../models/PackedUserOperation.js";
-import { maxBigInt } from "../utils/bigint.js";
+import { calcPreVerificationGas } from "./calcPreVerificationGas.js";
+import { calcVerificationGasAndCallGasLimit } from "../../gasestimation/calcVerificationGasAndCallGasLimit.js";
+import { encodeUserOp } from "../../models/UserOperation.js";
+import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
+import { maxBigInt } from "../../utils/bigint.js";
 
 export interface EstimateUserOperationGasResponseResult {
     callGasLimit: bigint;
@@ -25,49 +26,6 @@ export type UserOperationGasFields =
     | "paymasterPostOpGasLimit"
     | "paymasterVerificationGasLimit";
 
-//TODO: Rename. This is mock implementation with hard-coded values.
-/**
- * Estimate UserOperation gas. Unlike Alto implementation, this does NOT mutate any parameters.
- * @param userOperationData `UserOperation` without any EXCLUDING gas fields
- * @param _entryPoint
- * @param _publicClient
- * @param _entryPointSimulationsAddress
- * @param _stateOverride
- * @returns gas parameters of UserOperation
- */
-export async function estimateUserOperationGasMock(
-    userOperationData: Omit<UserOperation<"v0.7">, UserOperationGasFields>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _entryPoint: Address,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _publicClient: Client,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _entryPointSimulationsAddress: Address,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _stateOverride: StateOverride[number] | undefined = undefined,
-): Promise<EstimateUserOperationGasResponseResult> {
-    //Default values - 1 (so that tests pass)
-    const userOpGas: EstimateUserOperationGasResponseResult = {
-        preVerificationGas: 999_999n,
-        verificationGasLimit: 9_999_999n,
-        callGasLimit: 9_999_999n,
-    };
-    if (userOperationData.paymaster && userOperationData.paymaster != zeroAddress) {
-        //This breaks why is it too high? Does this have to be added to `callGasLimit`?
-        // userOpGas.paymasterVerificationGasLimit = 4_999_999n;
-        // userOpGas.paymasterPostOpGasLimit = 1_999_999n;
-
-        //This breaks when using core-trpc
-        // userOpGas.paymasterVerificationGasLimit = 20_000n;
-        // userOpGas.paymasterPostOpGasLimit = 20_000n;
-
-        //This works when using core-trpc
-        userOpGas.paymasterVerificationGasLimit = 100_000n;
-        userOpGas.paymasterPostOpGasLimit = 100_000n;
-    }
-    return userOpGas;
-}
-
 /**
  * Estimate UserOperation gas. Unlike Alto implementation, this does NOT mutate any parameters.
  * @param userOperationData `UserOperation` without any EXCLUDING gas fields
@@ -79,18 +37,22 @@ export async function estimateUserOperationGasMock(
  */
 export async function estimateUserOperationGas(
     //TODO: Omit gas fields
-    userOperationData: Omit<UserOperation<"v0.7">, UserOperationGasFields>,
-    entryPoint: Address,
     client: Client,
-    entryPointSimulationsAddress: Address,
-    stateOverride: StateOverride[number] | undefined = undefined,
+    parameters: {
+        userOperationData: Omit<UserOperation<"0.7">, UserOperationGasFields>;
+        entryPoint: Address;
+        entryPointSimulationsAddress: Address;
+        stateOverride?: StateOverride[number] | undefined;
+    },
 ): Promise<EstimateUserOperationGasResponseResult> {
+    const { userOperationData, entryPoint, entryPointSimulationsAddress, stateOverride } = parameters;
+
     if (userOperationData.maxFeePerGas === 0n) {
         throw new Error("user operation max fee per gas must be larger than 0 during gas estimation");
     }
 
     //TODO: This defines minimum paymaster balance required for initial gas estimation
-    const userOperation: UserOperation<"v0.7"> = {
+    const userOperation: UserOperation<"0.7"> = {
         ...userOperationData,
         preVerificationGas: 1_000_000n,
         verificationGasLimit: 10_000_000n,
@@ -110,7 +72,10 @@ export async function estimateUserOperationGas(
 
     //Additional 10% added
     userOperation.preVerificationGas =
-        ((await calcPreVerificationGas(client, toPackedUserOperation(encodeUserOp(userOperation)), entryPoint)) *
+        ((await calcPreVerificationGas(client, {
+            packedUserOperation: toPackedUserOperation(encodeUserOp(userOperation)),
+            entryPoint,
+        })) *
             110n) /
         100n;
 
@@ -124,13 +89,12 @@ export async function estimateUserOperationGas(
         userOperation.callGasLimit = 1_000_000n;
     }
 
-    const executionResult = await getExecutionResult(
-        toPackedUserOperation(encodeUserOp(userOperation)),
+    const executionResult = await getExecutionResult(client, {
+        packedUserOperation: toPackedUserOperation(encodeUserOp(userOperation)),
         entryPoint,
-        client,
         entryPointSimulationsAddress,
         stateOverride,
-    );
+    });
 
     const verificationGasAndCallGasLimit = calcVerificationGasAndCallGasLimit(
         userOperation,

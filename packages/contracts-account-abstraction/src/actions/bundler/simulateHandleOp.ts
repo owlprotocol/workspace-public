@@ -1,20 +1,8 @@
-import {
-    Address,
-    StateOverride,
-    Client,
-    Hex,
-    encodeFunctionData,
-    decodeAbiParameters,
-    decodeErrorResult,
-    decodeFunctionResult,
-} from "viem";
-import { getAction } from "viem/utils";
-import { call } from "viem/actions";
+import { Address, StateOverride, Client, Hex, encodeFunctionData, decodeErrorResult, decodeFunctionResult } from "viem";
 
-import { parseFailedOpWithRevert } from "./parseFailedOpWithRevert.js";
-import { abi as PimlicoEntryPointSimulationsAbi } from "../artifacts/PimlicoEntryPointSimulations.js";
-import { abi as EntryPointV07Abi } from "../artifacts/EntryPoint.js";
-import { abi as EntryPointV07SimulationsAbi } from "../artifacts/EntryPointSimulations.js";
+import { simulateEntryPoint } from "./simulateEntryPoint.js";
+import { parseFailedOpWithRevert } from "../../gasestimation/parseFailedOpWithRevert.js";
+import { abi as EntryPointV07SimulationsAbi } from "../../artifacts/EntryPointSimulations.js";
 import {
     PackedUserOperation,
     ExecutionResult,
@@ -23,7 +11,7 @@ import {
     ExecutionError,
     ExecutionErrors,
     ValidationErrors,
-} from "../models/index.js";
+} from "../../models/index.js";
 
 export type SimulateHandleOpResult<TypeResult extends "failed" | "execution" = "failed" | "execution"> = {
     result: TypeResult;
@@ -49,21 +37,24 @@ export type SimulateHandleOpResult<TypeResult extends "failed" | "execution" = "
  * @returns
  */
 export async function getExecutionResult(
-    packedUserOperation: PackedUserOperation,
-    entryPoint: Address,
     client: Client,
-    entryPointSimulationsAddress: Address,
-    stateOverride: StateOverride[number] | undefined = undefined,
+    parameters: {
+        packedUserOperation: PackedUserOperation;
+        entryPoint: Address;
+        entryPointSimulationsAddress: Address;
+        stateOverride?: StateOverride[number] | undefined;
+    },
 ): Promise<SimulateHandleOpResult<"execution">> {
-    const error = await simulateHandleOpV07(
+    const { packedUserOperation, entryPoint, entryPointSimulationsAddress, stateOverride } = parameters;
+
+    const error = await simulateHandleOpV07(client, {
         packedUserOperation,
         entryPoint,
-        client,
-        packedUserOperation.sender,
-        packedUserOperation.callData,
+        targetAddress: packedUserOperation.sender,
+        targetCallData: packedUserOperation.callData,
         entryPointSimulationsAddress,
         stateOverride,
-    );
+    });
 
     if (error.result === "failed") {
         throw new ExecutionError(
@@ -88,14 +79,25 @@ export async function getExecutionResult(
  * @returns
  */
 export async function simulateHandleOpV07(
-    packedUserOperation: PackedUserOperation,
-    entryPoint: Address,
     client: Client,
-    targetAddress: Address,
-    targetCallData: Hex,
-    entryPointSimulationsAddress: Address,
-    stateOverride: StateOverride[number] | undefined = undefined,
+    parameters: {
+        packedUserOperation: PackedUserOperation;
+        entryPoint: Address;
+        targetAddress: Address;
+        targetCallData: Hex;
+        entryPointSimulationsAddress: Address;
+        stateOverride?: StateOverride[number] | undefined;
+    },
 ): Promise<SimulateHandleOpResult> {
+    const {
+        packedUserOperation,
+        entryPoint,
+        targetAddress,
+        targetCallData,
+        entryPointSimulationsAddress,
+        stateOverride,
+    } = parameters;
+
     const entryPointSimulationsSimulateHandleOpCallData = encodeFunctionData({
         abi: EntryPointV07SimulationsAbi,
         functionName: "simulateHandleOp",
@@ -108,13 +110,15 @@ export async function simulateHandleOpV07(
         args: [packedUserOperation, targetAddress, targetCallData],
     });
 
-    const cause = await callPimlicoEntryPointSimulations(
-        client,
+    const cause = await simulateEntryPoint(client, {
         entryPoint,
-        [entryPointSimulationsSimulateHandleOpCallData, entryPointSimulationsSimulateTargetCallData],
+        entryPointSimulationsCallData: [
+            entryPointSimulationsSimulateHandleOpCallData,
+            entryPointSimulationsSimulateTargetCallData,
+        ],
         entryPointSimulationsAddress,
         stateOverride,
-    );
+    });
 
     try {
         const executionResult = getSimulateHandleOpResult(cause[0]);
@@ -224,58 +228,4 @@ function validateTargetCallDataResult(data: Hex):
             code: ExecutionErrors.UserOperationReverted,
         } as const;
     }
-}
-
-/**
- * Call PimlicoEntryPointSimulations contract and decode revert data
- * @param client
- * @param entryPoint
- * @param entryPointSimulationsCallData
- * @param entryPointSimulationsAddress
- * @param stateOverride
- * @returns
- */
-export async function callPimlicoEntryPointSimulations(
-    client: Client,
-    entryPoint: Address,
-    entryPointSimulationsCallData: Hex[],
-    entryPointSimulationsAddress: Address,
-    //TODO: Should we support passing multiple state overrides?
-    stateOverride?: StateOverride[number],
-) {
-    const callData = encodeFunctionData({
-        abi: PimlicoEntryPointSimulationsAbi,
-        functionName: "simulateEntryPoint",
-        args: [entryPoint, entryPointSimulationsCallData],
-    });
-
-    const callReturn = await getAction(
-        client,
-        call,
-        "call",
-    )({
-        to: entryPointSimulationsAddress,
-        data: callData,
-        blockTag: "latest",
-        stateOverride: [...(stateOverride ? [stateOverride] : [])],
-    });
-
-    const result = callReturn.data;
-    if (!result) {
-        throw new Error("simulateEntryPoint return empty data");
-    }
-
-    const returnBytes = decodeAbiParameters([{ name: "ret", type: "bytes[]" }], result);
-
-    return returnBytes[0].map((data: Hex) => {
-        const decodedDelegateAndError = decodeErrorResult({
-            abi: EntryPointV07Abi,
-            data: data,
-        });
-
-        if (!decodedDelegateAndError?.args?.[1]) {
-            throw new Error("Unexpected error");
-        }
-        return decodedDelegateAndError.args[1] as Hex;
-    });
 }

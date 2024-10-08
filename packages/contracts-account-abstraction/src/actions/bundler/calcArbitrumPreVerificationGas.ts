@@ -10,8 +10,8 @@ import {
 } from "viem";
 import { simulateContract, getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
-import { abi as EntryPointV07Abi } from "../artifacts/EntryPoint.js";
-import { PackedUserOperation, packedUserOperationToRandomDataUserOp } from "../models/PackedUserOperation.js";
+import { abi as EntryPointV07Abi } from "../../artifacts/EntryPoint.js";
+import { PackedUserOperation, packedUserOperationToRandomDataUserOp } from "../../models/PackedUserOperation.js";
 
 const getArbitrumL1FeeAbi = [
     {
@@ -57,10 +57,14 @@ const getArbitrumL1FeeAbi = [
 
 export async function calcArbitrumPreVerificationGas(
     client: Client,
-    packedUserOperation: PackedUserOperation,
-    entryPoint: Address,
-    staticFee: bigint,
+    parameters: {
+        packedUserOperation: PackedUserOperation;
+        entryPoint: Address;
+        staticFee: bigint;
+    },
 ) {
+    const { packedUserOperation, entryPoint, staticFee } = parameters;
+
     const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
 
     const randomDataUserOp: PackedUserOperation = packedUserOperationToRandomDataUserOp(packedUserOperation);

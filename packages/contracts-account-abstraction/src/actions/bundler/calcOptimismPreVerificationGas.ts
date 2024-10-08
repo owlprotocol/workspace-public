@@ -10,9 +10,9 @@ import {
 } from "viem";
 import { getChainId, getBlock, simulateContract } from "viem/actions";
 import { getAction } from "viem/utils";
-import { packedUserOperationToRandomDataUserOp } from "../models/PackedUserOperation.js";
-import { abi as EntryPointV07Abi } from "../artifacts/EntryPoint.js";
-import { PackedUserOperation, unpackGasLimits } from "../models/PackedUserOperation.js";
+import { packedUserOperationToRandomDataUserOp } from "../../models/PackedUserOperation.js";
+import { abi as EntryPointV07Abi } from "../../artifacts/EntryPoint.js";
+import { PackedUserOperation, unpackGasLimits } from "../../models/PackedUserOperation.js";
 
 const getL1FeeAbi = [
     {
@@ -45,10 +45,13 @@ const getL1FeeAbi = [
 
 export async function calcOptimismPreVerificationGas(
     client: Client,
-    packedUserOperation: PackedUserOperation,
-    entryPoint: Address,
-    staticFee: bigint,
+    parameters: {
+        packedUserOperation: PackedUserOperation;
+        entryPoint: Address;
+        staticFee: bigint;
+    },
 ) {
+    const { packedUserOperation, entryPoint, staticFee } = parameters;
     const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
 
     const randomDataUserOp: PackedUserOperation = packedUserOperationToRandomDataUserOp(packedUserOperation);
