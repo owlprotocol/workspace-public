@@ -1,4 +1,4 @@
-import { Client, Transport } from "viem";
+import { Address, Client, Transport } from "viem";
 import { entryPoint07Address } from "viem/account-abstraction";
 
 /**
@@ -22,7 +22,8 @@ import { entryPoint07Address } from "viem/account-abstraction";
  *
  * const addresses = await getSupportedEntryPoints(bundlerClient)
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function getSupportedEntryPoints(_client: Client<Transport>) {
-    return [entryPoint07Address];
+export async function getSupportedEntryPoints(
+    client: Client<Transport> & { supportedEntryPoints?: Address[] },
+): Promise<Address[]> {
+    return client.supportedEntryPoints ?? [entryPoint07Address];
 }

@@ -6,6 +6,7 @@ import { getAction } from "viem/utils";
 
 import { getExecutionResult } from "./simulateHandleOp.js";
 import { calcPreVerificationGas } from "./calcPreVerificationGas.js";
+import { getSupportedEntryPoints } from "./getSupportedEntryPoints.js";
 import { calcVerificationGasAndCallGasLimit } from "../../gasestimation/calcVerificationGasAndCallGasLimit.js";
 import { dummySignature, encodeUserOp } from "../../models/UserOperation.js";
 import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
@@ -72,12 +73,16 @@ export type EstimateUserOperationGasParameters07 = PartialBy<
  */
 export async function estimateUserOperationGas(
     client: Client<Transport, Chain | undefined, undefined> & {
-        entryPointAddress: Address;
         entryPointSimulationsAddress: Address;
     },
     parameters: EstimateUserOperationGasParameters07,
 ): Promise<EstimateUserOperationGasReturnType<undefined, undefined, undefined, "0.7">> {
-    const { entryPointAddress, entryPointSimulationsAddress } = client;
+    const { entryPointSimulationsAddress } = client;
+
+    // Default entryPoint
+    const supportedEntryPoints = await getAction(client, getSupportedEntryPoints, "getSupportedEntryPoints")({});
+    const entryPointAddress = supportedEntryPoints[0];
+
     //TODO: Get fee per gas if undefined???
     if (parameters.maxFeePerGas === 0n) {
         throw new Error("user operation max fee per gas must be larger than 0 during gas estimation");

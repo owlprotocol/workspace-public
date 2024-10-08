@@ -9,13 +9,11 @@ import {
     createPublicClient,
     createWalletClient,
     http,
-    encodeAbiParameters,
     encodeFunctionData,
     parseEther,
     HDAccount,
     PrivateKeyAccount,
     hexToBytes,
-    concatHex,
     padHex,
 } from "viem";
 import { localhost } from "viem/chains";
@@ -207,7 +205,7 @@ describe("estimateUserOperationGas.test.ts", function () {
 
             //Estimate UserOp gas
             const userOpGas = await estimateUserOperationGas(
-                { ...publicClient, entryPointAddress: entryPointAddress, entryPointSimulationsAddress },
+                { ...publicClient, entryPointSimulationsAddress },
                 userOpData,
             );
 
@@ -238,21 +236,17 @@ describe("estimateUserOperationGas.test.ts", function () {
             });
             userOp.signature = signature;
 
-            const userOpHash = await sendUserOperation({ ...walletClient, entryPointAddress }, userOp);
+            const userOpHash = await sendUserOperation(walletClient, userOp);
             expect(userOpHash).toBe(userOpHashExpected);
 
             const bundler = publicClient.extend((client) => {
                 return {
-                    getUserOperationReceipt: (args: any) =>
-                        getUserOperationReceipt({ ...client, entryPointAddress }, args),
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt({ ...client }, args),
                 };
             });
             const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHashExpected });
             expect(userOpReceipt.userOpHash).toBe(userOpHashExpected);
-            const userOperation = await getUserOperation(
-                { ...publicClient, entryPointAddress },
-                { hash: userOpHashExpected },
-            );
+            const userOperation = await getUserOperation(publicClient, { hash: userOpHashExpected });
             expect(userOperation).toBeDefined();
 
             //Get balanceOf
@@ -318,7 +312,7 @@ describe("estimateUserOperationGas.test.ts", function () {
 
             //Estimate UserOp gas
             const userOpGas = await estimateUserOperationGas(
-                { ...publicClient, entryPointAddress, entryPointSimulationsAddress },
+                { ...publicClient, entryPointSimulationsAddress },
                 userOpData,
             );
 
@@ -360,21 +354,17 @@ describe("estimateUserOperationGas.test.ts", function () {
             });
             userOp.signature = signature;
 
-            const userOpHash = await sendUserOperation({ ...walletClient, entryPointAddress }, userOp);
+            const userOpHash = await sendUserOperation(walletClient, userOp);
             expect(userOpHash).toBe(userOpHashExpected);
 
             const bundler = publicClient.extend((client) => {
                 return {
-                    getUserOperationReceipt: (args: any) =>
-                        getUserOperationReceipt({ ...client, entryPointAddress }, args),
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt(client, args),
                 };
             });
             const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHashExpected });
             expect(userOpReceipt.userOpHash).toBe(userOpHashExpected);
-            const userOperation = await getUserOperation(
-                { ...publicClient, entryPointAddress },
-                { hash: userOpHashExpected },
-            );
+            const userOperation = await getUserOperation(publicClient, { hash: userOpHashExpected });
             expect(userOperation).toBeDefined();
 
             //Get balanceOf
@@ -438,7 +428,7 @@ describe("estimateUserOperationGas.test.ts", function () {
 
             //Estimate UserOp gas
             const userOpGas = await estimateUserOperationGas(
-                { ...publicClient, entryPointAddress: entryPointAddress, entryPointSimulationsAddress },
+                { ...publicClient, entryPointSimulationsAddress },
                 userOpData,
             );
 
@@ -479,21 +469,17 @@ describe("estimateUserOperationGas.test.ts", function () {
             });
             userOp.signature = signature;
 
-            const userOpHash = await sendUserOperation({ ...walletClient, entryPointAddress }, userOp);
+            const userOpHash = await sendUserOperation(walletClient, userOp);
             expect(userOpHash).toBe(userOpHashExpected);
 
             const bundler = publicClient.extend((client) => {
                 return {
-                    getUserOperationReceipt: (args: any) =>
-                        getUserOperationReceipt({ ...client, entryPointAddress }, args),
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt(client, args),
                 };
             });
             const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHashExpected });
             expect(userOpReceipt.userOpHash).toBe(userOpHashExpected);
-            const userOperation = await getUserOperation(
-                { ...publicClient, entryPointAddress },
-                { hash: userOpHashExpected },
-            );
+            const userOperation = await getUserOperation(publicClient, { hash: userOpHashExpected });
             expect(userOperation).toBeDefined();
 
             const contractBytecode = await publicClient.getBytecode({ address: contractAddress });
@@ -582,7 +568,7 @@ describe("estimateUserOperationGas.test.ts", function () {
 
             //Estimate UserOp gas
             const userOpGas = await estimateUserOperationGas(
-                { ...publicClient, entryPointAddress, entryPointSimulationsAddress },
+                { ...publicClient, entryPointSimulationsAddress },
                 userOpData,
             );
 
@@ -617,21 +603,17 @@ describe("estimateUserOperationGas.test.ts", function () {
             });
             userOp.signature = signature;
 
-            const userOpHash = await sendUserOperation({ ...walletClient, entryPointAddress }, userOp);
+            const userOpHash = await sendUserOperation(walletClient, userOp);
             expect(userOpHash).toBe(userOpHashExpected);
 
             const bundler = publicClient.extend((client) => {
                 return {
-                    getUserOperationReceipt: (args: any) =>
-                        getUserOperationReceipt({ ...client, entryPointAddress }, args),
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt(client, args),
                 };
             });
             const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHashExpected });
             expect(userOpReceipt.userOpHash).toBe(userOpHashExpected);
-            const userOperation = await getUserOperation(
-                { ...publicClient, entryPointAddress },
-                { hash: userOpHashExpected },
-            );
+            const userOperation = await getUserOperation(publicClient, { hash: userOpHashExpected });
             expect(userOperation).toBeDefined();
 
             const contractBytecode = await publicClient.getBytecode({ address: contractAddress });
@@ -719,7 +701,7 @@ describe("estimateUserOperationGas.test.ts", function () {
 
             //Estimate UserOp gas
             const userOpGas = await estimateUserOperationGas(
-                { ...publicClient, entryPointAddress: entryPointAddress, entryPointSimulationsAddress },
+                { ...publicClient, entryPointSimulationsAddress },
                 userOpData,
             );
 
@@ -761,21 +743,17 @@ describe("estimateUserOperationGas.test.ts", function () {
             });
             userOp.signature = signature;
 
-            const userOpHash = await sendUserOperation({ ...walletClient, entryPointAddress }, userOp);
+            const userOpHash = await sendUserOperation(walletClient, userOp);
             expect(userOpHash).toBe(userOpHashExpected);
 
             const bundler = publicClient.extend((client) => {
                 return {
-                    getUserOperationReceipt: (args: any) =>
-                        getUserOperationReceipt({ ...client, entryPointAddress }, args),
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt(client, args),
                 };
             });
             const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHashExpected });
             expect(userOpReceipt.userOpHash).toBe(userOpHashExpected);
-            const userOperation = await getUserOperation(
-                { ...publicClient, entryPointAddress },
-                { hash: userOpHashExpected },
-            );
+            const userOperation = await getUserOperation(publicClient, { hash: userOpHashExpected });
             expect(userOperation).toBeDefined();
 
             const contractBytecode = await publicClient.getBytecode({ address: contractAddress });
