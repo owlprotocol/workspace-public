@@ -1,5 +1,5 @@
-import { Client, GetLogsReturnType, GetTransactionReturnType, Transport } from "viem";
-import { GetUserOperationParameters, UserOperationNotFoundError } from "viem/account-abstraction";
+import { Address, Client, GetLogsReturnType, GetTransactionReturnType, Hash, Prettify, Transport } from "viem";
+import { GetUserOperationParameters, UserOperation, UserOperationNotFoundError } from "viem/account-abstraction";
 import { getAction, decodeFunctionData } from "viem/utils";
 import { getLogs, getTransaction } from "viem/actions";
 
@@ -7,6 +7,19 @@ import { getSupportedEntryPoints } from "./getSupportedEntryPoints.js";
 import { UserOperationEvent, handleOps } from "../../artifacts/IEntryPoint.js";
 import { PackedUserOperation, toUserOperationEncoded } from "../../models/PackedUserOperation.js";
 import { decodeUserOp } from "../../models/UserOperation.js";
+
+export type GetUserOperationReturnType07 = Prettify<{
+    /** The block hash the User Operation was included on. */
+    blockHash: Hash;
+    /** The block number the User Operation was included on. */
+    blockNumber: bigint;
+    /** The EntryPoint which handled the User Operation. */
+    entryPoint: Address;
+    /** The hash of the transaction which included the User Operation. */
+    transactionHash: Hash;
+    /** The User Operation. */
+    userOperation: UserOperation<"0.7">;
+}>;
 
 /**
  * Retrieves information about a User Operation given a hash.
@@ -31,7 +44,10 @@ import { decodeUserOp } from "../../models/UserOperation.js";
  *   hash: '0x4ca7ee652d57678f26e887c149ab0735f41de37bcad58c9f6d3ed5824f15b74d',
  * })
  */
-export async function getUserOperation(client: Client<Transport>, { hash }: GetUserOperationParameters) {
+export async function getUserOperation(
+    client: Client<Transport>,
+    { hash }: GetUserOperationParameters,
+): Promise<GetUserOperationReturnType07> {
     // Default entryPoint
     const supportedEntryPoints = await getAction(client, getSupportedEntryPoints, "getSupportedEntryPoints")({});
     const entryPointAddress = supportedEntryPoints[0];
