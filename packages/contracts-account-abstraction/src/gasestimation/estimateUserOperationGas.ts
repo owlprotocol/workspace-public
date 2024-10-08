@@ -1,6 +1,8 @@
-import { Address, PublicClient, StateOverride, Chain, Transport, zeroAddress } from "viem";
+import { Address, Client, StateOverride, zeroAddress } from "viem";
 import * as chains from "viem/chains";
 import { UserOperation } from "permissionless/types";
+import { getChainId } from "viem/actions";
+import { getAction } from "viem/utils";
 import { getExecutionResult } from "./simulateHandleOp.js";
 import { calcVerificationGasAndCallGasLimit } from "./calcVerificationGasAndCallLimit.js";
 import { calcPreVerificationGas } from "../calcPreVerificationGas/calcPreVerificationGas.js";
@@ -38,7 +40,7 @@ export async function estimateUserOperationGasMock(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _entryPoint: Address,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _publicClient: PublicClient<Transport, Chain>,
+    _publicClient: Client,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _entryPointSimulationsAddress: Address,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -70,7 +72,7 @@ export async function estimateUserOperationGasMock(
  * Estimate UserOperation gas. Unlike Alto implementation, this does NOT mutate any parameters.
  * @param userOperationData `UserOperation` without any EXCLUDING gas fields
  * @param entryPoint
- * @param publicClient
+ * @param client
  * @param entryPointSimulationsAddress
  * @param stateOverride
  * @returns gas parameters of UserOperation
@@ -79,7 +81,7 @@ export async function estimateUserOperationGas(
     //TODO: Omit gas fields
     userOperationData: Omit<UserOperation<"v0.7">, UserOperationGasFields>,
     entryPoint: Address,
-    publicClient: PublicClient<Transport, Chain>,
+    client: Client,
     entryPointSimulationsAddress: Address,
     stateOverride: StateOverride[number] | undefined = undefined,
 ): Promise<EstimateUserOperationGasResponseResult> {
@@ -104,11 +106,11 @@ export async function estimateUserOperationGas(
         userOperation.paymasterPostOpGasLimit = 2_000_000n;
     }
 
-    const chainId = publicClient.chain.id;
+    const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
 
     //Additional 10% added
     userOperation.preVerificationGas =
-        ((await calcPreVerificationGas(publicClient, toPackedUserOperation(encodeUserOp(userOperation)), entryPoint)) *
+        ((await calcPreVerificationGas(client, toPackedUserOperation(encodeUserOp(userOperation)), entryPoint)) *
             110n) /
         100n;
 
@@ -125,7 +127,7 @@ export async function estimateUserOperationGas(
     const executionResult = await getExecutionResult(
         toPackedUserOperation(encodeUserOp(userOperation)),
         entryPoint,
-        publicClient,
+        client,
         entryPointSimulationsAddress,
         stateOverride,
     );

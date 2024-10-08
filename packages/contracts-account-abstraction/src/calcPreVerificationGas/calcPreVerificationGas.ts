@@ -1,5 +1,7 @@
-import { Address, PublicClient, Chain, Transport } from "viem";
+import { Address, Client } from "viem";
 import * as chains from "viem/chains";
+import { getAction } from "viem/utils";
+import { getChainId } from "viem/actions";
 import { calcDefaultPreVerificationGas } from "./calcDefaultPreVerificationGas.js";
 import { GasOverheads } from "./GasOverheads.js";
 import { calcArbitrumPreVerificationGas } from "./calcArbitrumPreVerificationGas.js";
@@ -21,15 +23,16 @@ import { PackedUserOperation } from "../models/PackedUserOperation.js";
  * @returns
  */
 export async function calcPreVerificationGas(
-    publicClient: PublicClient<Transport, Chain>,
+    client: Client,
     packedUserOperation: PackedUserOperation,
     entryPoint: Address,
     overheads?: GasOverheads,
 ): Promise<bigint> {
+    const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
+
     //TODO: Refactor this logic if possible to make it more modular as chainIds are hard-coded rn
     //TODO: Is default calculation required?
     let preVerificationGas = calcDefaultPreVerificationGas(packedUserOperation, overheads);
-    const chainId = publicClient.chain.id;
 
     if (chainId === 59140 || chainId === 59142) {
         preVerificationGas *= 2n;
@@ -45,7 +48,7 @@ export async function calcPreVerificationGas(
         chainId === 957 // Lyra chain
     ) {
         preVerificationGas = await calcOptimismPreVerificationGas(
-            publicClient,
+            client,
             packedUserOperation,
             entryPoint,
             preVerificationGas,
@@ -56,7 +59,7 @@ export async function calcPreVerificationGas(
         chainId === chains.arbitrumSepolia.id
     ) {
         preVerificationGas = await calcArbitrumPreVerificationGas(
-            publicClient,
+            client,
             packedUserOperation,
             entryPoint,
             preVerificationGas,

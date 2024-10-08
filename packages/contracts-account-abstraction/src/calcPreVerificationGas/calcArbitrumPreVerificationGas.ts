@@ -1,16 +1,15 @@
 import {
     Address,
-    Chain,
-    PublicClient,
-    Transport,
+    Client,
     concat,
     encodeAbiParameters,
     getAbiItem,
-    getContract,
     maxUint64,
     serializeTransaction,
     toFunctionSelector,
 } from "viem";
+import { simulateContract, getChainId } from "viem/actions";
+import { getAction } from "viem/utils";
 import { abi as EntryPointV07Abi } from "../artifacts/EntryPoint.js";
 import { PackedUserOperation, packedUserOperationToRandomDataUserOp } from "../models/PackedUserOperation.js";
 
@@ -57,11 +56,13 @@ const getArbitrumL1FeeAbi = [
 ] as const;
 
 export async function calcArbitrumPreVerificationGas(
-    publicClient: PublicClient<Transport, Chain>,
+    client: Client,
     packedUserOperation: PackedUserOperation,
     entryPoint: Address,
     staticFee: bigint,
 ) {
+    const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
+
     const randomDataUserOp: PackedUserOperation = packedUserOperationToRandomDataUserOp(packedUserOperation);
 
     const handleOpsAbi = getAbiItem({
@@ -79,7 +80,7 @@ export async function calcArbitrumPreVerificationGas(
     const serializedTx = serializeTransaction(
         {
             to: entryPoint,
-            chainId: publicClient.chain.id,
+            chainId,
             nonce: 999999,
             gasLimit: maxUint64,
             gasPrice: maxUint64,
@@ -92,15 +93,16 @@ export async function calcArbitrumPreVerificationGas(
         },
     );
 
-    const arbGasPriceOracle = getContract({
+    const { result } = await getAction(
+        client,
+        simulateContract,
+        "simulateContract",
+    )({
         abi: getArbitrumL1FeeAbi,
         address: precompileAddress,
-        client: {
-            public: publicClient,
-        },
+        functionName: "gasEstimateL1Component",
+        args: [entryPoint, false, serializedTx],
     });
-
-    const { result } = await arbGasPriceOracle.simulate.gasEstimateL1Component([entryPoint, false, serializedTx]);
 
     return result[0] + staticFee;
 }

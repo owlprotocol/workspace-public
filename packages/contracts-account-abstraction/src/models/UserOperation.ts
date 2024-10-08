@@ -138,13 +138,13 @@ export function decodeUserOp(userOp: UserOperationWithBigIntAsHex<"v0.7">): User
     if (userOp.paymaster != zeroAddress) {
         userOpDecoded.paymaster = userOp.paymaster;
     }
-    if (userOp.paymasterVerificationGasLimit != "0x0") {
+    if (userOp.paymasterVerificationGasLimit && userOp.paymasterVerificationGasLimit != "0x0") {
         userOpDecoded.paymasterVerificationGasLimit = BigInt(userOp.paymasterVerificationGasLimit);
     }
-    if (userOp.paymasterPostOpGasLimit != "0x0") {
+    if (userOp.paymasterPostOpGasLimit && userOp.paymasterPostOpGasLimit != "0x0") {
         userOpDecoded.paymasterPostOpGasLimit = BigInt(userOp.paymasterPostOpGasLimit);
     }
-    if (userOp.paymasterData != "0x") {
+    if (userOp.paymasterData && userOp.paymasterData != "0x") {
         userOpDecoded.paymasterData = userOp.paymasterData;
     }
     return userOpDecoded;
