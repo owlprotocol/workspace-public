@@ -31,22 +31,21 @@ import {
 } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
-import { estimateUserOperationGas, UserOperationGasLimitFields } from "./estimateUserOperationGas.js";
-import { sendUserOperation } from "./sendUserOperation.js";
-import { getUserOperationReceipt } from "./getUserOperationReceipt.js";
-import { getUserOperation } from "./getUserOperation.js";
-import { port } from "../../test/constants.js";
-import { getSimpleAccountAddress } from "../../SimpleAccount.js";
-import { ERC1967Proxy } from "../../artifacts/ERC1967Proxy.js";
-import { SimpleAccountFactory } from "../../artifacts/SimpleAccountFactory.js";
-import { MyContract } from "../../artifacts/MyContract.js";
-import { setupERC4337Contracts, setupVerifyingPaymaster, topupPaymaster } from "../../setupERC4337Contracts.js";
-import { dummySignature } from "../../models/UserOperation.js";
+import { estimateUserOperationGas, UserOperationGasLimitFields } from "./bundler/estimateUserOperationGas.js";
+import { sendUserOperation } from "./bundler/sendUserOperation.js";
+import { getUserOperationReceipt } from "./bundler/getUserOperationReceipt.js";
+import { getUserOperation } from "./bundler/getUserOperation.js";
+import { getPaymasterData } from "./paymaster/getPaymasterData.js";
+import { getPaymasterStubData } from "./paymaster/getPaymasterStubData.js";
+import { port } from "../test/constants.js";
+import { getSimpleAccountAddress } from "../SimpleAccount.js";
+import { ERC1967Proxy } from "../artifacts/ERC1967Proxy.js";
+import { SimpleAccountFactory } from "../artifacts/SimpleAccountFactory.js";
+import { MyContract } from "../artifacts/MyContract.js";
+import { setupERC4337Contracts, setupVerifyingPaymaster, topupPaymaster } from "../setupERC4337Contracts.js";
+import { dummySignature } from "../models/UserOperation.js";
 
-import { getPaymasterData } from "../paymaster/getPaymasterData.js";
-import { getPaymasterStubData } from "../paymaster/getPaymasterStubData.js";
-
-describe("estimateUserOperationGas.test.ts", function () {
+describe("actions/index.test.ts", function () {
     let transport: Transport;
     let publicClient: PublicClient<Transport, Chain>;
     // Fixed account with funding `getLocalAccount(0)`
@@ -162,7 +161,7 @@ describe("estimateUserOperationGas.test.ts", function () {
          *   - Sign UserOp with account owner
          *   - Submit to EntryPoint
          **/
-        test("estimateUserOperationGas - No Paymaster", async () => {
+        test("No Paymaster", async () => {
             //Pre-fund wallet just to pay tx cost
             const fundSimpleAccountHash = await walletClient.sendTransaction({
                 to: simpleAccount.address,
@@ -262,7 +261,7 @@ describe("estimateUserOperationGas.test.ts", function () {
          *   - Sign UserOp with account owner
          *   - Submit to EntryPoint
          **/
-        test("estimateUserOperationGas - Paymaster", async () => {
+        test("Paymaster", async () => {
             //Encode smart account tx, send to random address
             const to = privateKeyToAccount(generatePrivateKey()).address;
             const value = 1n;
@@ -372,7 +371,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             expect(balance).toBe(value);
         });
 
-        test("estimateUserOperationGas - Paymaster Deploy Contract", async () => {
+        test("Paymaster Deploy Contract", async () => {
             //Encode smart account tx, deploy hello contract
             //Deploy hello world contract
             const deployParams = {
@@ -489,7 +488,7 @@ describe("estimateUserOperationGas.test.ts", function () {
 
     /** Tests involving deploying the smart account */
     describe("Deploy Simple Account", () => {
-        test("estimateUserOperationGas - No Paymaster Deploy Contract", async () => {
+        test("No Paymaster Deploy Contract", async () => {
             //Encode smart account tx, deploy smart account & hello contract
             //Deploy smart account data
             //Get SimpleAccount address
@@ -620,7 +619,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             expect(contractBytecode).toBeDefined();
         });
 
-        test("estimateUserOperationGas - Paymaster Deploy Contract", async () => {
+        test("Paymaster Deploy Contract", async () => {
             //Encode smart account tx, deploy smart account & hello contract
             //Deploy smart account data
             //Get SimpleAccount address

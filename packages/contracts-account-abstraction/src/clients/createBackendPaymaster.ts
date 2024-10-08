@@ -8,8 +8,8 @@ export type BackendPaymasterConfig<
 > = Prettify<
     Pick<
         ClientConfig<transport, chain, account, undefined>,
-        "cacheTime" | "key" | "name" | "pollingInterval" | "transport"
-    > & { paymaster: Address }
+        "cacheTime" | "key" | "name" | "pollingInterval" | "transport" | "chain" | "account"
+    > & { account: account; paymaster: Address }
 >;
 
 export type BackendPaymaster<
@@ -23,14 +23,19 @@ export function createBackendPaymaster<
     chain extends Chain | undefined = Chain | undefined,
     account extends LocalAccount = LocalAccount,
 >(parameters: BackendPaymasterConfig<transport, chain, account>): BackendPaymaster {
-    const { key = "paymaster-backend", name = "Paymaster Backend", transport } = parameters;
-    const client = createClient({
-        ...parameters,
-        key,
-        name,
-        transport,
-        type: "PaymasterBackend",
-    }) as any;
+    const { key = "paymaster-backend", name = "Paymaster Backend", transport, paymaster } = parameters;
+    const client = Object.assign(
+        createClient({
+            ...parameters,
+            key,
+            name,
+            transport,
+            type: "PaymasterBackend",
+        }),
+        {
+            paymaster,
+        },
+    ) as any;
 
     return client.extend(backendPaymasterActions);
 }
