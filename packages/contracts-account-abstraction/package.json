@@ -44,6 +44,11 @@
       "require": "./lib/cjs/actions/index.js",
       "import": "./lib/esm/actions/index.js"
     },
+    "./clients": {
+      "types": "./lib/types/clients/index.d.ts",
+      "require": "./lib/cjs/clients/index.js",
+      "import": "./lib/esm/clients/index.js"
+    },
     "./artifacts": {
       "types": "./lib/types/artifacts/index.d.ts",
       "require": "./lib/cjs/artifacts/index.js",
