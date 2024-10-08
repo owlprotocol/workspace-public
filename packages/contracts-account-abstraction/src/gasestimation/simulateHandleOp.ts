@@ -1,13 +1,16 @@
-import { Address } from "abitype";
 import {
+    Address,
     StateOverride,
-    PublicClient,
+    Client,
     Hex,
     encodeFunctionData,
     decodeAbiParameters,
     decodeErrorResult,
     decodeFunctionResult,
 } from "viem";
+import { getAction } from "viem/utils";
+import { call } from "viem/actions";
+
 import { parseFailedOpWithRevert } from "./parseFailedOpWithRevert.js";
 import { abi as PimlicoEntryPointSimulationsAbi } from "../artifacts/PimlicoEntryPointSimulations.js";
 import { abi as EntryPointV07Abi } from "../artifacts/EntryPoint.js";
@@ -40,7 +43,7 @@ export type SimulateHandleOpResult<TypeResult extends "failed" | "execution" = "
  * - targetCallData = userOp.callData
  * @param packedUserOperation
  * @param entryPoint
- * @param publicClient
+ * @param client
  * @param entryPointSimulationsAddress
  * @param stateOverride
  * @returns
@@ -48,14 +51,14 @@ export type SimulateHandleOpResult<TypeResult extends "failed" | "execution" = "
 export async function getExecutionResult(
     packedUserOperation: PackedUserOperation,
     entryPoint: Address,
-    publicClient: PublicClient,
+    client: Client,
     entryPointSimulationsAddress: Address,
     stateOverride: StateOverride[number] | undefined = undefined,
 ): Promise<SimulateHandleOpResult<"execution">> {
     const error = await simulateHandleOpV07(
         packedUserOperation,
         entryPoint,
-        publicClient,
+        client,
         packedUserOperation.sender,
         packedUserOperation.callData,
         entryPointSimulationsAddress,
@@ -77,7 +80,7 @@ export async function getExecutionResult(
  * decode revert data.
  * @param packedUserOperation
  * @param entryPoint
- * @param publicClient
+ * @param client
  * @param targetAddress currently all calls use userOp.sender but this is here to align with the interface
  * @param targetCallData currently all calls use userOp.callData but this is here to align with the interface
  * @param entryPointSimulationsAddress
@@ -87,7 +90,7 @@ export async function getExecutionResult(
 export async function simulateHandleOpV07(
     packedUserOperation: PackedUserOperation,
     entryPoint: Address,
-    publicClient: PublicClient,
+    client: Client,
     targetAddress: Address,
     targetCallData: Hex,
     entryPointSimulationsAddress: Address,
@@ -106,7 +109,7 @@ export async function simulateHandleOpV07(
     });
 
     const cause = await callPimlicoEntryPointSimulations(
-        publicClient,
+        client,
         entryPoint,
         [entryPointSimulationsSimulateHandleOpCallData, entryPointSimulationsSimulateTargetCallData],
         entryPointSimulationsAddress,
@@ -225,7 +228,7 @@ function validateTargetCallDataResult(data: Hex):
 
 /**
  * Call PimlicoEntryPointSimulations contract and decode revert data
- * @param publicClient
+ * @param client
  * @param entryPoint
  * @param entryPointSimulationsCallData
  * @param entryPointSimulationsAddress
@@ -233,7 +236,7 @@ function validateTargetCallDataResult(data: Hex):
  * @returns
  */
 export async function callPimlicoEntryPointSimulations(
-    publicClient: PublicClient,
+    client: Client,
     entryPoint: Address,
     entryPointSimulationsCallData: Hex[],
     entryPointSimulationsAddress: Address,
@@ -246,7 +249,11 @@ export async function callPimlicoEntryPointSimulations(
         args: [entryPoint, entryPointSimulationsCallData],
     });
 
-    const callReturn = await publicClient.call({
+    const callReturn = await getAction(
+        client,
+        call,
+        "call",
+    )({
         to: entryPointSimulationsAddress,
         data: callData,
         blockTag: "latest",

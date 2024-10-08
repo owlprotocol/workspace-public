@@ -1,16 +1,15 @@
 import {
     Address,
-    Chain,
-    PublicClient,
-    Transport,
+    Client,
     concat,
     encodeAbiParameters,
     getAbiItem,
-    getContract,
     maxUint64,
     serializeTransaction,
     toFunctionSelector,
 } from "viem";
+import { getChainId, getBlock, simulateContract } from "viem/actions";
+import { getAction } from "viem/utils";
 import { packedUserOperationToRandomDataUserOp } from "../models/PackedUserOperation.js";
 import { abi as EntryPointV07Abi } from "../artifacts/EntryPoint.js";
 import { PackedUserOperation, unpackGasLimits } from "../models/PackedUserOperation.js";
@@ -45,11 +44,13 @@ const getL1FeeAbi = [
 ] as const;
 
 export async function calcOptimismPreVerificationGas(
-    publicClient: PublicClient<Transport, Chain>,
+    client: Client,
     packedUserOperation: PackedUserOperation,
     entryPoint: Address,
     staticFee: bigint,
 ) {
+    const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
+
     const randomDataUserOp: PackedUserOperation = packedUserOperationToRandomDataUserOp(packedUserOperation);
 
     const handleOpsAbi = getAbiItem({
@@ -62,15 +63,16 @@ export async function calcOptimismPreVerificationGas(
 
     const data = concat([selector, paramData]);
 
-    const latestBlock = await publicClient.getBlock();
+    const latestBlock = await getAction(client, getBlock, "getBlock")({});
     if (latestBlock.baseFeePerGas === null) {
         throw new Error("block does not have baseFeePerGas");
     }
 
+    const precompileAddress = "0x420000000000000000000000000000000000000F";
     const serializedTx = serializeTransaction(
         {
             to: entryPoint,
-            chainId: publicClient.chain.id,
+            chainId,
             nonce: 999999,
             gasLimit: maxUint64,
             gasPrice: maxUint64,
@@ -83,15 +85,16 @@ export async function calcOptimismPreVerificationGas(
         },
     );
 
-    const opGasPriceOracle = getContract({
+    const { result: l1Fee } = await getAction(
+        client,
+        simulateContract,
+        "simulateContract",
+    )({
         abi: getL1FeeAbi,
-        address: "0x420000000000000000000000000000000000000F",
-        client: {
-            public: publicClient,
-        },
+        address: precompileAddress,
+        functionName: "getL1Fee",
+        args: [serializedTx],
     });
-
-    const { result: l1Fee } = await opGasPriceOracle.simulate.getL1Fee([serializedTx]);
 
     const { maxFeePerGas, maxPriorityFeePerGas } = unpackGasLimits(packedUserOperation.gasFees);
     const l2MaxFee = maxFeePerGas;
