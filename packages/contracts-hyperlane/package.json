@@ -78,7 +78,7 @@
     "madge": "madge src/index.ts -c",
     "test": "pnpm run test:ci",
     "test:ci": "vitest --run",
-    "test:watch": "vitest",
+    "test:watch": "vitest --watch",
     "to:commonjs": "sed 's/\"type\": \"module\"/\"type\": \"commonjs\"/g' package.json > ./temp.package.json && mv ./temp.package.json package.json",
     "to:module": "sed 's/\"type\": \"commonjs\"/\"type\": \"module\"/g' package.json > ./temp.package.json && mv -f ./temp.package.json package.json",
     "tsc": "tsc",
