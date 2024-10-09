@@ -1,118 +1,109 @@
-// Store address + maxCuserClaim
-// prove data
-// update on-chain tracking
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import {AccessControlRecursiveLib} from "../../access/AccessControlRecursiveLib.sol";
 
 library ERC721DropLib {
+    // TODO: use selector
+    bytes32 internal constant ERC721_DROP_ROLE = bytes32("ERC721_DROP_ROLE");
+
+    bytes32 constant ERC721_DROP_STORAGE =
+        keccak256(abi.encode(uint256(keccak256("erc721.drop.storage")) - 1)) & ~bytes32(uint256(0xff));
+
     /// @custom:storage-location erc7201:erc721.drop.storage
     struct DropStorage {
         bytes32 merkleRoot;
-        mapping(address => uint256) maxUserClaim;
-        mapping(address => uint256) userClaims;
+        mapping(address => uint256) accountClaims;
     }
 
     // Errors
-    error MismatchedArrays();
     error InvalidProof();
     error ClaimLimitExceeded(uint256 attempted, uint256 remaining);
-    error ZeroAddress();
 
     // Events
-    event DropConditionSet(bytes32 indexed merkleRoot, address[] addresses, uint256[] maxClaims);
-    event TokensClaimedWithProof(address indexed user, uint256 quantity, uint256 totalClaimed);
-
-    bytes32 internal constant DROP_STORAGE_POSITION = keccak256("erc721.drop.storage");
+    event DropConditionSet(bytes32 indexed merkleRoot);
+    event TokensClaimedWithProof(address indexed account, uint256 quantity, uint256 totalClaimed);
 
     function getData() internal pure returns (DropStorage storage ds) {
-        bytes32 position = DROP_STORAGE_POSITION;
+        bytes32 position = ERC721_DROP_STORAGE;
         assembly {
             ds.slot := position
         }
     }
 
     /**
-     * @dev Set or update the Merkle root and claim limits.
-     * Each leaf node in the Merkle tree is constructed as:
-     *
-     * `keccak256(bytes.concat(keccak256(abi.encode(address, maxUserClaim))))`
-     *
-     * where:
-     * - `address` is the user's wallet address.
-     * - `maxUserClaim` is the maximum number of tokens the user can claim.
-     *
-     * The Merkle tree should be constructed using OpenZeppelin's `merkle-tree` tool
-     * to ensure compatibility.
+     * @dev Set or update the Merkle root.
+     * Requires the caller to have the `ERC721_DROP_ROLE`.
      *
      * @param root Merkle root for address-based claim limits.
-     * @param addresses Array of user addresses to be included in the Merkle tree.
-     * @param maxClaims Array of maximum claim amounts corresponding to each address.
      */
-    function _setDropCondition(bytes32 root, address[] calldata addresses, uint256[] calldata maxClaims) internal {
-        if (addresses.length != maxClaims.length) revert MismatchedArrays();
+    function _setDropCondition(bytes32 root) internal {
+        AccessControlRecursiveLib._checkRoleRecursive(ERC721_DROP_ROLE, msg.sender);
 
         DropStorage storage ds = getData();
         ds.merkleRoot = root;
 
-        for (uint256 i = 0; i < addresses.length; i++) {
-            if (addresses[i] == address(0)) revert ZeroAddress();
-            ds.maxUserClaim[addresses[i]] = maxClaims[i];
-        }
-
-        emit DropConditionSet(root, addresses, maxClaims);
+        emit DropConditionSet(root);
     }
 
     /**
-     * @dev Verify Merkle proof and update user claims.
-     * This function checks if the provided Merkle proof is valid by constructing the leaf node
-     * using `keccak256(bytes.concat(keccak256(abi.encode(user, ds.maxUserClaim[user]))))`.
-     * If the proof is valid, it updates the number of tokens claimed by the user.
+     * @dev Verify Merkle proof and update account claims.
+     * This function uses `_checkMaxClaimForAccount` to validate the proof, and if the proof is valid, it updates the number of tokens claimed by the account.
      *
-     * @param user Address of the user making the claim.
-     * @param quantity Number of tokens the user wants to claim.
-     * @param merkleProof Array of hashes required to verify the user's eligibility.
+     * @param account Address of the account making the claim.
+     * @param quantity Number of tokens the account wants to claim.
+     * @param accountMaxClaim Maximum number of tokens the account is allowed to claim.
+     * @param merkleProof Array of hashes required to verify the account's eligibility.
      */
-    function _claimWithProof(address user, uint256 quantity, bytes32[] calldata merkleProof) internal {
+    function _claimWithProof(
+        address account,
+        uint256 quantity,
+        uint256 accountMaxClaim,
+        bytes32[] calldata merkleProof
+    ) internal {
         DropStorage storage ds = getData();
 
-        // Construct the leaf node using double-hashing pattern for verification
-        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(user, ds.maxUserClaim[user]))));
-
-        // Verify the Merkle proof against the root and the constructed leaf node
-        if (!MerkleProof.verify(merkleProof, ds.merkleRoot, leaf)) {
+        if (!_checkMaxClaimForAccount(account, accountMaxClaim, merkleProof)) {
             revert InvalidProof();
         }
 
-        uint256 remaining = ds.maxUserClaim[user] - ds.userClaims[user];
+        uint256 remaining = accountMaxClaim - ds.accountClaims[account];
         if (quantity > remaining) {
             revert ClaimLimitExceeded(quantity, remaining);
         }
 
-        ds.userClaims[user] += quantity;
+        ds.accountClaims[account] += quantity;
 
-        emit TokensClaimedWithProof(user, quantity, ds.userClaims[user]);
+        emit TokensClaimedWithProof(account, quantity, ds.accountClaims[account]);
     }
 
     /**
-     * @dev Get the maximum claim limit for a user.
-     * @param user Address of the user.
-     * @return uint256 Maximum tokens the user can claim.
+     * @dev Check if a given account and its max claim are valid based on the stored Merkle root.
+     * @param account Address of the account to check.
+     * @param accountMaxClaim Maximum number of tokens the account can claim.
+     * @param proof Array of hashes required to verify the account's eligibility.
+     * @return boolean indicating if the proof is valid for the given account and max claim.
      */
-    function _getMaxClaimForUser(address user) internal view returns (uint256) {
+    function _checkMaxClaimForAccount(
+        address account,
+        uint256 accountMaxClaim,
+        bytes32[] calldata proof
+    ) internal view returns (bool) {
         DropStorage storage ds = getData();
-        return ds.maxUserClaim[user];
+
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(account, accountMaxClaim))));
+
+        return MerkleProof.verify(proof, ds.merkleRoot, leaf);
     }
 
     /**
-     * @dev Get the number of tokens already claimed by a user.
-     * @param user Address of the user.
+     * @dev Get the number of tokens already claimed by an account.
+     * @param account Address of the account.
      * @return uint256 Number of tokens claimed.
      */
-    function _getUserClaimed(address user) internal view returns (uint256) {
+    function _getAccountClaimed(address account) internal view returns (uint256) {
         DropStorage storage ds = getData();
-        return ds.userClaims[user];
+        return ds.accountClaims[account];
     }
 }
