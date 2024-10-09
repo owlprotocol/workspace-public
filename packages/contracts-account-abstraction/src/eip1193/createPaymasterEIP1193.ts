@@ -13,7 +13,7 @@ import {
     Transport,
 } from "viem";
 import { getAction } from "viem/utils";
-import { getPaymasterData, getPaymasterStubData } from "../actions/index.js";
+import { getPaymasterData, getPaymasterStubData, getUserOperationGasPrice } from "../actions/index.js";
 import { decodeUserOp } from "../models/UserOperation.js";
 
 export function createBackendPaymasterEIP1193(
@@ -21,7 +21,23 @@ export function createBackendPaymasterEIP1193(
 ): EIP1193RequestFn<PaymasterRpcSchema> {
     return async function (args: EIP1193Parameters<PaymasterRpcSchema>) {
         try {
-            if (args.method === "pm_getPaymasterStubData") {
+            if ((args.method as any) === "pimlico_getUserOperationGasPrice") {
+                const gasPrice = await getAction(client, getUserOperationGasPrice, "getUserOperationGasPrice")({});
+                return {
+                    slow: {
+                        maxFeePerGas: numberToHex(gasPrice.slow.maxFeePerGas),
+                        maxPriorityFeePerGas: numberToHex(gasPrice.slow.maxPriorityFeePerGas),
+                    },
+                    standard: {
+                        maxFeePerGas: numberToHex(gasPrice.slow.maxFeePerGas),
+                        maxPriorityFeePerGas: numberToHex(gasPrice.slow.maxPriorityFeePerGas),
+                    },
+                    fast: {
+                        maxFeePerGas: numberToHex(gasPrice.slow.maxFeePerGas),
+                        maxPriorityFeePerGas: numberToHex(gasPrice.slow.maxPriorityFeePerGas),
+                    },
+                };
+            } else if (args.method === "pm_getPaymasterStubData") {
                 const [userOperationHex, entryPointAddress, chainIdHex] = args.params as unknown as [
                     userOperation: Pick<
                         RpcUserOperation<"0.7">,

@@ -63,6 +63,7 @@ export function createBackendBundlerEIP1193(
                     logs: logs.map((l) => logEncodeZod.parse(l)),
                 };
             } else if (args.method === "eth_estimateUserOperationGas") {
+                console.debug(args);
                 const [userOperationHex, entryPoint] = args.params;
                 const supportedEntryPoints = await getAction(
                     client,
@@ -93,6 +94,8 @@ export function createBackendBundlerEIP1193(
                 if (paymasterPostOpGasLimit != undefined) {
                     result.paymasterPostOpGasLimit = numberToHex(paymasterPostOpGasLimit);
                 }
+                console.debug(result);
+                return result;
             } else if (args.method === "eth_sendUserOperation") {
                 const [userOperationHex, entryPoint] = args.params;
                 const supportedEntryPoints = await getAction(
@@ -115,7 +118,6 @@ export function createBackendBundlerEIP1193(
                 return userOperationHash;
             }
         } catch (error) {
-            //TODO: Error handling
             return null;
         }
     } as any;
