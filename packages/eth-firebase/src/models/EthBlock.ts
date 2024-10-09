@@ -49,7 +49,8 @@ export type EthBlockGroupQueryResource = FirebaseQueryResource<
     Query<FirestoreSDK, BlockEncoded>
 >;
 
-export const EthBlockFieldOverrides: FieldOverridesSchema<keyof BlockInput> = {
+//TODO: viem type mismatch
+export const EthBlockFieldOverrides: FieldOverridesSchema<keyof Omit<BlockInput, "parentBeaconBlockRoot">> = {
     hash: "COLLECTION_GROUP",
     number: "COLLECTION",
     parentHash: "IGNORE",

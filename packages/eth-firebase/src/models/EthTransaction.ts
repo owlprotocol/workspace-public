@@ -49,7 +49,8 @@ export type EthTransactionGroupQueryResource = FirebaseQueryResource<
     Query<FirestoreSDK, TransactionEncoded>
 >;
 
-export const EthTransactionFieldOverrides: FieldOverridesSchema<keyof TransactionInput> = {
+//TODO: viem type mismatch
+export const EthTransactionFieldOverrides: FieldOverridesSchema<keyof Omit<TransactionInput, "authorizationList">> = {
     hash: "COLLECTION_GROUP",
     blockNumber: "COLLECTION",
     blockHash: "COLLECTION_GROUP",

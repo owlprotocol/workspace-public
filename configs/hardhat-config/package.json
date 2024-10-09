@@ -49,7 +49,7 @@
     "tsc:watch": "tsc -w"
   },
   "devDependencies": {
-    "viem": "2.9.20",
+    "viem": "2.21.19",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",

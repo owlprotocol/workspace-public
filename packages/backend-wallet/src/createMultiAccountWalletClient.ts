@@ -139,7 +139,8 @@ export async function createMultiAccountWalletEIP1193Request(
             ) as PrepareTransactionRequestRequest;
 
             const preparedTransaction = await walletClient.prepareTransactionRequest(transactionDecoded);
-            const signedTx = await walletClient.account.signTransaction(preparedTransaction);
+            //TODO: viem type mismatch
+            const signedTx = await walletClient.account.signTransaction(preparedTransaction as any);
 
             return request({ method: "eth_sendRawTransaction", params: [signedTx] }, options);
         } else if (args.method === "eth_signTransaction") {
