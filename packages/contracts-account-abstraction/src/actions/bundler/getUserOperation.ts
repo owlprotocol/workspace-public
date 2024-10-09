@@ -17,6 +17,8 @@ export type GetUserOperationReturnType07 = Prettify<{
     entryPoint: Address;
     /** The hash of the transaction which included the User Operation. */
     transactionHash: Hash;
+    /* The transaction (optional to align with official interface) */
+    transaction?: GetTransactionReturnType;
     /** The User Operation. */
     userOperation: UserOperation<"0.7">;
 }>;
@@ -115,6 +117,7 @@ export async function getUserOperation(
         blockNumber: transaction.blockNumber,
         entryPoint: entryPointAddress,
         transactionHash,
+        transaction,
         userOperation,
     };
 }

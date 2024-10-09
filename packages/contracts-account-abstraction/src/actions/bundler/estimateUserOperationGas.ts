@@ -77,7 +77,6 @@ export async function estimateUserOperationGas(
     },
     parameters: EstimateUserOperationGasParameters07,
 ): Promise<EstimateUserOperationGasReturnType<undefined, undefined, undefined, "0.7">> {
-    console.debug(parameters);
     const { entryPointSimulationsAddress } = client;
 
     // Default entryPoint
