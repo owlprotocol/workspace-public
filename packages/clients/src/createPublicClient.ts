@@ -1,4 +1,4 @@
-import { http, createPublicClient } from "viem";
+import { http, createPublicClient, PublicClient } from "viem";
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
 
 /**
@@ -24,7 +24,7 @@ export function getPublicUrl(params: PublicUrlParams): string {
  * @param params
  * @returns Public Client
  */
-export function createOwlPublicClient(params: PublicUrlParams) {
+export function createOwlPublicClient(params: PublicUrlParams): PublicClient {
     return createPublicClient({
         transport: http(getPublicUrl(params)),
     });
