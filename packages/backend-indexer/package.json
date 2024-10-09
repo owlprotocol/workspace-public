@@ -41,6 +41,11 @@
       "types": "./lib/types/clients/index.d.ts",
       "require": "./lib/cjs/clients/index.js",
       "import": "./lib/esm/clients/index.js"
+    },
+    "./eip1193": {
+      "types": "./lib/types/eip1193/index.d.ts",
+      "require": "./lib/cjs/eip1193/index.js",
+      "import": "./lib/esm/eip1193/index.js"
     }
   },
   "scripts": {
@@ -72,7 +77,7 @@
     "@owlprotocol/zod-sol": "workspace:*",
     "abitype": "1.0.6",
     "lodash-es": "4.17.21",
-    "viem": "2.9.20"
+    "viem": "2.21.19"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",
