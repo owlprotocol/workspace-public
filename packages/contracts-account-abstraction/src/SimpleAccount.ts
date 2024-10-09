@@ -1,4 +1,4 @@
-import { Address } from "abitype";
+import { Address } from "viem";
 import { Hex, encodeDeployData, encodeFunctionData, getCreate2Address, getCreateAddress, numberToBytes } from "viem";
 import { abi as SimpleAccountAbi } from "./artifacts/SimpleAccount.js";
 import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";

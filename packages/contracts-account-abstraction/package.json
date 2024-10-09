@@ -39,6 +39,16 @@
       "require": "./lib/cjs/index.js",
       "import": "./lib/esm/index.js"
     },
+    "./actions": {
+      "types": "./lib/types/actions/index.d.ts",
+      "require": "./lib/cjs/actions/index.js",
+      "import": "./lib/esm/actions/index.js"
+    },
+    "./clients": {
+      "types": "./lib/types/clients/index.d.ts",
+      "require": "./lib/cjs/clients/index.js",
+      "import": "./lib/esm/clients/index.js"
+    },
     "./artifacts": {
       "types": "./lib/types/artifacts/index.d.ts",
       "require": "./lib/cjs/artifacts/index.js",
@@ -99,9 +109,7 @@
     "@openzeppelin/contracts": "5.0.2",
     "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
-    "abitype": "1.0.6",
-    "permissionless": "^0.1.19",
-    "viem": "2.9.20",
+    "viem": "2.21.19",
     "zod": "3.22.4"
   },
   "devDependencies": {

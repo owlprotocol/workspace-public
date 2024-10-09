@@ -16,9 +16,7 @@ import { isStrictEventAbi } from "./isStrictEventAbi.js";
  * @param ethLogAbiResource
  * @returns
  */
-export function decodeLogWithAbis(
-    log: Pick<Log, "address" | "topics" | "data"> & { blockNumber: bigint | `0x${string}` },
-): {
+export function decodeLogWithAbis(log: Pick<Log, "topics" | "data">): {
     eventName?: string;
     args?: any[] & Record<string, any>;
 } | null {

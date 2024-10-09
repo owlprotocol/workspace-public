@@ -1,13 +1,12 @@
 import {
     getOrDeployDeterministicDeployer,
     getOrDeployDeterministicContract,
-    Clients,
     DETERMINISTIC_DEPLOYER_ADDRESS,
     getDeployDeterministicAddress,
 } from "@owlprotocol/viem-utils";
-import { Address, Hash, encodeDeployData, formatEther, zeroHash } from "viem";
-import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
-import { ENTRYPOINT_ADDRESS_V07, ENTRYPOINT_SALT_V07 } from "./constants.js";
+import { Address, Hash, encodeDeployData, formatEther, zeroHash, WalletClient, PublicClient } from "viem";
+import { entryPoint07Address } from "viem/account-abstraction";
+import { ENTRYPOINT_SALT_V07 } from "./constants.js";
 import { EntryPoint } from "./artifacts/EntryPoint.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { VerifyingPaymaster } from "./artifacts/VerifyingPaymaster.js";
@@ -69,14 +68,14 @@ export const erc4337Contracts = getERC4337Contracts();
  * @param clients publicClient, walletClient for deploying contracts
  * @returns contract info
  */
-export async function setupERC4337Contracts(clients: Clients) {
+export async function setupERC4337Contracts(clients: { walletClient: WalletClient; publicClient: PublicClient }) {
     const { publicClient, walletClient } = clients;
     //Step 1 - Deterministic Deployer
     //If no DeterminsticDeployer, wait for deploy (mostly used for local testing)
-    const deterministicDeployer = await getOrDeployDeterministicDeployer({
-        publicClient,
-        walletClient,
-    });
+    const deterministicDeployer = await getOrDeployDeterministicDeployer(
+        //TODO: viem type mismatch
+        { publicClient: publicClient as any, walletClient: walletClient as any },
+    );
     // console.debug(deterministicDeployer);
     if (deterministicDeployer.hash) {
         await publicClient.waitForTransactionReceipt({ hash: deterministicDeployer.hash });
@@ -85,18 +84,19 @@ export async function setupERC4337Contracts(clients: Clients) {
     //Step 2 - EntryPoint
     //If no EntryPoint v0.7, wait for deploy (mostly used for local testing)
     const entrypoint = (await getOrDeployDeterministicContract(
-        { publicClient, walletClient },
+        //TODO: viem type mismatch
+        { publicClient: publicClient as any, walletClient: walletClient as any },
         //Extracted salt (first 32 bytes) from original tx
         //https://etherscan.io/tx/0x5c81ea86f6c54481d3e21c78675b4f1d985c1fa62b678dcdfdf7934ddd6e127e
         {
             salt: ENTRYPOINT_SALT_V07,
             bytecode: EntryPoint.bytecode,
         },
-    )) as { address: ENTRYPOINT_ADDRESS_V07_TYPE; hash: Hash | undefined; existed: boolean };
+    )) as { address: typeof entryPoint07Address; hash: Hash | undefined; existed: boolean };
     // console.debug(entrypoint);
-    if (entrypoint.address != ENTRYPOINT_ADDRESS_V07) {
+    if (entrypoint.address != entryPoint07Address) {
         throw new Error(
-            `Entrypoint v0.7 deployed address ${ENTRYPOINT_ADDRESS_V07} (expected) != ${entrypoint.address} (actual)`,
+            `Entrypoint v0.7 deployed address ${entryPoint07Address} (expected) != ${entrypoint.address} (actual)`,
         );
     }
     if (entrypoint.hash) {
@@ -106,7 +106,8 @@ export async function setupERC4337Contracts(clients: Clients) {
     //Step 3 - SimpleAccountFactory
     //If no SimpleAccountFactory, wait for deploy (mostly used for local testing)
     const simpleAccountFactory = await getOrDeployDeterministicContract(
-        { publicClient, walletClient },
+        //TODO: viem type mismatch
+        { publicClient: publicClient as any, walletClient: walletClient as any },
         {
             salt: zeroHash,
             bytecode: encodeDeployData({
@@ -123,7 +124,8 @@ export async function setupERC4337Contracts(clients: Clients) {
 
     //Step 4 - EntryPointSimulations
     const entrypointSimulations = await getOrDeployDeterministicContract(
-        { publicClient, walletClient },
+        //TODO: viem type mismatch
+        { publicClient: publicClient as any, walletClient: walletClient as any },
         {
             salt: zeroHash,
             bytecode: encodeDeployData({
@@ -140,7 +142,8 @@ export async function setupERC4337Contracts(clients: Clients) {
 
     //Step 5 - EntryPointSimulations
     const pimlicoEntrypointSimulations = await getOrDeployDeterministicContract(
-        { publicClient, walletClient },
+        //TODO: viem type mismatch
+        { publicClient: publicClient as any, walletClient: walletClient as any },
         {
             salt: zeroHash,
             bytecode: encodeDeployData({
@@ -189,7 +192,7 @@ export function getVerifyingPaymaster(params: { verifyingSignerAddress: Address 
         bytecode: encodeDeployData({
             abi: VerifyingPaymaster.abi,
             bytecode: VerifyingPaymaster.bytecode,
-            args: [ENTRYPOINT_ADDRESS_V07, verifyingSignerAddress],
+            args: [entryPoint07Address, verifyingSignerAddress],
         }),
     });
 }
@@ -203,25 +206,30 @@ export function getVerifyingPaymaster(params: { verifyingSignerAddress: Address 
  * @returns contract info
  *
  */
-export async function setupVerifyingPaymaster(clients: Clients & { verifyingSignerAddress: Address }) {
+export async function setupVerifyingPaymaster(clients: {
+    walletClient: WalletClient;
+    publicClient: PublicClient;
+    verifyingSignerAddress: Address;
+}) {
     const { publicClient, walletClient, verifyingSignerAddress } = clients;
-    const entrypointBytecode = await publicClient.getBytecode({ address: ENTRYPOINT_ADDRESS_V07 });
+    const entrypointBytecode = await publicClient.getBytecode({ address: entryPoint07Address });
     if (!entrypointBytecode) {
         throw new Error(
-            `EntryPoint v0.7 ${ENTRYPOINT_ADDRESS_V07} not deployed. Consider deploying with setupERC4337Contracts()`,
+            `EntryPoint v0.7 ${entryPoint07Address} not deployed. Consider deploying with setupERC4337Contracts()`,
         );
     }
 
     //If no VerifyingPaymaster, wait for deploy (mostly used for local testing)
     //EntryPoint MUST be deployed for this to work
     const verifyingPaymaster = await getOrDeployDeterministicContract(
-        { publicClient, walletClient },
+        //TODO: viem type mismatch
+        { publicClient: publicClient as any, walletClient: walletClient as any },
         {
             salt: zeroHash,
             bytecode: encodeDeployData({
                 abi: VerifyingPaymaster.abi,
                 bytecode: VerifyingPaymaster.bytecode,
-                args: [ENTRYPOINT_ADDRESS_V07, verifyingSignerAddress],
+                args: [entryPoint07Address, verifyingSignerAddress],
             }),
         },
     );
@@ -240,9 +248,13 @@ export async function setupVerifyingPaymaster(clients: Clients & { verifyingSign
  * @param params publicClient, walletClient **with funds**, minBalance, targetBalance
  * @returns current paymaster balance & transaction hash for topup (if required)
  */
-export async function topupPaymaster(
-    params: Clients & { paymaster: Address; minBalance: bigint; targetBalance?: bigint },
-): Promise<{ balance: bigint; hash?: Hash }> {
+export async function topupPaymaster(params: {
+    walletClient: WalletClient;
+    publicClient: PublicClient;
+    paymaster: Address;
+    minBalance: bigint;
+    targetBalance?: bigint;
+}): Promise<{ balance: bigint; hash?: Hash }> {
     const { publicClient, walletClient, paymaster, minBalance } = params;
     if (minBalance == 0n && params.targetBalance === undefined) {
         //Ensure invariant targetBalance ALWAYS defined with minBalance = 0
@@ -263,7 +275,7 @@ export async function topupPaymaster(
     }
 
     const balance = await publicClient.readContract({
-        address: ENTRYPOINT_ADDRESS_V07,
+        address: entryPoint07Address,
         abi: EntryPoint.abi,
         functionName: "balanceOf",
         args: [paymaster],

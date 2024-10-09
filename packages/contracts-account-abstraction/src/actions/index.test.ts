@@ -9,37 +9,43 @@ import {
     createPublicClient,
     createWalletClient,
     http,
-    encodeAbiParameters,
     encodeFunctionData,
     parseEther,
     HDAccount,
     PrivateKeyAccount,
     hexToBytes,
-    concatHex,
     padHex,
 } from "viem";
 import { localhost } from "viem/chains";
+import {
+    UserOperation,
+    entryPoint07Address,
+    getUserOperationHash,
+    waitForUserOperationReceipt,
+} from "viem/account-abstraction";
+
 import {
     getLocalAccount,
     getDeployDeterministicAddress,
     getDeployDeterministicFunctionData,
 } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { ENTRYPOINT_ADDRESS_V07_TYPE, UserOperation } from "permissionless/types";
-import { signUserOperationHashWithECDSA } from "permissionless/utils";
-import { UserOperationGasFields, estimateUserOperationGas } from "./estimateUserOperationGas.js";
+
+import { estimateUserOperationGas, UserOperationGasLimitFields } from "./bundler/estimateUserOperationGas.js";
+import { sendUserOperation } from "./bundler/sendUserOperation.js";
+import { getUserOperationReceipt } from "./bundler/getUserOperationReceipt.js";
+import { getUserOperation } from "./bundler/getUserOperation.js";
+import { getPaymasterData } from "./paymaster/getPaymasterData.js";
+import { getPaymasterStubData } from "./paymaster/getPaymasterStubData.js";
 import { port } from "../test/constants.js";
-import { VerifyingPaymaster } from "../artifacts/VerifyingPaymaster.js";
 import { getSimpleAccountAddress } from "../SimpleAccount.js";
 import { ERC1967Proxy } from "../artifacts/ERC1967Proxy.js";
 import { SimpleAccountFactory } from "../artifacts/SimpleAccountFactory.js";
-import { IEntryPoint } from "../artifacts/IEntryPoint.js";
 import { MyContract } from "../artifacts/MyContract.js";
-import { setupERC4337Contracts, setupVerifyingPaymaster } from "../setupERC4337Contracts.js";
-import { toPackedUserOperation } from "../models/PackedUserOperation.js";
-import { encodeUserOp, dummySignature } from "../models/UserOperation.js";
+import { setupERC4337Contracts, setupVerifyingPaymaster, topupPaymaster } from "../setupERC4337Contracts.js";
+import { dummySignature } from "../models/UserOperation.js";
 
-describe("estimateUserOperationGas.test.ts", function () {
+describe("actions/index.test.ts", function () {
     let transport: Transport;
     let publicClient: PublicClient<Transport, Chain>;
     // Fixed account with funding `getLocalAccount(0)`
@@ -47,7 +53,7 @@ describe("estimateUserOperationGas.test.ts", function () {
     // Generated account on each test
     let account: PrivateKeyAccount;
 
-    let entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
+    let entryPointAddress: typeof entryPoint07Address;
     let entryPointSimulationsAddress: Address;
     let simpleAccountFactory: Address;
     let verifyingPaymaster: Address;
@@ -59,12 +65,15 @@ describe("estimateUserOperationGas.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getLocalAccount(0),
+            account: getLocalAccount(0) as unknown as HDAccount,
             chain: localhost,
             transport,
         });
-        const contracts = await setupERC4337Contracts({ publicClient, walletClient });
-        entryPoint = contracts.entrypoint.address;
+        const contracts = await setupERC4337Contracts({
+            publicClient,
+            walletClient,
+        });
+        entryPointAddress = contracts.entrypoint.address;
         //TODO: we use the Pimlico simulator?
         entryPointSimulationsAddress = contracts.pimlicoEntrypointSimulations.address;
         simpleAccountFactory = contracts.simpleAccountFactory.address;
@@ -77,17 +86,16 @@ describe("estimateUserOperationGas.test.ts", function () {
                 verifyingSignerAddress: walletClient.account.address,
             })
         ).address;
-        //Pre-fund paymaster
-        const paymasterDeposit = await publicClient.simulateContract({
-            account: walletClient.account,
-            address: verifyingPaymaster,
-            abi: VerifyingPaymaster.abi,
-            functionName: "deposit",
-            value: parseEther("10"),
-            args: [],
+
+        const { hash: topupHash } = await topupPaymaster({
+            publicClient,
+            walletClient,
+            paymaster: verifyingPaymaster,
+            minBalance: parseEther("10"),
         });
-        const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);
-        await publicClient.waitForTransactionReceipt({ hash: paymasterDepositHash });
+        if (topupHash) {
+            await publicClient.waitForTransactionReceipt({ hash: topupHash });
+        }
     });
 
     beforeEach(() => {
@@ -153,7 +161,7 @@ describe("estimateUserOperationGas.test.ts", function () {
          *   - Sign UserOp with account owner
          *   - Submit to EntryPoint
          **/
-        test("estimateUserOperationGas - No Paymaster", async () => {
+        test("No Paymaster", async () => {
             //Pre-fund wallet just to pay tx cost
             const fundSimpleAccountHash = await walletClient.sendTransaction({
                 to: simpleAccount.address,
@@ -184,7 +192,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             });
 
             const gasPrice = await publicClient.estimateFeesPerGas();
-            const userOpData: Omit<UserOperation<"v0.7">, UserOperationGasFields> = {
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasLimitFields> = {
                 sender: simpleAccount.address,
                 nonce: 0n,
                 signature:
@@ -196,10 +204,8 @@ describe("estimateUserOperationGas.test.ts", function () {
 
             //Estimate UserOp gas
             const userOpGas = await estimateUserOperationGas(
+                { ...publicClient, entryPointSimulationsAddress },
                 userOpData,
-                entryPoint,
-                publicClient,
-                entryPointSimulationsAddress,
             );
 
             expect(userOpGas).toBeDefined();
@@ -218,30 +224,29 @@ describe("estimateUserOperationGas.test.ts", function () {
             const userOp = { ...userOpData, ...userOpGas };
 
             //Sign UserOp
-            const signature = await signUserOperationHashWithECDSA({
-                account,
+            const userOpHashExpected = getUserOperationHash({
                 userOperation: userOp,
+                entryPointAddress: entryPointAddress,
+                entryPointVersion: "0.7",
                 chainId: localhost.id,
-                entryPoint,
+            });
+            const signature = await account.signMessage({
+                message: { raw: userOpHashExpected },
             });
             userOp.signature = signature;
 
-            const userOpPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //types seem to be inferred as [never[], Address]
-            const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
+            const userOpHash = await sendUserOperation(walletClient, userOp);
+            expect(userOpHash).toBe(userOpHashExpected);
 
-            //Simulate handleOps
-            const { request } = await publicClient.simulateContract({
-                account: walletClient.account,
-                address: entryPoint,
-                abi: IEntryPoint.abi,
-                functionName: "handleOps",
-                args: handleOpsArgs,
+            const bundler = publicClient.extend((client) => {
+                return {
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt({ ...client }, args),
+                };
             });
-
-            //Submit UserOp
-            const handleOpsHash = await walletClient.writeContract(request as any);
-            await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
+            const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHashExpected });
+            expect(userOpReceipt.userOpHash).toBe(userOpHashExpected);
+            const userOperation = await getUserOperation(publicClient, { hash: userOpHashExpected });
+            expect(userOperation).toBeDefined();
 
             //Get balanceOf
             const balance = await publicClient.getBalance({ address: to });
@@ -256,7 +261,7 @@ describe("estimateUserOperationGas.test.ts", function () {
          *   - Sign UserOp with account owner
          *   - Submit to EntryPoint
          **/
-        test("estimateUserOperationGas - Paymaster", async () => {
+        test("Paymaster", async () => {
             //Encode smart account tx, send to random address
             const to = privateKeyToAccount(generatePrivateKey()).address;
             const value = 1n;
@@ -280,36 +285,34 @@ describe("estimateUserOperationGas.test.ts", function () {
 
             //Create UserOp
             const gasPrice = await publicClient.estimateFeesPerGas();
-            const validUntil = Date.now() + 3600;
-            const validAfter = 0;
-            const paymasterDataUnsigned = encodeAbiParameters(
-                [
-                    { name: "validUntil", type: "uint48" },
-                    { name: "validAfter", type: "uint48" },
-                ],
-                [validUntil, validAfter],
+
+            const paymasterStubData = await getPaymasterStubData(
+                { paymaster: verifyingPaymaster },
+                {
+                    sender: simpleAccount.address,
+                    nonce: 0n,
+                    callData,
+                    chainId: publicClient.chain.id,
+                    entryPointAddress,
+                },
             );
-            const dummySignatureBytes = hexToBytes(dummySignature);
-            expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
-            expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);
-            const userOpData: Omit<UserOperation<"v0.7">, UserOperationGasFields> = {
+
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasLimitFields> = {
                 sender: simpleAccount.address,
                 nonce: 0n,
                 signature: dummySignature,
                 callData,
                 maxFeePerGas: gasPrice.maxFeePerGas!,
                 maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
-                paymaster: verifyingPaymaster,
-                //Empty, will be replaced with signature
-                paymasterData: concatHex([paymasterDataUnsigned, dummySignature]),
+                paymaster: paymasterStubData.paymaster,
+                //Dummy signature
+                paymasterData: paymasterStubData.paymasterData,
             };
 
             //Estimate UserOp gas
             const userOpGas = await estimateUserOperationGas(
+                { ...publicClient, entryPointSimulationsAddress },
                 userOpData,
-                entryPoint,
-                publicClient,
-                entryPointSimulationsAddress,
             );
 
             expect(userOpGas).toBeDefined();
@@ -330,61 +333,45 @@ describe("estimateUserOperationGas.test.ts", function () {
             const userOp = {
                 ...userOpData,
                 ...userOpGas,
-                paymasterData: paymasterDataUnsigned,
             };
-            //Compute UserOp hash
-            const userOpPaymasterPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //TODO: Is this needed? Can be computed off-chain
-            const userOpPaymasterHash = await publicClient.readContract({
-                address: verifyingPaymaster,
-                abi: VerifyingPaymaster.abi,
-                functionName: "getHash",
-                args: [userOpPaymasterPacked as any, validUntil, validAfter],
-            });
-            //Sign paymaster data
-            const paymasterSignature = await walletClient.account.signMessage({
-                message: {
-                    raw: userOpPaymasterHash,
-                },
-            });
-            const paymasterSignatureBytes = hexToBytes(paymasterSignature);
-            expect(paymasterSignatureBytes.length).toBeGreaterThanOrEqual(64);
-            expect(paymasterSignatureBytes.length).toBeLessThanOrEqual(65);
-            const paymasterDataSigned = concatHex([paymasterDataUnsigned, paymasterSignature]);
-            userOp.paymasterData = paymasterDataSigned;
+
+            const paymasterData = await getPaymasterData(
+                { ...(walletClient as any), paymaster: verifyingPaymaster },
+                { ...userOp, chainId: publicClient.chain.id, entryPointAddress },
+            );
+            userOp.paymasterData = paymasterData.paymasterData;
 
             //Sign UserOp
-            const signature = await signUserOperationHashWithECDSA({
-                account,
+            const userOpHashExpected = getUserOperationHash({
                 userOperation: userOp,
+                entryPointAddress: entryPointAddress,
+                entryPointVersion: "0.7",
                 chainId: localhost.id,
-                entryPoint,
+            });
+            const signature = await account.signMessage({
+                message: { raw: userOpHashExpected },
             });
             userOp.signature = signature;
 
-            const userOpPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //types seem to be inferred as [never[], Address]
-            const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
+            const userOpHash = await sendUserOperation(walletClient, userOp);
+            expect(userOpHash).toBe(userOpHashExpected);
 
-            //Simulate handleOps
-            const { request } = await publicClient.simulateContract({
-                account: walletClient.account,
-                address: entryPoint,
-                abi: IEntryPoint.abi,
-                functionName: "handleOps",
-                args: handleOpsArgs,
+            const bundler = publicClient.extend((client) => {
+                return {
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt(client, args),
+                };
             });
-
-            //Submit UserOp
-            const handleOpsHash = await walletClient.writeContract(request as any);
-            await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
+            const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHashExpected });
+            expect(userOpReceipt.userOpHash).toBe(userOpHashExpected);
+            const userOperation = await getUserOperation(publicClient, { hash: userOpHashExpected });
+            expect(userOperation).toBeDefined();
 
             //Get balanceOf
             const balance = await publicClient.getBalance({ address: to });
             expect(balance).toBe(value);
         });
 
-        test("estimateUserOperationGas - Paymaster Deploy Contract", async () => {
+        test("Paymaster Deploy Contract", async () => {
             //Encode smart account tx, deploy hello contract
             //Deploy hello world contract
             const deployParams = {
@@ -414,38 +401,34 @@ describe("estimateUserOperationGas.test.ts", function () {
 
             //Create UserOp
             const gasPrice = await publicClient.estimateFeesPerGas();
-            const validUntil = Date.now() + 3600;
-            const validAfter = 0;
-            const paymasterDataUnsigned = encodeAbiParameters(
-                [
-                    { name: "validUntil", type: "uint48" },
-                    { name: "validAfter", type: "uint48" },
-                ],
-                [validUntil, validAfter],
+
+            const paymasterStubData = await getPaymasterStubData(
+                { paymaster: verifyingPaymaster },
+                {
+                    sender: simpleAccount.address,
+                    nonce: 0n,
+                    callData,
+                    chainId: publicClient.chain.id,
+                    entryPointAddress,
+                },
             );
-            const dummySignature =
-                "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
-            const dummySignatureBytes = hexToBytes(dummySignature);
-            expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
-            expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);
-            const userOpData: Omit<UserOperation<"v0.7">, UserOperationGasFields> = {
+
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasLimitFields> = {
                 sender: simpleAccount.address,
                 nonce: 0n,
                 signature: dummySignature,
                 callData,
                 maxFeePerGas: gasPrice.maxFeePerGas!,
                 maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
-                paymaster: verifyingPaymaster,
-                //Empty, will be replaced with signature
-                paymasterData: concatHex([paymasterDataUnsigned, dummySignature]),
+                paymaster: paymasterStubData.paymaster,
+                //Dummy signature
+                paymasterData: paymasterStubData.paymasterData,
             };
 
             //Estimate UserOp gas
             const userOpGas = await estimateUserOperationGas(
+                { ...publicClient, entryPointSimulationsAddress },
                 userOpData,
-                entryPoint,
-                publicClient,
-                entryPointSimulationsAddress,
             );
 
             expect(userOpGas).toBeDefined();
@@ -466,54 +449,37 @@ describe("estimateUserOperationGas.test.ts", function () {
             const userOp = {
                 ...userOpData,
                 ...userOpGas,
-                paymasterData: paymasterDataUnsigned,
             };
-            //Compute UserOp hash
-            const userOpPaymasterPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //TODO: Is this needed? Can be computed off-chain
-            const userOpPaymasterHash = await publicClient.readContract({
-                address: verifyingPaymaster,
-                abi: VerifyingPaymaster.abi,
-                functionName: "getHash",
-                args: [userOpPaymasterPacked as any, validUntil, validAfter],
-            });
-            //Sign paymaster data
-            const paymasterSignature = await walletClient.account.signMessage({
-                message: {
-                    raw: userOpPaymasterHash,
-                },
-            });
-            const paymasterSignatureBytes = hexToBytes(paymasterSignature);
-            expect(paymasterSignatureBytes.length).toBeGreaterThanOrEqual(64);
-            expect(paymasterSignatureBytes.length).toBeLessThanOrEqual(65);
-            const paymasterDataSigned = concatHex([paymasterDataUnsigned, paymasterSignature]);
-            userOp.paymasterData = paymasterDataSigned;
+            const paymasterData = await getPaymasterData(
+                { ...(walletClient as any), paymaster: verifyingPaymaster },
+                { ...userOp, chainId: publicClient.chain.id, entryPointAddress },
+            );
+            userOp.paymasterData = paymasterData.paymasterData;
 
             //Sign UserOp
-            const signature = await signUserOperationHashWithECDSA({
-                account,
+            const userOpHashExpected = getUserOperationHash({
                 userOperation: userOp,
+                entryPointAddress: entryPointAddress,
+                entryPointVersion: "0.7",
                 chainId: localhost.id,
-                entryPoint,
+            });
+            const signature = await account.signMessage({
+                message: { raw: userOpHashExpected },
             });
             userOp.signature = signature;
 
-            const userOpPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //types seem to be inferred as [never[], Address]
-            const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
+            const userOpHash = await sendUserOperation(walletClient, userOp);
+            expect(userOpHash).toBe(userOpHashExpected);
 
-            //Simulate handleOps
-            const { request } = await publicClient.simulateContract({
-                account: walletClient.account,
-                address: entryPoint,
-                abi: IEntryPoint.abi,
-                functionName: "handleOps",
-                args: handleOpsArgs,
+            const bundler = publicClient.extend((client) => {
+                return {
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt(client, args),
+                };
             });
-
-            //Submit UserOp
-            const handleOpsHash = await walletClient.writeContract(request as any);
-            await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
+            const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHashExpected });
+            expect(userOpReceipt.userOpHash).toBe(userOpHashExpected);
+            const userOperation = await getUserOperation(publicClient, { hash: userOpHashExpected });
+            expect(userOperation).toBeDefined();
 
             const contractBytecode = await publicClient.getBytecode({ address: contractAddress });
             expect(contractBytecode).toBeDefined();
@@ -522,7 +488,7 @@ describe("estimateUserOperationGas.test.ts", function () {
 
     /** Tests involving deploying the smart account */
     describe("Deploy Simple Account", () => {
-        test("estimateUserOperationGas - No Paymaster Deploy Contract", async () => {
+        test("No Paymaster Deploy Contract", async () => {
             //Encode smart account tx, deploy smart account & hello contract
             //Deploy smart account data
             //Get SimpleAccount address
@@ -588,7 +554,7 @@ describe("estimateUserOperationGas.test.ts", function () {
             const dummySignatureBytes = hexToBytes(dummySignature);
             expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
             expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);
-            const userOpData: Omit<UserOperation<"v0.7">, UserOperationGasFields> = {
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasLimitFields> = {
                 sender: simpleAccount.address,
                 factory: simpleAccount.factoryAddress,
                 factoryData: simpleAccount.factoryData,
@@ -601,10 +567,8 @@ describe("estimateUserOperationGas.test.ts", function () {
 
             //Estimate UserOp gas
             const userOpGas = await estimateUserOperationGas(
+                { ...publicClient, entryPointSimulationsAddress },
                 userOpData,
-                entryPoint,
-                publicClient,
-                entryPointSimulationsAddress,
             );
 
             expect(userOpGas).toBeDefined();
@@ -627,36 +591,35 @@ describe("estimateUserOperationGas.test.ts", function () {
             };
 
             //Sign UserOp
-            const signature = await signUserOperationHashWithECDSA({
-                account,
+            const userOpHashExpected = getUserOperationHash({
                 userOperation: userOp,
+                entryPointAddress: entryPointAddress,
+                entryPointVersion: "0.7",
                 chainId: localhost.id,
-                entryPoint,
+            });
+            const signature = await account.signMessage({
+                message: { raw: userOpHashExpected },
             });
             userOp.signature = signature;
 
-            const userOpPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //types seem to be inferred as [never[], Address]
-            const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
+            const userOpHash = await sendUserOperation(walletClient, userOp);
+            expect(userOpHash).toBe(userOpHashExpected);
 
-            //Simulate handleOps
-            const { request } = await publicClient.simulateContract({
-                account: walletClient.account,
-                address: entryPoint,
-                abi: IEntryPoint.abi,
-                functionName: "handleOps",
-                args: handleOpsArgs,
+            const bundler = publicClient.extend((client) => {
+                return {
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt(client, args),
+                };
             });
-
-            //Submit UserOp
-            const handleOpsHash = await walletClient.writeContract(request as any);
-            await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
+            const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHashExpected });
+            expect(userOpReceipt.userOpHash).toBe(userOpHashExpected);
+            const userOperation = await getUserOperation(publicClient, { hash: userOpHashExpected });
+            expect(userOperation).toBeDefined();
 
             const contractBytecode = await publicClient.getBytecode({ address: contractAddress });
             expect(contractBytecode).toBeDefined();
         });
 
-        test("estimateUserOperationGas - Paymaster Deploy Contract", async () => {
+        test("Paymaster Deploy Contract", async () => {
             //Encode smart account tx, deploy smart account & hello contract
             //Deploy smart account data
             //Get SimpleAccount address
@@ -709,21 +672,19 @@ describe("estimateUserOperationGas.test.ts", function () {
 
             //Create UserOp
             const gasPrice = await publicClient.estimateFeesPerGas();
-            const validUntil = Date.now() + 3600;
-            const validAfter = 0;
-            const paymasterDataUnsigned = encodeAbiParameters(
-                [
-                    { name: "validUntil", type: "uint48" },
-                    { name: "validAfter", type: "uint48" },
-                ],
-                [validUntil, validAfter],
+
+            const paymasterStubData = await getPaymasterStubData(
+                { paymaster: verifyingPaymaster },
+                {
+                    sender: simpleAccount.address,
+                    nonce: 0n,
+                    callData,
+                    chainId: publicClient.chain.id,
+                    entryPointAddress,
+                },
             );
-            const dummySignature =
-                "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
-            const dummySignatureBytes = hexToBytes(dummySignature);
-            expect(dummySignatureBytes.length).toBeGreaterThanOrEqual(64);
-            expect(dummySignatureBytes.length).toBeLessThanOrEqual(65);
-            const userOpData: Omit<UserOperation<"v0.7">, UserOperationGasFields> = {
+
+            const userOpData: Omit<UserOperation<"0.7">, UserOperationGasLimitFields> = {
                 sender: simpleAccount.address,
                 factory: simpleAccount.factoryAddress,
                 factoryData: simpleAccount.factoryData,
@@ -733,16 +694,14 @@ describe("estimateUserOperationGas.test.ts", function () {
                 maxFeePerGas: gasPrice.maxFeePerGas!,
                 maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
                 paymaster: verifyingPaymaster,
-                //Empty, will be replaced with signature
-                paymasterData: concatHex([paymasterDataUnsigned, dummySignature]),
+                //Dummy signature
+                paymasterData: paymasterStubData.paymasterData,
             };
 
             //Estimate UserOp gas
             const userOpGas = await estimateUserOperationGas(
+                { ...publicClient, entryPointSimulationsAddress },
                 userOpData,
-                entryPoint,
-                publicClient,
-                entryPointSimulationsAddress,
             );
 
             expect(userOpGas).toBeDefined();
@@ -763,54 +722,38 @@ describe("estimateUserOperationGas.test.ts", function () {
             const userOp = {
                 ...userOpData,
                 ...userOpGas,
-                paymasterData: paymasterDataUnsigned,
             };
-            //Compute UserOp hash
-            const userOpPaymasterPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //TODO: Is this needed? Can be computed off-chain
-            const userOpPaymasterHash = await publicClient.readContract({
-                address: verifyingPaymaster,
-                abi: VerifyingPaymaster.abi,
-                functionName: "getHash",
-                args: [userOpPaymasterPacked as any, validUntil, validAfter],
-            });
-            //Sign paymaster data
-            const paymasterSignature = await walletClient.account.signMessage({
-                message: {
-                    raw: userOpPaymasterHash,
-                },
-            });
-            const paymasterSignatureBytes = hexToBytes(paymasterSignature);
-            expect(paymasterSignatureBytes.length).toBeGreaterThanOrEqual(64);
-            expect(paymasterSignatureBytes.length).toBeLessThanOrEqual(65);
-            const paymasterDataSigned = concatHex([paymasterDataUnsigned, paymasterSignature]);
-            userOp.paymasterData = paymasterDataSigned;
+
+            const paymasterData = await getPaymasterData(
+                { ...(walletClient as any), paymaster: verifyingPaymaster },
+                { ...userOp, chainId: publicClient.chain.id, entryPointAddress },
+            );
+            userOp.paymasterData = paymasterData.paymasterData;
 
             //Sign UserOp
-            const signature = await signUserOperationHashWithECDSA({
-                account,
+            const userOpHashExpected = getUserOperationHash({
                 userOperation: userOp,
+                entryPointAddress: entryPointAddress,
+                entryPointVersion: "0.7",
                 chainId: localhost.id,
-                entryPoint,
+            });
+            const signature = await account.signMessage({
+                message: { raw: userOpHashExpected },
             });
             userOp.signature = signature;
 
-            const userOpPacked = toPackedUserOperation(encodeUserOp(userOp));
-            //types seem to be inferred as [never[], Address]
-            const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
+            const userOpHash = await sendUserOperation(walletClient, userOp);
+            expect(userOpHash).toBe(userOpHashExpected);
 
-            //Simulate handleOps
-            const { request } = await publicClient.simulateContract({
-                account: walletClient.account,
-                address: entryPoint,
-                abi: IEntryPoint.abi,
-                functionName: "handleOps",
-                args: handleOpsArgs,
+            const bundler = publicClient.extend((client) => {
+                return {
+                    getUserOperationReceipt: (args: any) => getUserOperationReceipt(client, args),
+                };
             });
-
-            //Submit UserOp
-            const handleOpsHash = await walletClient.writeContract(request as any);
-            await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
+            const userOpReceipt = await waitForUserOperationReceipt(bundler, { hash: userOpHashExpected });
+            expect(userOpReceipt.userOpHash).toBe(userOpHashExpected);
+            const userOperation = await getUserOperation(publicClient, { hash: userOpHashExpected });
+            expect(userOperation).toBeDefined();
 
             const contractBytecode = await publicClient.getBytecode({ address: contractAddress });
             expect(contractBytecode).toBeDefined();

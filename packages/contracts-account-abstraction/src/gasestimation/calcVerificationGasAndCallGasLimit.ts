@@ -1,5 +1,5 @@
-import { UserOperation } from "permissionless/types";
 import * as chains from "viem/chains";
+import { UserOperation } from "viem/account-abstraction";
 
 /**
  * Use executionResult of EntryPointSimulations to compute `verificationGas`
@@ -11,7 +11,7 @@ import * as chains from "viem/chains";
  * @returns `verificationGas` and `callGasLimit`
  */
 export function calcVerificationGasAndCallGasLimit(
-    userOperation: UserOperation<"v0.7">,
+    userOperation: UserOperation<"0.7">,
     executionResult: {
         preOpGas: bigint;
         paid: bigint;

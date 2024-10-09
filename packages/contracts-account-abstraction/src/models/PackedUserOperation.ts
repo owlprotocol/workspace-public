@@ -11,7 +11,7 @@ import {
     slice,
     zeroAddress,
 } from "viem";
-import { UserOperationWithBigIntAsHex } from "./UserOperation.js";
+import { UserOperation } from "viem/account-abstraction";
 
 /**
  * PackedUserOp suitable for call to EntryPoint contract
@@ -34,11 +34,17 @@ export interface PackedUserOperation {
  * @param userOp
  * @returns packedUserOperation
  */
-export function toPackedUserOperation(userOp: UserOperationWithBigIntAsHex<"v0.7">): PackedUserOperation {
+export function toPackedUserOperation(userOp: UserOperation<"0.7", Hex>): PackedUserOperation {
     const accountGasLimits = packAccountGasLimits(userOp.verificationGasLimit, userOp.callGasLimit);
     const gasFees = packAccountGasLimits(userOp.maxPriorityFeePerGas, userOp.maxFeePerGas);
     let paymasterAndData: Hex = "0x";
-    if (userOp.paymaster?.length >= 20 && userOp.paymaster !== zeroAddress) {
+    if (
+        userOp.paymaster &&
+        userOp.paymaster !== zeroAddress &&
+        userOp.paymasterVerificationGasLimit &&
+        userOp.paymasterPostOpGasLimit &&
+        userOp.paymasterData
+    ) {
         paymasterAndData = packPaymasterData(
             userOp.paymaster,
             userOp.paymasterVerificationGasLimit,
@@ -48,7 +54,9 @@ export function toPackedUserOperation(userOp: UserOperationWithBigIntAsHex<"v0.7
     }
 
     const initCode =
-        userOp.factory && userOp.factory != zeroAddress ? concatHex([userOp.factory, userOp.factoryData]) : "0x";
+        userOp.factory && userOp.factory != zeroAddress && userOp.factoryData
+            ? concatHex([userOp.factory, userOp.factoryData])
+            : "0x";
     return {
         sender: userOp.sender,
         nonce: BigInt(userOp.nonce),
@@ -67,7 +75,7 @@ export function toPackedUserOperation(userOp: UserOperationWithBigIntAsHex<"v0.7
  * @param userOp
  * @returns packedUserOperation
  */
-export function toUserOperationEncoded(packedUserOperation: PackedUserOperation): UserOperationWithBigIntAsHex<"v0.7"> {
+export function toUserOperationEncoded(packedUserOperation: PackedUserOperation): UserOperation<"0.7", Hex> {
     const { factory, factoryData } = unpackInitCode(packedUserOperation.initCode);
 
     const { callGasLimit, verificationGasLimit } = unpackAccountGasLimits(packedUserOperation.accountGasLimits);

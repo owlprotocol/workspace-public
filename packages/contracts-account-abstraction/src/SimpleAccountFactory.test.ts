@@ -12,6 +12,8 @@ import {
     zeroHash,
 } from "viem";
 import { localhost } from "viem/chains";
+import { entryPoint07Address } from "viem/account-abstraction";
+
 import {
     getDeployDeterministicAddress,
     getOrDeployDeterministicContract,
@@ -20,7 +22,7 @@ import {
 } from "@owlprotocol/viem-utils";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { port } from "./test/constants.js";
-import { ENTRYPOINT_ADDRESS_V07, SIMPLE_ACCOUNT_FACTORY_ADDRESS } from "./constants.js";
+import { SIMPLE_ACCOUNT_FACTORY_ADDRESS } from "./constants.js";
 
 describe("SimpleAccountFactory.test.ts", function () {
     let publicClient: PublicClient<Transport, Chain>;
@@ -33,12 +35,17 @@ describe("SimpleAccountFactory.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getLocalAccount(0),
+            //TODO: viem type mimatch
+            account: getLocalAccount(0) as unknown as Account,
             chain: localhost,
             transport,
         });
         //Deploy Deterministic Deployer first
-        const { hash } = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
+        //TODO: viem type mismatch
+        const { hash } = await getOrDeployDeterministicDeployer({
+            publicClient: publicClient as any,
+            walletClient: walletClient as any,
+        });
         if (hash) {
             await publicClient.waitForTransactionReceipt({ hash });
         }
@@ -50,7 +57,7 @@ describe("SimpleAccountFactory.test.ts", function () {
             bytecode: encodeDeployData({
                 abi: SimpleAccountFactory.abi,
                 bytecode: SimpleAccountFactory.bytecode,
-                args: [ENTRYPOINT_ADDRESS_V07],
+                args: [entryPoint07Address],
             }),
         };
         //Check SimpleAccountFactory address matches expected
@@ -58,7 +65,11 @@ describe("SimpleAccountFactory.test.ts", function () {
         expect(address).toBe(SIMPLE_ACCOUNT_FACTORY_ADDRESS);
 
         //Deploy new
-        const resultDeploy = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
+        //TODO: viem type mismatch
+        const resultDeploy = await getOrDeployDeterministicContract(
+            { publicClient: publicClient as any, walletClient: walletClient as any },
+            deployParams,
+        );
         expect(resultDeploy.address).toBe(address);
 
         //Wait for receipt
@@ -70,7 +81,11 @@ describe("SimpleAccountFactory.test.ts", function () {
         }
 
         //Get existing
-        const resultGet = await getOrDeployDeterministicContract({ publicClient, walletClient }, deployParams);
+        //TODO: viem type mismatch
+        const resultGet = await getOrDeployDeterministicContract(
+            { publicClient: publicClient as any, walletClient: walletClient as any },
+            deployParams,
+        );
         expect(resultGet.existed).toBe(true);
         expect(resultGet.hash).toBeUndefined();
         expect(resultGet.address).toBe(address);
