@@ -16,6 +16,23 @@ import { getAction } from "viem/utils";
 import { getPaymasterData, getPaymasterStubData, getUserOperationGasPrice } from "../actions/index.js";
 import { decodeUserOp } from "../models/UserOperation.js";
 
+export type PaymasterRpcMethod = (typeof paymasterRpcMethods)[number];
+
+export const paymasterRpcMethods = [
+    "pimlico_getUserOperationGasPrice",
+    "pm_getPaymasterStubData",
+    "pm_getPaymasterData",
+] as const;
+
+/**
+ * Check if RPC method is for paymaster.
+ * @param method
+ * @returns true if paymaster rpc method
+ */
+export function isPaymasterRpcMethod(method: string): method is PaymasterRpcMethod {
+    return paymasterRpcMethods.includes(method as any);
+}
+
 export function createBackendPaymasterEIP1193(
     client: Client<Transport, Chain | undefined, LocalAccount>,
 ): EIP1193RequestFn<PaymasterRpcSchema> {
