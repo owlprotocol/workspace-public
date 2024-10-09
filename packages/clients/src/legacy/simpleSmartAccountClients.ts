@@ -1,8 +1,9 @@
-import { type SmartAccountClient, createSmartAccountClient } from "permissionless";
-import { type Chain, type HttpTransport, type Address } from "viem";
-import { createPimlicoPaymasterClient } from "permissionless/clients/pimlico";
-import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless/utils";
+import { type Chain, type Address } from "viem";
+import { entryPoint07Address } from "viem/account-abstraction";
+
+import { createSmartAccountClient, SmartAccountClient } from "permissionless/clients";
+import { createPimlicoClient } from "permissionless/clients/pimlico";
+
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
 import { getAdminSimpleSmartAccount, getUserSimpleSmartAccount } from "./simpleSmartAccounts.js";
 import { getOwlUserRpcTransport, Auth, getOwlAdminRpcTransport } from "./transports.js";
@@ -13,7 +14,7 @@ export async function getUserSimpleSmartAccountClient(
     chain: Chain,
     owlApiRestBaseUrl = API_REST_BASE_URL,
     factoryAddress: Address = "0xe7A78BA9be87103C317a66EF78e6085BD74Dd538",
-): Promise<SmartAccountClient<ENTRYPOINT_ADDRESS_V07_TYPE, HttpTransport, typeof chain>> {
+): Promise<SmartAccountClient> {
     const simpleSmartAccount = await getUserSimpleSmartAccount(
         jwt,
         projectId,
@@ -24,18 +25,21 @@ export async function getUserSimpleSmartAccountClient(
 
     const owlRpcTransport = getOwlUserRpcTransport(jwt, projectId, chain.id, owlApiRestBaseUrl);
 
-    const paymasterClient = createPimlicoPaymasterClient({
+    const paymasterClient = createPimlicoClient({
         transport: owlRpcTransport,
-        entryPoint: ENTRYPOINT_ADDRESS_V07,
+        entryPoint: {
+            address: entryPoint07Address,
+            version: "0.7",
+        },
     });
 
     return createSmartAccountClient({
         account: simpleSmartAccount,
-        entryPoint: ENTRYPOINT_ADDRESS_V07,
         chain,
         bundlerTransport: owlRpcTransport,
-        middleware: {
-            sponsorUserOperation: paymasterClient.sponsorUserOperation,
+        paymaster: paymasterClient,
+        userOperation: {
+            estimateFeesPerGas: async () => (await paymasterClient.getUserOperationGasPrice()).fast,
         },
     });
 }
@@ -46,7 +50,7 @@ export async function getAdminSimpleSmartAccountClient(
     chain: Chain,
     owlApiRestBaseUrl = API_REST_BASE_URL,
     factoryAddress: Address = "0xe7A78BA9be87103C317a66EF78e6085BD74Dd538",
-): Promise<SmartAccountClient<ENTRYPOINT_ADDRESS_V07_TYPE, HttpTransport, typeof chain>> {
+): Promise<SmartAccountClient> {
     const simpleSmartAccount = await getAdminSimpleSmartAccount(
         auth,
         projectId,
@@ -57,18 +61,21 @@ export async function getAdminSimpleSmartAccountClient(
 
     const owlRpcTransport = getOwlAdminRpcTransport(auth, projectId, chain.id, owlApiRestBaseUrl);
 
-    const paymasterClient = createPimlicoPaymasterClient({
+    const paymasterClient = createPimlicoClient({
         transport: owlRpcTransport,
-        entryPoint: ENTRYPOINT_ADDRESS_V07,
+        entryPoint: {
+            address: entryPoint07Address,
+            version: "0.7",
+        },
     });
 
     return createSmartAccountClient({
         account: simpleSmartAccount,
-        entryPoint: ENTRYPOINT_ADDRESS_V07,
         chain,
         bundlerTransport: owlRpcTransport,
-        middleware: {
-            sponsorUserOperation: paymasterClient.sponsorUserOperation,
+        paymaster: paymasterClient,
+        userOperation: {
+            estimateFeesPerGas: async () => (await paymasterClient.getUserOperationGasPrice()).fast,
         },
     });
 }
