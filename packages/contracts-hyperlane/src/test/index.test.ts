@@ -18,11 +18,16 @@ import {
     parseEventLogs,
     Hash,
     Hex,
+    encodePacked,
+    TransactionReceipt,
+    bytesToNumber,
+    hexToNumber,
 } from "viem";
 import {
     getLocalAccount,
     getOrDeployDeterministicContract,
     getOrDeployDeterministicDeployer,
+    numberToAddress,
 } from "@owlprotocol/viem-utils";
 import {
     getOrDeployCreate2Factory,
@@ -32,11 +37,21 @@ import {
 import { localhost } from "viem/chains";
 import { randomBytes } from "crypto";
 import { port, port2, chainId2 } from "./constants.js";
-import { Mailbox, initialize as initializeAbi, DispatchId as dispatchIdEvent } from "../artifacts/Mailbox.js";
+import {
+    Mailbox,
+    initialize as initializeAbi,
+    DispatchId as dispatchIdEvent,
+    Dispatch as dispatchEvent,
+} from "../artifacts/Mailbox.js";
 import { NoopIsm } from "../artifacts/NoopIsm.js";
 import { PausableHook } from "../artifacts/PausableHook.js";
-import { Router } from "../artifacts/Router.js";
 import { MailboxClient } from "../artifacts/MailboxClient.js";
+import { getTransactionReceipt } from "viem/actions";
+
+type Clients = {
+    publicClient: PublicClient<Transport, Chain>;
+    walletClient: WalletClient<Transport, Chain, Account>;
+};
 
 const localhostRemote = { ...localhost, id: chainId2 } as Chain;
 
@@ -153,21 +168,34 @@ async function getOrDeployMailboxProxy({
     return { hash, address: mailboxAddress };
 }
 
-async function getDispatchIdFromHash(params: {
-    publicClient: PublicClient<Transport, Chain>;
-    hash: Hash;
-}): Promise<Hex | undefined> {
-    const { publicClient, hash } = params;
-    const receipt = await publicClient.waitForTransactionReceipt({ hash });
-    const logsDecoded = parseEventLogs({ logs: receipt.logs, abi: [dispatchIdEvent], eventName: "DispatchId" });
+function getMessageFromReceipt(receipt: TransactionReceipt) {
+    const logsDecoded = parseEventLogs({ logs: receipt.logs, abi: [dispatchEvent], eventName: "Dispatch" });
 
-    return logsDecoded[0].args.messageId;
+    return logsDecoded[0]?.args.message;
 }
 
-type Clients = {
-    publicClient: PublicClient<Transport, Chain>;
+function getMessageIdFromReceipt(receipt: TransactionReceipt): Hex | undefined {
+    const logsDecoded = parseEventLogs({ logs: receipt.logs, abi: [dispatchIdEvent], eventName: "DispatchId" });
+
+    return logsDecoded[0]?.args.messageId;
+}
+
+async function relayMessage(params: {
     walletClient: WalletClient<Transport, Chain, Account>;
-};
+    mailboxAddress: Address;
+    message: Hex;
+    metadata: Hex;
+}) {
+    const { walletClient, message, metadata, mailboxAddress } = params;
+
+    const hash = await walletClient.writeContract({
+        address: mailboxAddress,
+        abi: Mailbox.abi,
+        functionName: "process",
+        args: [metadata, message],
+    });
+    return hash;
+}
 
 describe("index.test.ts", function () {
     let clientsOrigin: Clients;
@@ -208,7 +236,7 @@ describe("index.test.ts", function () {
         pausableHookAddressRemote = ismAndHookRemote.hookAddress;
     });
 
-    test("Deploy Mailbox and dispatch a mesasge", async () => {
+    test.skip("Deploy Mailbox and dispatch a mesasge", async () => {
         const randomSalt = bytesToHex(randomBytes(32));
 
         const { address: mailboxImplAddressOrigin } = await getOrDeployMailboxImpl(clientsOrigin);
@@ -235,9 +263,9 @@ describe("index.test.ts", function () {
             functionName: "dispatch",
             args: [localhostRemote.id, padHex(clientsRemote.walletClient.account.address, { size: 32 }), "0x"],
         });
+        const receipt = await clientsOrigin.publicClient.waitForTransactionReceipt({ hash });
 
-        const messageId = await getDispatchIdFromHash({ publicClient: clientsOrigin.publicClient, hash });
-
+        const messageId = getMessageIdFromReceipt(receipt);
         expect(messageId).toBeDefined();
     });
 
@@ -266,7 +294,32 @@ describe("index.test.ts", function () {
             salt: randomSalt,
         });
 
-        // TODO: dispatch a message
+        const recipient = numberToAddress(1);
+        const messageBody = "0x1234";
+
+        const dispatchHash = await clientsOrigin.walletClient.writeContract({
+            address: mailboxAddressOrigin,
+            abi: Mailbox.abi,
+            functionName: "dispatch",
+            args: [clientsRemote.publicClient.chain.id, padHex(recipient, { size: 32 }), messageBody],
+        });
+        const dispatchReceipt = await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: dispatchHash });
+
+        const messageId = getMessageIdFromReceipt(dispatchReceipt);
+        expect(messageId).toBeDefined();
+
+        const message = getMessageFromReceipt(dispatchReceipt);
+        expect(message).toBeDefined();
+
+        const emptyMetadata = "0x0";
+
+        // FIXME bad message maybe causes revert?
+        await relayMessage({
+            walletClient: clientsRemote.walletClient,
+            message,
+            metadata: emptyMetadata,
+            mailboxAddress: mailboxAddressRemote,
+        });
 
         // TODO: relay message
 
