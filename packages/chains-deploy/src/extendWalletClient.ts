@@ -14,7 +14,8 @@ export function extendWalletClient(
     // Non-EIP1559 Chains
     const nonEIP1559 = [4690, 4689, 94204209, 1001];
     if (!nonEIP1559.includes(walletClient.chain.id)) {
-        return walletClient.extend(transactionQueue());
+        //TODO: Check if this works with updated viem
+        return walletClient.extend(transactionQueue() as any);
     }
 
     return walletClient;

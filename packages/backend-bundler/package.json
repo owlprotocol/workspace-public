@@ -65,8 +65,6 @@
   "dependencies": {
     "@owlprotocol/contracts-account-abstraction": "workspace:*",
     "@owlprotocol/eth-firebase": "workspace:*",
-    "lodash-es": "4.17.21",
-    "permissionless": "0.2.5",
     "viem": "2.21.19"
   },
   "devDependencies": {
@@ -75,7 +73,6 @@
     "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
     "@owlprotocol/viem-utils": "workspace:*",
-    "@types/lodash-es": "4.17.12",
     "@types/node": "^20.11.10",
     "@typescript/analyze-trace": "^0.10.1",
     "core-js": "^3.37.1",

@@ -60,7 +60,7 @@
     "@owlprotocol/core-firebase": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/viem-utils": "workspace:*",
-    "viem": "2.9.20"
+    "viem": "2.21.19"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",
