@@ -21,6 +21,26 @@ import {
 } from "../actions/index.js";
 import { decodeUserOp, encodeUserOp } from "../models/UserOperation.js";
 
+export type BundlerRpcMethod = (typeof bundlerRpcMethods)[number];
+
+export const bundlerRpcMethods = [
+    "eth_chainId",
+    "eth_supportedEntryPoints",
+    "eth_getUserOperationByHash",
+    "eth_getUserOperationReceipt",
+    "eth_sendUserOperation",
+    "eth_estimateUserOperationGas",
+] as const;
+
+/**
+ * Check if RPC method is for bundler.
+ * @param method
+ * @returns true if bundler rpc method
+ */
+export function isBundlerRpcMethod(method: string): method is BundlerRpcMethod {
+    return bundlerRpcMethods.includes(method as any);
+}
+
 export function createBackendBundlerEIP1193(
     client: Client<Transport, Chain | undefined, Account>,
 ): EIP1193RequestFn<BundlerRpcSchema> {
