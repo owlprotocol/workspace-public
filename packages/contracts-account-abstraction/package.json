@@ -49,6 +49,11 @@
       "require": "./lib/cjs/clients/index.js",
       "import": "./lib/esm/clients/index.js"
     },
+    "./eip1193": {
+      "types": "./lib/types/eip1193/index.d.ts",
+      "require": "./lib/cjs/eip1193/index.js",
+      "import": "./lib/esm/eip1193/index.js"
+    },
     "./artifacts": {
       "types": "./lib/types/artifacts/index.d.ts",
       "require": "./lib/cjs/artifacts/index.js",
@@ -109,6 +114,7 @@
     "@openzeppelin/contracts": "5.0.2",
     "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
+    "permissionless": "0.2.6",
     "viem": "2.21.19",
     "zod": "3.22.4"
   },
