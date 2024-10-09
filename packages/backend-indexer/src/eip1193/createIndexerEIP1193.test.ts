@@ -8,6 +8,7 @@ import {
     createWalletClient,
     http,
     zeroAddress,
+    custom,
 } from "viem";
 import { localhost } from "viem/chains";
 import { getAddress } from "viem/utils";
@@ -19,8 +20,9 @@ import {
     ethTransactionReceiptResource,
     ethTransactionResource,
 } from "@owlprotocol/eth-firebase/admin";
-import { createIndexerBackend } from "./createIndexerBackend.js";
-import { port } from "./test/constants.js";
+import { createIndexerEIP1193 } from "./createIndexerEIP1193.js";
+import { port } from "../test/constants.js";
+import { createIndexerClient } from "../clients/createIndexerClient.js";
 
 /**
  * For block comparisons between viem
@@ -52,10 +54,11 @@ function toTransactionReceipt(transactionReceipt: any) {
     return {
         ...omit(transactionReceipt, ["typeHex", "chainId"]),
         from: getAddress(transactionReceipt.from),
+        logs: transactionReceipt.logs ?? [],
     };
 }
 
-describe("createIndexerClient.test.ts", function () {
+describe("createIndexerEIP1193.test.ts", function () {
     let publicClient: PublicClient;
     let publicIndexerClient: PublicClient;
 
@@ -68,7 +71,9 @@ describe("createIndexerClient.test.ts", function () {
             transport,
         });
 
-        publicIndexerClient = await createIndexerBackend({ chain: localhost, transport });
+        publicIndexerClient = await createPublicClient({
+            transport: custom({ request: createIndexerEIP1193(createIndexerClient({ chain: localhost, transport })) }),
+        });
 
         walletClient = createWalletClient({
             chain: localhost,
@@ -82,9 +87,8 @@ describe("createIndexerClient.test.ts", function () {
 
     test("getBlock", async () => {
         const block = await publicClient.getBlock({ blockNumber: 0n });
-        console.debug({ block });
         const blockSeed = await publicIndexerClient.getBlock({ blockNumber: 0n });
-        expect(blockSeed).toStrictEqual(block);
+        expect(toBlock(blockSeed)).toStrictEqual(toBlock(block));
 
         //Firebase write is done in background, wait a bit for it to complete
         await sleep(200);
@@ -107,7 +111,7 @@ describe("createIndexerClient.test.ts", function () {
 
         const transaction = await publicClient.getTransaction({ hash });
         const transactionSeed = await publicIndexerClient.getTransaction({ hash });
-        expect(transactionSeed).toStrictEqual(transaction);
+        expect(toTransaction(transactionSeed)).toStrictEqual(toTransaction(transaction));
 
         //Firebase write is done in background, wait a bit for it to complete
         await sleep(200);
@@ -132,7 +136,7 @@ describe("createIndexerClient.test.ts", function () {
 
         const transactionReceipt = await publicClient.waitForTransactionReceipt({ hash });
         const transactionReceiptSeed = await publicIndexerClient.getTransactionReceipt({ hash });
-        expect(transactionReceiptSeed).toStrictEqual(transactionReceipt);
+        expect(toTransactionReceipt(transactionReceiptSeed)).toStrictEqual(toTransactionReceipt(transactionReceipt));
 
         //Firebase write is done in background, wait a bit for it to complete
         await sleep(200);
