@@ -1,6 +1,5 @@
 import { describe, test, beforeAll, expect } from "vitest";
 import {
-    PublicClient,
     Transport,
     Chain,
     WalletClient,
@@ -16,10 +15,10 @@ import {
     Hex,
     stringToHex,
 } from "viem";
-import { getLocalAccount } from "@owlprotocol/viem-utils";
+import { Clients, getLocalAccount } from "@owlprotocol/viem-utils";
 import { localhost } from "viem/chains";
 import { randomBytes } from "crypto";
-import { port, port2, chainId2 } from "./constants.js";
+import { localhostRemote, port, port2 } from "./constants.js";
 import { getOrDeployTestRecipient, setupTestMailboxContracts } from "./mailboxTestHelpers.js";
 import { Mailbox } from "../artifacts/Mailbox.js";
 import { MailboxClient } from "../artifacts/MailboxClient.js";
@@ -27,13 +26,6 @@ import { TestRecipient } from "../artifacts/TestRecipient.js";
 import { getOrDeployMailboxProxy } from "../mailbox/getOrDeployMailboxProxy.js";
 import { getMessageIdFromReceipt } from "../mailbox/getMessageIdFromReceipt.js";
 import { getMessageFromReceipt } from "../mailbox/getMessageFromReceipt.js";
-
-type Clients = {
-    publicClient: PublicClient<Transport, Chain>;
-    walletClient: WalletClient<Transport, Chain, Account>;
-};
-
-const localhostRemote = { ...localhost, id: chainId2 } as Chain;
 
 async function dispatchMessage(params: {
     walletClient: WalletClient<Transport, Chain, Account>;
