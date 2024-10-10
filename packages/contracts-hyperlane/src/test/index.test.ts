@@ -8,45 +8,25 @@ import {
     createPublicClient,
     createWalletClient,
     http,
-    encodeDeployData,
-    encodeFunctionData,
-    zeroHash,
     zeroAddress,
     bytesToHex,
     Address,
     padHex,
     parseEventLogs,
-    Hash,
     Hex,
-    encodePacked,
-    TransactionReceipt,
-    bytesToNumber,
-    hexToNumber,
+    stringToHex,
 } from "viem";
-import {
-    getLocalAccount,
-    getOrDeployDeterministicContract,
-    getOrDeployDeterministicDeployer,
-    numberToAddress,
-} from "@owlprotocol/viem-utils";
-import {
-    getOrDeployCreate2Factory,
-    getCloneDeterministicBytecode,
-    getOrDeployContracts,
-} from "@owlprotocol/contracts-create2factory";
+import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { localhost } from "viem/chains";
 import { randomBytes } from "crypto";
 import { port, port2, chainId2 } from "./constants.js";
-import {
-    Mailbox,
-    initialize as initializeAbi,
-    DispatchId as dispatchIdEvent,
-    Dispatch as dispatchEvent,
-} from "../artifacts/Mailbox.js";
-import { NoopIsm } from "../artifacts/NoopIsm.js";
-import { PausableHook } from "../artifacts/PausableHook.js";
+import { getOrDeployTestRecipient, setupTestMailboxContracts } from "./mailboxTestHelpers.js";
+import { Mailbox } from "../artifacts/Mailbox.js";
 import { MailboxClient } from "../artifacts/MailboxClient.js";
-import { getTransactionReceipt } from "viem/actions";
+import { TestRecipient } from "../artifacts/TestRecipient.js";
+import { getOrDeployMailboxProxy } from "../mailbox/getOrDeployMailboxProxy.js";
+import { getMessageIdFromReceipt } from "../mailbox/getMessageIdFromReceipt.js";
+import { getMessageFromReceipt } from "../mailbox/getMessageFromReceipt.js";
 
 type Clients = {
     publicClient: PublicClient<Transport, Chain>;
@@ -55,129 +35,20 @@ type Clients = {
 
 const localhostRemote = { ...localhost, id: chainId2 } as Chain;
 
-export async function getOrDeployTestIsmAndHook(params: {
+async function dispatchMessage(params: {
     walletClient: WalletClient<Transport, Chain, Account>;
-    publicClient: PublicClient<Transport, Chain>;
-}): Promise<{ ismAddress: Address; hookAddress: Address }> {
-    const { walletClient, publicClient } = params;
-    const { address: ismAddress, hash: ismHash } = await getOrDeployDeterministicContract(
-        { publicClient, walletClient },
-        { salt: zeroHash, bytecode: NoopIsm.bytecode },
-    );
-
-    if (ismHash) {
-        await publicClient.waitForTransactionReceipt({ hash: ismHash });
-    }
-
-    const { address: hookAddress, hash: hookHash } = await getOrDeployDeterministicContract(
-        { publicClient, walletClient },
-        {
-            salt: zeroHash,
-            bytecode: PausableHook.bytecode,
-        },
-    );
-
-    if (hookHash) {
-        await publicClient.waitForTransactionReceipt({ hash: hookHash });
-    }
-
-    return { ismAddress, hookAddress };
-}
-
-export async function getOrDeployDeployers(params: {
-    walletClient: WalletClient<Transport, Chain, Account>;
-    publicClient: PublicClient<Transport, Chain>;
+    recipient: Address;
+    destination: number;
+    mailboxAddress: Address;
+    message: Hex;
 }) {
-    const { walletClient, publicClient } = params;
-
-    const { hash: hashDeployer } = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
-    if (hashDeployer) {
-        await publicClient.waitForTransactionReceipt({ hash: hashDeployer });
-    }
-
-    const { hash: hashCreate2Factory } = await getOrDeployCreate2Factory({ publicClient, walletClient });
-    if (hashCreate2Factory) {
-        await publicClient.waitForTransactionReceipt({ hash: hashCreate2Factory });
-    }
-}
-
-async function getOrDeployMailboxImpl({
-    publicClient,
-    walletClient,
-    salt = zeroHash,
-}: {
-    publicClient: PublicClient<Transport, Chain>;
-    walletClient: WalletClient<Transport, Chain, Account>;
-    salt?: Hash;
-}): Promise<{ hash?: Hash; address: Address }> {
-    const { address, hash } = await getOrDeployDeterministicContract(
-        { publicClient, walletClient },
-        {
-            salt,
-            bytecode: encodeDeployData({
-                abi: Mailbox.abi,
-                bytecode: Mailbox.bytecode,
-                args: [publicClient.chain.id],
-            }),
-        },
-    );
-
-    if (hash) {
-        await publicClient.waitForTransactionReceipt({ hash });
-    }
-
-    return { hash, address };
-}
-
-async function getOrDeployMailboxProxy({
-    publicClient,
-    walletClient,
-    mailboxImplAddress,
-    ismAddress,
-    defaultHookAddress,
-    requiredHookAddress,
-    salt = zeroHash,
-}: {
-    publicClient: PublicClient<Transport, Chain>;
-    walletClient: WalletClient<Transport, Chain, Account>;
-    mailboxImplAddress: Address;
-    ismAddress: Address;
-    defaultHookAddress: Address;
-    requiredHookAddress: Address;
-    salt?: Hash;
-}): Promise<{ hash?: Hash; address: Address }> {
-    const deployMailbox = await getOrDeployContracts({ publicClient, walletClient }, zeroAddress, [
-        {
-            bytecode: getCloneDeterministicBytecode(mailboxImplAddress),
-            initData: encodeFunctionData({
-                abi: [initializeAbi],
-                functionName: "initialize",
-                args: [walletClient.account.address, ismAddress, defaultHookAddress, requiredHookAddress],
-            }),
-            salt,
-        },
-    ]);
-    const mailboxAddress = deployMailbox.addresses[0].address;
-
-    const hash = deployMailbox.hash;
-
-    if (hash) {
-        await publicClient.waitForTransactionReceipt({ hash });
-    }
-
-    return { hash, address: mailboxAddress };
-}
-
-function getMessageFromReceipt(receipt: TransactionReceipt) {
-    const logsDecoded = parseEventLogs({ logs: receipt.logs, abi: [dispatchEvent], eventName: "Dispatch" });
-
-    return logsDecoded[0]?.args.message;
-}
-
-function getMessageIdFromReceipt(receipt: TransactionReceipt): Hex | undefined {
-    const logsDecoded = parseEventLogs({ logs: receipt.logs, abi: [dispatchIdEvent], eventName: "DispatchId" });
-
-    return logsDecoded[0]?.args.messageId;
+    const { walletClient, recipient, destination, mailboxAddress, message } = params;
+    return await walletClient.writeContract({
+        address: mailboxAddress,
+        abi: Mailbox.abi,
+        functionName: "dispatch",
+        args: [destination, padHex(recipient, { size: 32 }), message],
+    });
 }
 
 async function relayMessage(params: {
@@ -201,11 +72,14 @@ describe("index.test.ts", function () {
     let clientsOrigin: Clients;
     let clientsRemote: Clients;
 
-    let noopIsmAddressOrigin: Address;
-    let pausableHookAddressOrigin: Address;
+    let testIsmAddressOrigin: Address;
+    let testHookAddressOrigin: Address;
 
-    let noopIsmAddressRemote: Address;
-    let pausableHookAddressRemote: Address;
+    let testIsmAddressRemote: Address;
+    let testHookAddressRemote: Address;
+
+    let mailboxImplAddressOrigin: Address;
+    let mailboxImplAddressRemote: Address;
 
     beforeAll(async () => {
         const transport = http(`http://127.0.0.1:${port}`);
@@ -224,31 +98,31 @@ describe("index.test.ts", function () {
             }),
         };
 
-        await getOrDeployDeployers(clientsOrigin);
-        await getOrDeployDeployers(clientsRemote);
+        const mailboxContractsOrigin = await setupTestMailboxContracts(clientsOrigin);
+        testIsmAddressOrigin = mailboxContractsOrigin.testIsm.address;
+        testHookAddressOrigin = mailboxContractsOrigin.testHook.address;
+        mailboxImplAddressOrigin = mailboxContractsOrigin.mailboxImpl.address;
 
-        const ismAndHookOrigin = await getOrDeployTestIsmAndHook(clientsOrigin);
-        noopIsmAddressOrigin = ismAndHookOrigin.ismAddress;
-        pausableHookAddressOrigin = ismAndHookOrigin.hookAddress;
-
-        const ismAndHookRemote = await getOrDeployTestIsmAndHook(clientsRemote);
-        noopIsmAddressRemote = ismAndHookRemote.ismAddress;
-        pausableHookAddressRemote = ismAndHookRemote.hookAddress;
+        const mailboxContractsRemote = await setupTestMailboxContracts(clientsRemote);
+        testIsmAddressRemote = mailboxContractsRemote.testIsm.address;
+        testHookAddressRemote = mailboxContractsRemote.testHook.address;
+        mailboxImplAddressRemote = mailboxContractsRemote.mailboxImpl.address;
     });
 
-    test.skip("Deploy Mailbox and dispatch a mesasge", async () => {
+    test("Deploy Mailbox and dispatch a mesasge", async () => {
         const randomSalt = bytesToHex(randomBytes(32));
 
-        const { address: mailboxImplAddressOrigin } = await getOrDeployMailboxImpl(clientsOrigin);
-
-        const { address: mailboxAddressOrigin } = await getOrDeployMailboxProxy({
+        const { address: mailboxAddressOrigin, hash: mailboxHashOrigin } = await getOrDeployMailboxProxy({
             ...clientsOrigin,
             mailboxImplAddress: mailboxImplAddressOrigin,
-            ismAddress: noopIsmAddressOrigin,
-            defaultHookAddress: pausableHookAddressOrigin,
-            requiredHookAddress: pausableHookAddressOrigin,
+            ismAddress: testIsmAddressOrigin,
+            defaultHookAddress: testHookAddressOrigin,
+            requiredHookAddress: testHookAddressOrigin,
             salt: randomSalt,
         });
+        if (mailboxHashOrigin) {
+            await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: mailboxHashOrigin });
+        }
 
         const mailboxOwner = await clientsOrigin.publicClient.readContract({
             address: mailboxAddressOrigin,
@@ -257,11 +131,12 @@ describe("index.test.ts", function () {
         });
         expect(mailboxOwner).toEqual(clientsOrigin.walletClient.account.address);
 
-        const hash = await clientsOrigin.walletClient.writeContract({
-            address: mailboxAddressOrigin,
-            abi: Mailbox.abi,
-            functionName: "dispatch",
-            args: [localhostRemote.id, padHex(clientsRemote.walletClient.account.address, { size: 32 }), "0x"],
+        const hash = await dispatchMessage({
+            walletClient: clientsOrigin.walletClient,
+            destination: localhostRemote.id,
+            mailboxAddress: mailboxAddressOrigin,
+            message: "0x",
+            recipient: zeroAddress,
         });
         const receipt = await clientsOrigin.publicClient.waitForTransactionReceipt({ hash });
 
@@ -269,39 +144,47 @@ describe("index.test.ts", function () {
         expect(messageId).toBeDefined();
     });
 
-    test("Pass a message with mailboxes", async () => {
+    test("Relay a message with mailboxes", async () => {
         const randomSalt = bytesToHex(randomBytes(32));
 
-        const { address: mailboxImplAddressOrigin } = await getOrDeployMailboxImpl(clientsOrigin);
-
-        const { address: mailboxImplAddressRemote } = await getOrDeployMailboxImpl(clientsRemote);
-
-        const { address: mailboxAddressOrigin } = await getOrDeployMailboxProxy({
+        const mailboxOrigin = await getOrDeployMailboxProxy({
             ...clientsOrigin,
             mailboxImplAddress: mailboxImplAddressOrigin,
-            ismAddress: noopIsmAddressOrigin,
-            defaultHookAddress: pausableHookAddressOrigin,
-            requiredHookAddress: pausableHookAddressOrigin,
+            ismAddress: testIsmAddressOrigin,
+            defaultHookAddress: testHookAddressOrigin,
+            requiredHookAddress: testHookAddressOrigin,
             salt: randomSalt,
         });
+        if (mailboxOrigin.hash) {
+            await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: mailboxOrigin.hash });
+        }
 
-        const { address: mailboxAddressRemote } = await getOrDeployMailboxProxy({
+        const mailboxRemote = await getOrDeployMailboxProxy({
             ...clientsRemote,
             mailboxImplAddress: mailboxImplAddressRemote,
-            ismAddress: noopIsmAddressRemote,
-            defaultHookAddress: pausableHookAddressRemote,
-            requiredHookAddress: pausableHookAddressRemote,
+            ismAddress: testIsmAddressRemote,
+            defaultHookAddress: testHookAddressRemote,
+            requiredHookAddress: testHookAddressRemote,
             salt: randomSalt,
         });
+        if (mailboxRemote.hash) {
+            await clientsRemote.publicClient.waitForTransactionReceipt({ hash: mailboxRemote.hash });
+        }
 
-        const recipient = numberToAddress(1);
-        const messageBody = "0x1234";
+        const { address: recipient, hash: testRecipientHash } = await getOrDeployTestRecipient(clientsRemote);
+        if (testRecipientHash) {
+            await clientsRemote.publicClient.waitForTransactionReceipt({ hash: testRecipientHash });
+        }
 
-        const dispatchHash = await clientsOrigin.walletClient.writeContract({
-            address: mailboxAddressOrigin,
-            abi: Mailbox.abi,
-            functionName: "dispatch",
-            args: [clientsRemote.publicClient.chain.id, padHex(recipient, { size: 32 }), messageBody],
+        const messageBody = "Test message";
+        const messageHex = stringToHex(messageBody);
+
+        const dispatchHash = await dispatchMessage({
+            walletClient: clientsOrigin.walletClient,
+            recipient,
+            destination: clientsRemote.publicClient.chain.id,
+            mailboxAddress: mailboxOrigin.address,
+            message: messageHex,
         });
         const dispatchReceipt = await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: dispatchHash });
 
@@ -313,18 +196,37 @@ describe("index.test.ts", function () {
 
         const emptyMetadata = "0x0";
 
-        // FIXME bad message maybe causes revert?
-        await relayMessage({
+        const relayHash = await relayMessage({
             walletClient: clientsRemote.walletClient,
             message,
             metadata: emptyMetadata,
-            mailboxAddress: mailboxAddressRemote,
+            mailboxAddress: mailboxRemote.address,
+        });
+        const relayReceipt = clientsRemote.publicClient.waitForTransactionReceipt({ hash: relayHash });
+
+        // Check that the TestRecipient received the message
+        const receivedMessageLog = parseEventLogs({
+            abi: TestRecipient.abi,
+            eventName: "ReceivedMessage",
+            logs: (await relayReceipt).logs,
+        })[0];
+
+        expect(receivedMessageLog).toBeDefined();
+        expect(receivedMessageLog.args).toStrictEqual({
+            origin: clientsOrigin.publicClient.chain.id,
+            sender: padHex(clientsOrigin.walletClient.account.address, { size: 32 }).toLowerCase(),
+            message: messageBody,
+            value: 0n,
         });
 
-        // TODO: relay message
+        // Check mailbox on remote
+        const processedAt = await clientsRemote.publicClient.readContract({
+            address: mailboxRemote.address,
+            abi: Mailbox.abi,
+            functionName: "processedAt",
+            args: [messageId!],
+        });
 
-        // TODO: check mailbox on remote
-
-        // TODO: check message is "processed" on origin
+        expect(processedAt).toBeGreaterThan(0);
     });
 });
