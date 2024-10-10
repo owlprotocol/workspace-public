@@ -69,17 +69,8 @@ interface IERC721DropSinglePhase {
     function getAccountClaimed(address account) external view returns (uint256);
 
     /**
-     * @notice Check if a given account and its max claim are valid for a specific drop condition.
-     * @param merkleRoot The Merkle root to use for verification.
-     * @param account Address of the account to check.
-     * @param accountMaxClaim Maximum number of tokens the account can claim.
-     * @param proof Array of hashes required to verify the account's eligibility.
-     * @return boolean indicating if the proof is valid for the given account and max claim.
+     * @notice Get the Merkle root.
+     * @return bytes32 The Merkle root.
      */
-    function checkMaxClaimForAccount(
-        bytes32 merkleRoot,
-        address account,
-        uint256 accountMaxClaim,
-        bytes32[] calldata proof
-    ) external pure returns (bool);
+    function getMerkleRoot() external view returns (bytes32);
 }

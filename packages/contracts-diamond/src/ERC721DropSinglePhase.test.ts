@@ -10,6 +10,7 @@ import {
     createWalletClient,
     http,
     parseEther,
+    numberToHex,
 } from "viem";
 import { localhost } from "viem/chains";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
@@ -65,8 +66,7 @@ describe("ERC721DropPreset with Single Valid and Invalid User", () => {
         validAddress = userWalletClients[0].account.address;
         invalidAddress = userWalletClients[1].account.address;
 
-        // only pass first user to the Merkle Tree
-        const values = [[validAddress, maxClaimable.toString()]];
+        const values = [[validAddress, numberToHex(maxClaimable)]];
         tree = StandardMerkleTree.of(values, ["address", "uint256"]);
 
         const hashDeploy = await adminWalletClient.deployContract({
@@ -130,6 +130,14 @@ describe("ERC721DropPreset with Single Valid and Invalid User", () => {
         });
 
         expect(ownerOfBatch).toBe(validAddress);
+
+        const claimed = await publicClient.readContract({
+            address: contractAddress,
+            abi: ERC721DropPreset.abi,
+            functionName: "getAccountClaimed",
+            args: [validAddress],
+        });
+        expect(claimed).toBe(2n);
     });
 
     test("Mint with the invalid user not in the Merkle Tree should fail", async () => {
@@ -144,5 +152,15 @@ describe("ERC721DropPreset with Single Valid and Invalid User", () => {
                 args: [invalidAddress, maxClaimable, emptyProof],
             }),
         ).rejects.toThrowError("InvalidProof");
+    });
+
+    test("Verify getMerkleRoot", async () => {
+        const merkleRoot = await publicClient.readContract({
+            address: contractAddress,
+            abi: ERC721DropPreset.abi,
+            functionName: "getMerkleRoot",
+        });
+
+        expect(merkleRoot).toBe(tree.root);
     });
 });

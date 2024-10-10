@@ -99,28 +99,19 @@ contract ERC721DropSinglePhaseFacet is IERC721DropSinglePhase {
     }
 
     /**
-     * @notice Get the number of tokens already claimed by an account for a specific drop condition.
+     * @notice Get the number of tokens already claimed by an account.
      * @param account Address of the account.
      * @return uint256 Number of tokens claimed.
      */
     function getAccountClaimed(address account) external view returns (uint256) {
-        return ERC721DropLib._getAccountClaimed(0, account);
+        return ERC721DropLib._getDropConditionAccountClaimed(0, account);
     }
 
     /**
-     * @notice Check if a given account and its max claim are valid for a specific drop condition.
-     * @param merkleRoot The Merkle root to use for verification.
-     * @param account Address of the account to check.
-     * @param accountMaxClaim Maximum number of tokens the account can claim.
-     * @param proof Array of hashes required to verify the account's eligibility.
-     * @return boolean indicating if the proof is valid for the given account and max claim.
+     * @notice Get the Merkle root.
+     * @return bytes32 The Merkle root.
      */
-    function checkMaxClaimForAccount(
-        bytes32 merkleRoot,
-        address account,
-        uint256 accountMaxClaim,
-        bytes32[] calldata proof
-    ) external pure returns (bool) {
-        return ERC721DropLib._verifyAccountMaxClaim(merkleRoot, account, accountMaxClaim, proof);
+    function getMerkleRoot() external view returns (bytes32) {
+        return ERC721DropLib._getDropConditionMerkleRoot(0);
     }
 }
