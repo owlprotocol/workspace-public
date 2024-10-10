@@ -19,7 +19,7 @@ importers:
         version: 1.25.0(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@22.7.4)(typescript@5.4.5)
       firebase-tools:
         specifier: ^13.16.0
-        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@6.0.3)
+        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@5.0.10)
       husky:
         specifier: ^7.0.4
         version: 7.0.4
@@ -312,10 +312,10 @@ importers:
         version: 4.17.21
       permissionless:
         specifier: ^0.1.19
-        version: 0.1.31(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))
+        version: 0.1.31(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4))
       viem:
         specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
     devDependencies:
       '@owlprotocol/esbuild-config':
         specifier: workspace:*
@@ -349,7 +349,7 @@ importers:
         version: 1.4.7
       firebase-tools:
         specifier: ^13.16.0
-        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@6.0.3)
+        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@5.0.10)
       lint-staged:
         specifier: ^11.2.6
         version: 11.2.6
@@ -406,7 +406,7 @@ importers:
         version: 4.17.21
       viem:
         specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
     devDependencies:
       '@owlprotocol/esbuild-config':
         specifier: workspace:*
@@ -437,7 +437,7 @@ importers:
         version: 1.4.7
       firebase-tools:
         specifier: ^13.16.0
-        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@6.0.3)
+        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@5.0.10)
       lint-staged:
         specifier: ^11.2.6
         version: 11.2.6
@@ -729,17 +729,17 @@ importers:
         version: 1.0.6(typescript@5.4.5)(zod@3.22.4)
       permissionless:
         specifier: ^0.1.19
-        version: 0.1.31(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))
+        version: 0.1.31(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4))
       viem:
         specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
       zod:
         specifier: 3.22.4
         version: 3.22.4
     devDependencies:
       '@nomicfoundation/hardhat-viem':
         specifier: ^2.0.0
-        version: 2.0.2(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))(typescript@5.4.5)(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(zod@3.22.4)
+        version: 2.0.2(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4))(zod@3.22.4)
       '@owlprotocol/esbuild-config':
         specifier: workspace:*
         version: link:../../configs/esbuild-config
@@ -778,10 +778,10 @@ importers:
         version: 4.7.8
       hardhat:
         specifier: ^2.22.1
-        version: 2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3)
+        version: 2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10)
       hardhat-deploy:
         specifier: ^0.12.2
-        version: 0.12.4(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+        version: 0.12.4(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       lint-staged:
         specifier: ^11.2.6
         version: 11.2.6
@@ -802,7 +802,7 @@ importers:
         version: 3.0.2
       solidity-docgen:
         specifier: ^0.6.0-beta.36
-        version: 0.6.0-beta.36(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))
+        version: 0.6.0-beta.36(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10))
       ts-node:
         specifier: ^10.8.0
         version: 10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5)
@@ -841,14 +841,14 @@ importers:
         version: 9.1.2
       viem:
         specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
       zod:
         specifier: 3.22.4
         version: 3.22.4
     devDependencies:
       '@nomicfoundation/hardhat-viem':
         specifier: ^2.0.0
-        version: 2.0.2(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))(typescript@5.4.5)(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(zod@3.22.4)
+        version: 2.0.2(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4))(zod@3.22.4)
       '@owlprotocol/esbuild-config':
         specifier: workspace:*
         version: link:../../configs/esbuild-config
@@ -884,10 +884,10 @@ importers:
         version: 4.7.8
       hardhat:
         specifier: ^2.22.1
-        version: 2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3)
+        version: 2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10)
       hardhat-deploy:
         specifier: ^0.12.2
-        version: 0.12.4(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+        version: 0.12.4(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       lint-staged:
         specifier: ^11.2.6
         version: 11.2.6
@@ -908,7 +908,7 @@ importers:
         version: 3.0.2
       solidity-docgen:
         specifier: ^0.6.0-beta.36
-        version: 0.6.0-beta.36(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))
+        version: 0.6.0-beta.36(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10))
       ts-node:
         specifier: ^10.8.0
         version: 10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5)
@@ -938,14 +938,14 @@ importers:
         version: link:../zod-sol
       viem:
         specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
       zod:
         specifier: 3.22.4
         version: 3.22.4
     devDependencies:
       '@nomicfoundation/hardhat-viem':
         specifier: ^2.0.0
-        version: 2.0.2(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))(typescript@5.4.5)(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(zod@3.22.4)
+        version: 2.0.2(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4))(zod@3.22.4)
       '@owlprotocol/esbuild-config':
         specifier: workspace:*
         version: link:../../configs/esbuild-config
@@ -981,10 +981,10 @@ importers:
         version: 4.7.8
       hardhat:
         specifier: ^2.22.1
-        version: 2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3)
+        version: 2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10)
       hardhat-deploy:
         specifier: ^0.12.2
-        version: 0.12.4(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+        version: 0.12.4(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       lint-staged:
         specifier: ^11.2.6
         version: 11.2.6
@@ -1005,7 +1005,7 @@ importers:
         version: 3.0.2
       solidity-docgen:
         specifier: ^0.6.0-beta.36
-        version: 0.6.0-beta.36(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))
+        version: 0.6.0-beta.36(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10))
       tiny-invariant:
         specifier: ^1.3.3
         version: 1.3.3
@@ -1030,6 +1030,9 @@ importers:
       '@openzeppelin/contracts':
         specifier: 5.0.2
         version: 5.0.2
+      '@openzeppelin/merkle-tree':
+        specifier: ^1.0.7
+        version: 1.0.7
       '@owlprotocol/contracts-create2factory':
         specifier: workspace:*
         version: link:../contracts-create2factory
@@ -1041,14 +1044,14 @@ importers:
         version: link:../zod-sol
       viem:
         specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
       zod:
         specifier: 3.22.4
         version: 3.22.4
     devDependencies:
       '@nomicfoundation/hardhat-viem':
         specifier: ^2.0.0
-        version: 2.0.2(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))(typescript@5.4.5)(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(zod@3.22.4)
+        version: 2.0.2(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4))(zod@3.22.4)
       '@owlprotocol/esbuild-config':
         specifier: workspace:*
         version: link:../../configs/esbuild-config
@@ -1084,10 +1087,10 @@ importers:
         version: 4.7.8
       hardhat:
         specifier: ^2.22.1
-        version: 2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3)
+        version: 2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10)
       hardhat-deploy:
         specifier: ^0.12.2
-        version: 0.12.4(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+        version: 0.12.4(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       lint-staged:
         specifier: ^11.2.6
         version: 11.2.6
@@ -1108,7 +1111,7 @@ importers:
         version: 3.0.2
       solidity-docgen:
         specifier: ^0.6.0-beta.36
-        version: 0.6.0-beta.36(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))
+        version: 0.6.0-beta.36(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10))
       ts-node:
         specifier: ^10.8.0
         version: 10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5)
@@ -1256,7 +1259,7 @@ importers:
         version: 9.0.1
       viem:
         specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
       zod:
         specifier: 3.22.4
         version: 3.22.4
@@ -1302,7 +1305,7 @@ importers:
         version: 12.4.0(encoding@0.1.13)
       firebase-tools:
         specifier: ^13.16.0
-        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@6.0.3)
+        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@5.0.10)
       lint-staged:
         specifier: ^11.2.6
         version: 11.2.6
@@ -1396,7 +1399,7 @@ importers:
         version: 12.4.0(encoding@0.1.13)
       firebase-tools:
         specifier: ^13.16.0
-        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@6.0.3)
+        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@5.0.10)
       lint-staged:
         specifier: ^11.2.6
         version: 11.2.6
@@ -1435,14 +1438,14 @@ importers:
     dependencies:
       ethers:
         specifier: 5.7.2
-        version: 5.7.2(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+        version: 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
     devDependencies:
       '@dfns/lib-ethersjs5':
         specifier: 0.3.3
         version: 0.3.3(@dfns/sdk@0.3.3(encoding@0.1.13))(encoding@0.1.13)
       '@dfns/lib-viem':
         specifier: 0.3.3
-        version: 0.3.3(@dfns/sdk@0.3.3(encoding@0.1.13))(bufferutil@4.0.7)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+        version: 0.3.3(@dfns/sdk@0.3.3(encoding@0.1.13))(bufferutil@4.0.7)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
       '@dfns/sdk':
         specifier: 0.3.3
         version: 0.3.3(encoding@0.1.13)
@@ -1490,7 +1493,7 @@ importers:
         version: 5.4.5
       viem:
         specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
       vite:
         specifier: ^5.1.6
         version: 5.3.1(@types/node@20.14.8)
@@ -1523,7 +1526,7 @@ importers:
         version: 18.3.1
       viem:
         specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
       zod:
         specifier: 3.22.4
         version: 3.22.4
@@ -1551,7 +1554,7 @@ importers:
         version: 1.4.7
       firebase-tools:
         specifier: ^13.16.0
-        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@6.0.3)
+        version: 13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@5.0.10)
       lint-staged:
         specifier: ^11.2.6
         version: 11.2.6
@@ -1781,13 +1784,13 @@ importers:
         version: 1.0.6(typescript@5.4.5)(zod@3.22.4)
       ethers:
         specifier: 5.7.2
-        version: 5.7.2(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+        version: 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       lodash-es:
         specifier: 4.17.21
         version: 4.17.21
       viem:
         specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
       zod:
         specifier: 3.22.4
         version: 3.22.4
@@ -4006,6 +4009,9 @@ packages:
 
   '@openzeppelin/contracts@5.0.2':
     resolution: {integrity: sha512-ytPc6eLGcHHnapAZ9S+5qsdomhjo6QBHTDRRBFfTxXIpsicMhVPouPgmUPebZZZGX7vt9USA+Z+0M0dSVtSUEA==}
+
+  '@openzeppelin/merkle-tree@1.0.7':
+    resolution: {integrity: sha512-i93t0YYv6ZxTCYU3CdO5Q+DXK0JH10A4dCBOMlzYbX+ujTXm+k1lXiEyVqmf94t3sqmv8sm/XT5zTa0+efnPgQ==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -6955,6 +6961,7 @@ packages:
   eslint@8.57.0:
     resolution: {integrity: sha512-dZ6+mexnaTIbSBZWgou51U6OmzIhYM2VcNdtiTtI7qPNZm35Akpr0f6vtw3w1Kmn5PYo+tZVfh13WrhpS6oLqQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.6.1:
@@ -13578,13 +13585,13 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@dfns/lib-viem@0.3.3(@dfns/sdk@0.3.3(encoding@0.1.13))(bufferutil@4.0.7)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)':
+  '@dfns/lib-viem@0.3.3(@dfns/sdk@0.3.3(encoding@0.1.13))(bufferutil@4.0.7)(encoding@0.1.13)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)':
     dependencies:
       '@dfns/sdk': 0.3.3(encoding@0.1.13)
       buffer: 6.0.3
       cross-fetch: 3.1.6(encoding@0.1.13)
       uuid: 9.0.0
-      viem: 1.21.4(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+      viem: 1.21.4(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -13994,32 +14001,6 @@ snapshots:
       '@ethersproject/web': 5.7.1
       bech32: 1.1.4
       ws: 7.4.6(bufferutil@4.0.7)(utf-8-validate@5.0.10)
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@ethersproject/providers@5.7.2(bufferutil@4.0.7)(utf-8-validate@6.0.3)':
-    dependencies:
-      '@ethersproject/abstract-provider': 5.7.0
-      '@ethersproject/abstract-signer': 5.7.0
-      '@ethersproject/address': 5.7.0
-      '@ethersproject/base64': 5.7.0
-      '@ethersproject/basex': 5.7.0
-      '@ethersproject/bignumber': 5.7.0
-      '@ethersproject/bytes': 5.7.0
-      '@ethersproject/constants': 5.7.0
-      '@ethersproject/hash': 5.7.0
-      '@ethersproject/logger': 5.7.0
-      '@ethersproject/networks': 5.7.1
-      '@ethersproject/properties': 5.7.0
-      '@ethersproject/random': 5.7.0
-      '@ethersproject/rlp': 5.7.0
-      '@ethersproject/sha2': 5.7.0
-      '@ethersproject/strings': 5.7.0
-      '@ethersproject/transactions': 5.7.0
-      '@ethersproject/web': 5.7.1
-      bech32: 1.1.4
-      ws: 7.4.6(bufferutil@4.0.7)(utf-8-validate@6.0.3)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -14994,16 +14975,6 @@ snapshots:
     transitivePeerDependencies:
       - zod
 
-  '@nomicfoundation/hardhat-viem@2.0.2(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))(typescript@5.4.5)(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(zod@3.22.4)':
-    dependencies:
-      abitype: 0.9.8(typescript@5.4.5)(zod@3.22.4)
-      hardhat: 2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3)
-      lodash.memoize: 4.1.2
-      typescript: 5.4.5
-      viem: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
-    transitivePeerDependencies:
-      - zod
-
   '@nomicfoundation/solidity-analyzer-darwin-arm64@0.1.2':
     optional: true
 
@@ -15275,6 +15246,13 @@ snapshots:
   '@openzeppelin/contracts@4.9.3': {}
 
   '@openzeppelin/contracts@5.0.2': {}
+
+  '@openzeppelin/merkle-tree@1.0.7':
+    dependencies:
+      '@ethersproject/abi': 5.7.0
+      '@ethersproject/bytes': 5.7.0
+      '@ethersproject/constants': 5.7.0
+      '@ethersproject/keccak256': 5.7.0
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
@@ -18960,42 +18938,6 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  ethers@5.7.2(bufferutil@4.0.7)(utf-8-validate@6.0.3):
-    dependencies:
-      '@ethersproject/abi': 5.7.0
-      '@ethersproject/abstract-provider': 5.7.0
-      '@ethersproject/abstract-signer': 5.7.0
-      '@ethersproject/address': 5.7.0
-      '@ethersproject/base64': 5.7.0
-      '@ethersproject/basex': 5.7.0
-      '@ethersproject/bignumber': 5.7.0
-      '@ethersproject/bytes': 5.7.0
-      '@ethersproject/constants': 5.7.0
-      '@ethersproject/contracts': 5.7.0
-      '@ethersproject/hash': 5.7.0
-      '@ethersproject/hdnode': 5.7.0
-      '@ethersproject/json-wallets': 5.7.0
-      '@ethersproject/keccak256': 5.7.0
-      '@ethersproject/logger': 5.7.0
-      '@ethersproject/networks': 5.7.1
-      '@ethersproject/pbkdf2': 5.7.0
-      '@ethersproject/properties': 5.7.0
-      '@ethersproject/providers': 5.7.2(bufferutil@4.0.7)(utf-8-validate@6.0.3)
-      '@ethersproject/random': 5.7.0
-      '@ethersproject/rlp': 5.7.0
-      '@ethersproject/sha2': 5.7.0
-      '@ethersproject/signing-key': 5.7.0
-      '@ethersproject/solidity': 5.7.0
-      '@ethersproject/strings': 5.7.0
-      '@ethersproject/transactions': 5.7.0
-      '@ethersproject/units': 5.7.0
-      '@ethersproject/wallet': 5.7.0
-      '@ethersproject/web': 5.7.1
-      '@ethersproject/wordlists': 5.7.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   ethjs-util@0.1.6:
     dependencies:
       is-hex-prefixed: 1.0.0
@@ -19340,7 +19282,7 @@ snapshots:
       - encoding
       - supports-color
 
-  firebase-tools@13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@6.0.3):
+  firebase-tools@13.16.0(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@5.0.10):
     dependencies:
       '@google-cloud/cloud-sql-connector': 1.3.4(encoding@0.1.13)
       '@google-cloud/pubsub': 4.7.0(encoding@0.1.13)
@@ -19406,7 +19348,7 @@ snapshots:
       uuid: 8.3.2
       winston: 3.13.0
       winston-transport: 4.7.0
-      ws: 7.5.10(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+      ws: 7.5.10(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       yaml: 2.4.5
     transitivePeerDependencies:
       - bufferutil
@@ -19928,37 +19870,6 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  hardhat-deploy@0.12.4(bufferutil@4.0.7)(utf-8-validate@6.0.3):
-    dependencies:
-      '@ethersproject/abi': 5.7.0
-      '@ethersproject/abstract-signer': 5.7.0
-      '@ethersproject/address': 5.7.0
-      '@ethersproject/bignumber': 5.7.0
-      '@ethersproject/bytes': 5.7.0
-      '@ethersproject/constants': 5.7.0
-      '@ethersproject/contracts': 5.7.0
-      '@ethersproject/providers': 5.7.2(bufferutil@4.0.7)(utf-8-validate@6.0.3)
-      '@ethersproject/solidity': 5.7.0
-      '@ethersproject/transactions': 5.7.0
-      '@ethersproject/wallet': 5.7.0
-      '@types/qs': 6.9.15
-      axios: 0.21.4(debug@4.3.5)
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      debug: 4.3.5(supports-color@8.1.1)
-      enquirer: 2.4.1
-      ethers: 5.7.2(bufferutil@4.0.7)(utf-8-validate@6.0.3)
-      form-data: 4.0.0
-      fs-extra: 10.1.0
-      match-all: 1.2.6
-      murmur-128: 0.2.1
-      qs: 6.12.1
-      zksync-ethers: 5.9.0(ethers@5.7.2(bufferutil@4.0.7)(utf-8-validate@6.0.3))
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-
   hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10):
     dependencies:
       '@ethersproject/abi': 5.7.0
@@ -20004,60 +19915,6 @@ snapshots:
       undici: 5.28.4
       uuid: 8.3.2
       ws: 7.5.10(bufferutil@4.0.7)(utf-8-validate@5.0.10)
-    optionalDependencies:
-      ts-node: 10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5)
-      typescript: 5.4.5
-    transitivePeerDependencies:
-      - bufferutil
-      - c-kzg
-      - supports-color
-      - utf-8-validate
-
-  hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3):
-    dependencies:
-      '@ethersproject/abi': 5.7.0
-      '@metamask/eth-sig-util': 4.0.1
-      '@nomicfoundation/edr': 0.4.0
-      '@nomicfoundation/ethereumjs-common': 4.0.4
-      '@nomicfoundation/ethereumjs-tx': 5.0.4
-      '@nomicfoundation/ethereumjs-util': 9.0.4
-      '@nomicfoundation/solidity-analyzer': 0.1.2
-      '@sentry/node': 5.30.0
-      '@types/bn.js': 5.1.5
-      '@types/lru-cache': 5.1.1
-      adm-zip: 0.4.16
-      aggregate-error: 3.1.0
-      ansi-escapes: 4.3.2
-      boxen: 5.1.2
-      chalk: 2.4.2
-      chokidar: 3.6.0
-      ci-info: 2.0.0
-      debug: 4.3.5(supports-color@8.1.1)
-      enquirer: 2.4.1
-      env-paths: 2.2.1
-      ethereum-cryptography: 1.2.0
-      ethereumjs-abi: 0.6.8
-      find-up: 2.1.0
-      fp-ts: 1.19.3
-      fs-extra: 7.0.1
-      glob: 7.2.0
-      immutable: 4.3.6
-      io-ts: 1.10.4
-      keccak: 3.0.4
-      lodash: 4.17.21
-      mnemonist: 0.38.5
-      mocha: 10.4.0
-      p-map: 4.0.0
-      raw-body: 2.5.2
-      resolve: 1.17.0
-      semver: 6.3.1
-      solc: 0.7.3(debug@4.3.5)
-      source-map-support: 0.5.21
-      stacktrace-parser: 0.1.10
-      tsort: 0.0.1
-      undici: 5.28.4
-      uuid: 8.3.2
-      ws: 7.5.10(bufferutil@4.0.7)(utf-8-validate@6.0.3)
     optionalDependencies:
       ts-node: 10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5)
       typescript: 5.4.5
@@ -22598,6 +22455,10 @@ snapshots:
       estree-walker: 3.0.3
       is-reference: 3.0.2
 
+  permissionless@0.1.31(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)):
+    dependencies:
+      viem: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)
+
   permissionless@0.1.31(viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)):
     dependencies:
       viem: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
@@ -23679,12 +23540,6 @@ snapshots:
       hardhat: 2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@5.0.10)
       solidity-ast: 0.4.56
 
-  solidity-docgen@0.6.0-beta.36(hardhat@2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3)):
-    dependencies:
-      handlebars: 4.7.8
-      hardhat: 2.22.5(bufferutil@4.0.7)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.13))(@types/node@20.14.8)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3)
-      solidity-ast: 0.4.56
-
   sonic-boom@3.8.1:
     dependencies:
       atomic-sleep: 1.0.0
@@ -24694,7 +24549,7 @@ snapshots:
       unist-util-stringify-position: 4.0.0
       vfile-message: 4.0.2
 
-  viem@1.21.4(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4):
+  viem@1.21.4(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4):
     dependencies:
       '@adraffy/ens-normalize': 1.10.0
       '@noble/curves': 1.2.0
@@ -24702,8 +24557,8 @@ snapshots:
       '@scure/bip32': 1.3.2
       '@scure/bip39': 1.2.1
       abitype: 0.9.8(typescript@5.4.5)(zod@3.22.4)
-      isows: 1.0.3(ws@8.13.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))
-      ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+      isows: 1.0.3(ws@8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10))
+      ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
     optionalDependencies:
       typescript: 5.4.5
     transitivePeerDependencies:
@@ -25049,20 +24904,10 @@ snapshots:
       bufferutil: 4.0.7
       utf-8-validate: 5.0.10
 
-  ws@7.4.6(bufferutil@4.0.7)(utf-8-validate@6.0.3):
-    optionalDependencies:
-      bufferutil: 4.0.7
-      utf-8-validate: 6.0.3
-
   ws@7.5.10(bufferutil@4.0.7)(utf-8-validate@5.0.10):
     optionalDependencies:
       bufferutil: 4.0.7
       utf-8-validate: 5.0.10
-
-  ws@7.5.10(bufferutil@4.0.7)(utf-8-validate@6.0.3):
-    optionalDependencies:
-      bufferutil: 4.0.7
-      utf-8-validate: 6.0.3
 
   ws@8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10):
     optionalDependencies:
@@ -25154,10 +24999,6 @@ snapshots:
   zksync-ethers@5.9.0(ethers@5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)):
     dependencies:
       ethers: 5.7.2(bufferutil@4.0.7)(utf-8-validate@5.0.10)
-
-  zksync-ethers@5.9.0(ethers@5.7.2(bufferutil@4.0.7)(utf-8-validate@6.0.3)):
-    dependencies:
-      ethers: 5.7.2(bufferutil@4.0.7)(utf-8-validate@6.0.3)
 
   zod@3.22.4: {}
 
