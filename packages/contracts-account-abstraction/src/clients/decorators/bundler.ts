@@ -6,9 +6,6 @@ import {
     GetUserOperationReceiptReturnType,
     SendUserOperationReturnType,
     UserOperation,
-    waitForUserOperationReceipt,
-    WaitForUserOperationReceiptParameters,
-    WaitForUserOperationReceiptReturnType,
 } from "viem/account-abstraction";
 import { Transport, Chain, Account, Client, Address, GetChainIdReturnType } from "viem";
 

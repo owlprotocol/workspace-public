@@ -210,7 +210,7 @@ describe("eip1993/index.test.ts", function () {
                 calls: [{ to, data }],
             });
             const userOpHash = await bundlerClient.sendUserOperation(userOperation);
-            const userOpReceipt = await bundlerClient.waitForUserOperationReceipt({ hash: userOpHash });
+            const userOpReceipt = await waitForUserOperationReceipt(bundlerClient, { hash: userOpHash });
             expect(userOpReceipt).toBeDefined();
 
             const contractBytecode = await publicClient.getBytecode({ address: contractAddress });
