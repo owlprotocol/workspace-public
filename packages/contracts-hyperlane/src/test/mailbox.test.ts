@@ -68,7 +68,7 @@ async function relayMessage(params: {
     return hash;
 }
 
-describe("index.test.ts", function () {
+describe("mailbox.test.ts", function () {
     let clientsOrigin: Clients;
     let clientsRemote: Clients;
 
