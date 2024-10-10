@@ -57,7 +57,7 @@ contract Create2Factory is ICreate2Factory {
                 //Initialize if needed
                 if (contracts[i].initData.length > 0) {
                     // Initialize
-                    Address.functionCall(contractAddresses[i], contracts[i].initData);
+                    Address.functionCall(contractAddress, contracts[i].initData);
                 }
             }
 

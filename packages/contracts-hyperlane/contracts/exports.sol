@@ -20,5 +20,9 @@ import {InterchainQueryRouter} from "@hyperlane-xyz/core/contracts/middleware/In
 import {OwnableMulticall} from "@hyperlane-xyz/core/contracts/middleware/libs/OwnableMulticall.sol";
 
 import {TrustedRelayerIsm} from "@hyperlane-xyz/core/contracts/isms/TrustedRelayerIsm.sol";
+import {NoopIsm} from "@hyperlane-xyz/core/contracts/isms/NoopIsm.sol";
 
 import {TokenRouter} from "@hyperlane-xyz/core/contracts/token/libs/TokenRouter.sol";
+
+import {PausableHook} from "@hyperlane-xyz/core/contracts/hooks/PausableHook.sol";
+import {TestRecipient} from "@hyperlane-xyz/core/contracts/test/TestRecipient.sol";
