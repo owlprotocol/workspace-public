@@ -1,3 +1,3 @@
 export * from "./decorators/index.js";
 
-export * from "./createIndexerClient.js";
+export * from "./createBackendIndexer.js";

@@ -189,7 +189,6 @@ describe("VerifyingPaymaster.test.ts", function () {
                 },
             });
             const paymasterSignatureBytes = hexToBytes(paymasterSignature);
-            console.debug(paymasterSignatureBytes.length);
 
             expect(paymasterSignatureBytes.length).toBeGreaterThanOrEqual(64);
             expect(paymasterSignatureBytes.length).toBeLessThanOrEqual(65);

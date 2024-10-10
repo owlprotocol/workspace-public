@@ -20,7 +20,7 @@ import {
     ethTransactionResource,
 } from "@owlprotocol/eth-firebase/admin";
 import { port } from "../test/constants.js";
-import { createIndexerClient } from "./createIndexerClient.js";
+import { createBackendIndexer } from "./createBackendIndexer.js";
 
 /**
  * For block comparisons between viem
@@ -55,7 +55,7 @@ function toTransactionReceipt(transactionReceipt: any) {
     };
 }
 
-describe("createIndexerClient.test.ts", function () {
+describe("createBackendIndexer.test.ts", function () {
     let publicClient: PublicClient;
     let publicIndexerClient: PublicClient;
 
@@ -68,7 +68,7 @@ describe("createIndexerClient.test.ts", function () {
             transport,
         });
 
-        publicIndexerClient = await createIndexerClient({ chain: localhost, transport });
+        publicIndexerClient = await createBackendIndexer({ chain: localhost, transport });
 
         walletClient = createWalletClient({
             chain: localhost,

@@ -22,7 +22,7 @@ import {
 } from "@owlprotocol/eth-firebase/admin";
 import { createIndexerEIP1193 } from "./createIndexerEIP1193.js";
 import { port } from "../test/constants.js";
-import { createIndexerClient } from "../clients/createIndexerClient.js";
+import { createBackendIndexer } from "../clients/createBackendIndexer.js";
 
 /**
  * For block comparisons between viem
@@ -72,7 +72,7 @@ describe("createIndexerEIP1193.test.ts", function () {
         });
 
         publicIndexerClient = await createPublicClient({
-            transport: custom({ request: createIndexerEIP1193(createIndexerClient({ chain: localhost, transport })) }),
+            transport: custom({ request: createIndexerEIP1193(createBackendIndexer({ chain: localhost, transport })) }),
         });
 
         walletClient = createWalletClient({

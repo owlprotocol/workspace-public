@@ -115,7 +115,7 @@ describe("clients/index.test.ts", function () {
         account = privateKeyToAccount(generatePrivateKey());
     });
     /** Tests involving deploying the smart account */
-    test.only("No Paymaster Deploy Contract", async () => {
+    test("No Paymaster Deploy Contract", async () => {
         //Encode smart account tx, deploy smart account & hello contract
         //Deploy smart account data
         //Get SimpleAccount address

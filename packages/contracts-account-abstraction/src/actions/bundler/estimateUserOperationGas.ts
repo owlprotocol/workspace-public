@@ -107,7 +107,6 @@ export async function estimateUserOperationGas(
     }
 
     const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
-    console.debug({ chainId });
 
     //Additional 10% added
     userOperation.preVerificationGas =
@@ -118,7 +117,6 @@ export async function estimateUserOperationGas(
         })) *
             110n) /
         100n;
-    console.debug(userOperation.preVerificationGas);
 
     //TODO: Make more modular for chain overrides
     if (chainId === chains.base.id) {
@@ -135,7 +133,6 @@ export async function estimateUserOperationGas(
         entryPoint: entryPointAddress,
         entryPointSimulationsAddress,
     });
-    console.debug(executionResult);
 
     const verificationGasAndCallGasLimit = calcVerificationGasAndCallGasLimit(
         userOperation,
