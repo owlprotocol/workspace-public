@@ -27,7 +27,7 @@ library ERC721DropLib {
     error DropConditionNotFound(bytes32 dropConditionId);
 
     // Events
-    event DropConditionSet(bytes32 indexed dropConditionId, bytes32 indexed merkleRoot);
+    event DropConditionSet(bytes32 indexed dropConditionId, bytes32 merkleRoot);
     event TokensClaimedWithProof(
         bytes32 indexed dropConditionId,
         address indexed account,
@@ -78,7 +78,11 @@ library ERC721DropLib {
         DropStorage storage ds = getData();
         DropCondition storage condition = ds.dropConditions[dropConditionId];
 
-        if (!_checkMaxClaimForAccount(dropConditionId, account, accountMaxClaim, merkleProof)) {
+        if (condition.merkleRoot == bytes32(0)) {
+            revert DropConditionNotFound(dropConditionId);
+        }
+
+        if (!_verifyAccountMaxClaim(condition.merkleRoot, account, accountMaxClaim, merkleProof)) {
             revert InvalidProof();
         }
 
@@ -93,29 +97,21 @@ library ERC721DropLib {
     }
 
     /**
-     * @dev Check if a given account and its max claim are valid for a specific drop condition.
-     * @param dropConditionId The ID of the drop condition.
+     * @dev Verify the account's maximum claimable amount using the provided Merkle proof.
+     * @param merkleRoot Merkle root for the condition.
      * @param account Address of the account to check.
      * @param accountMaxClaim Maximum number of tokens the account can claim.
      * @param proof Array of hashes required to verify the account's eligibility.
      * @return boolean indicating if the proof is valid for the given account and max claim.
      */
-    function _checkMaxClaimForAccount(
-        bytes32 dropConditionId,
+    function _verifyAccountMaxClaim(
+        bytes32 merkleRoot,
         address account,
         uint256 accountMaxClaim,
         bytes32[] calldata proof
-    ) internal view returns (bool) {
-        DropStorage storage ds = getData();
-        DropCondition storage condition = ds.dropConditions[dropConditionId];
-
-        if (condition.merkleRoot == bytes32(0)) {
-            revert DropConditionNotFound(dropConditionId);
-        }
-
+    ) internal pure returns (bool) {
         bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(account, accountMaxClaim))));
-
-        return MerkleProof.verify(proof, condition.merkleRoot, leaf);
+        return MerkleProof.verify(proof, merkleRoot, leaf);
     }
 
     /**

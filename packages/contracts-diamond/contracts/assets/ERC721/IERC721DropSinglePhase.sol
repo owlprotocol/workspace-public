@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {ERC721DropLib} from "./ERC721DropLib.sol";
-
 interface IERC721DropSinglePhase {
-    event DropConditionSet(bytes32 indexed dropConditionId, bytes32 indexed merkleRoot);
+    event DropConditionSet(bytes32 indexed dropConditionId, bytes32 merkleRoot);
     event TokensClaimedWithProof(
         bytes32 indexed dropConditionId,
         address indexed account,
@@ -20,12 +18,48 @@ interface IERC721DropSinglePhase {
     function setDropCondition(bytes32 merkleRoot) external;
 
     /**
-     * @notice Claim tokens based on a Merkle proof.
-     * @param quantity Number of tokens to claim.
-     * @param maxClaimable The maximum number of tokens the account is allowed to claim.
-     * @param merkleProof Array of hashes required to verify the account's eligibility.
+     * @notice Mint a single token with proof.
+     * @param to Address to mint the token to.
+     * @param maxClaimable Maximum number of tokens the account can claim.
+     * @param merkleProof Merkle proof array.
      */
-    function claimWithProof(uint256 quantity, uint256 maxClaimable, bytes32[] calldata merkleProof) external;
+    function mintWithProof(address to, uint256 maxClaimable, bytes32[] calldata merkleProof) external returns (uint256);
+
+    /**
+     * @notice Mint multiple tokens with proof.
+     * @param to Array of addresses to mint tokens to.
+     * @param maxClaimable Maximum number of tokens the account can claim.
+     * @param merkleProof Merkle proof array.
+     */
+    function mintBatchWithProof(
+        address[] memory to,
+        uint256 maxClaimable,
+        bytes32[] calldata merkleProof
+    ) external returns (uint256[] memory);
+
+    /**
+     * @notice Safely mint a single token with proof.
+     * @param to Address to mint the token to.
+     * @param maxClaimable Maximum number of tokens the account can claim.
+     * @param merkleProof Merkle proof array.
+     */
+    function safeMintWithProof(
+        address to,
+        uint256 maxClaimable,
+        bytes32[] calldata merkleProof
+    ) external returns (uint256);
+
+    /**
+     * @notice Safely mint multiple tokens with proof.
+     * @param to Array of addresses to mint tokens to.
+     * @param maxClaimable Maximum number of tokens the account can claim.
+     * @param merkleProof Merkle proof array.
+     */
+    function safeMintBatchWithProof(
+        address[] memory to,
+        uint256 maxClaimable,
+        bytes32[] calldata merkleProof
+    ) external returns (uint256[] memory);
 
     /**
      * @notice Get the number of tokens already claimed by an account.
@@ -36,14 +70,16 @@ interface IERC721DropSinglePhase {
 
     /**
      * @notice Check if a given account and its max claim are valid for a specific drop condition.
+     * @param merkleRoot The Merkle root to use for verification.
      * @param account Address of the account to check.
      * @param accountMaxClaim Maximum number of tokens the account can claim.
      * @param proof Array of hashes required to verify the account's eligibility.
      * @return boolean indicating if the proof is valid for the given account and max claim.
      */
     function checkMaxClaimForAccount(
+        bytes32 merkleRoot,
         address account,
         uint256 accountMaxClaim,
         bytes32[] calldata proof
-    ) external view returns (bool);
+    ) external pure returns (bool);
 }

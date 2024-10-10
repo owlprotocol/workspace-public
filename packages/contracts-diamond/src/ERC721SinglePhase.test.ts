@@ -19,90 +19,6 @@ import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { ERC721SinglePhasePreset } from "./artifacts/ERC721SinglePhasePreset.js";
 import { port } from "./test/constants.js";
 
-const constructorAbi = {
-    inputs: [
-        {
-            internalType: "address",
-            name: "admin",
-            type: "address",
-        },
-        {
-            internalType: "string",
-            name: "contractUri",
-            type: "string",
-        },
-        {
-            internalType: "string",
-            name: "name",
-            type: "string",
-        },
-        {
-            internalType: "string",
-            name: "symbol",
-            type: "string",
-        },
-        {
-            internalType: "string",
-            name: "baseUri",
-            type: "string",
-        },
-        {
-            internalType: "address",
-            name: "royaltyReceiver",
-            type: "address",
-        },
-        {
-            internalType: "uint96",
-            name: "feeNumerator",
-            type: "uint96",
-        },
-        {
-            components: [
-                {
-                    internalType: "uint256",
-                    name: "startTimestamp",
-                    type: "uint256",
-                },
-                {
-                    internalType: "uint256",
-                    name: "endTimestamp",
-                    type: "uint256",
-                },
-                {
-                    internalType: "uint256",
-                    name: "maxClaimableSupply",
-                    type: "uint256",
-                },
-                {
-                    internalType: "uint256",
-                    name: "supplyClaimed",
-                    type: "uint256",
-                },
-                {
-                    internalType: "uint256",
-                    name: "quantityLimitPerWallet",
-                    type: "uint256",
-                },
-                {
-                    internalType: "uint256",
-                    name: "pricePerToken",
-                    type: "uint256",
-                },
-                {
-                    internalType: "address",
-                    name: "currency",
-                    type: "address",
-                },
-            ],
-            internalType: "struct ERC721ClaimLib.ClaimCondition",
-            name: "condition",
-            type: "tuple",
-        },
-    ],
-    stateMutability: "nonpayable",
-    type: "constructor",
-};
-
 const MAX_INT = hexToBigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 
 describe("ERC721SinglePhase.test.ts", function () {
@@ -157,7 +73,7 @@ describe("ERC721SinglePhase.test.ts", function () {
         };
 
         const hashDeploy = await adminWalletClient.deployContract({
-            abi: [constructorAbi],
+            abi: [ERC721SinglePhasePreset.abi],
             args: [
                 adminWalletClient.account.address,
                 "contractUri",
