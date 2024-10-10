@@ -115,12 +115,22 @@ library ERC721DropLib {
     }
 
     /**
+     * @notice Retrieve the Merkle root of a specific drop condition.
+     * @param dropConditionId The ID of the drop condition.
+     * @return bytes32 Merkle root of the drop condition.
+     */
+    function _getDropConditionMerkleRoot(bytes32 dropConditionId) internal view returns (bytes32) {
+        DropStorage storage ds = getData();
+        return ds.dropConditions[dropConditionId].merkleRoot;
+    }
+
+    /**
      * @dev Get the number of tokens already claimed by an account for a specific drop condition.
      * @param dropConditionId The ID of the drop condition.
      * @param account Address of the account.
      * @return uint256 Number of tokens claimed.
      */
-    function _getAccountClaimed(bytes32 dropConditionId, address account) internal view returns (uint256) {
+    function _getDropConditionAccountClaimed(bytes32 dropConditionId, address account) internal view returns (uint256) {
         DropStorage storage ds = getData();
         return ds.dropConditions[dropConditionId].accountClaims[account];
     }
