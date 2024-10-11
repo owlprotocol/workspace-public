@@ -8,11 +8,14 @@ import {IERC721MintableAutoId} from "./IERC721MintableAutoId.sol";
 
 import {ERC721DropLib} from "./ERC721DropLib.sol";
 import {ERC721MintableAutoIdLib} from "./ERC721MintableAutoIdLib.sol";
+import {ERC721ClaimLib} from "./ERC721ClaimLib.sol";
 
 /**
  * @dev Manage and claim ERC-721 tokens airdrops in a single phase.
  */
 contract ERC721DropSinglePhaseFacet is IERC721DropSinglePhase {
+    using ERC721ClaimLib for ERC721ClaimLib.ClaimCondition;
+
     /**
      * @notice Set or update the drop condition.
      * Caller must have the `ERC721_DROP_ROLE`.
@@ -25,18 +28,18 @@ contract ERC721DropSinglePhaseFacet is IERC721DropSinglePhase {
     /**
      * @notice Mint a single token to the specified address.
      * @param to The address to mint the token to.
-     * @param maxClaimable The maximum number of tokens the account can claim.
+     * @param condition ClaimCondition struct containing all condition fields.
      * @param merkleProof Array of hashes required to verify the account's eligibility.
      */
     function mintWithProof(
         address to,
-        uint256 maxClaimable,
+        ERC721ClaimLib.ClaimCondition calldata condition,
         bytes32[] calldata merkleProof
-    ) external returns (uint256) {
+    ) external payable returns (uint256) {
         if (AccessControlRecursiveLib._hasRoleRecursive(ERC721MintableAutoIdLib.ERC721_MINTER_ROLE, msg.sender)) {
             return ERC721MintableAutoIdLib.__unsafe_mint(to);
         } else {
-            ERC721DropLib._claimWithProof(0, msg.sender, 1, maxClaimable, merkleProof);
+            ERC721DropLib._claimWithProof(0, msg.sender, 1, condition, merkleProof);
             return ERC721MintableAutoIdLib.__unsafe_mint(to);
         }
     }
@@ -44,18 +47,18 @@ contract ERC721DropSinglePhaseFacet is IERC721DropSinglePhase {
     /**
      * @notice Mint multiple tokens in a batch.
      * @param to The addresses to mint the tokens to.
-     * @param maxClaimable The maximum number of tokens the account can claim.
+     * @param condition ClaimCondition struct containing all condition fields.
      * @param merkleProof Array of hashes required to verify the account's eligibility.
      */
     function mintBatchWithProof(
         address[] memory to,
-        uint256 maxClaimable,
+        ERC721ClaimLib.ClaimCondition calldata condition,
         bytes32[] calldata merkleProof
-    ) external returns (uint256[] memory) {
+    ) external payable returns (uint256[] memory) {
         if (AccessControlRecursiveLib._hasRoleRecursive(ERC721MintableAutoIdLib.ERC721_MINTER_ROLE, msg.sender)) {
             return ERC721MintableAutoIdLib.__unsafe_mintBatch(to);
         } else {
-            ERC721DropLib._claimWithProof(0, msg.sender, to.length, maxClaimable, merkleProof);
+            ERC721DropLib._claimWithProof(0, msg.sender, to.length, condition, merkleProof);
             return ERC721MintableAutoIdLib.__unsafe_mintBatch(to);
         }
     }
@@ -63,18 +66,18 @@ contract ERC721DropSinglePhaseFacet is IERC721DropSinglePhase {
     /**
      * @notice Safely mint a single token to the specified address.
      * @param to The address to mint the token to.
-     * @param maxClaimable The maximum number of tokens the account can claim.
+     * @param condition ClaimCondition struct containing all condition fields.
      * @param merkleProof Array of hashes required to verify the account's eligibility.
      */
     function safeMintWithProof(
         address to,
-        uint256 maxClaimable,
+        ERC721ClaimLib.ClaimCondition calldata condition,
         bytes32[] calldata merkleProof
-    ) external returns (uint256) {
+    ) external payable returns (uint256) {
         if (AccessControlRecursiveLib._hasRoleRecursive(ERC721MintableAutoIdLib.ERC721_MINTER_ROLE, msg.sender)) {
             return ERC721MintableAutoIdLib.__unsafe_safeMint(to);
         } else {
-            ERC721DropLib._claimWithProof(0, msg.sender, 1, maxClaimable, merkleProof);
+            ERC721DropLib._claimWithProof(0, msg.sender, 1, condition, merkleProof);
             return ERC721MintableAutoIdLib.__unsafe_safeMint(to);
         }
     }
@@ -82,18 +85,18 @@ contract ERC721DropSinglePhaseFacet is IERC721DropSinglePhase {
     /**
      * @notice Safely mint multiple tokens in a batch.
      * @param to The addresses to mint the tokens to.
-     * @param maxClaimable The maximum number of tokens the account can claim.
+     * @param condition ClaimCondition struct containing all condition fields.
      * @param merkleProof Array of hashes required to verify the account's eligibility.
      */
     function safeMintBatchWithProof(
         address[] memory to,
-        uint256 maxClaimable,
+        ERC721ClaimLib.ClaimCondition calldata condition,
         bytes32[] calldata merkleProof
-    ) external returns (uint256[] memory) {
+    ) external payable returns (uint256[] memory) {
         if (AccessControlRecursiveLib._hasRoleRecursive(ERC721MintableAutoIdLib.ERC721_MINTER_ROLE, msg.sender)) {
             return ERC721MintableAutoIdLib.__unsafe_safeMintBatch(to);
         } else {
-            ERC721DropLib._claimWithProof(0, msg.sender, to.length, maxClaimable, merkleProof);
+            ERC721DropLib._claimWithProof(0, msg.sender, to.length, condition, merkleProof);
             return ERC721MintableAutoIdLib.__unsafe_safeMintBatch(to);
         }
     }

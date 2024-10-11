@@ -4,8 +4,11 @@ pragma solidity ^0.8.20;
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import {AccessControlRecursiveLib} from "../../access/AccessControlRecursiveLib.sol";
 import {IERC721DropSinglePhase} from "./IERC721DropSinglePhase.sol";
+import {ERC721ClaimLib} from "./ERC721ClaimLib.sol";
 
 library ERC721DropLib {
+    using ERC721ClaimLib for ERC721ClaimLib.ClaimCondition;
+
     bytes32 internal constant ERC721_DROP_ROLE = bytes32(IERC721DropSinglePhase.setDropCondition.selector);
 
     bytes32 constant ERC721_DROP_STORAGE =
@@ -23,7 +26,6 @@ library ERC721DropLib {
 
     // Errors
     error InvalidProof();
-    error ClaimLimitExceeded(uint256 attempted, uint256 remaining);
     error DropConditionNotFound(bytes32 dropConditionId);
 
     // Events
@@ -65,52 +67,51 @@ library ERC721DropLib {
      * @param dropConditionId The ID of the drop condition.
      * @param account Address of the account making the claim.
      * @param quantity Number of tokens the account wants to claim.
-     * @param accountMaxClaim Maximum number of tokens the account is allowed to claim.
+     * @param condition Claim condition struct containing all condition fields.
      * @param merkleProof Array of hashes required to verify the account's eligibility.
      */
     function _claimWithProof(
         bytes32 dropConditionId,
         address account,
         uint256 quantity,
-        uint256 accountMaxClaim,
+        ERC721ClaimLib.ClaimCondition calldata condition,
         bytes32[] calldata merkleProof
     ) internal {
         DropStorage storage ds = getData();
-        DropCondition storage condition = ds.dropConditions[dropConditionId];
+        DropCondition storage drop = ds.dropConditions[dropConditionId];
 
-        if (condition.merkleRoot == bytes32(0)) {
+        if (drop.merkleRoot == bytes32(0)) {
             revert DropConditionNotFound(dropConditionId);
         }
 
-        if (!_verifyAccountMaxClaim(condition.merkleRoot, account, accountMaxClaim, merkleProof)) {
+        if (!_verifyAccountClaimCondition(drop.merkleRoot, account, condition, merkleProof)) {
             revert InvalidProof();
         }
 
-        uint256 remaining = accountMaxClaim - condition.accountClaims[account];
-        if (quantity > remaining) {
-            revert ClaimLimitExceeded(quantity, remaining);
-        }
+        condition._checkClaim(quantity, drop.accountClaims[account]);
+        condition._payClaim(account, quantity);
 
-        condition.accountClaims[account] += quantity;
+        drop.accountClaims[account] += quantity;
 
-        emit TokensClaimedWithProof(dropConditionId, account, quantity, condition.accountClaims[account]);
+        emit TokensClaimedWithProof(dropConditionId, account, quantity, drop.accountClaims[account]);
     }
 
     /**
-     * @dev Verify the account's maximum claimable amount using the provided Merkle proof.
+     * @dev Verify the account's conditions using the provided Merkle proof.
      * @param merkleRoot Merkle root for the condition.
      * @param account Address of the account to check.
-     * @param accountMaxClaim Maximum number of tokens the account can claim.
+     * @param condition ClaimCondition struct to validate.
      * @param proof Array of hashes required to verify the account's eligibility.
-     * @return boolean indicating if the proof is valid for the given account and max claim.
+     * @return boolean indicating if the proof is valid.
      */
-    function _verifyAccountMaxClaim(
+    function _verifyAccountClaimCondition(
         bytes32 merkleRoot,
         address account,
-        uint256 accountMaxClaim,
+        ERC721ClaimLib.ClaimCondition calldata condition,
         bytes32[] calldata proof
     ) internal pure returns (bool) {
-        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(account, accountMaxClaim))));
+        bytes32 leaf = keccak256(abi.encode(account, condition));
+
         return MerkleProof.verify(proof, merkleRoot, leaf);
     }
 

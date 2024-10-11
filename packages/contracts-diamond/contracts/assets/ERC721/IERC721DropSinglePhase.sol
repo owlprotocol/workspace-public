@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import {ERC721ClaimLib} from "./ERC721ClaimLib.sol";
+
 interface IERC721DropSinglePhase {
     event DropConditionSet(bytes32 indexed dropConditionId, bytes32 merkleRoot);
     event TokensClaimedWithProof(
@@ -20,46 +22,50 @@ interface IERC721DropSinglePhase {
     /**
      * @notice Mint a single token with proof.
      * @param to Address to mint the token to.
-     * @param maxClaimable Maximum number of tokens the account can claim.
+     * @param condition ClaimCondition struct containing all condition fields.
      * @param merkleProof Merkle proof array.
      */
-    function mintWithProof(address to, uint256 maxClaimable, bytes32[] calldata merkleProof) external returns (uint256);
+    function mintWithProof(
+        address to,
+        ERC721ClaimLib.ClaimCondition calldata condition,
+        bytes32[] calldata merkleProof
+    ) external payable returns (uint256);
 
     /**
      * @notice Mint multiple tokens with proof.
      * @param to Array of addresses to mint tokens to.
-     * @param maxClaimable Maximum number of tokens the account can claim.
+     * @param condition ClaimCondition struct containing all condition fields.
      * @param merkleProof Merkle proof array.
      */
     function mintBatchWithProof(
         address[] memory to,
-        uint256 maxClaimable,
+        ERC721ClaimLib.ClaimCondition calldata condition,
         bytes32[] calldata merkleProof
-    ) external returns (uint256[] memory);
+    ) external payable returns (uint256[] memory);
 
     /**
      * @notice Safely mint a single token with proof.
      * @param to Address to mint the token to.
-     * @param maxClaimable Maximum number of tokens the account can claim.
+     * @param condition ClaimCondition struct containing all condition fields.
      * @param merkleProof Merkle proof array.
      */
     function safeMintWithProof(
         address to,
-        uint256 maxClaimable,
+        ERC721ClaimLib.ClaimCondition calldata condition,
         bytes32[] calldata merkleProof
-    ) external returns (uint256);
+    ) external payable returns (uint256);
 
     /**
      * @notice Safely mint multiple tokens with proof.
      * @param to Array of addresses to mint tokens to.
-     * @param maxClaimable Maximum number of tokens the account can claim.
+     * @param condition ClaimCondition struct containing all condition fields.
      * @param merkleProof Merkle proof array.
      */
     function safeMintBatchWithProof(
         address[] memory to,
-        uint256 maxClaimable,
+        ERC721ClaimLib.ClaimCondition calldata condition,
         bytes32[] calldata merkleProof
-    ) external returns (uint256[] memory);
+    ) external payable returns (uint256[] memory);
 
     /**
      * @notice Get the number of tokens already claimed by an account.

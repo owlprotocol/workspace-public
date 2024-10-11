@@ -9,7 +9,9 @@ import {
     createPublicClient,
     createWalletClient,
     http,
+    zeroAddress,
     parseEther,
+    hexToBigInt,
     numberToHex,
 } from "viem";
 import { localhost } from "viem/chains";
@@ -18,6 +20,8 @@ import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { ERC721DropPreset } from "./artifacts/ERC721DropPreset.js";
 import { port } from "./test/constants.js";
+
+const MAX_INT = hexToBigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 
 describe("ERC721DropPreset with Single Valid and Invalid User", () => {
     let transport: Transport;
@@ -30,7 +34,16 @@ describe("ERC721DropPreset with Single Valid and Invalid User", () => {
 
     let validAddress: Address;
     let invalidAddress: Address;
-    const maxClaimable = 3n;
+
+    const claimCondition = {
+        startTimestamp: 0n,
+        endTimestamp: MAX_INT,
+        maxClaimableSupply: 3n,
+        supplyClaimed: 0n,
+        quantityLimitPerWallet: 3n,
+        pricePerToken: parseEther("0.1"),
+        currency: zeroAddress,
+    };
 
     beforeAll(async () => {
         transport = http(`http://127.0.0.1:${port}`);
@@ -66,8 +79,29 @@ describe("ERC721DropPreset with Single Valid and Invalid User", () => {
         validAddress = userWalletClients[0].account.address;
         invalidAddress = userWalletClients[1].account.address;
 
-        const values = [[validAddress, numberToHex(maxClaimable)]];
-        tree = StandardMerkleTree.of(values, ["address", "uint256"]);
+        const values = [
+            [
+                validAddress,
+                numberToHex(claimCondition.startTimestamp),
+                numberToHex(claimCondition.endTimestamp),
+                numberToHex(claimCondition.maxClaimableSupply),
+                numberToHex(claimCondition.supplyClaimed),
+                numberToHex(claimCondition.quantityLimitPerWallet),
+                numberToHex(claimCondition.pricePerToken),
+                claimCondition.currency,
+            ],
+        ];
+
+        tree = StandardMerkleTree.of(values, [
+            "address",
+            "uint256",
+            "uint256",
+            "uint256",
+            "uint256",
+            "uint256",
+            "uint256",
+            "address",
+        ]);
 
         const hashDeploy = await adminWalletClient.deployContract({
             abi: ERC721DropPreset.abi,
@@ -96,7 +130,8 @@ describe("ERC721DropPreset with Single Valid and Invalid User", () => {
             address: contractAddress,
             abi: ERC721DropPreset.abi,
             functionName: "mintWithProof",
-            args: [validAddress, maxClaimable, proof],
+            args: [validAddress, claimCondition, proof],
+            value: claimCondition.pricePerToken,
         });
 
         const hash = await userWalletClients[0].writeContract(request);
@@ -116,7 +151,8 @@ describe("ERC721DropPreset with Single Valid and Invalid User", () => {
             address: contractAddress,
             abi: ERC721DropPreset.abi,
             functionName: "mintBatchWithProof",
-            args: [[validAddress], maxClaimable, proof],
+            args: [[validAddress], claimCondition, proof],
+            value: claimCondition.pricePerToken,
         });
 
         const batchHash = await userWalletClients[0].writeContract(batchRequest);
@@ -149,7 +185,8 @@ describe("ERC721DropPreset with Single Valid and Invalid User", () => {
                 address: contractAddress,
                 abi: ERC721DropPreset.abi,
                 functionName: "mintWithProof",
-                args: [invalidAddress, maxClaimable, emptyProof],
+                args: [invalidAddress, claimCondition, emptyProof],
+                value: claimCondition.pricePerToken,
             }),
         ).rejects.toThrowError("InvalidProof");
     });
