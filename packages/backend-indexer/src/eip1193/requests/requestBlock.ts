@@ -1,21 +1,16 @@
 import { ethBlockResource, ethTransactionResource } from "@owlprotocol/eth-firebase/admin";
-import {
-    EIP1193Parameters,
-    EIP1193RequestFn,
-    hexToNumber,
-    isHex,
-    PublicRpcSchema,
-    RpcBlock,
-    RpcRequestError,
-} from "viem";
+import { EIP1193Parameters, EIP1193RequestFn, hexToNumber, PublicRpcSchema, RpcBlock } from "viem";
 import { uploadRpcBlock } from "../../controllers/uploadRpcBlock.js";
 import { isBlockTag } from "../../controllers/isBlockTag.js";
+import { validateRequestBlockByHash, validateRequestBlockByNumber } from "../validators/validateRequestBlock.js";
 
 export async function requestBlockByHash(
     request: EIP1193RequestFn<PublicRpcSchema>,
     args: EIP1193Parameters<PublicRpcSchema> & { method: "eth_getBlockByHash" },
     options?: any,
 ) {
+    validateRequestBlockByHash(args);
+
     const chainId = hexToNumber(await request({ method: "eth_chainId" }));
     const [blockHash, includeTransactions] = args.params;
 
@@ -51,28 +46,9 @@ export async function requestBlockByNumber(
     args: EIP1193Parameters<PublicRpcSchema> & { method: "eth_getBlockByNumber" },
     options?: any,
 ) {
-    if (!args.params) {
-        throw new RpcRequestError({
-            body: args,
-            url: "",
-            error: {
-                code: -32602,
-                message: "invalid type: null, expected tuple variant EthRequest::EthGetBlockByNumber",
-            },
-        });
-    }
+    validateRequestBlockByNumber(args);
 
     const [blockTagOrNumber, includeTransactions] = args.params;
-    if (!blockTagOrNumber || (!isBlockTag(blockTagOrNumber) && !isHex(blockTagOrNumber))) {
-        throw new RpcRequestError({
-            body: args,
-            url: "",
-            error: {
-                code: -32602,
-                message: "data did not match any variant of untagged enum LenientBlockNumber",
-            },
-        });
-    }
 
     if (isBlockTag(blockTagOrNumber)) {
         return request(args, options);

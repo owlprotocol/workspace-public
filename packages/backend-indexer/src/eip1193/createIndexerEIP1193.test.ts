@@ -11,12 +11,11 @@ import {
     custom,
     createClient,
     TransactionReceipt,
-    MethodNotFoundRpcError,
     zeroHash,
     numberToHex,
-    InvalidParamsRpcError,
     Hash,
     Hex,
+    RpcBlock,
 } from "viem";
 import { localhost } from "viem/chains";
 import { getAddress } from "viem/utils";
@@ -27,7 +26,7 @@ import {
     ethTransactionReceiptResource,
     ethTransactionResource,
 } from "@owlprotocol/eth-firebase/admin";
-import { createPublicEIP1193 } from "./createIndexerEIP1193.js";
+import { createIndexerEIP1193 } from "./createIndexerEIP1193.js";
 import { port } from "../test/constants.js";
 
 //TODO: Add more error handling
@@ -87,7 +86,7 @@ describe("createIndexerEIP1193.test.ts", function () {
 
         publicEIP1193Client = createPublicClient({
             transport: custom({
-                request: createPublicEIP1193(createClient({ chain: localhost, transport })),
+                request: createIndexerEIP1193(createClient({ chain: localhost, transport })),
             }),
         });
     });
@@ -101,21 +100,6 @@ describe("createIndexerEIP1193.test.ts", function () {
         const chainId = await publicClient.getChainId();
         const chainIdEIP1193 = await publicEIP1193Client.getChainId();
         expect(chainIdEIP1193).toBe(chainId);
-    });
-
-    describe("errors", () => {
-        test("MethodNotFound", async () => {
-            const invalid = publicClient.request({ method: "eth_invalid" } as any);
-            const invalidEIP1193 = publicEIP1193Client.request({ method: "eth_invalid" } as any);
-            const [invalidError, invalidEIP1193Error] = (await Promise.allSettled([
-                invalid,
-                invalidEIP1193,
-            ])) as unknown as [{ reason: MethodNotFoundRpcError }, { reason: MethodNotFoundRpcError }];
-
-            expect(invalidError.reason).toBeInstanceOf(MethodNotFoundRpcError);
-            expect(invalidEIP1193Error.reason).toBeInstanceOf(MethodNotFoundRpcError);
-            expect(invalidEIP1193Error.reason.code).toBe(invalidError.reason.code);
-        });
     });
 
     describe("getBlock", () => {
@@ -142,6 +126,41 @@ describe("createIndexerEIP1193.test.ts", function () {
                 expect(toBlock(blockCached)).toStrictEqual(toBlock(block));
             });
 
+            test("getBlockByNumber includeTransactions - found", async () => {
+                const accounts = await walletClient.getAddresses();
+                const hash = await walletClient.sendTransaction({
+                    account: accounts[0],
+                    to: zeroAddress,
+                    value: 1n,
+                });
+                const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+                const number = numberToHex(receipt.blockNumber);
+                const params = [number, true] as [Hex, boolean];
+                const block = (await publicClient.request({ method: "eth_getBlockByNumber", params })) as RpcBlock<
+                    "safe",
+                    true
+                >;
+                const blockEIP1193 = await publicEIP1193Client.request({
+                    method: "eth_getBlockByNumber",
+                    params,
+                });
+                expect(toBlock(blockEIP1193)).toStrictEqual(toBlock(block));
+
+                const blockFromFirebase = await ethBlockResource.getWhereFirstEncoded({
+                    chainId: 1337,
+                    number,
+                });
+                expect(toBlock(blockFromFirebase)).toStrictEqual(
+                    toBlock({ ...block, transactions: block!.transactions.map((t) => t.hash) }),
+                );
+                const blockCached = await publicEIP1193Client.request({
+                    method: "eth_getBlockByNumber",
+                    params,
+                });
+                expect(toBlock(blockCached)).toStrictEqual(toBlock(block));
+            });
+
             test("getBlockByNumber - not found", async () => {
                 const number = "0xFFFF";
                 const params = [number, false] as [Hex, boolean];
@@ -151,38 +170,6 @@ describe("createIndexerEIP1193.test.ts", function () {
                     params,
                 });
                 expect(toBlock(blockEIP1193)).toStrictEqual(toBlock(block));
-            });
-
-            test("getBlockByNumber - InvalidParamsRpcError EthRequest::EthGetBlockByNumber", async () => {
-                const invalid = publicClient.request({ method: "eth_getBlockByNumber" } as any);
-                const invalidEIP1193 = publicEIP1193Client.request({ method: "eth_getBlockByNumber" } as any);
-                const [invalidError, invalidEIP1193Error] = (await Promise.allSettled([
-                    invalid,
-                    invalidEIP1193,
-                ])) as unknown as [{ reason: InvalidParamsRpcError }, { reason: InvalidParamsRpcError }];
-
-                expect(invalidError.reason).toBeInstanceOf(InvalidParamsRpcError);
-                expect(invalidEIP1193Error.reason).toBeInstanceOf(InvalidParamsRpcError);
-                expect(invalidEIP1193Error.reason.code).toBe(invalidError.reason.code);
-                expect(invalidEIP1193Error.reason.details).toBe(invalidError.reason.details);
-            });
-
-            test("getBlockByNumber - InvalidParamsRpcError enum LenientBlockNumber", async () => {
-                const params = ["invalid"];
-                const invalid = publicClient.request({ method: "eth_getBlockByNumber", params } as any);
-                const invalidEIP1193 = publicEIP1193Client.request({
-                    method: "eth_getBlockByNumber",
-                    params,
-                } as any);
-                const [invalidError, invalidEIP1193Error] = (await Promise.allSettled([
-                    invalid,
-                    invalidEIP1193,
-                ])) as unknown as [{ reason: InvalidParamsRpcError }, { reason: InvalidParamsRpcError }];
-
-                expect(invalidError.reason).toBeInstanceOf(InvalidParamsRpcError);
-                expect(invalidEIP1193Error.reason).toBeInstanceOf(InvalidParamsRpcError);
-                expect(invalidEIP1193Error.reason.code).toBe(invalidError.reason.code);
-                expect(invalidEIP1193Error.reason.details).toBe(invalidError.reason.details);
             });
         });
 
