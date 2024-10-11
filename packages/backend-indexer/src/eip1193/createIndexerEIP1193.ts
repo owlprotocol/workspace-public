@@ -1,4 +1,6 @@
-import { PublicRpcSchema, EIP1193Parameters, EIP1193RequestFn, RpcRequestError, Hex } from "viem";
+import { PublicRpcSchema, EIP1193Parameters, EIP1193RequestFn, RpcRequestError } from "viem";
+import { ParameterValidationError } from "@open-rpc/schema-utils-js";
+
 import { requestBlockByHash, requestBlockByNumber } from "./requests/requestBlock.js";
 import { requestCode } from "./requests/requestCode.js";
 import { requestLogs } from "./requests/requestLogs.js";
@@ -8,10 +10,9 @@ import {
     requestTransactionByHash,
 } from "./requests/requestTransaction.js";
 import { requestTransactionReceipt } from "./requests/requestTransactionReceipt.js";
-import { isPublicRpcMethod } from "./createPublicEIP1193.js";
+import { isPublicRpcMethod, requestWithMemoizedChainId } from "./createPublicEIP1193.js";
+import { getPublicOpenRpcSchema } from "./publicOpenRpcSchema.js";
 
-//TODO: Cache chain id
-//TODO: Support additional overrides
 /**
  * Process EIP1193 request using a viem client
  * Useful for clients with custom action overrides
@@ -20,6 +21,32 @@ import { isPublicRpcMethod } from "./createPublicEIP1193.js";
  * @returns JSON-RPC formatted result
  */
 export async function requestIndexerEIP1193(request: EIP1193RequestFn, args: EIP1193Parameters<PublicRpcSchema>) {
+    // Validate method
+    if (!isPublicRpcMethod(args.method)) {
+        throw new RpcRequestError({
+            body: args,
+            url: "",
+            error: {
+                code: -32601,
+                message: "Method not found",
+            },
+        });
+    }
+
+    // Validate params
+    const publicRpcValidator = (await getPublicOpenRpcSchema()).publicRpcValidator;
+    const errors = publicRpcValidator.validate(args.method, args.params ?? []) as ParameterValidationError[];
+    if (errors.length > 0) {
+        throw new RpcRequestError({
+            body: args,
+            url: "",
+            error: {
+                code: -32602,
+                message: errors[0].message,
+            },
+        });
+    }
+
     try {
         if (args.method === "eth_getBlockByHash") {
             return requestBlockByHash(request, args);
@@ -41,39 +68,22 @@ export async function requestIndexerEIP1193(request: EIP1193RequestFn, args: EIP
             return requestTransactionByHash(request, args);
         } else if (args.method === "eth_getTransactionReceipt") {
             return requestTransactionReceipt(request, args);
-        } else if (isPublicRpcMethod(args.method)) {
-            return request(args);
         } else {
-            throw new RpcRequestError({
-                body: args,
-                url: "",
-                error: {
-                    code: -32601,
-                    message: "Method not found",
-                },
-            });
+            return request(args);
         }
     } catch (error) {
-        // console.debug(error);
         if (error instanceof RpcRequestError) {
             throw error;
         }
 
+        // Unhandled error
+        console.error(error);
         return null;
     }
 }
 
 export function createIndexerEIP1193(request: EIP1193RequestFn): EIP1193RequestFn<PublicRpcSchema> {
-    let chainId: Hex | undefined = undefined;
-
-    async function requestMemoizedChainId(args: EIP1193Parameters<PublicRpcSchema>) {
-        if (args.method === "eth_chainId") {
-            chainId = chainId ?? (await request(args));
-            return chainId;
-        }
-
-        return request(args);
-    }
+    const requestMemoizedChainId = requestWithMemoizedChainId(request);
 
     return async function (args: EIP1193Parameters<PublicRpcSchema>) {
         return requestIndexerEIP1193(requestMemoizedChainId as EIP1193RequestFn, args);

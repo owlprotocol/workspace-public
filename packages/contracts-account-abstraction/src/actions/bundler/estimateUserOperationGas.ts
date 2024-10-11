@@ -186,5 +186,8 @@ export async function estimateUserOperationGas(
         userOpGas.paymasterPostOpGasLimit = userOperation.paymasterPostOpGasLimit;
     }
 
+    //TODO: Fix
+    // userOpGas.callGasLimit = 10_000_000n;
+
     return userOpGas;
 }

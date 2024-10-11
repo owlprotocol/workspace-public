@@ -22,6 +22,9 @@ import {
     createPaymasterClient,
     SmartAccount,
     waitForUserOperationReceipt,
+    PaymasterClient,
+    createBundlerClient,
+    BundlerClient,
 } from "viem/account-abstraction";
 
 import {
@@ -37,10 +40,11 @@ import { getUserOperationGasPrice } from "permissionless/actions/pimlico";
 
 import { createBackendBundlerEIP1193 } from "./createBundlerEIP1193.js";
 import { createBackendPaymasterEIP1193 } from "./createPaymasterEIP1193.js";
-import { BackendBundler, createBackendBundler } from "../clients/createBackendBundler.js";
+import { createBackendBundler } from "../clients/createBackendBundler.js";
 import { createBackendPaymaster } from "../clients/createBackendPaymaster.js";
 import { port } from "../test/constants.js";
 import { getSimpleAccountAddress } from "../SimpleAccount.js";
+
 import { ERC1967Proxy } from "../artifacts/ERC1967Proxy.js";
 import { MyContract } from "../artifacts/MyContract.js";
 import { setupERC4337Contracts, setupVerifyingPaymaster, topupPaymaster } from "../setupERC4337Contracts.js";
@@ -50,18 +54,22 @@ describe("eip1993/index.test.ts", function () {
     let publicClient: PublicClient<Transport, Chain>;
     let walletClient: WalletClient<Transport, Chain, HDAccount>;
 
-    let bundlerTransport: Transport;
-    let paymasterTransport: Transport;
-    let bundlerClient: BackendBundler;
-
+    // Contracts
     let entryPointAddress: typeof entryPoint07Address;
     let entryPointSimulationsAddress: Address;
-    let simpleAccountFactory: Address;
-    let verifyingPaymaster: Address;
+    let factoryAddress: Address;
+    let paymasterAddress: Address;
+
+    // AA clients
+    let bundlerTransport: Transport;
+    let bundlerClient: BundlerClient;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    let paymasterTransport: Transport;
+    let paymasterClient: PaymasterClient;
 
     // Generated account on each test
     let owner: PrivateKeyAccount;
-    let smartAccount: SmartAccount<SimpleSmartAccountImplementation>;
+    let smartAccount: SmartAccount<SimpleSmartAccountImplementation<"0.7">>;
 
     let contractAddressExpected: Address;
     let contractDeployTransaction: { to: Address; data: Hex };
@@ -78,17 +86,17 @@ describe("eip1993/index.test.ts", function () {
             transport,
         });
 
+        // ERC4337 Contracts
         const contracts = await setupERC4337Contracts({
             publicClient,
             walletClient,
         });
         entryPointAddress = contracts.entrypoint.address;
-        //TODO: we use the Pimlico simulator?
         entryPointSimulationsAddress = contracts.pimlicoEntrypointSimulations.address;
-        simpleAccountFactory = contracts.simpleAccountFactory.address;
+        factoryAddress = contracts.simpleAccountFactory.address;
 
-        //Deploy paymaster
-        verifyingPaymaster = (
+        // Paymaster
+        paymasterAddress = (
             await setupVerifyingPaymaster({
                 publicClient,
                 walletClient,
@@ -99,32 +107,36 @@ describe("eip1993/index.test.ts", function () {
         const { hash: topupHash } = await topupPaymaster({
             publicClient,
             walletClient,
-            paymaster: verifyingPaymaster,
+            paymaster: paymasterAddress,
             minBalance: parseEther("10"),
         });
         if (topupHash) {
             await publicClient.waitForTransactionReceipt({ hash: topupHash });
         }
 
-        bundlerClient = createBackendBundler({
-            account: getLocalAccount(0) as LocalAccount,
-            chain: localhost,
-            transport,
-            entryPointSimulationsAddress,
-        });
+        // AA Clients
         bundlerTransport = custom({
-            request: createBackendBundlerEIP1193(bundlerClient),
+            request: createBackendBundlerEIP1193(
+                createBackendBundler({
+                    account: getLocalAccount(0) as LocalAccount,
+                    chain: localhost,
+                    transport,
+                    entryPointSimulationsAddress,
+                }),
+            ),
         });
+        bundlerClient = createBundlerClient({ transport: bundlerTransport });
         paymasterTransport = custom({
             request: createBackendPaymasterEIP1193(
                 createBackendPaymaster({
                     account: getLocalAccount(0) as LocalAccount,
                     chain: localhost,
                     transport,
-                    paymaster: verifyingPaymaster,
+                    paymaster: paymasterAddress,
                 }),
             ),
         });
+        paymasterClient = createPaymasterClient({ transport: paymasterTransport });
     });
 
     beforeEach(async () => {
@@ -135,7 +147,7 @@ describe("eip1993/index.test.ts", function () {
                 salt: 0n,
             },
             {
-                factoryAddress: simpleAccountFactory,
+                factoryAddress,
                 proxyBytecode: ERC1967Proxy.bytecode,
             },
         );
@@ -144,7 +156,7 @@ describe("eip1993/index.test.ts", function () {
             address: smartAccountAddress,
             client: publicClient,
             owner: owner,
-            factoryAddress: simpleAccountFactory,
+            factoryAddress,
             entryPoint: {
                 address: entryPointAddress,
                 version: "0.7",
@@ -161,8 +173,7 @@ describe("eip1993/index.test.ts", function () {
         contractAddressExpected = getDeployDeterministicAddress(deployParams);
     });
     /** Tests involving deploying the smart account */
-    //TODO: Not working
-    describe.skip("No Paymaster", () => {
+    describe("No Paymaster", () => {
         let smartAccountClient: SmartAccountClient<Transport, Chain, SmartAccount<SimpleSmartAccountImplementation>>;
 
         beforeEach(async () => {
@@ -209,6 +220,7 @@ describe("eip1993/index.test.ts", function () {
             const userOperation = await smartAccountClient.prepareUserOperation({
                 calls: [{ to, data }],
             });
+            userOperation.signature = await smartAccount.signUserOperation(userOperation as any);
             const userOpHash = await bundlerClient.sendUserOperation(userOperation);
             const userOpReceipt = await waitForUserOperationReceipt(bundlerClient, { hash: userOpHash });
             expect(userOpReceipt).toBeDefined();
@@ -222,14 +234,13 @@ describe("eip1993/index.test.ts", function () {
         let smartAccountClient: SmartAccountClient<Transport, Chain, SmartAccount>;
 
         beforeEach(() => {
-            const paymaster = createPaymasterClient({ transport: paymasterTransport });
             smartAccountClient = createSmartAccountClient({
                 account: smartAccount,
                 chain: publicClient.chain,
-                paymaster,
+                paymaster: paymasterClient,
                 bundlerTransport,
                 userOperation: {
-                    estimateFeesPerGas: async () => (await getUserOperationGasPrice(paymaster)).fast,
+                    estimateFeesPerGas: async () => (await getUserOperationGasPrice(paymasterClient)).fast,
                 },
             });
         });
@@ -249,7 +260,7 @@ describe("eip1993/index.test.ts", function () {
             });
             userOperation.signature = await smartAccount.signUserOperation(userOperation as any);
 
-            const userOpHash = await bundlerClient.sendUserOperation(userOperation);
+            const userOpHash = await bundlerClient.sendUserOperation(userOperation as any);
             const userOpReceipt = await waitForUserOperationReceipt(bundlerClient, { hash: userOpHash });
             expect(userOpReceipt).toBeDefined();
 

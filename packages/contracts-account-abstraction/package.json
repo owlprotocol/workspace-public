@@ -111,6 +111,8 @@
   },
   "dependencies": {
     "@account-abstraction/contracts": "0.7.0",
+    "@open-rpc/meta-schema": "1.14.9",
+    "@open-rpc/schema-utils-js": "2.0.5",
     "@openzeppelin/contracts": "5.0.2",
     "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",

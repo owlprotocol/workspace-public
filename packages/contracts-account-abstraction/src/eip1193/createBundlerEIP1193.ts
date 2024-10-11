@@ -6,7 +6,12 @@ import {
     EIP1193Parameters,
     EIP1193RequestFn,
     numberToHex,
+    RpcUserOperation,
     Transport,
+    Address,
+    PartialBy,
+    Hex,
+    RpcRequestError,
 } from "viem";
 import { getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
@@ -16,6 +21,7 @@ import {
     estimateUserOperationGas,
     getSupportedEntryPoints,
     getUserOperation,
+    getUserOperationGasPrice,
     getUserOperationReceipt,
     sendUserOperation,
 } from "../actions/index.js";
@@ -32,6 +38,14 @@ export const bundlerRpcMethods = [
     "eth_estimateUserOperationGas",
 ] as const;
 
+export const bundlerPublicRpcMethods = [
+    //additional methods for gas estimation
+    "eth_blockNumber",
+    "eth_getBlockByNumber",
+    "eth_maxPriorityFeePerGas",
+    "eth_gasPrice",
+];
+
 /**
  * Check if RPC method is for bundler.
  * @param method
@@ -41,14 +55,63 @@ export function isBundlerRpcMethod(method: string): method is BundlerRpcMethod {
     return bundlerRpcMethods.includes(method as any);
 }
 
+export function isBundlerPublicRpcMethod(method: string): method is BundlerRpcMethod {
+    return bundlerPublicRpcMethods.includes(method as any);
+}
+
+//TODO: Fully refactor as request
 export function createBackendBundlerEIP1193(
     client: Client<Transport, Chain | undefined, Account>,
 ): EIP1193RequestFn<BundlerRpcSchema> {
     return async function (args: EIP1193Parameters<BundlerRpcSchema>) {
+        // Public RPC for gas estimation
+        if (isBundlerPublicRpcMethod(args.method)) {
+            try {
+                return client.request(args);
+            } catch (error) {
+                if (error instanceof RpcRequestError) {
+                    throw error;
+                }
+
+                // Unhandled error
+                console.error(error);
+                return null;
+            }
+        }
+
+        // Validate method
+        if (!isBundlerRpcMethod(args.method)) {
+            throw new RpcRequestError({
+                body: args,
+                url: "",
+                error: {
+                    code: -32601,
+                    message: "Method not found",
+                },
+            });
+        }
+
+        // TODO: Validate params
+        /*
+        const bundlerRpcValidator = (await getBundlerOpenRpcSchema()).bundlerRpcValidator;
+        const errors = bundlerRpcValidator.validate(args.method, args.params ?? []) as ParameterValidationError[];
+        if (errors.length > 0) {
+            throw new RpcRequestError({
+                body: args,
+                url: "",
+                error: {
+                    code: -32602,
+                    message: errors[0].message,
+                },
+            });
+        }
+        */
+
         try {
             if (args.method === "eth_chainId") {
                 const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
                 return numberToHex(chainId);
+                //TODO: Required for default gas estimate by viem. Refactor public EIP1193
             } else if (args.method === "eth_supportedEntryPoints") {
                 return await getAction(client, getSupportedEntryPoints, "getSupportedEntryPoints")({});
             } else if (args.method === "eth_getUserOperationByHash") {
@@ -83,18 +146,34 @@ export function createBackendBundlerEIP1193(
                     logs: logs.map((l) => logEncodeZod.parse(l)),
                 };
             } else if (args.method === "eth_estimateUserOperationGas") {
-                const [userOperationHex, entryPoint] = args.params;
+                const [userOperationHex, entryPoint] = args.params as [
+                    PartialBy<RpcUserOperation, "maxFeePerGas" | "maxPriorityFeePerGas">,
+                    Address | undefined,
+                ];
                 const supportedEntryPoints = await getAction(
                     client,
                     getSupportedEntryPoints,
                     "getSupportedEntryPoints",
                 )({});
-                if (!supportedEntryPoints.includes(entryPoint)) {
+                if (entryPoint && !supportedEntryPoints.includes(entryPoint)) {
                     //TODO: Viem error for this?
                     throw new Error(`Unsupported entrypoint ${entryPoint}, expected one of ${supportedEntryPoints}`);
                 }
 
-                const userOperation = decodeUserOp(userOperationHex);
+                let maxFeePerGas: Hex;
+                let maxPriorityFeePerGas: Hex;
+                if (userOperationHex.maxFeePerGas) {
+                    maxFeePerGas = userOperationHex.maxFeePerGas;
+                    // EntryPoint payment = min(maxFeePerGas, baseFee + maxPriorityFeePerGas)
+                    // Default maxPriorityFeePerGas to maxFeePerGas
+                    maxPriorityFeePerGas = userOperationHex.maxPriorityFeePerGas ?? userOperationHex.maxFeePerGas;
+                } else {
+                    const gasPrice = await getAction(client, getUserOperationGasPrice, "getUserOperationGasPrice")({});
+                    maxFeePerGas = numberToHex(gasPrice.standard.maxFeePerGas);
+                    maxPriorityFeePerGas = numberToHex(gasPrice.standard.maxPriorityFeePerGas);
+                }
+
+                const userOperation = decodeUserOp({ ...userOperationHex, maxFeePerGas, maxPriorityFeePerGas });
                 const {
                     preVerificationGas,
                     verificationGasLimit,
@@ -115,13 +194,13 @@ export function createBackendBundlerEIP1193(
                 }
                 return result;
             } else if (args.method === "eth_sendUserOperation") {
-                const [userOperationHex, entryPoint] = args.params;
+                const [userOperationHex, entryPoint] = args.params as [RpcUserOperation, Address | undefined];
                 const supportedEntryPoints = await getAction(
                     client,
                     getSupportedEntryPoints,
                     "getSupportedEntryPoints",
                 )({});
-                if (!supportedEntryPoints.includes(entryPoint)) {
+                if (entryPoint && !supportedEntryPoints.includes(entryPoint)) {
                     //TODO: Viem error for this?
                     throw new Error(`Unsupported entrypoint ${entryPoint}, expected one of ${supportedEntryPoints}`);
                 }
@@ -132,10 +211,19 @@ export function createBackendBundlerEIP1193(
                     sendUserOperation,
                     "sendUserOperation",
                 )(userOperation);
+                console.debug({ userOperationHash });
 
                 return userOperationHash;
+            } else {
+                return client.request(args);
             }
         } catch (error) {
+            if (error instanceof RpcRequestError) {
+                throw error;
+            }
+
+            // Unhandled error
+            console.error(error);
             return null;
         }
     } as any;

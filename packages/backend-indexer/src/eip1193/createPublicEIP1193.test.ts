@@ -66,7 +66,7 @@ describe("createPublicEIP1193.test.ts", function () {
 
         publicEIP1193Client = createPublicClient({
             transport: custom({
-                request: createPublicEIP1193(createClient({ chain: localhost, transport })),
+                request: createPublicEIP1193(createClient({ chain: localhost, transport }).request),
             }),
         });
     });

@@ -1,4 +1,4 @@
-import { PublicRpcSchema, Client, EIP1193Parameters, EIP1193RequestFn, Transport, RpcRequestError } from "viem";
+import { PublicRpcSchema, EIP1193Parameters, EIP1193RequestFn, RpcRequestError, Hex, RpcSchema } from "viem";
 import { ParameterValidationError } from "@open-rpc/schema-utils-js";
 import { getPublicOpenRpcSchema } from "./publicOpenRpcSchema.js";
 
@@ -48,20 +48,16 @@ export const publicRpcMethods = new Set([
 ] as const);
 
 /**
- * Check if RPC method is for public client.
+ * Check if RPC method is for Public RPC Spec
  * @param method
  * @returns true if public rpc method
  */
 export function isPublicRpcMethod(method: string): method is PublicRpcMethod {
     return publicRpcMethods.has(method as any);
 }
-
-//TODO: Cache chain id
-//TODO: Support additional overrides
 /**
- * Process EIP1193 request using a viem client
- * Useful for clients with custom action overrides
- * @param client
+ * Restrict EIP1193 request function to Public RPC
+ * @param request
  * @param args
  * @returns JSON-RPC formatted result
  */
@@ -100,13 +96,33 @@ export async function requestPublicEIP1193(request: EIP1193RequestFn, args: EIP1
         }
 
         // Unhandled error
-        console.debug(error);
+        console.error(error);
         return null;
     }
 }
 
-export function createPublicEIP1193(client: Client<Transport>): EIP1193RequestFn<PublicRpcSchema> {
+export function requestWithMemoizedChainId<T extends RpcSchema = RpcSchema>(
+    request: EIP1193RequestFn<T>,
+): EIP1193RequestFn<T> {
+    let chainId: Hex | undefined = undefined;
+
     return async function (args: EIP1193Parameters<PublicRpcSchema>) {
-        return requestPublicEIP1193(client.request, args);
-    } as any;
+        if (args.method === "eth_chainId") {
+            chainId = chainId ?? (await request(args as any));
+            return chainId;
+        }
+
+        return request(args as any);
+    } as EIP1193RequestFn;
+}
+
+/**
+ *
+ * @param client
+ * @returns
+ */
+export function createPublicEIP1193(request: EIP1193RequestFn): EIP1193RequestFn<PublicRpcSchema> {
+    return async function (args: EIP1193Parameters<PublicRpcSchema>) {
+        return requestPublicEIP1193(request, args);
+    } as EIP1193RequestFn<PublicRpcSchema>;
 }
