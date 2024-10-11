@@ -1,5 +1,5 @@
 {
-  "name": "@owlprotocol/backend-indexer",
+  "name": "@owlprotocol/backend-public",
   "version": "3.1.3",
   "keywords": [],
   "private": false,
@@ -32,30 +32,10 @@
       "require": "./lib/cjs/index.js",
       "import": "./lib/esm/index.js"
     },
-    "./actions": {
-      "types": "./lib/types/actions/index.d.ts",
-      "require": "./lib/cjs/actions/index.js",
-      "import": "./lib/esm/actions/index.js"
-    },
-    "./clients": {
-      "types": "./lib/types/clients/index.d.ts",
-      "require": "./lib/cjs/clients/index.js",
-      "import": "./lib/esm/clients/index.js"
-    },
     "./eip1193": {
       "types": "./lib/types/eip1193/index.d.ts",
       "require": "./lib/cjs/eip1193/index.js",
       "import": "./lib/esm/eip1193/index.js"
-    },
-    "./eip1193/public": {
-      "types": "./lib/types/eip1193/public/index.d.ts",
-      "require": "./lib/cjs/eip1193/public/index.js",
-      "import": "./lib/esm/eip1193/public/index.js"
-    },
-    "./eip1193/indexer": {
-      "types": "./lib/types/eip1193/indexer/index.d.ts",
-      "require": "./lib/cjs/eip1193/indexer/index.js",
-      "import": "./lib/esm/eip1193/indexer/index.js"
     }
   },
   "scripts": {
@@ -65,12 +45,11 @@
     "depcheck": "depcheck",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
-    "firebase:exec": "firebase emulators:exec --project demo-owl-protocol",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
     "lint:staged": "lint-staged",
     "madge": "madge src/index.ts -c",
-    "test": "firebase emulators:exec --project demo-owl-protocol 'pnpm run test:ci'",
+    "test": "vitest --run",
     "test:ci": "vitest --run",
     "test:watch": "firebase emulators:exec --project demo-owl-protocol 'vitest'",
     "tsc": "tsc",
@@ -80,14 +59,6 @@
   "dependencies": {
     "@open-rpc/meta-schema": "1.14.9",
     "@open-rpc/schema-utils-js": "2.0.5",
-    "@owlprotocol/backend-public": "workspace:*",
-    "@owlprotocol/contracts-create2factory": "workspace:*",
-    "@owlprotocol/contracts-account-abstraction": "workspace:*",
-    "@owlprotocol/contracts-diamond": "workspace:*",
-    "@owlprotocol/envvars": "workspace:*",
-    "@owlprotocol/eth-firebase": "workspace:*",
-    "abitype": "1.0.6",
-    "lodash-es": "4.17.21",
     "viem": "2.21.19"
   },
   "devDependencies": {
@@ -95,11 +66,9 @@
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
-    "@types/lodash-es": "4.17.12",
     "@types/node": "^20.11.10",
     "@typescript/analyze-trace": "^0.10.1",
     "core-js": "^3.37.1",
-    "firebase-tools": "^13.16.0",
     "lint-staged": "^11.2.6",
     "madge": "^5.0.2",
     "npm-run-all": "^4.1.5",

@@ -1,6 +1,6 @@
 import { ethBytecodeResource } from "@owlprotocol/eth-firebase/admin";
 import { EIP1193Parameters, EIP1193RequestFn, Hex, hexToNumber, keccak256, PublicRpcSchema } from "viem";
-import { isBlockTag } from "../../controllers/isBlockTag.js";
+import { isBlockTag } from "../controllers/isBlockTag.js";
 
 export async function requestCode(
     request: EIP1193RequestFn<PublicRpcSchema>,

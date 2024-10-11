@@ -14,7 +14,7 @@ import {
 import { localhost } from "viem/chains";
 
 import { createPublicEIP1193 } from "./createPublicEIP1193.js";
-import { port } from "../../test/constants.js";
+import { port } from "../test/constants.js";
 
 /**
  * Test if proxy request returns InvalidParamsRpcError

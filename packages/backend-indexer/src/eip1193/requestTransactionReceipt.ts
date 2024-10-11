@@ -10,8 +10,8 @@ import {
     PublicRpcSchema,
 } from "viem";
 import { GCLOUD_PROJECT } from "@owlprotocol/envvars";
-import { decodeLogWithAbis } from "../../controllers/decodeLogWithAbis.js";
-import { updateStateForLog } from "../../actions/indexer/updateStateForLog.js";
+import { decodeLogWithAbis } from "../controllers/decodeLogWithAbis.js";
+import { updateStateForLog } from "../actions/indexer/updateStateForLog.js";
 
 export async function requestTransactionReceipt(
     request: EIP1193RequestFn<PublicRpcSchema>,

@@ -1,6 +1,6 @@
 import { PublicRpcSchema, EIP1193Parameters, EIP1193RequestFn, RpcRequestError, Hex, RpcSchema } from "viem";
 import { ParameterValidationError } from "@open-rpc/schema-utils-js";
-import { getPublicOpenRpcSchema } from "./publicOpenRpcSchema.js";
+import { getPublicOpenRpcSchema } from "../publicOpenRpcSchema.js";
 
 export type PublicRpcMethod = Parameters<(typeof publicRpcMethods)["has"]>[0];
 
