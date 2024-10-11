@@ -73,7 +73,7 @@ describe("ERC721SinglePhase.test.ts", function () {
         };
 
         const hashDeploy = await adminWalletClient.deployContract({
-            abi: [ERC721SinglePhasePreset.abi],
+            abi: ERC721SinglePhasePreset.abi,
             args: [
                 adminWalletClient.account.address,
                 "contractUri",

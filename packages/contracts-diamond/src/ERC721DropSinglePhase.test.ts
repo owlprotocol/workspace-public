@@ -15,9 +15,9 @@ import {
 import { localhost } from "viem/chains";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
+import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { ERC721DropPreset } from "./artifacts/ERC721DropPreset.js";
 import { port } from "./test/constants.js";
-import { getLocalAccount } from "@owlprotocol/viem-utils";
 
 describe("ERC721DropPreset with Single Valid and Invalid User", () => {
     let transport: Transport;
