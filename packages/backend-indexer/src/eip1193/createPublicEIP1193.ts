@@ -1,5 +1,6 @@
 import { PublicRpcSchema, Client, EIP1193Parameters, EIP1193RequestFn, Transport, RpcRequestError } from "viem";
-import { validateRequestBlockByHash, validateRequestBlockByNumber } from "./validators/validateRequestBlock.js";
+import { ParameterValidationError } from "@open-rpc/schema-utils-js";
+import { getPublicOpenRpcSchema } from "./publicOpenRpcSchema.js";
 
 export type PublicRpcMethod = Parameters<(typeof publicRpcMethods)["has"]>[0];
 
@@ -65,32 +66,41 @@ export function isPublicRpcMethod(method: string): method is PublicRpcMethod {
  * @returns JSON-RPC formatted result
  */
 export async function requestPublicEIP1193(request: EIP1193RequestFn, args: EIP1193Parameters<PublicRpcSchema>) {
-    try {
-        // Validate Request
-        if (args.method === "eth_getBlockByHash") {
-            validateRequestBlockByHash(args);
-        } else if (args.method === "eth_getBlockByNumber") {
-            validateRequestBlockByNumber(args);
-        }
+    // Validate method
+    if (!isPublicRpcMethod(args.method)) {
+        throw new RpcRequestError({
+            body: args,
+            url: "",
+            error: {
+                code: -32601,
+                message: "Method not found",
+            },
+        });
+    }
 
-        if (isPublicRpcMethod(args.method)) {
-            return request(args);
-        } else {
-            throw new RpcRequestError({
-                body: args,
-                url: "",
-                error: {
-                    code: -32601,
-                    message: "Method not found",
-                },
-            });
-        }
+    // Validate params
+    const publicRpcValidator = (await getPublicOpenRpcSchema()).publicRpcValidator;
+    const errors = publicRpcValidator.validate(args.method, args.params ?? []) as ParameterValidationError[];
+    if (errors.length > 0) {
+        throw new RpcRequestError({
+            body: args,
+            url: "",
+            error: {
+                code: -32602,
+                message: errors[0].message,
+            },
+        });
+    }
+
+    try {
+        return request(args);
     } catch (error) {
-        // console.debug(error);
         if (error instanceof RpcRequestError) {
             throw error;
         }
 
+        // Unhandled error
+        console.debug(error);
         return null;
     }
 }

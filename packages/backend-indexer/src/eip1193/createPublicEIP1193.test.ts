@@ -17,19 +17,23 @@ import { createPublicEIP1193 } from "./createPublicEIP1193.js";
 import { port } from "../test/constants.js";
 
 /**
- * Test if proxy request returns same error
+ * Test if proxy request returns InvalidParamsRpcError
  * @param params
  */
 async function testInvalidParamsRpcErrorTest(parameters: {
     publicClient: Client;
     publicEIP1193Client: Client;
     method: string;
-    params: any[] | undefined;
-    expectedDetails: string;
+    params?: any[];
 }) {
-    const { publicClient, publicEIP1193Client, method, params, expectedDetails } = parameters;
-    const invalid = publicClient.request({ method, params } as any);
-    const invalidEIP1193 = publicEIP1193Client.request({ method, params } as any);
+    const { publicClient, publicEIP1193Client, method, params } = parameters;
+    const args: { method: string; params?: any[] } = { method };
+    if (params) {
+        args.params = params;
+    }
+
+    const invalid = publicClient.request(args as any);
+    const invalidEIP1193 = publicEIP1193Client.request(args as any);
     const [invalidError, invalidEIP1193Error] = (await Promise.allSettled([invalid, invalidEIP1193])) as unknown as [
         { reason: InvalidParamsRpcError },
         { reason: InvalidParamsRpcError },
@@ -39,14 +43,9 @@ async function testInvalidParamsRpcErrorTest(parameters: {
     expect(invalidError.reason).toBeInstanceOf(InvalidParamsRpcError);
     expect(invalidEIP1193Error.reason).toBeInstanceOf(InvalidParamsRpcError);
     expect(invalidEIP1193Error.reason.code).toBe(InvalidParamsRpcError.code);
-
-    expect(invalidError.reason.details).toBe(expectedDetails);
-    expect(invalidEIP1193Error.reason.details).toBe(expectedDetails);
 }
 
-//TODO: Find proper OpenRPC Typescript validator
-
-describe("createIndexerEIP1193.test.ts", function () {
+describe("createPublicEIP1193.test.ts", function () {
     let transport: Transport;
     let publicClient: PublicClient;
     let publicEIP1193Client: PublicClient;
@@ -89,13 +88,11 @@ describe("createIndexerEIP1193.test.ts", function () {
 
     describe("getBlock", () => {
         describe("getBlockByNumber", () => {
-            test("getBlockByNumber - InvalidParamsRpcError params null", async () => {
+            test("getBlockByNumber - InvalidParamsRpcError params empty", async () => {
                 await testInvalidParamsRpcErrorTest({
                     publicClient,
                     publicEIP1193Client,
                     method: "eth_getBlockByNumber",
-                    params: undefined,
-                    expectedDetails: "invalid type: null, expected tuple variant EthRequest::EthGetBlockByNumber",
                 });
             });
 
@@ -105,18 +102,16 @@ describe("createIndexerEIP1193.test.ts", function () {
                     publicEIP1193Client,
                     method: "eth_getBlockByNumber",
                     params: [],
-                    expectedDetails:
-                        "invalid length 0, expected tuple variant EthRequest::EthGetBlockByNumber with 2 elements",
                 });
             });
 
             test("getBlockByNumber - InvalidParamsRpcError [invalid, true]", async () => {
+                const params = ["invalid", true] as any;
                 await testInvalidParamsRpcErrorTest({
                     publicClient,
                     publicEIP1193Client,
                     method: "eth_getBlockByNumber",
-                    params: ["invalid", true],
-                    expectedDetails: "data did not match any variant of untagged enum LenientBlockNumber",
+                    params,
                 });
             });
 
@@ -127,19 +122,16 @@ describe("createIndexerEIP1193.test.ts", function () {
                     publicEIP1193Client,
                     method: "eth_getBlockByNumber",
                     params,
-                    expectedDetails: `invalid type: ${typeof params[1]} "${params[1]}", expected a boolean`,
                 });
             });
         });
 
         describe("getBlockByHash", () => {
-            test("getBlockByHash - InvalidParamsRpcError params null", async () => {
+            test("getBlockByHash - InvalidParamsRpcError params undefined", async () => {
                 await testInvalidParamsRpcErrorTest({
                     publicClient,
                     publicEIP1193Client,
                     method: "eth_getBlockByHash",
-                    params: undefined,
-                    expectedDetails: "invalid type: null, expected tuple variant EthRequest::EthGetBlockByHash",
                 });
             });
 
@@ -149,8 +141,6 @@ describe("createIndexerEIP1193.test.ts", function () {
                     publicEIP1193Client,
                     method: "eth_getBlockByHash",
                     params: [],
-                    expectedDetails:
-                        "invalid length 0, expected tuple variant EthRequest::EthGetBlockByHash with 2 elements",
                 });
             });
 
@@ -160,7 +150,6 @@ describe("createIndexerEIP1193.test.ts", function () {
                     publicEIP1193Client,
                     method: "eth_getBlockByHash",
                     params: ["0x", true],
-                    expectedDetails: "Invalid string length",
                 });
             });
 
@@ -170,18 +159,16 @@ describe("createIndexerEIP1193.test.ts", function () {
                     publicEIP1193Client,
                     method: "eth_getBlockByHash",
                     params: ["0x1", true],
-                    expectedDetails: "Odd number of digits",
                 });
             });
 
-            test("getBlockByHash - InvalidParamsRpcError [0x0, invalid]", async () => {
+            test("getBlockByHash - InvalidParamsRpcError [0x0...0, invalid]", async () => {
                 const params = [zeroHash, "invalid"] as any;
                 await testInvalidParamsRpcErrorTest({
                     publicClient,
                     publicEIP1193Client,
                     method: "eth_getBlockByHash",
                     params,
-                    expectedDetails: `invalid type: ${typeof params[1]} "${params[1]}", expected a boolean`,
                 });
             });
         });

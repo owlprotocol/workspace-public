@@ -2,15 +2,12 @@ import { ethBlockResource, ethTransactionResource } from "@owlprotocol/eth-fireb
 import { EIP1193Parameters, EIP1193RequestFn, hexToNumber, PublicRpcSchema, RpcBlock } from "viem";
 import { uploadRpcBlock } from "../../controllers/uploadRpcBlock.js";
 import { isBlockTag } from "../../controllers/isBlockTag.js";
-import { validateRequestBlockByHash, validateRequestBlockByNumber } from "../validators/validateRequestBlock.js";
 
 export async function requestBlockByHash(
     request: EIP1193RequestFn<PublicRpcSchema>,
     args: EIP1193Parameters<PublicRpcSchema> & { method: "eth_getBlockByHash" },
     options?: any,
 ) {
-    validateRequestBlockByHash(args);
-
     const chainId = hexToNumber(await request({ method: "eth_chainId" }));
     const [blockHash, includeTransactions] = args.params;
 
@@ -46,8 +43,6 @@ export async function requestBlockByNumber(
     args: EIP1193Parameters<PublicRpcSchema> & { method: "eth_getBlockByNumber" },
     options?: any,
 ) {
-    validateRequestBlockByNumber(args);
-
     const [blockTagOrNumber, includeTransactions] = args.params;
 
     if (isBlockTag(blockTagOrNumber)) {

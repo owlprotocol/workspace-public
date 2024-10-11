@@ -29,8 +29,6 @@ import {
 import { createIndexerEIP1193 } from "./createIndexerEIP1193.js";
 import { port } from "../test/constants.js";
 
-//TODO: Add more error handling
-
 /**
  * For block comparisons between viem
  * @param block

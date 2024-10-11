@@ -68,6 +68,8 @@
     "tsc:watch": "tsc -w"
   },
   "dependencies": {
+    "@open-rpc/meta-schema": "1.14.9",
+    "@open-rpc/schema-utils-js": "2.0.5",
     "@owlprotocol/contracts-create2factory": "workspace:*",
     "@owlprotocol/contracts-account-abstraction": "workspace:*",
     "@owlprotocol/contracts-diamond": "workspace:*",
