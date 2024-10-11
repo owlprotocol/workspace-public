@@ -1,11 +1,12 @@
-import { describe, test, beforeAll } from "vitest";
-import { createPublicClient, createWalletClient, http, Address } from "viem";
+import { describe, test, beforeAll, expect } from "vitest";
+import { createPublicClient, createWalletClient, http, Address, zeroAddress, padHex } from "viem";
 import { getLocalAccount, Clients } from "@owlprotocol/viem-utils";
 import { localhost } from "viem/chains";
 import { port, port2, localhostRemote } from "./constants.js";
 import { setupTestMailboxContractsWithProxy } from "./mailboxTestHelpers.js";
 import { getOrDeployHypERC20Proxy } from "../token/getOrDeployHypERC20Proxy.js";
 import { getOrDeployHypERC20Impl } from "../token/getOrDeployHypERC20Impl.js";
+import { Router } from "../artifacts/Router.js";
 
 describe("warpRoute.test.ts", function () {
     let clientsOrigin: Clients;
@@ -70,5 +71,21 @@ describe("warpRoute.test.ts", function () {
         if (hypERC20Origin.hash) {
             clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypERC20Origin.hash });
         }
+
+        const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
+        const fakeChainId = 150150;
+        await clientsOrigin.walletClient.writeContract({
+            address: hypERC20Origin.address,
+            abi: Router.abi,
+            functionName: "enrollRemoteRouter",
+            args: [fakeChainId, fakeRouterAddressPadded],
+        });
+
+        const routerDomains = await clientsOrigin.publicClient.readContract({
+            address: hypERC20Origin.address,
+            abi: Router.abi,
+            functionName: "domains",
+        });
+        expect(routerDomains).toContain(fakeChainId);
     });
 });
