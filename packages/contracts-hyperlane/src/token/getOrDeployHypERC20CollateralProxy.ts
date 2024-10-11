@@ -17,16 +17,16 @@ export async function getOrDeployHypERC20CollateralProxy({
     walletClient,
     publicClient,
     hypERC20CollateralImplAddress,
-    hookAddress,
-    ismAddress,
+    hookAddress = zeroAddress,
+    ismAddress = zeroAddress,
     owner,
     salt = zeroHash,
 }: {
     walletClient: WalletClient<Transport, Chain, Account>;
     publicClient: PublicClient<Transport, Chain>;
     hypERC20CollateralImplAddress: Address;
-    hookAddress: Address;
-    ismAddress: Address;
+    hookAddress?: Address;
+    ismAddress?: Address;
     owner: Address;
     salt?: Hex;
 }) {

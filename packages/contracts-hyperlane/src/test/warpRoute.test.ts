@@ -35,12 +35,6 @@ describe("warpRoute.test.ts", function () {
     let clientsOrigin: Clients;
     let clientsRemote: Clients;
 
-    let testIsmAddressOrigin: Address;
-    let testHookAddressOrigin: Address;
-
-    let testIsmAddressRemote: Address;
-    let testHookAddressRemote: Address;
-
     let mailboxAddressOrigin: Address;
     let mailboxAddressRemote: Address;
 
@@ -64,13 +58,9 @@ describe("warpRoute.test.ts", function () {
         };
 
         const mailboxContractsOrigin = await setupTestMailboxContractsWithProxy(clientsOrigin);
-        testIsmAddressOrigin = mailboxContractsOrigin.testIsm.address;
-        testHookAddressOrigin = mailboxContractsOrigin.testHook.address;
         mailboxAddressOrigin = mailboxContractsOrigin.mailbox.address;
 
         const mailboxContractsRemote = await setupTestMailboxContractsWithProxy(clientsRemote);
-        testIsmAddressRemote = mailboxContractsRemote.testIsm.address;
-        testHookAddressRemote = mailboxContractsRemote.testHook.address;
         mailboxAddressRemote = mailboxContractsRemote.mailbox.address;
 
         const hypERC20ImplRemote = await getOrDeployHypERC20Impl({
@@ -96,8 +86,6 @@ describe("warpRoute.test.ts", function () {
         const hypERC20CollateralOrigin = await getOrDeployHypERC20CollateralProxy({
             ...clientsOrigin,
             hypERC20CollateralImplAddress: hypERC20CollateralImplOrigin.address,
-            hookAddress: testHookAddressOrigin,
-            ismAddress: testIsmAddressOrigin,
             owner: clientsOrigin.walletClient.account.address,
         });
         if (hypERC20CollateralOrigin.hash) {
@@ -127,8 +115,6 @@ describe("warpRoute.test.ts", function () {
             ...clientsRemote,
             ...testToken,
             hypERC20ImplAddress: hypERC20ImplAddressRemote,
-            hookAddress: testHookAddressRemote,
-            ismAddress: testIsmAddressRemote,
             owner: clientsRemote.walletClient.account.address,
         });
         if (hypERC20Remote.hash) {
@@ -176,8 +162,6 @@ describe("warpRoute.test.ts", function () {
         const hypERC20CollateralOrigin = await getOrDeployHypERC20CollateralProxy({
             ...clientsOrigin,
             hypERC20CollateralImplAddress: hypERC20CollateralImplOrigin.address,
-            hookAddress: testHookAddressOrigin,
-            ismAddress: testIsmAddressOrigin,
             owner: clientsOrigin.walletClient.account.address,
             salt: randomSalt,
         });
@@ -187,8 +171,6 @@ describe("warpRoute.test.ts", function () {
             ...clientsRemote,
             ...testToken,
             hypERC20ImplAddress: hypERC20ImplAddressRemote,
-            hookAddress: testHookAddressRemote,
-            ismAddress: testIsmAddressRemote,
             owner: clientsRemote.walletClient.account.address,
             salt: randomSalt,
         });

@@ -20,8 +20,8 @@ export async function getOrDeployHypERC20Proxy({
     totalSupply,
     name,
     symbol,
-    hookAddress,
-    ismAddress,
+    hookAddress = zeroAddress,
+    ismAddress = zeroAddress,
     owner,
     salt = zeroHash,
 }: {
@@ -31,8 +31,8 @@ export async function getOrDeployHypERC20Proxy({
     totalSupply: bigint;
     name: string;
     symbol: string;
-    hookAddress: Address;
-    ismAddress: Address;
+    hookAddress?: Address;
+    ismAddress?: Address;
     owner: Address;
     salt?: Hex;
 }) {
