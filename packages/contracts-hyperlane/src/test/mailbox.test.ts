@@ -26,6 +26,7 @@ import { TestRecipient } from "../artifacts/TestRecipient.js";
 import { getOrDeployMailboxProxy } from "../mailbox/getOrDeployMailboxProxy.js";
 import { getMessageIdFromReceipt } from "../mailbox/getMessageIdFromReceipt.js";
 import { getMessageFromReceipt } from "../mailbox/getMessageFromReceipt.js";
+import { relayMessage } from "../relayer/relayMessage.js";
 
 async function dispatchMessage(params: {
     walletClient: WalletClient<Transport, Chain, Account>;
@@ -41,23 +42,6 @@ async function dispatchMessage(params: {
         functionName: "dispatch",
         args: [destination, padHex(recipient, { size: 32 }), message],
     });
-}
-
-async function relayMessage(params: {
-    walletClient: WalletClient<Transport, Chain, Account>;
-    mailboxAddress: Address;
-    message: Hex;
-    metadata: Hex;
-}) {
-    const { walletClient, message, metadata, mailboxAddress } = params;
-
-    const hash = await walletClient.writeContract({
-        address: mailboxAddress,
-        abi: Mailbox.abi,
-        functionName: "process",
-        args: [metadata, message],
-    });
-    return hash;
 }
 
 describe("mailbox.test.ts", function () {
@@ -194,13 +178,13 @@ describe("mailbox.test.ts", function () {
             metadata: emptyMetadata,
             mailboxAddress: mailboxRemote.address,
         });
-        const relayReceipt = clientsRemote.publicClient.waitForTransactionReceipt({ hash: relayHash });
+        const relayReceipt = await clientsRemote.publicClient.waitForTransactionReceipt({ hash: relayHash });
 
         // Check that the TestRecipient received the message
         const receivedMessageLog = parseEventLogs({
             abi: TestRecipient.abi,
             eventName: "ReceivedMessage",
-            logs: (await relayReceipt).logs,
+            logs: relayReceipt.logs,
         })[0];
 
         expect(receivedMessageLog).toBeDefined();
