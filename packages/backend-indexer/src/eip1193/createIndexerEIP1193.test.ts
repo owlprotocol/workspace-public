@@ -84,7 +84,7 @@ describe("createIndexerEIP1193.test.ts", function () {
 
         publicEIP1193Client = createPublicClient({
             transport: custom({
-                request: createIndexerEIP1193(createClient({ chain: localhost, transport })),
+                request: createIndexerEIP1193(createClient({ chain: localhost, transport }).request),
             }),
         });
     });
@@ -92,8 +92,6 @@ describe("createIndexerEIP1193.test.ts", function () {
     //TODO: Test log fetching
     //TODO: Test gas estimation
     //TODO: Test additional rpc (getBlockNumber etc...)
-    //TODO: Test error handling
-
     test("getChainId", async () => {
         const chainId = await publicClient.getChainId();
         const chainIdEIP1193 = await publicEIP1193Client.getChainId();

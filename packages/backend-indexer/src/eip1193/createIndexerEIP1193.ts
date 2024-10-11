@@ -1,4 +1,4 @@
-import { Client, Transport, PublicRpcSchema, EIP1193Parameters, EIP1193RequestFn, RpcRequestError } from "viem";
+import { PublicRpcSchema, EIP1193Parameters, EIP1193RequestFn, RpcRequestError, Hex } from "viem";
 import { requestBlockByHash, requestBlockByNumber } from "./requests/requestBlock.js";
 import { requestCode } from "./requests/requestCode.js";
 import { requestLogs } from "./requests/requestLogs.js";
@@ -63,8 +63,19 @@ export async function requestIndexerEIP1193(request: EIP1193RequestFn, args: EIP
     }
 }
 
-export function createIndexerEIP1193(client: Client<Transport>): EIP1193RequestFn<PublicRpcSchema> {
+export function createIndexerEIP1193(request: EIP1193RequestFn): EIP1193RequestFn<PublicRpcSchema> {
+    let chainId: Hex | undefined = undefined;
+
+    async function requestMemoizedChainId(args: EIP1193Parameters<PublicRpcSchema>) {
+        if (args.method === "eth_chainId") {
+            chainId = chainId ?? (await request(args));
+            return chainId;
+        }
+
+        return request(args);
+    }
+
     return async function (args: EIP1193Parameters<PublicRpcSchema>) {
-        return requestIndexerEIP1193(client.request, args);
+        return requestIndexerEIP1193(requestMemoizedChainId as EIP1193RequestFn, args);
     } as any;
 }
