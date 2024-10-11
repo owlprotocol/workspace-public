@@ -117,12 +117,38 @@ export function requestWithMemoizedChainId<T extends RpcSchema = RpcSchema>(
 }
 
 /**
+ * Concatenate multiple EIP1139 RPC Methods
+ * @param requests
+ * @returns
+ */
+export function concatRequests(requests: { request: EIP1193RequestFn; isRpcMethod: (method: string) => boolean }[]) {
+    return async function (args: EIP1193Parameters) {
+        const request = requests.find(({ isRpcMethod }) => isRpcMethod(args.method));
+
+        if (!request) {
+            throw new RpcRequestError({
+                body: args,
+                url: "",
+                error: {
+                    code: -32601,
+                    message: "Method not found",
+                },
+            });
+        }
+
+        return request.request(args);
+    };
+}
+
+/**
  *
  * @param client
  * @returns
  */
 export function createPublicEIP1193(request: EIP1193RequestFn): EIP1193RequestFn<PublicRpcSchema> {
+    const requestMemoizedChainId = requestWithMemoizedChainId(request);
+
     return async function (args: EIP1193Parameters<PublicRpcSchema>) {
-        return requestPublicEIP1193(request, args);
+        return requestPublicEIP1193(requestMemoizedChainId, args);
     } as EIP1193RequestFn<PublicRpcSchema>;
 }

@@ -1,17 +1,17 @@
 import { PublicRpcSchema, EIP1193Parameters, EIP1193RequestFn, RpcRequestError } from "viem";
 import { ParameterValidationError } from "@open-rpc/schema-utils-js";
 
-import { requestBlockByHash, requestBlockByNumber } from "./requests/requestBlock.js";
-import { requestCode } from "./requests/requestCode.js";
-import { requestLogs } from "./requests/requestLogs.js";
+import { requestBlockByHash, requestBlockByNumber } from "./requestBlock.js";
+import { requestCode } from "./requestCode.js";
+import { requestLogs } from "./requestLogs.js";
 import {
     requestTransactionByBlockHashAndIndex,
     requestTransactionByBlockNumberAndIndex,
     requestTransactionByHash,
-} from "./requests/requestTransaction.js";
-import { requestTransactionReceipt } from "./requests/requestTransactionReceipt.js";
-import { isPublicRpcMethod, requestWithMemoizedChainId } from "./createPublicEIP1193.js";
-import { getPublicOpenRpcSchema } from "./publicOpenRpcSchema.js";
+} from "./requestTransaction.js";
+import { requestTransactionReceipt } from "./requestTransactionReceipt.js";
+import { isPublicRpcMethod, requestWithMemoizedChainId } from "../public/createPublicEIP1193.js";
+import { getPublicOpenRpcSchema } from "../public/publicOpenRpcSchema.js";
 
 /**
  * Process EIP1193 request using a viem client

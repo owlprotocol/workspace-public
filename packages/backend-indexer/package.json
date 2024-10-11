@@ -46,6 +46,16 @@
       "types": "./lib/types/eip1193/index.d.ts",
       "require": "./lib/cjs/eip1193/index.js",
       "import": "./lib/esm/eip1193/index.js"
+    },
+    "./eip1193/public": {
+      "types": "./lib/types/eip1193/public/index.d.ts",
+      "require": "./lib/cjs/eip1193/public/index.js",
+      "import": "./lib/esm/eip1193/public/index.js"
+    },
+    "./eip1193/indexer": {
+      "types": "./lib/types/eip1193/indexer/index.d.ts",
+      "require": "./lib/cjs/eip1193/indexer/index.js",
+      "import": "./lib/esm/eip1193/indexer/index.js"
     }
   },
   "scripts": {

@@ -27,7 +27,7 @@ import {
     ethTransactionResource,
 } from "@owlprotocol/eth-firebase/admin";
 import { createIndexerEIP1193 } from "./createIndexerEIP1193.js";
-import { port } from "../test/constants.js";
+import { port } from "../../test/constants.js";
 
 /**
  * For block comparisons between viem

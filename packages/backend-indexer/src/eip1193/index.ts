@@ -1,3 +1,2 @@
-export * from "./createIndexerEIP1193.js";
-export * from "./createPublicEIP1193.js";
-export * from "./publicOpenRpcSchema.js";
+export * from "./indexer/index.js";
+export * from "./public/index.js";
