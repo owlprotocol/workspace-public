@@ -114,6 +114,7 @@
     "@open-rpc/meta-schema": "1.14.9",
     "@open-rpc/schema-utils-js": "2.0.5",
     "@openzeppelin/contracts": "5.0.2",
+    "@owlprotocol/backend-public": "workspace:*",
     "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
     "permissionless": "0.2.6",

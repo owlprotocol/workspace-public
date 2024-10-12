@@ -141,7 +141,8 @@ export async function estimateUserOperationGas(
         executionResult.data.callDataResult,
     );
     userOperation.verificationGasLimit = verificationGasAndCallGasLimit.verificationGasLimit;
-    userOperation.callGasLimit = verificationGasAndCallGasLimit.callGasLimit;
+    //TODO: Cleanup (over-estimate by 50%)
+    userOperation.callGasLimit = (verificationGasAndCallGasLimit.callGasLimit * 150n) / 100n;
 
     if (chainId === chains.base.id || chainId === chains.baseSepolia.id) {
         userOperation.callGasLimit += 10_000n;
