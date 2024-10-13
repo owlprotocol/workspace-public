@@ -1,9 +1,9 @@
 import { expect, describe, test, beforeAll } from "vitest";
-import { Transport, http, MethodNotFoundRpcError, zeroHash, InvalidParamsRpcError, EIP1193RequestFn } from "viem";
-import { localhost } from "viem/chains";
+import { MethodNotFoundRpcError, zeroHash, InvalidParamsRpcError, EIP1193RequestFn } from "viem";
 import { buildRequest } from "viem/utils";
 
 import { createPublicEIP1193 } from "./createPublicEIP1193.js";
+import { createHttpEIP1193 } from "./createHttpEIP1193.js";
 import { port } from "../test/constants.js";
 
 /**
@@ -35,14 +35,14 @@ async function testInvalidParamsRpcErrorTest(parameters: {
 }
 
 describe("createPublicEIP1193.test.ts", function () {
-    let transport: Transport;
     let expectedRequest: EIP1193RequestFn;
     let request: EIP1193RequestFn;
 
     beforeAll(async () => {
-        transport = http(`http://127.0.0.1:${port}`);
-        expectedRequest = transport({ chain: localhost }).request;
-        request = buildRequest(createPublicEIP1193(transport({ chain: localhost }).request));
+        // by pass buildRequest middleware
+        const httpEIP1193 = createHttpEIP1193(`http://127.0.0.1:${port}`);
+        expectedRequest = buildRequest(httpEIP1193);
+        request = buildRequest(createPublicEIP1193(httpEIP1193));
     });
 
     describe("errors", () => {
