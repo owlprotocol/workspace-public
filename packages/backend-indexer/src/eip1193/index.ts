@@ -4,3 +4,5 @@ export * from "./requestCode.js";
 export * from "./requestLogs.js";
 export * from "./requestTransaction.js";
 export * from "./requestTransactionReceipt.js";
+
+export * from "@owlprotocol/backend-public/eip1193";

@@ -1,7 +1,13 @@
 import { PublicRpcSchema, EIP1193Parameters, EIP1193RequestFn, RpcRequestError } from "viem";
 import { ParameterValidationError } from "@open-rpc/schema-utils-js";
 
-import { isPublicRpcMethod, requestWithMemoizedChainId, getPublicOpenRpcSchema } from "@owlprotocol/backend-public";
+import {
+    requestWithMemoizedChainId,
+    getPublicOpenRpcSchema,
+    requestPublicEIP1193,
+    concatRequests,
+    isPublicRpcMethod,
+} from "@owlprotocol/backend-public";
 
 import { requestBlockByHash, requestBlockByNumber } from "./requestBlock.js";
 import { requestCode } from "./requestCode.js";
@@ -13,6 +19,30 @@ import {
 } from "./requestTransaction.js";
 import { requestTransactionReceipt } from "./requestTransactionReceipt.js";
 
+export type IndexerRpcMethod = Parameters<(typeof indexerRpcMethods)["has"]>[0];
+
+export const indexerRpcMethods = new Set([
+    "eth_getBlockByHash",
+    "eth_getBlockByNumber",
+    "eth_getCode",
+    "eth_getFilterChanges",
+    "eth_getFilterLogs",
+    "eth_getLogs",
+    "eth_getTransactionByBlockHashAndIndex",
+    "eth_getTransactionByBlockNumberAndIndex",
+    "eth_getTransactionByHash",
+    "eth_getTransactionReceipt",
+] as const);
+
+/**
+ * Check if RPC method is for Public RPC Spec
+ * @param method
+ * @returns true if public rpc method
+ */
+export function isIndexerRpcMethod(method: string): method is IndexerRpcMethod {
+    return indexerRpcMethods.has(method as any);
+}
+
 /**
  * Process EIP1193 request using a viem client
  * Useful for clients with custom action overrides
@@ -22,7 +52,7 @@ import { requestTransactionReceipt } from "./requestTransactionReceipt.js";
  */
 export async function requestIndexerEIP1193(request: EIP1193RequestFn, args: EIP1193Parameters<PublicRpcSchema>) {
     // Validate method
-    if (!isPublicRpcMethod(args.method)) {
+    if (!isIndexerRpcMethod(args.method)) {
         throw new RpcRequestError({
             body: args,
             url: "",
@@ -69,7 +99,14 @@ export async function requestIndexerEIP1193(request: EIP1193RequestFn, args: EIP
         } else if (args.method === "eth_getTransactionReceipt") {
             return requestTransactionReceipt(request, args);
         } else {
-            return request(args);
+            throw new RpcRequestError({
+                body: args,
+                url: "",
+                error: {
+                    code: -32601,
+                    message: "Method not found",
+                },
+            });
         }
     } catch (error) {
         if (error instanceof RpcRequestError) {
@@ -84,8 +121,19 @@ export async function requestIndexerEIP1193(request: EIP1193RequestFn, args: EIP
 
 export function createIndexerEIP1193(request: EIP1193RequestFn): EIP1193RequestFn<PublicRpcSchema> {
     const requestMemoizedChainId = requestWithMemoizedChainId(request);
+    const requestIndexer = async function (args: EIP1193Parameters<PublicRpcSchema>) {
+        return requestIndexerEIP1193(requestMemoizedChainId, args);
+    } as EIP1193RequestFn;
+    // Fallback to Public RPC
+    const requestPublic = async function (args: EIP1193Parameters<PublicRpcSchema>) {
+        return requestPublicEIP1193(requestMemoizedChainId, args);
+    } as EIP1193RequestFn;
 
-    return async function (args: EIP1193Parameters<PublicRpcSchema>) {
-        return requestIndexerEIP1193(requestMemoizedChainId as EIP1193RequestFn, args);
-    } as any;
+    return concatRequests([
+        { request: requestIndexer, isRpcMethod: isIndexerRpcMethod },
+        {
+            request: requestPublic,
+            isRpcMethod: isPublicRpcMethod,
+        },
+    ]) as EIP1193RequestFn<PublicRpcSchema>;
 }
