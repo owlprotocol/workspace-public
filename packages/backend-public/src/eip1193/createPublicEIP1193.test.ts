@@ -1,5 +1,5 @@
 import { expect, describe, test, beforeAll } from "vitest";
-import { MethodNotFoundRpcError, zeroHash, InvalidParamsRpcError, EIP1193RequestFn } from "viem";
+import { MethodNotFoundRpcError, zeroHash, InvalidParamsRpcError, EIP1193RequestFn, RpcRequestError } from "viem";
 import { buildRequest } from "viem/utils";
 
 import { createPublicEIP1193 } from "./createPublicEIP1193.js";
@@ -31,7 +31,9 @@ async function testInvalidParamsRpcErrorTest(parameters: {
 
     expect(invalidError.reason).toBeInstanceOf(InvalidParamsRpcError);
     expect(invalidEIP1193Error.reason).toBeInstanceOf(InvalidParamsRpcError);
-    expect(invalidEIP1193Error.reason.code).toBe(InvalidParamsRpcError.code);
+
+    expect((invalidError.reason.walk() as RpcRequestError).code).toBe(-32602);
+    expect((invalidEIP1193Error.reason.walk() as RpcRequestError).code).toBe(-32602);
 }
 
 describe("createPublicEIP1193.test.ts", function () {
@@ -54,10 +56,11 @@ describe("createPublicEIP1193.test.ts", function () {
                 invalidEIP1193,
             ])) as unknown as [{ reason: MethodNotFoundRpcError }, { reason: MethodNotFoundRpcError }];
 
-            console.debug(invalidEIP1193Error);
             expect(invalidError.reason).toBeInstanceOf(MethodNotFoundRpcError);
             expect(invalidEIP1193Error.reason).toBeInstanceOf(MethodNotFoundRpcError);
-            expect(invalidEIP1193Error.reason.code).toBe(invalidError.reason.code);
+
+            expect(invalidError.reason.walk()).toStrictEqual({ code: -32601, message: "Method not found" });
+            expect(invalidEIP1193Error.reason.walk()).toStrictEqual({ code: -32601, message: "Method not found" });
         });
     });
 

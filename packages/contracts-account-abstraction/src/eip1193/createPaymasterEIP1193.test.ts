@@ -49,7 +49,7 @@ import { ERC1967Proxy } from "../artifacts/ERC1967Proxy.js";
 import { MyContract } from "../artifacts/MyContract.js";
 import { setupERC4337Contracts, setupVerifyingPaymaster, topupPaymaster } from "../setupERC4337Contracts.js";
 
-describe("eip1993/index.test.ts", function () {
+describe("eip1993/createPaymasterEIP1193.test.ts", function () {
     let transport: Transport;
     let publicClient: PublicClient<Transport, Chain>;
     let walletClient: WalletClient<Transport, Chain, HDAccount>;
@@ -66,13 +66,6 @@ describe("eip1993/index.test.ts", function () {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let paymasterTransport: Transport;
     let paymasterClient: PaymasterClient;
-
-    // Generated account on each test
-    let owner: PrivateKeyAccount;
-    let smartAccount: SmartAccount<SimpleSmartAccountImplementation<"0.7">>;
-
-    let contractAddressExpected: Address;
-    let contractDeployTransaction: { to: Address; data: Hex };
 
     beforeAll(async () => {
         transport = http(`http://127.0.0.1:${port}`);
@@ -139,101 +132,37 @@ describe("eip1993/index.test.ts", function () {
         paymasterClient = createPaymasterClient({ transport: paymasterTransport });
     });
 
-    beforeEach(async () => {
-        owner = privateKeyToAccount(generatePrivateKey());
-        const smartAccountAddress = getSimpleAccountAddress(
-            {
-                owner: owner.address,
-                salt: 0n,
-            },
-            {
-                factoryAddress,
-                proxyBytecode: ERC1967Proxy.bytecode,
-            },
-        );
-
-        smartAccount = await toSimpleSmartAccount({
-            address: smartAccountAddress,
-            client: publicClient,
-            owner: owner,
-            factoryAddress,
-            entryPoint: {
-                address: entryPointAddress,
-                version: "0.7",
-            },
-        });
-
-        //Deploy hello world contract
-        const deployParams = {
-            // "random" salt
-            salt: padHex(owner.address, { size: 32 }),
-            bytecode: MyContract.bytecode,
-        };
-        contractDeployTransaction = getDeployDeterministicFunctionData(deployParams);
-        contractAddressExpected = getDeployDeterministicAddress(deployParams);
-    });
-    /** Tests involving deploying the smart account */
-    describe("No Paymaster", () => {
-        let smartAccountClient: SmartAccountClient<Transport, Chain, SmartAccount<SimpleSmartAccountImplementation>>;
-
-        beforeEach(async () => {
-            smartAccountClient = createSmartAccountClient({
-                account: smartAccount,
-                chain: publicClient.chain,
-                bundlerTransport,
-            });
-
-            //Pre-fund wallet just to pay tx cost
-            const fundSimpleAccountHash = await walletClient.sendTransaction({
-                to: smartAccount.address,
-                value: parseEther("5"),
-            });
-            await publicClient.waitForTransactionReceipt({ hash: fundSimpleAccountHash });
-        });
-
-        test("smartAccountClient.sendTransaction", async () => {
-            //Deploy hello world contract
-            const deployParams = {
-                salt: padHex(owner.address, { size: 32 }),
-                bytecode: MyContract.bytecode,
-            };
-            const { to, data } = getDeployDeterministicFunctionData(deployParams);
-            const contractAddress = getDeployDeterministicAddress(deployParams);
-
-            const hash = await smartAccountClient.sendTransaction({ to, data });
-            const receipt = await publicClient.waitForTransactionReceipt({ hash });
-            expect(receipt).toBeDefined();
-
-            const contractBytecode = await publicClient.getBytecode({ address: contractAddress });
-            expect(contractBytecode).toBeDefined();
-        });
-
-        test("smartAccountClient.prepareUserOperation", async () => {
-            //Deploy hello world contract
-            const deployParams = {
-                salt: padHex(owner.address, { size: 32 }),
-                bytecode: MyContract.bytecode,
-            };
-            const { to, data } = getDeployDeterministicFunctionData(deployParams);
-            const contractAddress = getDeployDeterministicAddress(deployParams);
-
-            const userOperation = await smartAccountClient.prepareUserOperation({
-                calls: [{ to, data }],
-            });
-            userOperation.signature = await smartAccount.signUserOperation(userOperation as any);
-            const userOpHash = await bundlerClient.sendUserOperation(userOperation);
-            const userOpReceipt = await waitForUserOperationReceipt(bundlerClient, { hash: userOpHash });
-            expect(userOpReceipt).toBeDefined();
-
-            const contractBytecode = await publicClient.getBytecode({ address: contractAddress });
-            expect(contractBytecode).toBeDefined();
-        });
-    });
-
-    describe("Paymaster", () => {
+    describe("smartAccountClient", () => {
+        // Generated account on each test
+        let owner: PrivateKeyAccount;
+        let smartAccount: SmartAccount<SimpleSmartAccountImplementation<"0.7">>;
         let smartAccountClient: SmartAccountClient<Transport, Chain, SmartAccount>;
 
-        beforeEach(() => {
+        let contractAddressExpected: Address;
+        let contractDeployTransaction: { to: Address; data: Hex };
+
+        beforeEach(async () => {
+            owner = privateKeyToAccount(generatePrivateKey());
+            const smartAccountAddress = getSimpleAccountAddress(
+                {
+                    owner: owner.address,
+                    salt: 0n,
+                },
+                {
+                    factoryAddress,
+                    proxyBytecode: ERC1967Proxy.bytecode,
+                },
+            );
+            smartAccount = await toSimpleSmartAccount({
+                address: smartAccountAddress,
+                client: publicClient,
+                owner: owner,
+                factoryAddress,
+                entryPoint: {
+                    address: entryPointAddress,
+                    version: "0.7",
+                },
+            });
             smartAccountClient = createSmartAccountClient({
                 account: smartAccount,
                 chain: publicClient.chain,
@@ -243,6 +172,15 @@ describe("eip1993/index.test.ts", function () {
                     estimateFeesPerGas: async () => (await getUserOperationGasPrice(paymasterClient)).fast,
                 },
             });
+
+            //Deploy hello world contract
+            const deployParams = {
+                // "random" salt
+                salt: padHex(owner.address, { size: 32 }),
+                bytecode: MyContract.bytecode,
+            };
+            contractDeployTransaction = getDeployDeterministicFunctionData(deployParams);
+            contractAddressExpected = getDeployDeterministicAddress(deployParams);
         });
 
         test("smartAccountClient.sendTransaction", async () => {
