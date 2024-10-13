@@ -9,7 +9,6 @@ import {
     http,
     zeroAddress,
     custom,
-    createClient,
     TransactionReceipt,
     zeroHash,
     numberToHex,
@@ -26,6 +25,7 @@ import {
     ethTransactionReceiptResource,
     ethTransactionResource,
 } from "@owlprotocol/eth-firebase/admin";
+import { createHttpEIP1193 } from "@owlprotocol/backend-public";
 import { createIndexerEIP1193 } from "./createIndexerEIP1193.js";
 import { port } from "../test/constants.js";
 
@@ -84,7 +84,7 @@ describe("createIndexerEIP1193.test.ts", function () {
 
         publicEIP1193Client = createPublicClient({
             transport: custom({
-                request: createIndexerEIP1193(createClient({ chain: localhost, transport }).request),
+                request: createIndexerEIP1193(createHttpEIP1193(`http://127.0.0.1:${port}`)),
             }),
         });
     });

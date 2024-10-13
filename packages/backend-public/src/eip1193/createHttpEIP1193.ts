@@ -7,7 +7,10 @@ import { RpcRequest } from "../types/rpc.js";
  * @description Creates a HTTP EIP1193 Request that connects to a JSON-RPC API.
  * Note: This is used to bypass viem `buildRequest` middleware when adding custom RPC middleware and then use with `custom` transport
  */
-export function createHttpEIP1193(url: string, config: HttpTransportConfig = {}): EIP1193RequestFn {
+export function createHttpEIP1193(
+    url: string,
+    config: Omit<HttpTransportConfig, "key" | "name" | "retryCount" | "retryDelay"> = {},
+): EIP1193RequestFn {
     const { batch, fetchOptions, onFetchRequest, onFetchResponse } = config;
     const { batchSize = 1000, wait = 0 } = typeof batch === "object" ? batch : {};
     const timeout = config.timeout ?? 10_000;

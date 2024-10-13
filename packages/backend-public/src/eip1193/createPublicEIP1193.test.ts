@@ -39,7 +39,7 @@ describe("createPublicEIP1193.test.ts", function () {
     let request: EIP1193RequestFn;
 
     beforeAll(async () => {
-        // by pass buildRequest middleware
+        // bypass buildRequest middleware by avoiding creating transport
         const httpEIP1193 = createHttpEIP1193(`http://127.0.0.1:${port}`);
         expectedRequest = buildRequest(httpEIP1193);
         request = buildRequest(createPublicEIP1193(httpEIP1193));
