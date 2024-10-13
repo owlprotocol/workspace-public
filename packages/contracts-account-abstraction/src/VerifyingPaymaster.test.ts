@@ -17,6 +17,8 @@ import {
     concatHex,
     decodeErrorResult,
     HDAccount,
+    zeroAddress,
+    Hash,
 } from "viem";
 import { localhost } from "viem/chains";
 import { getLocalAccount } from "@owlprotocol/viem-utils";
@@ -30,10 +32,11 @@ import { abi as EntryPointAbi } from "./artifacts/EntryPoint.js";
 import { getSimpleAccountAddress } from "./SimpleAccount.js";
 import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
-import { encodeUserOp } from "./models/UserOperation.js";
+import { dummySignature, encodeUserOp } from "./models/UserOperation.js";
 import { decodeViemError } from "./isViemError.js";
 import { setupERC4337Contracts, setupVerifyingPaymaster } from "./setupERC4337Contracts.js";
 import { toPackedUserOperation } from "./models/PackedUserOperation.js";
+import { getVerifyingPaymasterHash } from "./VerifyingPaymaster.js";
 
 describe("VerifyingPaymaster.test.ts", function () {
     let publicClient: PublicClient<Transport, Chain>;
@@ -65,6 +68,49 @@ describe("VerifyingPaymaster.test.ts", function () {
                 verifyingSignerAddress: walletClient.account.address,
             })
         ).address;
+    });
+
+    test.only("getVerifyingPaymasterHash", async () => {
+        const validUntil = Date.now() + 3600;
+        const validAfter = 0;
+        const paymasterDataUnsigned = encodeAbiParameters(
+            [
+                { name: "validUntil", type: "uint48" },
+                { name: "validAfter", type: "uint48" },
+            ],
+            [validUntil, validAfter],
+        );
+
+        const userOperation: UserOperation<"0.7"> = {
+            sender: zeroAddress,
+            nonce: 0n,
+            factory: zeroAddress,
+            factoryData: "0x",
+            callData: "0x",
+            preVerificationGas: 0n,
+            verificationGasLimit: 0n,
+            callGasLimit: 0n,
+            maxFeePerGas: 0n,
+            maxPriorityFeePerGas: 0n,
+            signature: dummySignature,
+            paymaster: verifyingPaymaster,
+            paymasterVerificationGasLimit: 0n,
+            paymasterPostOpGasLimit: 0n,
+            paymasterData: paymasterDataUnsigned,
+        };
+        const userOperationPacked = toPackedUserOperation(encodeUserOp(userOperation));
+
+        const hashExpected = (await publicClient.readContract({
+            address: verifyingPaymaster,
+            abi: VerifyingPaymaster.abi,
+            functionName: "getHash",
+            args: [userOperationPacked as any, validUntil, validAfter],
+        })) as Hash;
+        const hash = getVerifyingPaymasterHash({
+            chainId: publicClient.chain.id,
+            userOperation: userOperationPacked,
+        });
+        expect(hash).toBe(hashExpected);
     });
 
     /** Tests involving interacting with an existing paymaster */

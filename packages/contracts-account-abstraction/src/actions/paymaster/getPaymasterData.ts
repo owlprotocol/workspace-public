@@ -1,12 +1,12 @@
-import { Address, Hash, concatHex, PartialBy, Hex, Client, Transport, LocalAccount, Chain } from "viem";
+import { Address, concatHex, PartialBy, Hex, Client, Transport, LocalAccount, Chain } from "viem";
 import { UserOperation } from "viem/account-abstraction";
 import { getAction, encodeAbiParameters } from "viem/utils";
-import { readContract } from "viem/actions";
+import { getChainId } from "viem/actions";
 
-import { VerifyingPaymaster } from "../../artifacts/VerifyingPaymaster.js";
 import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
 import { dummySignature, encodeUserOp } from "../../models/UserOperation.js";
 import { getSupportedEntryPoints } from "../bundler/getSupportedEntryPoints.js";
+import { getVerifyingPaymasterHash } from "../../VerifyingPaymaster.js";
 
 export type GetPaymasterDataParameters07 = PartialBy<
     Pick<
@@ -77,6 +77,7 @@ export async function getPaymasterData(
 ): Promise<GetPaymasterDataReturnType07> {
     const { entryPointAddress, ...userOperation } = parameters;
     const { paymaster } = client;
+    const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
 
     const supportedEntryPoints = await getAction(
         client as unknown as Client<Transport>,
@@ -115,17 +116,7 @@ export async function getPaymasterData(
         }),
     );
 
-    //TODO: Is this needed? Can be computed off-chain
-    const userOpPaymasterHash = (await getAction(
-        client,
-        readContract,
-        "readContract",
-    )({
-        address: paymaster,
-        abi: VerifyingPaymaster.abi,
-        functionName: "getHash",
-        args: [userOpPaymasterPacked as any, validUntil, validAfter],
-    })) as Hash;
+    const userOpPaymasterHash = getVerifyingPaymasterHash({ chainId, userOperation: userOpPaymasterPacked });
 
     const paymasterSignature = await client.account.signMessage({
         message: {
