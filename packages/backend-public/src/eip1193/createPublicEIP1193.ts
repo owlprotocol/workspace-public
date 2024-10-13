@@ -55,6 +55,7 @@ export const publicRpcMethods = new Set([
 export function isPublicRpcMethod(method: string): method is PublicRpcMethod {
     return publicRpcMethods.has(method as any);
 }
+
 /**
  * Restrict EIP1193 request function to Public RPC
  * @param request
