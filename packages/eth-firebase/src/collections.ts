@@ -39,6 +39,10 @@ export const ethUserOpGroupPath = "ethUserOp";
 export const ethUserOpPath = (collectionId: NetworkId) => {
     return join(networkPath, encodeNetworkId(collectionId), ethUserOpGroupPath);
 };
+export const ethUserOpReceiptGroupPath = "ethUserOpReceipt";
+export const ethUserOpReceiptPath = (collectionId: NetworkId) => {
+    return join(networkPath, encodeNetworkId(collectionId), ethUserOpReceiptGroupPath);
+};
 
 //contractmodels
 export const erc20GroupPath = "erc20";

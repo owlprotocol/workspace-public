@@ -42,8 +42,8 @@ import {
     decodeEthTransactionReceiptId,
     EthLogId,
     decodeEthLogId,
-    EthUserOpId,
-    decodeEthUserOpId,
+    EthUserOpReceiptId,
+    decodeEthUserOpReceiptId,
     EthBytecodeInput,
     EthBytecodeId,
     decodeEthBytecodeData,
@@ -79,11 +79,11 @@ import {
     ERC721Input,
     ERC721Decoded,
     decodeERC721Data,
-    encodeEthUserOpDataPartial,
-    decodeEthUserOpData,
-    EthUserOpDecoded,
-    EthUserOpEncoded,
-    EthUserOpInput,
+    encodeEthUserOpReceiptDataPartial,
+    decodeEthUserOpReceiptData,
+    EthUserOpReceiptDecoded,
+    EthUserOpReceiptEncoded,
+    EthUserOpReceiptInput,
 } from "../models/index.js";
 import { NetworkId, encodeNetworkId, decodeNetworkId } from "../models/Network.js";
 
@@ -164,16 +164,16 @@ export const ethLogGroupQuery = getFirebaseQueryResource<
     decodeParentDocId: decodeNetworkId,
 });
 export const ethUserOpGroupQuery = getFirebaseQueryResource<
-    EthUserOpDecoded,
-    EthUserOpId,
+    EthUserOpReceiptDecoded,
+    EthUserOpReceiptId,
     NetworkId,
-    EthUserOpInput,
-    EthUserOpEncoded,
-    Query<"web", EthUserOpEncoded>
+    EthUserOpReceiptInput,
+    EthUserOpReceiptEncoded,
+    Query<"web", EthUserOpReceiptEncoded>
 >(ethUserOpColGroup, {
-    decodeId: decodeEthUserOpId,
-    encodeDataPartial: encodeEthUserOpDataPartial,
-    decodeData: decodeEthUserOpData,
+    decodeId: decodeEthUserOpReceiptId,
+    encodeDataPartial: encodeEthUserOpReceiptDataPartial,
+    decodeData: decodeEthUserOpReceiptData,
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });

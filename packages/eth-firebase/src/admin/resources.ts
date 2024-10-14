@@ -42,6 +42,7 @@ import {
     ethRoleAdminCol,
     ethRoleCol,
     operatorCol,
+    ethUserOpReceiptCol,
 } from "./collection.js";
 import {
     EthBlockId,
@@ -167,6 +168,15 @@ import {
     decodeNetworkData,
     encodeNetworkData,
     encodeNetworkDataPartial,
+    encodeEthUserOpReceiptDataPartial,
+    decodeEthUserOpReceiptData,
+    EthUserOpReceiptDecoded,
+    EthUserOpReceiptEncoded,
+    EthUserOpReceiptId,
+    EthUserOpReceiptInput,
+    encodeEthUserOpReceiptData,
+    decodeEthUserOpReceiptId,
+    encodeEthUserOpReceiptId,
 } from "../models/index.js";
 
 //Disabled for now
@@ -336,6 +346,26 @@ export const ethUserOpResource = getFirebaseResource<
         encodeDataPartial: encodeEthUserOpDataPartial,
         encodeData: encodeEthUserOpData,
         decodeData: decodeEthUserOpData,
+        encodeParentDocId: encodeNetworkId,
+        decodeParentDocId: decodeNetworkId,
+    },
+    { lruCacheSize },
+);
+export const ethUserOpReceiptResource = getFirebaseResource<
+    EthUserOpReceiptDecoded,
+    EthUserOpReceiptId,
+    NetworkId,
+    EthUserOpReceiptInput,
+    EthUserOpReceiptEncoded
+>(
+    firestore,
+    ethUserOpReceiptCol,
+    {
+        encodeId: encodeEthUserOpReceiptId,
+        decodeId: decodeEthUserOpReceiptId,
+        encodeDataPartial: encodeEthUserOpReceiptDataPartial,
+        encodeData: encodeEthUserOpReceiptData,
+        decodeData: decodeEthUserOpReceiptData,
         encodeParentDocId: encodeNetworkId,
         decodeParentDocId: decodeNetworkId,
     },
