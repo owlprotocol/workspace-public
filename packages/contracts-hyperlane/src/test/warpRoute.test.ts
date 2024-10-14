@@ -194,13 +194,6 @@ describe("warpRoute.test.ts", function () {
         });
         await clientsRemote.publicClient.waitForTransactionReceipt({ hash: enrollRemoteRouterHashRemote });
 
-        await clientsRemote.walletClient.writeContract({
-            address: hypERC20Remote.address,
-            abi: Router.abi,
-            functionName: "enrollRemoteRouter",
-            args: [chainIdOrigin, padHex(hypERC20CollateralOrigin.address, { size: 32 })],
-        });
-
         const amount = 10_000n;
         const mintHash = await clientsOrigin.walletClient.writeContract({
             address: erc20.address,
