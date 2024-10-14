@@ -78,7 +78,6 @@
     "tsc:watch": "tsc -w"
   },
   "dependencies": {
-    "@open-rpc/meta-schema": "1.14.9",
     "@open-rpc/schema-utils-js": "2.0.5",
     "@owlprotocol/backend-public": "workspace:*",
     "@owlprotocol/contracts-create2factory": "workspace:*",
