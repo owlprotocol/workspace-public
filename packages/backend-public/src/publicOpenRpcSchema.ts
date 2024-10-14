@@ -1165,12 +1165,13 @@ const publicOpenRpcSchema_ = {
                 type: "string",
                 description: "The hex representation of the block's height",
                 $ref: "#/components/schemas/Integer",
+                pattern: "^0x[a-fA-F0-9]+$|earliest|latest|pending|safe|finalized",
             },
             BlockNumberTag: {
                 title: "blockNumberTag",
                 type: "string",
                 description: "The optional block height description",
-                enum: ["earliest", "latest", "pending"],
+                enum: ["earliest", "latest", "pending", "safe", "finalized"],
             },
             BlockOrNull: {
                 title: "blockOrNull",
@@ -1801,15 +1802,7 @@ const publicOpenRpcSchema_ = {
                 name: "blockNumber",
                 required: true,
                 schema: {
-                    title: "blockNumberOrTag",
-                    oneOf: [
-                        {
-                            $ref: "#/components/schemas/BlockNumber",
-                        },
-                        {
-                            $ref: "#/components/schemas/BlockNumberTag",
-                        },
-                    ],
+                    $ref: "#/components/schemas/BlockNumber",
                 },
             },
             TransactionHash: {

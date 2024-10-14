@@ -1,5 +1,12 @@
 import { expect, describe, test, beforeAll } from "vitest";
-import { MethodNotFoundRpcError, zeroHash, InvalidParamsRpcError, EIP1193RequestFn, RpcRequestError } from "viem";
+import {
+    MethodNotFoundRpcError,
+    zeroHash,
+    InvalidParamsRpcError,
+    EIP1193RequestFn,
+    RpcRequestError,
+    zeroAddress,
+} from "viem";
 import { buildRequest } from "viem/utils";
 
 import { createPublicEIP1193 } from "./createPublicEIP1193.js";
@@ -10,7 +17,7 @@ import { port } from "../test/constants.js";
  * Test if proxy request returns InvalidParamsRpcError
  * @param params
  */
-async function testInvalidParamsRpcErrorTest(parameters: {
+async function testInvalidParamsRpcError(parameters: {
     expectedRequest: EIP1193RequestFn;
     request: EIP1193RequestFn;
     method: string;
@@ -34,6 +41,23 @@ async function testInvalidParamsRpcErrorTest(parameters: {
 
     expect((invalidError.reason.walk() as RpcRequestError).code).toBe(-32602);
     expect((invalidEIP1193Error.reason.walk() as RpcRequestError).code).toBe(-32602);
+}
+
+async function testRpcRequest(parameters: {
+    expectedRequest: EIP1193RequestFn;
+    request: EIP1193RequestFn;
+    method: string;
+    params?: any[];
+}) {
+    const { expectedRequest, request, method, params } = parameters;
+    const args: { method: string; params?: any[] } = { method };
+    if (params) {
+        args.params = params;
+    }
+
+    const expected = await expectedRequest(args);
+    const result = await request(args);
+    expect(result).toStrictEqual(expected);
 }
 
 describe("createPublicEIP1193.test.ts", function () {
@@ -64,10 +88,16 @@ describe("createPublicEIP1193.test.ts", function () {
         });
     });
 
+    describe("getCode", () => {
+        test("getCode - 0x", async () => {
+            await testRpcRequest({ expectedRequest, request, method: "eth_getCode", params: [zeroAddress, "latest"] });
+        });
+    });
+
     describe("getBlock", () => {
         describe("getBlockByNumber", () => {
             test("getBlockByNumber - InvalidParamsRpcError params empty", async () => {
-                await testInvalidParamsRpcErrorTest({
+                await testInvalidParamsRpcError({
                     expectedRequest,
                     request,
                     method: "eth_getBlockByNumber",
@@ -75,7 +105,7 @@ describe("createPublicEIP1193.test.ts", function () {
             });
 
             test("getBlockByNumber - InvalidParamsRpcError params []", async () => {
-                await testInvalidParamsRpcErrorTest({
+                await testInvalidParamsRpcError({
                     expectedRequest,
                     request,
                     method: "eth_getBlockByNumber",
@@ -85,7 +115,7 @@ describe("createPublicEIP1193.test.ts", function () {
 
             test("getBlockByNumber - InvalidParamsRpcError [invalid, true]", async () => {
                 const params = ["invalid", true] as any;
-                await testInvalidParamsRpcErrorTest({
+                await testInvalidParamsRpcError({
                     expectedRequest,
                     request,
                     method: "eth_getBlockByNumber",
@@ -95,7 +125,7 @@ describe("createPublicEIP1193.test.ts", function () {
 
             test("getBlockByNumber - InvalidParamsRpcError [0x0, invalid]", async () => {
                 const params = ["0x0", "invalid"] as any;
-                await testInvalidParamsRpcErrorTest({
+                await testInvalidParamsRpcError({
                     expectedRequest,
                     request,
                     method: "eth_getBlockByNumber",
@@ -105,8 +135,17 @@ describe("createPublicEIP1193.test.ts", function () {
         });
 
         describe("getBlockByHash", () => {
+            test("getBlockByHash - 0x", async () => {
+                await testRpcRequest({
+                    expectedRequest,
+                    request,
+                    method: "eth_getBlockByNumber",
+                    params: ["latest", false],
+                });
+            });
+
             test("getBlockByHash - InvalidParamsRpcError params undefined", async () => {
-                await testInvalidParamsRpcErrorTest({
+                await testInvalidParamsRpcError({
                     expectedRequest,
                     request,
                     method: "eth_getBlockByHash",
@@ -114,7 +153,7 @@ describe("createPublicEIP1193.test.ts", function () {
             });
 
             test("getBlockByHash - InvalidParamsRpcError params []", async () => {
-                await testInvalidParamsRpcErrorTest({
+                await testInvalidParamsRpcError({
                     expectedRequest,
                     request,
                     method: "eth_getBlockByHash",
@@ -123,7 +162,7 @@ describe("createPublicEIP1193.test.ts", function () {
             });
 
             test("getBlockByHash - InvalidParamsRpcError [0x, true]", async () => {
-                await testInvalidParamsRpcErrorTest({
+                await testInvalidParamsRpcError({
                     expectedRequest,
                     request,
                     method: "eth_getBlockByHash",
@@ -132,7 +171,7 @@ describe("createPublicEIP1193.test.ts", function () {
             });
 
             test("getBlockByHash - InvalidParamsRpcError [0x1, true]", async () => {
-                await testInvalidParamsRpcErrorTest({
+                await testInvalidParamsRpcError({
                     expectedRequest,
                     request,
                     method: "eth_getBlockByHash",
@@ -142,7 +181,7 @@ describe("createPublicEIP1193.test.ts", function () {
 
             test("getBlockByHash - InvalidParamsRpcError [0x0...0, invalid]", async () => {
                 const params = [zeroHash, "invalid"] as any;
-                await testInvalidParamsRpcErrorTest({
+                await testInvalidParamsRpcError({
                     expectedRequest,
                     request,
                     method: "eth_getBlockByHash",
