@@ -11,3 +11,4 @@ export * from "./TransactionReceipt.js";
 export * from "./TransactionRequest.js";
 
 export * from "./UserOp.js";
+export * from "./UserOpReceipt.js";
