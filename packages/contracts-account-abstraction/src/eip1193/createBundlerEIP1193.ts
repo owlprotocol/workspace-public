@@ -12,20 +12,25 @@ import {
     PartialBy,
     Hex,
     RpcRequestError,
+    PublicRpcSchema,
 } from "viem";
-import { getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
-import { transactionReceiptEncodeZod, logEncodeZod } from "@owlprotocol/zod-sol";
 import { RpcEstimateUserOperationGasReturnType } from "viem/account-abstraction";
+import {
+    concatRequests,
+    isPublicRpcMethod,
+    requestPublicEIP1193,
+    requestWithMemoizedChainId,
+} from "@owlprotocol/backend-public/eip1193";
+import { createRequestGetUserOperationByHash } from "./bundler/requestGetUserOperationByHash.js";
+import { createRequestGetUserOperationReceipt } from "./bundler/requestGetUserOperationReceipt.js";
 import {
     estimateUserOperationGas,
     getSupportedEntryPoints,
-    getUserOperation,
     getUserOperationGasPrice,
-    getUserOperationReceipt,
     sendUserOperation,
 } from "../actions/index.js";
-import { decodeUserOp, encodeUserOp } from "../models/UserOperation.js";
+import { decodeUserOp } from "../models/UserOperation.js";
 
 export type BundlerRpcMethod = (typeof bundlerRpcMethods)[number];
 
@@ -38,14 +43,6 @@ export const bundlerRpcMethods = [
     "eth_estimateUserOperationGas",
 ] as const;
 
-export const bundlerPublicRpcMethods = [
-    //additional methods for gas estimation
-    "eth_blockNumber",
-    "eth_getBlockByNumber",
-    "eth_maxPriorityFeePerGas",
-    "eth_gasPrice",
-];
-
 /**
  * Check if RPC method is for bundler.
  * @param method
@@ -55,42 +52,38 @@ export function isBundlerRpcMethod(method: string): method is BundlerRpcMethod {
     return bundlerRpcMethods.includes(method as any);
 }
 
-export function isBundlerPublicRpcMethod(method: string): method is BundlerRpcMethod {
-    return bundlerPublicRpcMethods.includes(method as any);
-}
-
 //TODO: Fully refactor as request
+
+/**
+ * Create bundler EIP1193 function
+ * @param client
+ * @param requestOverride custom override to bypass viem middleware (for getLogs)
+ * @returns request function
+ */
 export function createBackendBundlerEIP1193(
     client: Client<Transport, Chain | undefined, Account>,
+    config?: {
+        requestOverride?: EIP1193RequestFn;
+        createRequestGetUserOperationByHash?: typeof createRequestGetUserOperationByHash;
+        createRequestGetUserOperationReceipt?: typeof createRequestGetUserOperationReceipt;
+    },
 ): EIP1193RequestFn<BundlerRpcSchema> {
-    return async function (args: EIP1193Parameters<BundlerRpcSchema>) {
-        // Public RPC for gas estimation
-        if (isBundlerPublicRpcMethod(args.method)) {
-            try {
-                return client.request(args);
-            } catch (error) {
-                if (error instanceof RpcRequestError) {
-                    throw error;
-                }
+    const request = client.request ?? config?.requestOverride;
+    const requestMemoizedChainId = requestWithMemoizedChainId(request);
 
-                // Unhandled error
-                console.error(error);
-                return null;
-            }
-        }
+    const requestGetUserOperationByHash = config?.createRequestGetUserOperationByHash
+        ? config?.createRequestGetUserOperationByHash(requestMemoizedChainId)
+        : createRequestGetUserOperationByHash(requestMemoizedChainId);
+    const requestGetUserOperationReceipt = config?.createRequestGetUserOperationReceipt
+        ? config.createRequestGetUserOperationReceipt(requestMemoizedChainId)
+        : createRequestGetUserOperationReceipt(requestMemoizedChainId);
 
-        // Validate method
-        if (!isBundlerRpcMethod(args.method)) {
-            throw new RpcRequestError({
-                body: args,
-                url: "",
-                error: {
-                    code: -32601,
-                    message: "Method not found",
-                },
-            });
-        }
+    // Fallback to Public RPC
+    const requestPublic = async function (args: EIP1193Parameters<PublicRpcSchema>) {
+        return requestPublicEIP1193(requestMemoizedChainId, args);
+    } as EIP1193RequestFn;
 
+    const requestBundler = async function (args: EIP1193Parameters<BundlerRpcSchema>) {
         // TODO: Validate params
         /*
         const bundlerRpcValidator = (await getBundlerOpenRpcSchema()).bundlerRpcValidator;
@@ -108,43 +101,12 @@ export function createBackendBundlerEIP1193(
         */
 
         try {
-            if (args.method === "eth_chainId") {
-                const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
-                return numberToHex(chainId);
-                //TODO: Required for default gas estimate by viem. Refactor public EIP1193
-            } else if (args.method === "eth_supportedEntryPoints") {
-                return await getAction(client, getSupportedEntryPoints, "getSupportedEntryPoints")({});
+            if (args.method === "eth_supportedEntryPoints") {
+                return getAction(client, getSupportedEntryPoints, "getSupportedEntryPoints")({});
             } else if (args.method === "eth_getUserOperationByHash") {
-                const [hash] = args.params;
-                const { blockHash, blockNumber, entryPoint, transactionHash, userOperation } = await getAction(
-                    client,
-                    getUserOperation,
-                    "getUserOperation",
-                )({ hash });
-
-                return {
-                    blockHash,
-                    blockNumber: numberToHex(blockNumber),
-                    entryPoint,
-                    transactionHash,
-                    userOperation: encodeUserOp(userOperation),
-                };
+                return requestGetUserOperationByHash(args);
             } else if (args.method === "eth_getUserOperationReceipt") {
-                const [hash] = args.params;
-                const { entryPoint, userOpHash, sender, nonce, actualGasUsed, actualGasCost, success, receipt, logs } =
-                    await getAction(client, getUserOperationReceipt, "getUserOperationReceipt")({ hash });
-
-                return {
-                    entryPoint,
-                    userOpHash,
-                    sender,
-                    nonce: numberToHex(nonce),
-                    actualGasUsed: numberToHex(actualGasUsed),
-                    actualGasCost: numberToHex(actualGasCost),
-                    success,
-                    receipt: transactionReceiptEncodeZod.parse(receipt),
-                    logs: logs.map((l) => logEncodeZod.parse(l)),
-                };
+                return requestGetUserOperationReceipt(args);
             } else if (args.method === "eth_estimateUserOperationGas") {
                 const [userOperationHex, entryPoint] = args.params as [
                     PartialBy<RpcUserOperation, "maxFeePerGas" | "maxPriorityFeePerGas">,
@@ -215,7 +177,14 @@ export function createBackendBundlerEIP1193(
 
                 return userOperationHash;
             } else {
-                return client.request(args);
+                throw new RpcRequestError({
+                    body: args,
+                    url: "",
+                    error: {
+                        code: -32601,
+                        message: "Method not found",
+                    },
+                });
             }
         } catch (error) {
             if (error instanceof RpcRequestError) {
@@ -227,4 +196,12 @@ export function createBackendBundlerEIP1193(
             return null;
         }
     } as any;
+
+    return concatRequests([
+        { request: requestBundler, isRpcMethod: isBundlerRpcMethod },
+        {
+            request: requestPublic,
+            isRpcMethod: isPublicRpcMethod,
+        },
+    ]) as EIP1193RequestFn<BundlerRpcSchema>;
 }

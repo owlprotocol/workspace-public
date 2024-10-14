@@ -16,7 +16,7 @@ export type BackendPaymaster<
     transport extends Transport = Transport,
     chain extends Chain | undefined = Chain | undefined,
     account extends LocalAccount = LocalAccount,
-> = Prettify<Client<transport, chain, account, undefined, BackendPaymasterActions>>;
+> = Prettify<Client<transport, chain, account, undefined, BackendPaymasterActions>> & { paymaster: Address };
 
 export function createBackendPaymaster<
     transport extends Transport = Transport,

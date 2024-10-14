@@ -15,6 +15,8 @@ import {
     LocalAccount,
     custom,
     Hex,
+    EIP1193RequestFn,
+    numberToHex,
 } from "viem";
 import { localhost } from "viem/chains";
 import {
@@ -38,6 +40,7 @@ import { SimpleSmartAccountImplementation, toSimpleSmartAccount } from "permissi
 import { createSmartAccountClient, SmartAccountClient } from "permissionless/clients";
 import { getUserOperationGasPrice } from "permissionless/actions/pimlico";
 
+import { createHttpEIP1193, createPublicEIP1193 } from "@owlprotocol/backend-public/eip1193";
 import { createBackendBundlerEIP1193 } from "./createBundlerEIP1193.js";
 import { createBackendPaymasterEIP1193 } from "./createPaymasterEIP1193.js";
 import { createBackendBundler } from "../clients/createBackendBundler.js";
@@ -64,6 +67,7 @@ describe("eip1993/createPaymasterEIP1193.test.ts", function () {
     let bundlerTransport: Transport;
     let bundlerClient: BundlerClient;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    let paymasterRequest: EIP1193RequestFn;
     let paymasterTransport: Transport;
     let paymasterClient: PaymasterClient;
 
@@ -108,28 +112,47 @@ describe("eip1993/createPaymasterEIP1193.test.ts", function () {
         }
 
         // AA Clients
+        const requestOverride = createPublicEIP1193(createHttpEIP1193(`http://127.0.0.1:${port}`));
+
+        const bundlerRequest = createBackendBundlerEIP1193(
+            createBackendBundler({
+                account: getLocalAccount(0) as LocalAccount,
+                chain: localhost,
+                transport,
+                entryPointSimulationsAddress,
+            }),
+            //viem middleware bypass
+            { requestOverride },
+        );
         bundlerTransport = custom({
-            request: createBackendBundlerEIP1193(
-                createBackendBundler({
-                    account: getLocalAccount(0) as LocalAccount,
-                    chain: localhost,
-                    transport,
-                    entryPointSimulationsAddress,
-                }),
-            ),
+            request: bundlerRequest,
+            config: { retryCount: 0 },
         });
         bundlerClient = createBundlerClient({ transport: bundlerTransport });
+
+        paymasterRequest = createBackendPaymasterEIP1193(
+            createBackendPaymaster({
+                account: getLocalAccount(0) as LocalAccount,
+                chain: localhost,
+                transport,
+                paymaster: paymasterAddress,
+            }),
+        );
         paymasterTransport = custom({
-            request: createBackendPaymasterEIP1193(
-                createBackendPaymaster({
-                    account: getLocalAccount(0) as LocalAccount,
-                    chain: localhost,
-                    transport,
-                    paymaster: paymasterAddress,
-                }),
-            ),
+            request: paymasterRequest,
+            config: { retryCount: 0 },
         });
         paymasterClient = createPaymasterClient({ transport: paymasterTransport });
+    });
+
+    describe("paymasterClient", () => {
+        test("pm_getPaymasterStubData", async () => {
+            const result = await paymasterClient.request({
+                method: "pm_getPaymasterStubData",
+                params: [{} as any, entryPoint07Address, numberToHex(localhost.id), {}],
+            });
+            expect(result).toBeDefined();
+        });
     });
 
     describe("smartAccountClient", () => {

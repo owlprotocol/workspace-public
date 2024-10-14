@@ -15,6 +15,8 @@ import {
     LocalAccount,
     custom,
     Hex,
+    EIP1193RequestFn,
+    zeroHash,
 } from "viem";
 import { localhost } from "viem/chains";
 import {
@@ -34,6 +36,7 @@ import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
 import { SimpleSmartAccountImplementation, toSimpleSmartAccount } from "permissionless/accounts";
 import { createSmartAccountClient, SmartAccountClient } from "permissionless/clients";
+import { createHttpEIP1193, createPublicEIP1193 } from "@owlprotocol/backend-public/eip1193";
 
 import { createBackendBundlerEIP1193 } from "./createBundlerEIP1193.js";
 import { createBackendBundler } from "../clients/createBackendBundler.js";
@@ -55,6 +58,7 @@ describe("eip1993/createBundlerEIP1193.test.ts", function () {
     let factoryAddress: Address;
 
     // AA clients
+    let bundlerRequest: EIP1193RequestFn;
     let bundlerTransport: Transport;
     let bundlerClient: BundlerClient;
 
@@ -80,17 +84,35 @@ describe("eip1993/createBundlerEIP1193.test.ts", function () {
         factoryAddress = contracts.simpleAccountFactory.address;
 
         // AA Clients
+        const requestOverride = createPublicEIP1193(createHttpEIP1193(`http://127.0.0.1:${port}`));
+
+        bundlerRequest = createBackendBundlerEIP1193(
+            createBackendBundler({
+                account: getLocalAccount(0) as LocalAccount,
+                chain: localhost,
+                transport,
+                entryPointSimulationsAddress,
+            }),
+            //viem middleware bypass
+            { requestOverride },
+        );
         bundlerTransport = custom({
-            request: createBackendBundlerEIP1193(
-                createBackendBundler({
-                    account: getLocalAccount(0) as LocalAccount,
-                    chain: localhost,
-                    transport,
-                    entryPointSimulationsAddress,
-                }),
-            ),
+            request: bundlerRequest,
+            config: { retryCount: 0 },
         });
         bundlerClient = createBundlerClient({ transport: bundlerTransport });
+    });
+
+    describe("bundlerClient", () => {
+        test("eth_getUserOperationByHash", async () => {
+            const result = await bundlerClient.request({ method: "eth_getUserOperationByHash", params: [zeroHash] });
+            expect(result).toBeNull();
+        });
+
+        test("eth_getUserOperationReceipt", async () => {
+            const result = await bundlerClient.request({ method: "eth_getUserOperationReceipt", params: [zeroHash] });
+            expect(result).toBeNull();
+        });
     });
 
     describe("smartAccountClient", () => {

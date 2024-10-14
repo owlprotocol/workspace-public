@@ -1,9 +1,6 @@
 import {
     EstimateUserOperationGasReturnType,
     GetSupportedEntryPointsReturnType,
-    GetUserOperationParameters,
-    GetUserOperationReceiptParameters,
-    GetUserOperationReceiptReturnType,
     SendUserOperationReturnType,
     UserOperation,
 } from "viem/account-abstraction";
@@ -14,9 +11,7 @@ import {
     estimateUserOperationGas,
     EstimateUserOperationGasParameters07,
 } from "../../actions/bundler/estimateUserOperationGas.js";
-import { getUserOperation, GetUserOperationReturnType07 } from "../../actions/bundler/getUserOperation.js";
 import { getSupportedEntryPoints } from "../../actions/bundler/getSupportedEntryPoints.js";
-import { getUserOperationReceipt } from "../../actions/bundler/getUserOperationReceipt.js";
 import { sendUserOperation } from "../../actions/bundler/sendUserOperation.js";
 
 export type BackendBundlerActions = {
@@ -25,10 +20,6 @@ export type BackendBundlerActions = {
         parameters: EstimateUserOperationGasParameters07,
     ) => Promise<EstimateUserOperationGasReturnType<undefined, undefined, undefined, "0.7">>;
     getSupportedEntryPoints: () => Promise<GetSupportedEntryPointsReturnType>;
-    getUserOperation: (parameters: GetUserOperationParameters) => Promise<GetUserOperationReturnType07>;
-    getUserOperationReceipt: (
-        parameters: GetUserOperationReceiptParameters,
-    ) => Promise<GetUserOperationReceiptReturnType>;
     sendUserOperation: (parameters: UserOperation<"0.7">) => Promise<SendUserOperationReturnType>;
 };
 
@@ -45,8 +36,6 @@ export function backendBundlerActions<
         estimateUserOperationGas: (parameters) => estimateUserOperationGas(client, parameters),
         getChainId: () => getChainId(client),
         getSupportedEntryPoints: () => getSupportedEntryPoints(client),
-        getUserOperation: (parameters) => getUserOperation(client, parameters),
-        getUserOperationReceipt: (parameters) => getUserOperationReceipt(client, parameters),
         sendUserOperation: (parameters) => sendUserOperation(client, parameters),
     };
 }
