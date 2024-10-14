@@ -57,7 +57,6 @@
     "tsc:watch": "tsc -w"
   },
   "dependencies": {
-    "@latticexyz/common": "2.0.9",
     "@owlprotocol/chains": "workspace:*",
     "@owlprotocol/contracts-account-abstraction": "workspace:*",
     "@owlprotocol/contracts-create2factory": "workspace:*",
