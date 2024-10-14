@@ -301,12 +301,18 @@ importers:
 
   packages/backend-bundler:
     dependencies:
+      '@owlprotocol/backend-public':
+        specifier: workspace:*
+        version: link:../backend-public
       '@owlprotocol/contracts-account-abstraction':
         specifier: workspace:*
         version: link:../contracts-account-abstraction
       '@owlprotocol/eth-firebase':
         specifier: workspace:*
         version: link:../eth-firebase
+      permissionless:
+        specifier: 0.2.6
+        version: 0.2.6(viem@2.21.19(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4))
       viem:
         specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.22.4)

@@ -138,7 +138,7 @@ export function concatRequests(requests: { request: EIP1193RequestFn; isRpcMetho
         }
 
         return request.request(args);
-    };
+    } as EIP1193RequestFn;
 }
 
 /**
