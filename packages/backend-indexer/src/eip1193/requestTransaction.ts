@@ -19,8 +19,7 @@ export async function requestTransactionByHash(
 
     if (transactionRpc && transactionRpc.blockHash) {
         //Update cache with confirmed tx only
-        //TODO: Seems like need to await for write to confirm?
-        await ethTransactionResource.upsert({ ...(transactionRpc as TransactionEncoded), chainId });
+        ethTransactionResource.upsert({ ...(transactionRpc as TransactionEncoded), chainId });
     }
 
     return transactionRpc;
@@ -47,8 +46,7 @@ export async function requestTransactionByBlockHashAndIndex(
 
     if (transactionRpc && transactionRpc.blockHash) {
         //Update cache with confirmed tx only
-        //TODO: Seems like need to await for write to confirm?
-        await ethTransactionResource.upsert({ ...(transactionRpc as TransactionEncoded), chainId });
+        ethTransactionResource.upsert({ ...(transactionRpc as TransactionEncoded), chainId });
     }
 
     return transactionRpc;
@@ -78,8 +76,7 @@ export async function requestTransactionByBlockNumberAndIndex(
 
     if (transactionRpc && transactionRpc.blockHash) {
         //Update cache with confirmed tx only
-        //TODO: Seems like need to await for write to confirm?
-        await ethTransactionResource.upsert({ ...(transactionRpc as TransactionEncoded), chainId });
+        ethTransactionResource.upsert({ ...(transactionRpc as TransactionEncoded), chainId });
     }
 
     return transactionRpc;

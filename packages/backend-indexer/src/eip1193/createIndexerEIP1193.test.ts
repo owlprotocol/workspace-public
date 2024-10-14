@@ -63,6 +63,10 @@ function toTransactionReceipt(transactionReceipt: any) {
     };
 }
 
+function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 describe("createIndexerEIP1193.test.ts", function () {
     let transport: Transport;
     let publicClient: PublicClient;
@@ -110,6 +114,7 @@ describe("createIndexerEIP1193.test.ts", function () {
                 });
                 expect(toBlock(blockEIP1193)).toStrictEqual(toBlock(block));
 
+                await sleep(200);
                 const blockFromFirebase = await ethBlockResource.getWhereFirstEncoded({
                     chainId: 1337,
                     number,
@@ -143,6 +148,7 @@ describe("createIndexerEIP1193.test.ts", function () {
                 });
                 expect(toBlock(blockEIP1193)).toStrictEqual(toBlock(block));
 
+                await sleep(200);
                 const blockFromFirebase = await ethBlockResource.getWhereFirstEncoded({
                     chainId: 1337,
                     number,
@@ -180,6 +186,7 @@ describe("createIndexerEIP1193.test.ts", function () {
                 });
                 expect(toBlock(blockEIP1193)).toStrictEqual(toBlock(block));
 
+                await sleep(200);
                 const blockFromFirebase = await ethBlockResource.getOrNullEncoded({
                     chainId: 1337,
                     hash,
@@ -248,6 +255,7 @@ describe("createIndexerEIP1193.test.ts", function () {
             });
             expect(toTransaction(transactionEIP1193)).toStrictEqual(toTransaction(transaction));
 
+            await sleep(200);
             const transactionFromFirebase = await ethTransactionResource.getOrNullEncoded({
                 chainId: 1337,
                 hash,
@@ -289,6 +297,7 @@ describe("createIndexerEIP1193.test.ts", function () {
             });
             expect(toTransaction(transactionEIP1193)).toStrictEqual(toTransaction(transaction));
 
+            await sleep(200);
             const transactionFromFirebase = await ethTransactionResource.getWhereFirstEncoded({
                 chainId: 1337,
                 blockHash,
@@ -332,6 +341,7 @@ describe("createIndexerEIP1193.test.ts", function () {
             });
             expect(toTransaction(transactionEIP1193)).toStrictEqual(toTransaction(transaction));
 
+            await sleep(200);
             const transactionFromFirebase = await ethTransactionResource.getWhereFirstEncoded({
                 chainId: 1337,
                 blockNumber,
@@ -385,6 +395,7 @@ describe("createIndexerEIP1193.test.ts", function () {
                 toTransactionReceipt(transactionReceipt),
             );
 
+            await sleep(200);
             const transactionReceiptFromFirebase = await ethTransactionReceiptResource.getEncoded({
                 transactionHash: hash,
                 chainId: 1337,

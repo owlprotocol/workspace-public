@@ -36,8 +36,7 @@ export async function requestCode(
 
         if (codeRpc != "0x") {
             //Non empty-result, update cached earliers block
-            //TODO: Seems like need to await for write to confirm?
-            await ethBytecodeResource.upsert({
+            ethBytecodeResource.upsert({
                 chainId,
                 address,
                 blockNumber: blockNumberCache,

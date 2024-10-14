@@ -40,8 +40,8 @@ export async function requestTransactionReceipt(
 
     if (transactionReceiptRpc && transactionReceiptRpc.blockHash) {
         // contractAddress constrained to `Address | null`
-        await ethTransactionReceiptResource.upsert({ ...(transactionReceiptRpc as any), chainId });
-        //TODO: Seems like need to await for write to confirm?
+        ethTransactionReceiptResource.upsert({ ...(transactionReceiptRpc as any), chainId });
+
         //Decode logs
         const logsRpc = transactionReceiptRpc.logs;
         const logsDecoded = await Promise.all(

@@ -75,7 +75,7 @@ export async function requestBlockByNumber(
     const blockRpc = await request(args, options);
 
     if (blockRpc) {
-        await uploadRpcBlock(chainId, blockRpc as RpcBlock<"safe">);
+        uploadRpcBlock(chainId, blockRpc as RpcBlock<"safe">);
     }
     return blockRpc;
 }
