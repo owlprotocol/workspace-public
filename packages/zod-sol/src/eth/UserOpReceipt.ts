@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { UserOperationReceipt } from "viem/account-abstraction";
+import { zeroAddress } from "viem";
 import { quantityDecodeZod, quantityEncodeZod } from "./math.js";
 import { logDecodeZod, logEncodeZod } from "./Log.js";
 import { transactionReceiptDecodeZod, transactionReceiptEncodeZod } from "./TransactionReceipt.js";
@@ -41,7 +42,7 @@ export const userOpReceiptEncodeZod = z
         entryPoint: addressZod,
         logs: z.array(logEncodeZod),
         nonce: quantityEncodeZod,
-        paymaster: addressZod,
+        paymaster: addressZod.default(zeroAddress),
         reason: z.string().optional(),
         receipt: transactionReceiptEncodeZod,
         sender: addressZod,
@@ -60,7 +61,7 @@ export const userOpReceiptDecodeZod = z
         entryPoint: addressZod,
         logs: z.array(logDecodeZod),
         nonce: quantityDecodeZod,
-        paymaster: addressZod,
+        paymaster: addressZod.default(zeroAddress),
         reason: z.string().optional(),
         receipt: transactionReceiptDecodeZod,
         sender: addressZod,
