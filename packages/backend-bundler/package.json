@@ -69,7 +69,9 @@
   },
   "dependencies": {
     "@owlprotocol/contracts-account-abstraction": "workspace:*",
+    "@owlprotocol/backend-public": "workspace:*",
     "@owlprotocol/eth-firebase": "workspace:*",
+    "permissionless": "0.2.6",
     "viem": "2.21.19"
   },
   "devDependencies": {

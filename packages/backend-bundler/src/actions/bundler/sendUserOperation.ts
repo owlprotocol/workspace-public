@@ -12,7 +12,7 @@ export async function sendUserOperationWithFirebase(
     const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
     const userOpHash = await sendUserOperation(client, parameters);
 
-    ethUserOpResource.upsert({
+    ethUserOpResource.set({
         chainId,
         userOpHash,
         ...parameters,
