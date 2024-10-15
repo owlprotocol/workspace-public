@@ -374,9 +374,6 @@ importers:
 
   packages/backend-indexer:
     dependencies:
-      '@open-rpc/schema-utils-js':
-        specifier: 2.0.5
-        version: 2.0.5(encoding@0.1.13)
       '@owlprotocol/backend-public':
         specifier: workspace:*
         version: link:../backend-public
