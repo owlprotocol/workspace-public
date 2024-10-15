@@ -1653,8 +1653,8 @@ importers:
         specifier: workspace:*
         version: link:../contracts-hyperlane
       viem:
-        specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+        specifier: 2.21.19
+        version: 2.21.19(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
     devDependencies:
       '@oclif/prettier-config':
         specifier: ^0.2.1
@@ -5210,17 +5210,6 @@ packages:
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.19.1
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-      zod:
-        optional: true
-
-  abitype@1.0.0:
-    resolution: {integrity: sha512-NMeMah//6bJ56H5XRj8QCV4AwuW6hB6zqz2LnhhLdcWVQOsXki6/Pn3APeqxCma62nXIcmZWdu1DlHWS74umVQ==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-      zod: ^3 >=3.22.0
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -11576,14 +11565,6 @@ packages:
       typescript:
         optional: true
 
-  viem@2.9.20:
-    resolution: {integrity: sha512-PHb1MrBHMrSZ8Ayuk3Y/6wUTcMbzlACQaM6AJBSv9kRKX3xYSZ/kehi+gvS0swQJeAlTQ4eZM7jsHQJNAOarmg==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
   vite-node@1.6.0:
     resolution: {integrity: sha512-de6HJgzC+TFzOu0NTC4RAIsyf/DY/ibWDYQUcuEA84EMHhcefTUGkjFHKKEJhQN4A+6I0u++kr3l36ZF2d7XRw==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -16711,11 +16692,6 @@ snapshots:
       typescript: 5.4.5
       zod: 3.22.4
 
-  abitype@1.0.0(typescript@5.4.5)(zod@3.22.4):
-    optionalDependencies:
-      typescript: 5.4.5
-      zod: 3.22.4
-
   abitype@1.0.6(typescript@5.4.5)(zod@3.22.4):
     optionalDependencies:
       typescript: 5.4.5
@@ -20596,10 +20572,6 @@ snapshots:
   isows@1.0.3(ws@8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)):
     dependencies:
       ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
-
-  isows@1.0.3(ws@8.13.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)):
-    dependencies:
-      ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
 
   isows@1.0.6(ws@8.18.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)):
     dependencies:
@@ -24640,23 +24612,6 @@ snapshots:
       - utf-8-validate
       - zod
 
-  viem@2.9.20(bufferutil@4.0.7)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4):
-    dependencies:
-      '@adraffy/ens-normalize': 1.10.0
-      '@noble/curves': 1.2.0
-      '@noble/hashes': 1.3.2
-      '@scure/bip32': 1.3.2
-      '@scure/bip39': 1.2.1
-      abitype: 1.0.0(typescript@5.4.5)(zod@3.22.4)
-      isows: 1.0.3(ws@8.13.0(bufferutil@4.0.7)(utf-8-validate@6.0.3))
-      ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
-    optionalDependencies:
-      typescript: 5.4.5
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-      - zod
-
   vite-node@1.6.0(@types/node@20.14.8):
     dependencies:
       cac: 6.7.14
@@ -24975,11 +24930,6 @@ snapshots:
     optionalDependencies:
       bufferutil: 4.0.7
       utf-8-validate: 5.0.10
-
-  ws@8.13.0(bufferutil@4.0.7)(utf-8-validate@6.0.3):
-    optionalDependencies:
-      bufferutil: 4.0.7
-      utf-8-validate: 6.0.3
 
   ws@8.18.0(bufferutil@4.0.7)(utf-8-validate@5.0.10):
     optionalDependencies:
