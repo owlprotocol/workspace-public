@@ -50,21 +50,18 @@ describe("Diamond.test.ts", function () {
             transport,
         });
         //Deploy DeterministicDeployer
-        const { hash: hash0 } = await getOrDeployDeterministicDeployer({
-            publicClient,
-            walletClient: localWalletClient,
-        });
+        const { hash: hash0 } = await getOrDeployDeterministicDeployer(localWalletClient);
         if (hash0) {
             await publicClient.waitForTransactionReceipt({ hash: hash0 });
         }
         //Deploy Create2Factory
-        const { hash: hash1 } = await getOrDeployCreate2Factory({ publicClient, walletClient: localWalletClient });
+        const { hash: hash1 } = await getOrDeployCreate2Factory(localWalletClient);
         if (hash1) {
             await publicClient.waitForTransactionReceipt({ hash: hash1 });
         }
 
         //Deploy implementations
-        const resultDeployFacets = await getOrDeployImplementations({ publicClient, walletClient: localWalletClient }, [
+        const resultDeployFacets = await getOrDeployImplementations(localWalletClient, [
             { bytecode: DiamondCutFacet.bytecode },
             { bytecode: DiamondLoupeFacet.bytecode },
             { bytecode: MyContract.bytecode },
@@ -83,9 +80,7 @@ describe("Diamond.test.ts", function () {
         });
 
         //Top-up EOA address
-        const { hash } = await topupAddress({
-            publicClient,
-            walletClient: localWalletClient,
+        const { hash } = await topupAddress(localWalletClient, {
             address: walletClient.account.address,
             minBalance: parseEther("10"),
             targetBalance: parseEther("10"),
@@ -116,7 +111,7 @@ describe("Diamond.test.ts", function () {
             initData: "0x",
         });
 
-        const resultDeploy = await getOrDeployContracts({ publicClient, walletClient }, zeroAddress, [
+        const resultDeploy = await getOrDeployContracts(walletClient, zeroAddress, [
             {
                 salt: zeroHash,
                 bytecode: diamondDeployData.deployData,

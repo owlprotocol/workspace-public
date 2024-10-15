@@ -1,7 +1,8 @@
-import { Address, Hash, Hex, concat, encodeAbiParameters, isHex } from "viem";
+import { Account, Address, Chain, Client, Hash, Hex, Transport, concat, encodeAbiParameters, isHex } from "viem";
+import { getAction } from "viem/utils";
+import { getCode, sendTransaction } from "viem/actions";
 import { DETERMINISTIC_DEPLOYER_ADDRESS } from "./constants.js";
 import { getDeployDeterministicAddress } from "./getAddress.js";
-import { Clients } from "../clients.js";
 
 /**
  * Encode deploy deterministic fallback data
@@ -27,23 +28,22 @@ export function getDeployDeterministicFunctionData({ salt, bytecode }: { salt: H
 
 /**
  * Get or deploy contract using DeterministicDeployer
- * @param clients publicClient, walletClient
+ * @param client Client with chain & account
  * @param salt Hex
  * @param bytecode Hex
  * @returns deploy transaction hash
  */
 export async function getOrDeployDeterministicContract(
-    clients: Clients,
+    client: Client<Transport, Chain, Account>,
     { salt, bytecode }: { salt: Hash; bytecode: Hex },
 ): Promise<{
     address: Address;
     hash: Hash | undefined;
     existed: boolean;
 }> {
-    const { publicClient, walletClient } = clients;
     const address = getDeployDeterministicAddress({ salt, bytecode });
     //Check if contract exists
-    const existingByteCode = await publicClient.getBytecode({ address });
+    const existingByteCode = await getAction(client, getCode, "getCode")({ address });
     if (existingByteCode != undefined) {
         return {
             address,
@@ -53,7 +53,11 @@ export async function getOrDeployDeterministicContract(
     }
 
     const { to, data } = getDeployDeterministicFunctionData({ salt, bytecode });
-    const hash = await walletClient.sendTransaction({ to, data });
+    const hash = await getAction(
+        client,
+        sendTransaction,
+        "sendTransaction",
+    )({ to, data, account: client.account, chain: client.chain });
 
     return {
         address,

@@ -4,8 +4,10 @@ import {
     DETERMINISTIC_DEPLOYER_ADDRESS,
     getDeployDeterministicAddress,
 } from "@owlprotocol/viem-utils";
-import { Address, Hash, encodeDeployData, formatEther, zeroHash, WalletClient, PublicClient } from "viem";
+import { Address, Hash, encodeDeployData, formatEther, zeroHash, Account, Chain, Client, Transport } from "viem";
 import { entryPoint07Address } from "viem/account-abstraction";
+import { getCode, readContract, simulateContract, waitForTransactionReceipt, writeContract } from "viem/actions";
+import { getAction } from "viem/utils";
 import { ENTRYPOINT_SALT_V07 } from "./constants.js";
 import { EntryPoint } from "./artifacts/EntryPoint.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
@@ -65,27 +67,26 @@ export const erc4337Contracts = getERC4337Contracts();
  *   - DeterministicDeployer (0x4e59b44847b379578588920cA78FbF26c0B4956C)
  *   - EntryPointV07  (0x0000000071727De22E5E9d8BAf0edAc6f37da032)
  *   - SimpleAccountFactory (0x91E60e0613810449d098b0b5Ec8b51A0FE8c8985)
- * @param clients publicClient, walletClient for deploying contracts
+ * @param client Client with chain & account for deploying contracts
  * @returns contract info
  */
-export async function setupERC4337Contracts(clients: { walletClient: WalletClient; publicClient: PublicClient }) {
-    const { publicClient, walletClient } = clients;
+export async function setupERC4337Contracts(client: Client<Transport, Chain, Account>) {
     //Step 1 - Deterministic Deployer
     //If no DeterminsticDeployer, wait for deploy (mostly used for local testing)
-    const deterministicDeployer = await getOrDeployDeterministicDeployer(
-        //TODO: viem type mismatch
-        { publicClient: publicClient as any, walletClient: walletClient as any },
-    );
+    const deterministicDeployer = await getOrDeployDeterministicDeployer(client);
     // console.debug(deterministicDeployer);
     if (deterministicDeployer.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: deterministicDeployer.hash });
+        await getAction(
+            client,
+            waitForTransactionReceipt,
+            "waitForTransactionReceipt",
+        )({ hash: deterministicDeployer.hash });
     }
 
     //Step 2 - EntryPoint
     //If no EntryPoint v0.7, wait for deploy (mostly used for local testing)
     const entrypoint = (await getOrDeployDeterministicContract(
-        //TODO: viem type mismatch
-        { publicClient: publicClient as any, walletClient: walletClient as any },
+        client,
         //Extracted salt (first 32 bytes) from original tx
         //https://etherscan.io/tx/0x5c81ea86f6c54481d3e21c78675b4f1d985c1fa62b678dcdfdf7934ddd6e127e
         {
@@ -100,62 +101,62 @@ export async function setupERC4337Contracts(clients: { walletClient: WalletClien
         );
     }
     if (entrypoint.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: entrypoint.hash });
+        await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash: entrypoint.hash });
     }
 
     //Step 3 - SimpleAccountFactory
     //If no SimpleAccountFactory, wait for deploy (mostly used for local testing)
-    const simpleAccountFactory = await getOrDeployDeterministicContract(
-        //TODO: viem type mismatch
-        { publicClient: publicClient as any, walletClient: walletClient as any },
-        {
-            salt: zeroHash,
-            bytecode: encodeDeployData({
-                abi: SimpleAccountFactory.abi,
-                bytecode: SimpleAccountFactory.bytecode,
-                args: [entrypoint.address],
-            }),
-        },
-    );
+    const simpleAccountFactory = await getOrDeployDeterministicContract(client, {
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: SimpleAccountFactory.abi,
+            bytecode: SimpleAccountFactory.bytecode,
+            args: [entrypoint.address],
+        }),
+    });
     // console.debug(simpleAccountFactory);
     if (simpleAccountFactory.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: simpleAccountFactory.hash });
+        await getAction(
+            client,
+            waitForTransactionReceipt,
+            "waitForTransactionReceipt",
+        )({ hash: simpleAccountFactory.hash });
     }
 
     //Step 4 - EntryPointSimulations
-    const entrypointSimulations = await getOrDeployDeterministicContract(
-        //TODO: viem type mismatch
-        { publicClient: publicClient as any, walletClient: walletClient as any },
-        {
-            salt: zeroHash,
-            bytecode: encodeDeployData({
-                abi: EntryPointSimulations.abi,
-                bytecode: EntryPointSimulations.bytecode,
-                args: [],
-            }),
-        },
-    );
+    const entrypointSimulations = await getOrDeployDeterministicContract(client, {
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: EntryPointSimulations.abi,
+            bytecode: EntryPointSimulations.bytecode,
+            args: [],
+        }),
+    });
     // console.debug(entrypointSimulations);
     if (entrypointSimulations.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: entrypointSimulations.hash });
+        await getAction(
+            client,
+            waitForTransactionReceipt,
+            "waitForTransactionReceipt",
+        )({ hash: entrypointSimulations.hash });
     }
 
     //Step 5 - EntryPointSimulations
-    const pimlicoEntrypointSimulations = await getOrDeployDeterministicContract(
-        //TODO: viem type mismatch
-        { publicClient: publicClient as any, walletClient: walletClient as any },
-        {
-            salt: zeroHash,
-            bytecode: encodeDeployData({
-                abi: PimlicoEntryPointSimulations.abi,
-                bytecode: PimlicoEntryPointSimulations.bytecode,
-                args: [entrypointSimulations.address],
-            }),
-        },
-    );
+    const pimlicoEntrypointSimulations = await getOrDeployDeterministicContract(client, {
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: PimlicoEntryPointSimulations.abi,
+            bytecode: PimlicoEntryPointSimulations.bytecode,
+            args: [entrypointSimulations.address],
+        }),
+    });
     // console.debug(entrypointSimulations);
     if (pimlicoEntrypointSimulations.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: pimlicoEntrypointSimulations.hash });
+        await getAction(
+            client,
+            waitForTransactionReceipt,
+            "waitForTransactionReceipt",
+        )({ hash: pimlicoEntrypointSimulations.hash });
     }
 
     //EntryPoint & SimpleAccountFactory & PimlicoEntryPointSimulations can be deployed concurrently
@@ -202,17 +203,18 @@ export function getVerifyingPaymaster(params: { verifyingSignerAddress: Address 
  * This contracts stores a balance of ETH to sponsor UserOps (aka "Paymaster").
  * It approves UserOp sponsorship if these are signed by the `verifyingSignerAddress` (the "Verifying" part).
  *   - VerifyingPaymaster () //TODO: TBD after research if we should deploy AA stack.
- * @param clients publicClient, walletClient for deploying contracts, verifyingSignerAddress address for paymaster
+ * @param client Client with chain & account for deploying contracts, verifyingSignerAddress address for paymaster
  * @returns contract info
  *
  */
-export async function setupVerifyingPaymaster(clients: {
-    walletClient: WalletClient;
-    publicClient: PublicClient;
-    verifyingSignerAddress: Address;
-}) {
-    const { publicClient, walletClient, verifyingSignerAddress } = clients;
-    const entrypointBytecode = await publicClient.getBytecode({ address: entryPoint07Address });
+export async function setupVerifyingPaymaster(
+    client: Client<Transport, Chain, Account>,
+    parameters: {
+        verifyingSignerAddress: Address;
+    },
+) {
+    const { verifyingSignerAddress } = parameters;
+    const entrypointBytecode = await getAction(client, getCode, "getCode")({ address: entryPoint07Address });
     if (!entrypointBytecode) {
         throw new Error(
             `EntryPoint v0.7 ${entryPoint07Address} not deployed. Consider deploying with setupERC4337Contracts()`,
@@ -221,21 +223,21 @@ export async function setupVerifyingPaymaster(clients: {
 
     //If no VerifyingPaymaster, wait for deploy (mostly used for local testing)
     //EntryPoint MUST be deployed for this to work
-    const verifyingPaymaster = await getOrDeployDeterministicContract(
-        //TODO: viem type mismatch
-        { publicClient: publicClient as any, walletClient: walletClient as any },
-        {
-            salt: zeroHash,
-            bytecode: encodeDeployData({
-                abi: VerifyingPaymaster.abi,
-                bytecode: VerifyingPaymaster.bytecode,
-                args: [entryPoint07Address, verifyingSignerAddress],
-            }),
-        },
-    );
+    const verifyingPaymaster = await getOrDeployDeterministicContract(client, {
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: VerifyingPaymaster.abi,
+            bytecode: VerifyingPaymaster.bytecode,
+            args: [entryPoint07Address, verifyingSignerAddress],
+        }),
+    });
     // console.debug(verifyingPaymaster);
     if (verifyingPaymaster.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: verifyingPaymaster.hash });
+        await getAction(
+            client,
+            waitForTransactionReceipt,
+            "waitForTransactionReceipt",
+        )({ hash: verifyingPaymaster.hash });
     }
 
     return verifyingPaymaster;
@@ -245,23 +247,24 @@ export async function setupVerifyingPaymaster(clients: {
  * Topup Paymaster contract with funds if balance is below `minBalance` (0 = Always topup)
  *
  * Funds are deposited to reach `targetBalance` (defaults to `minBalance`)
- * @param params publicClient, walletClient **with funds**, minBalance, targetBalance
+ * @param parameters publicClient, walletClient **with funds**, minBalance, targetBalance
  * @returns current paymaster balance & transaction hash for topup (if required)
  */
-export async function topupPaymaster(params: {
-    walletClient: WalletClient;
-    publicClient: PublicClient;
-    paymaster: Address;
-    minBalance: bigint;
-    targetBalance?: bigint;
-}): Promise<{ balance: bigint; hash?: Hash }> {
-    const { publicClient, walletClient, paymaster, minBalance } = params;
-    if (minBalance == 0n && params.targetBalance === undefined) {
+export async function topupPaymaster(
+    client: Client<Transport, Chain, Account>,
+    parameters: {
+        paymaster: Address;
+        minBalance: bigint;
+        targetBalance?: bigint;
+    },
+): Promise<{ balance: bigint; hash?: Hash }> {
+    const { paymaster, minBalance } = parameters;
+    if (minBalance == 0n && parameters.targetBalance === undefined) {
         //Ensure invariant targetBalance ALWAYS defined with minBalance = 0
         throw new Error(`topupAddressL2: minBalance 0, targetBalance MUST be defined`);
     }
 
-    const targetBalance = params.targetBalance ?? minBalance;
+    const targetBalance = parameters.targetBalance ?? minBalance;
     if (minBalance > targetBalance) {
         //Ensure invariant targetBalance >= minBalance
         throw new Error(
@@ -274,7 +277,11 @@ export async function topupPaymaster(params: {
         throw new Error(`topupPaymaster: 0 >= targetBalance (${formatEther(targetBalance)})`);
     }
 
-    const balance = await publicClient.readContract({
+    const balance = await getAction(
+        client,
+        readContract,
+        "readContract",
+    )({
         address: entryPoint07Address,
         abi: EntryPoint.abi,
         functionName: "balanceOf",
@@ -286,15 +293,20 @@ export async function topupPaymaster(params: {
 
     if (targetDeficit > 0n && (balance < minBalance || minBalance == 0n)) {
         //Paymaster under-funded => deposit from wallet account
-        const paymasterDeposit = await publicClient.simulateContract({
-            account: walletClient.account,
+        const paymasterDeposit = await getAction(
+            client,
+            simulateContract,
+            "simulateContract",
+        )({
+            account: client.account,
+            chain: client.chain,
             address: paymaster,
             abi: VerifyingPaymaster.abi,
             functionName: "deposit",
             value: targetDeficit,
             args: [],
         });
-        const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);
+        const paymasterDepositHash = await getAction(client, writeContract, "writeContract")(paymasterDeposit.request);
         return { balance, hash: paymasterDepositHash };
     }
 

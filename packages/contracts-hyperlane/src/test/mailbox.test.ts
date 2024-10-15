@@ -14,8 +14,9 @@ import {
     parseEventLogs,
     Hex,
     stringToHex,
+    PublicClient,
 } from "viem";
-import { Clients, getLocalAccount } from "@owlprotocol/viem-utils";
+import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { localhost } from "viem/chains";
 import { randomBytes } from "crypto";
 import { localhostRemote, port, port2 } from "./constants.js";
@@ -45,8 +46,14 @@ async function dispatchMessage(params: {
 }
 
 describe("mailbox.test.ts", function () {
-    let clientsOrigin: Clients;
-    let clientsRemote: Clients;
+    let clientsOrigin: {
+        publicClient: PublicClient<Transport, Chain>;
+        walletClient: WalletClient<Transport, Chain, Account>;
+    };
+    let clientsRemote: {
+        publicClient: PublicClient<Transport, Chain>;
+        walletClient: WalletClient<Transport, Chain, Account>;
+    };
 
     let testIsmAddressOrigin: Address;
     let testHookAddressOrigin: Address;
@@ -74,12 +81,12 @@ describe("mailbox.test.ts", function () {
             }),
         };
 
-        const mailboxContractsOrigin = await setupTestMailboxContracts(clientsOrigin);
+        const mailboxContractsOrigin = await setupTestMailboxContracts(clientsOrigin.walletClient);
         testIsmAddressOrigin = mailboxContractsOrigin.testIsm.address;
         testHookAddressOrigin = mailboxContractsOrigin.testHook.address;
         mailboxImplAddressOrigin = mailboxContractsOrigin.mailboxImpl.address;
 
-        const mailboxContractsRemote = await setupTestMailboxContracts(clientsRemote);
+        const mailboxContractsRemote = await setupTestMailboxContracts(clientsRemote.walletClient);
         testIsmAddressRemote = mailboxContractsRemote.testIsm.address;
         testHookAddressRemote = mailboxContractsRemote.testHook.address;
         mailboxImplAddressRemote = mailboxContractsRemote.mailboxImpl.address;
@@ -88,14 +95,16 @@ describe("mailbox.test.ts", function () {
     test("Deploy Mailbox and dispatch a mesasge", async () => {
         const randomSalt = bytesToHex(randomBytes(32));
 
-        const { address: mailboxAddressOrigin, hash: mailboxHashOrigin } = await getOrDeployMailboxProxy({
-            ...clientsOrigin,
-            mailboxImplAddress: mailboxImplAddressOrigin,
-            ismAddress: testIsmAddressOrigin,
-            defaultHookAddress: testHookAddressOrigin,
-            requiredHookAddress: testHookAddressOrigin,
-            salt: randomSalt,
-        });
+        const { address: mailboxAddressOrigin, hash: mailboxHashOrigin } = await getOrDeployMailboxProxy(
+            clientsOrigin.walletClient,
+            {
+                mailboxImplAddress: mailboxImplAddressOrigin,
+                ismAddress: testIsmAddressOrigin,
+                defaultHookAddress: testHookAddressOrigin,
+                requiredHookAddress: testHookAddressOrigin,
+                salt: randomSalt,
+            },
+        );
         if (mailboxHashOrigin) {
             await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: mailboxHashOrigin });
         }
@@ -123,8 +132,7 @@ describe("mailbox.test.ts", function () {
     test("Relay a message with mailboxes", async () => {
         const randomSalt = bytesToHex(randomBytes(32));
 
-        const mailboxOrigin = await getOrDeployMailboxProxy({
-            ...clientsOrigin,
+        const mailboxOrigin = await getOrDeployMailboxProxy(clientsOrigin.walletClient, {
             mailboxImplAddress: mailboxImplAddressOrigin,
             ismAddress: testIsmAddressOrigin,
             defaultHookAddress: testHookAddressOrigin,
@@ -135,8 +143,7 @@ describe("mailbox.test.ts", function () {
             await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: mailboxOrigin.hash });
         }
 
-        const mailboxRemote = await getOrDeployMailboxProxy({
-            ...clientsRemote,
+        const mailboxRemote = await getOrDeployMailboxProxy(clientsRemote.walletClient, {
             mailboxImplAddress: mailboxImplAddressRemote,
             ismAddress: testIsmAddressRemote,
             defaultHookAddress: testHookAddressRemote,
@@ -147,7 +154,9 @@ describe("mailbox.test.ts", function () {
             await clientsRemote.publicClient.waitForTransactionReceipt({ hash: mailboxRemote.hash });
         }
 
-        const { address: recipient, hash: testRecipientHash } = await getOrDeployTestRecipient(clientsRemote);
+        const { address: recipient, hash: testRecipientHash } = await getOrDeployTestRecipient(
+            clientsRemote.walletClient,
+        );
         if (testRecipientHash) {
             await clientsRemote.publicClient.waitForTransactionReceipt({ hash: testRecipientHash });
         }

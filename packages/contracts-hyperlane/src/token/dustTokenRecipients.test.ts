@@ -47,19 +47,16 @@ describe("dustTokenRecipients.test.ts", function () {
         });
 
         //Deploy DeterministicDeployer
-        const { hash: hashDeployer } = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
+        const { hash: hashDeployer } = await getOrDeployDeterministicDeployer(walletClient);
         if (hashDeployer) {
             await publicClient.waitForTransactionReceipt({ hash: hashDeployer });
         }
 
         //Deploy Mock Token Router
-        const tokenRouter = await getOrDeployDeterministicContract(
-            { publicClient, walletClient },
-            {
-                salt: zeroHash,
-                bytecode: MockTokenRouterEventsBytecode,
-            },
-        );
+        const tokenRouter = await getOrDeployDeterministicContract(walletClient, {
+            salt: zeroHash,
+            bytecode: MockTokenRouterEventsBytecode,
+        });
         tokenRouterAddress = tokenRouter.address;
         if (tokenRouter.hash) {
             await publicClient.waitForTransactionReceipt({ hash: tokenRouter.hash });

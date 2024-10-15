@@ -1,15 +1,9 @@
-import { Address } from "viem";
-import { Clients } from "@owlprotocol/viem-utils";
+import { Account, Address, Chain, Client, Transport } from "viem";
 import { setupERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
 import { getOrDeployCreate2Factory } from "@owlprotocol/contracts-create2factory";
 import { getERC721ImplementationDeployParams } from "@owlprotocol/contracts-diamond";
-
-/**
- * Params to setup network
- */
-export interface SetupChainContractsParams extends Clients {
-    verifyingSignerAddress: Address;
-}
+import { getAction } from "viem/utils";
+import { sendTransaction, waitForTransactionReceipt } from "viem/actions";
 
 /**
  * Setup network by deploying core contracts required by our infra. We try to only deployed contracts
@@ -23,27 +17,33 @@ export interface SetupChainContractsParams extends Clients {
  *   - VerifyingPaymaster (TBD / 0x2e23ef1375aA642504bED97676A566F5A3E4ae5A)
  *   - Diamond contracts
  */
-export async function setupChainContracts(params: SetupChainContractsParams) {
-    const { publicClient, walletClient, verifyingSignerAddress } = params;
+export async function setupChainContracts(
+    client: Client<Transport, Chain, Account>,
+    parameters: {
+        verifyingSignerAddress: Address;
+    },
+) {
+    const { verifyingSignerAddress } = parameters;
 
     //1. Deploy ERC4337 contracts (+ Arachnid deployer)
-    const erc4337Contracts = await setupERC4337Contracts({ publicClient, walletClient });
+    const erc4337Contracts = await setupERC4337Contracts(client);
     //2. Deploy ERC4337 Paymaster
-    const verifyingPaymaster = await setupVerifyingPaymaster({ publicClient, walletClient, verifyingSignerAddress });
+    const verifyingPaymaster = await setupVerifyingPaymaster(client, { verifyingSignerAddress });
     //3. Deploy Create2Factory
-    const create2Factory = await getOrDeployCreate2Factory({
-        publicClient,
-        walletClient,
-    });
+    const create2Factory = await getOrDeployCreate2Factory(client);
     if (create2Factory.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: create2Factory.hash });
+        await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash: create2Factory.hash });
     }
 
     //4. Deploy ERC721 Implementations
-    const erc721Implementations = await getERC721ImplementationDeployParams({ publicClient });
+    const erc721Implementations = await getERC721ImplementationDeployParams(client);
     if (erc721Implementations.deployTransaction) {
-        const hash = await walletClient.sendTransaction(erc721Implementations.deployTransaction);
-        await publicClient.waitForTransactionReceipt({ hash });
+        const hash = await getAction(
+            client,
+            sendTransaction,
+            "sendTransaction",
+        )({ ...erc721Implementations.deployTransaction, account: client.account, chain: client.chain });
+        await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
     }
 
     return {

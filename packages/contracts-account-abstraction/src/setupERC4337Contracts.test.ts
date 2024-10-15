@@ -25,40 +25,30 @@ describe("setupERC4337Contracts.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            //TODO: viem type mismatch
-            account: getLocalAccount(0) as unknown as Account,
+            account: getLocalAccount(0),
             chain: localhost,
             transport,
         });
 
         //Deploy Deterministic Deployer first
-        const { hash } = await getOrDeployDeterministicDeployer({
-            //TOOD: viem type mismatch
-            publicClient: publicClient as any,
-            walletClient: walletClient as any,
-        });
+        const { hash } = await getOrDeployDeterministicDeployer(walletClient);
         if (hash) {
             await publicClient.waitForTransactionReceipt({ hash });
         }
     });
 
     test("setupERC4337Contracts", async () => {
-        const result = await setupERC4337Contracts({
-            publicClient,
-            walletClient,
-        });
+        const result = await setupERC4337Contracts(walletClient);
 
-        expect(await publicClient.getBytecode({ address: result.deterministicDeployer.address })).toBeDefined();
-        expect(await publicClient.getBytecode({ address: result.entrypoint.address })).toBeDefined();
-        expect(await publicClient.getBytecode({ address: result.simpleAccountFactory.address })).toBeDefined();
-        expect(await publicClient.getBytecode({ address: result.entrypointSimulations.address })).toBeDefined();
-        expect(await publicClient.getBytecode({ address: result.pimlicoEntrypointSimulations.address })).toBeDefined();
+        expect(await publicClient.getCode({ address: result.deterministicDeployer.address })).toBeDefined();
+        expect(await publicClient.getCode({ address: result.entrypoint.address })).toBeDefined();
+        expect(await publicClient.getCode({ address: result.simpleAccountFactory.address })).toBeDefined();
+        expect(await publicClient.getCode({ address: result.entrypointSimulations.address })).toBeDefined();
+        expect(await publicClient.getCode({ address: result.pimlicoEntrypointSimulations.address })).toBeDefined();
 
-        const verifyingPaymaster = await setupVerifyingPaymaster({
-            publicClient,
-            walletClient,
+        const verifyingPaymaster = await setupVerifyingPaymaster(walletClient, {
             verifyingSignerAddress: walletClient.account.address,
         });
-        expect(await publicClient.getBytecode({ address: verifyingPaymaster.address })).toBeDefined();
+        expect(await publicClient.getCode({ address: verifyingPaymaster.address })).toBeDefined();
     });
 });

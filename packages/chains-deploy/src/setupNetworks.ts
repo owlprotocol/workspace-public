@@ -4,7 +4,7 @@ import { Network, NetworkDataInput, networkPrivateResource, networkResource } fr
 import { localhost, opBedrockL1, opBedrockL2 } from "@owlprotocol/chains";
 import * as chains from "@owlprotocol/chains/chains";
 import { getUtilityAccount, getRelayerAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
-import { Chain, createPublicClient, createWalletClient, http } from "viem";
+import { Chain, createWalletClient, http } from "viem";
 import { setupChain } from "./setupChain.js";
 
 /**
@@ -108,10 +108,6 @@ export async function setupNetworksForEnv() {
     const { networksPrivate } = await uploadNetworks(data);
     for (const network of networksPrivate) {
         const chain = { id: network.chainId, ...network } as Chain;
-        const publicClient = createPublicClient({
-            transport: http(chain.rpcUrls.default.http[0]),
-            chain,
-        });
         const walletClient = createWalletClient({
             transport: http(chain.rpcUrls.default.http[0]),
             chain,
@@ -120,12 +116,6 @@ export async function setupNetworksForEnv() {
         // L1 (opstack)
         const networkL1 = chain.sourceId ? await networkPrivateResource.getOrNull({ chainId: chain.sourceId }) : null;
         const chainL1 = networkL1 ? ({ id: networkL1.chainId, ...networkL1 } as Chain) : undefined;
-        const publicClientL1 = chainL1
-            ? createPublicClient({
-                  transport: http(chainL1.rpcUrls.default.http[0]),
-                  chain: chainL1,
-              })
-            : undefined;
         const walletClientL1 = chainL1
             ? createWalletClient({
                   transport: http(chainL1.rpcUrls.default.http[0]),
@@ -136,13 +126,10 @@ export async function setupNetworksForEnv() {
 
         console.debug(`🛠️  Deploying ${network.name}`);
 
-        const result = await setupChain({
-            publicClient,
-            walletClient,
+        const result = await setupChain(walletClient, {
             bundlerAddress: bundlerAccount.address,
             verifyingSignerAddress: paymasterSignerAccount.address,
-            publicClientL1: publicClientL1 as any,
-            walletClientL1: walletClientL1 as any,
+            clientL1: walletClientL1 as any,
             bundlerTargetBalance: network.targetRelayerBalance as bigint,
             bundlerMinBalance: network.minRelayerBalance as bigint,
             paymasterTargetBalance: network.targetPaymasterBalance as bigint,

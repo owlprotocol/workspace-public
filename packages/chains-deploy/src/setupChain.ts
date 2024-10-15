@@ -1,6 +1,8 @@
-import { Address, Transport, Chain, PublicClient, WalletClient, Account } from "viem";
+import { Address, Transport, Chain, WalletClient, Account, Client } from "viem";
 import { topupAddress } from "@owlprotocol/viem-utils";
 import { topupPaymaster } from "@owlprotocol/contracts-account-abstraction";
+import { getAction } from "viem/utils";
+import { getGasPrice, waitForTransactionReceipt } from "viem/actions";
 import { topupUtilityAccount } from "./topupUtilityAccount.js";
 import { setupChainContracts } from "./setupChainContracts.js";
 
@@ -13,10 +15,6 @@ import { setupChainContracts } from "./setupChainContracts.js";
  * 4. Topup Paymaster
  */
 export type SetupChainParams = {
-    /** Public Client */
-    publicClient: PublicClient<Transport, Chain>;
-    /** Wallet Client */
-    walletClient: WalletClient<Transport, Chain, Account>;
     /** Bundler relayer */
     bundlerAddress: Address;
     /** Paymaster signer */
@@ -37,20 +35,19 @@ export type SetupChainParams = {
     utilityTargetBalance?: bigint;
     /** Min utility balance to trigger topup */
     utilityMinBalance?: bigint;
-} & (
-    | { publicClientL1: PublicClient<Transport, Chain>; walletClientL1: WalletClient<Transport, Chain, Account> }
-    | { publicClientL1?: undefined; walletClientL1?: undefined }
-);
+    /** L1 Client for topup */
+    clientL1?: WalletClient<Transport, Chain, Account>;
+};
 
 /**
  * Topup chain utility account
  * @param params
  */
-export async function setupChain(params: SetupChainParams) {
-    const { publicClient, walletClient, publicClientL1, walletClientL1 } = params;
+export async function setupChain(client: Client<Transport, Chain, Account>, params: SetupChainParams) {
+    const { clientL1 } = params;
 
     //0. Topup amounts
-    const gasPrice = await publicClient.getGasPrice();
+    const gasPrice = await getAction(client, getGasPrice, "getGasPrice")({});
 
     // bundler gets refunded by paymaster, no need for large
     const bundlerGasBudget = params.bundlerGasBudget ?? 50_00_000n;
@@ -70,44 +67,37 @@ export async function setupChain(params: SetupChainParams) {
     const utilityMinBalance = params.utilityMinBalance ?? utilityTargetBalance / 2n;
 
     //1. Topup utility account (local development & L2)
-    const utilityTopup = await topupUtilityAccount({
-        address: walletClient.account.address,
+    const utilityTopup = await topupUtilityAccount(client, {
+        address: client.account.address,
         minBalance: utilityMinBalance,
         targetBalance: utilityTargetBalance,
-        publicClient,
-        // any cast required because of complex union
-        publicClientL1: publicClientL1 as any,
-        walletClientL1: walletClientL1 as any,
+        clientL1,
     });
 
     //2. Contracts
     const { verifyingSignerAddress } = params;
-    const contracts = await setupChainContracts({ publicClient, walletClient, verifyingSignerAddress });
+    const contracts = await setupChainContracts(client, { verifyingSignerAddress });
 
     //3. Bundler Topup
     const { bundlerAddress } = params;
 
-    const bundlerTopup = await topupAddress({
-        publicClient,
-        walletClient,
+    const bundlerTopup = await topupAddress(client, {
         address: bundlerAddress,
         minBalance: bundlerMinBalance,
         targetBalance: bundlerTargetBalance,
     });
     if (bundlerTopup.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: bundlerTopup.hash });
+        await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash: bundlerTopup.hash });
     }
 
     //4. Paymaster Topup
-    const paymasterTopup = await topupPaymaster({
-        publicClient,
-        walletClient,
+    const paymasterTopup = await topupPaymaster(client, {
         paymaster: contracts.verifyingPaymaster.address,
         minBalance: paymasterMinBalance,
         targetBalance: paymasterTargetBalance,
     });
     if (paymasterTopup.hash) {
-        await publicClient.waitForTransactionReceipt({ hash: paymasterTopup.hash });
+        await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash: paymasterTopup.hash });
     }
 
     return { ...contracts, utilityTopup, bundlerTopup, paymasterTopup };

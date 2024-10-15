@@ -45,20 +45,17 @@ describe("ERC721.test.ts", function () {
             transport,
         });
         //Deploy DeterministicDeployer
-        const { hash: hash0 } = await getOrDeployDeterministicDeployer({
-            publicClient,
-            walletClient: localWalletClient,
-        });
+        const { hash: hash0 } = await getOrDeployDeterministicDeployer(localWalletClient);
         if (hash0) {
             await publicClient.waitForTransactionReceipt({ hash: hash0 });
         }
         //Deploy Create2Factory
-        const { hash: hash1 } = await getOrDeployCreate2Factory({ publicClient, walletClient: localWalletClient });
+        const { hash: hash1 } = await getOrDeployCreate2Factory(localWalletClient);
         if (hash1) {
             await publicClient.waitForTransactionReceipt({ hash: hash1 });
         }
         //Deploy implementations
-        const { deployTransaction } = await getERC721ImplementationDeployParams({ publicClient });
+        const { deployTransaction } = await getERC721ImplementationDeployParams(publicClient);
         if (deployTransaction) {
             const deployFacetsHash = await localWalletClient.sendTransaction(deployTransaction);
             await publicClient.waitForTransactionReceipt({ hash: deployFacetsHash });
@@ -73,9 +70,7 @@ describe("ERC721.test.ts", function () {
         });
 
         //Top-up EOA address
-        const { hash } = await topupAddress({
-            publicClient,
-            walletClient: localWalletClient,
+        const { hash } = await topupAddress(localWalletClient, {
             address: walletClient.account.address,
             minBalance: parseEther("10"),
             targetBalance: parseEther("10"),
@@ -101,10 +96,10 @@ describe("ERC721.test.ts", function () {
             initData: "0x",
         });
 
-        const diamondBytecode = await publicClient.getBytecode({ address: diamondAddress });
+        const diamondBytecode = await publicClient.getCode({ address: diamondAddress });
         expect(diamondBytecode).toBeUndefined();
 
-        const resultDeploy = await getOrDeployContracts({ publicClient, walletClient }, zeroAddress, [
+        const resultDeploy = await getOrDeployContracts(walletClient, zeroAddress, [
             {
                 salt: zeroHash,
                 bytecode: diamondDeployData.deployData,
@@ -118,7 +113,7 @@ describe("ERC721.test.ts", function () {
             await publicClient.waitForTransactionReceipt({ hash: resultDeploy.hash });
         }
 
-        const diamondBytecode2 = await publicClient.getBytecode({ address: diamondAddress });
+        const diamondBytecode2 = await publicClient.getCode({ address: diamondAddress });
         expect(diamondBytecode2).toBeDefined();
 
         const symbol = await publicClient.readContract({

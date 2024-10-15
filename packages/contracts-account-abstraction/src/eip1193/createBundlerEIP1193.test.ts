@@ -69,16 +69,13 @@ describe("eip1993/createBundlerEIP1193.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getLocalAccount(0) as unknown as HDAccount,
+            account: getLocalAccount(0),
             chain: localhost,
             transport,
         });
 
         // ERC4337 Contracts
-        const contracts = await setupERC4337Contracts({
-            publicClient,
-            walletClient,
-        });
+        const contracts = await setupERC4337Contracts(walletClient);
         entryPointAddress = contracts.entrypoint.address;
         entryPointSimulationsAddress = contracts.pimlicoEntrypointSimulations.address;
         factoryAddress = contracts.simpleAccountFactory.address;
@@ -174,7 +171,7 @@ describe("eip1993/createBundlerEIP1193.test.ts", function () {
             const receipt = await publicClient.waitForTransactionReceipt({ hash });
             expect(receipt).toBeDefined();
 
-            const contractBytecode = await publicClient.getBytecode({ address: contractAddressExpected });
+            const contractBytecode = await publicClient.getCode({ address: contractAddressExpected });
             expect(contractBytecode).toBeDefined();
         });
 
@@ -187,7 +184,7 @@ describe("eip1993/createBundlerEIP1193.test.ts", function () {
             const userOpReceipt = await waitForUserOperationReceipt(bundlerClient, { hash: userOpHash });
             expect(userOpReceipt).toBeDefined();
 
-            const contractBytecode = await publicClient.getBytecode({ address: contractAddressExpected });
+            const contractBytecode = await publicClient.getCode({ address: contractAddressExpected });
             expect(contractBytecode).toBeDefined();
         });
     });

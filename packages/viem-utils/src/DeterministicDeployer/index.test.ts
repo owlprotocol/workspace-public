@@ -40,10 +40,7 @@ describe.skip("DeterministicDeployer.test.ts", function () {
 
     test("getOrDeployDeterministicContract", async () => {
         //Deploy DeterministicDeployer
-        const resultDeployDeterministicDeployer = await getOrDeployDeterministicDeployer({
-            publicClient,
-            walletClient,
-        });
+        const resultDeployDeterministicDeployer = await getOrDeployDeterministicDeployer(walletClient);
         expect(resultDeployDeterministicDeployer.address).toBe(DETERMINISTIC_DEPLOYER_ADDRESS);
 
         //Wait for receipt
@@ -55,7 +52,7 @@ describe.skip("DeterministicDeployer.test.ts", function () {
         }
 
         //Get existing DeterministicDeployer
-        const resultGetDeterministicDeployer = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
+        const resultGetDeterministicDeployer = await getOrDeployDeterministicDeployer(walletClient);
         expect(resultGetDeterministicDeployer.existed).toBe(true);
         expect(resultGetDeterministicDeployer.hash).toBeUndefined();
         expect(resultGetDeterministicDeployer.address).toBe(DETERMINISTIC_DEPLOYER_ADDRESS);
@@ -67,10 +64,7 @@ describe.skip("DeterministicDeployer.test.ts", function () {
         };
         const address = getDeployDeterministicAddress(deployParams);
 
-        const resultDeployMyContract = await getOrDeployDeterministicContract(
-            { publicClient, walletClient },
-            deployParams,
-        );
+        const resultDeployMyContract = await getOrDeployDeterministicContract(walletClient, deployParams);
         expect(resultDeployMyContract.address).toBe(address);
 
         //Wait for receipt
@@ -81,10 +75,7 @@ describe.skip("DeterministicDeployer.test.ts", function () {
         }
 
         //Get existing MyContract
-        const resultGetMyContract = await getOrDeployDeterministicContract(
-            { publicClient, walletClient },
-            deployParams,
-        );
+        const resultGetMyContract = await getOrDeployDeterministicContract(walletClient, deployParams);
         expect(resultGetMyContract.existed).toBe(true);
         expect(resultGetMyContract.hash).toBeUndefined();
         expect(resultGetMyContract.address).toBe(address);
