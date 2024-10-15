@@ -35,17 +35,12 @@ describe("SimpleAccountFactory.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            //TODO: viem type mimatch
-            account: getLocalAccount(0) as unknown as Account,
+            account: getLocalAccount(0),
             chain: localhost,
             transport,
         });
         //Deploy Deterministic Deployer first
-        //TODO: viem type mismatch
-        const { hash } = await getOrDeployDeterministicDeployer({
-            publicClient: publicClient as any,
-            walletClient: walletClient as any,
-        });
+        const { hash } = await getOrDeployDeterministicDeployer(walletClient);
         if (hash) {
             await publicClient.waitForTransactionReceipt({ hash });
         }
@@ -65,11 +60,7 @@ describe("SimpleAccountFactory.test.ts", function () {
         expect(address).toBe(SIMPLE_ACCOUNT_FACTORY_ADDRESS);
 
         //Deploy new
-        //TODO: viem type mismatch
-        const resultDeploy = await getOrDeployDeterministicContract(
-            { publicClient: publicClient as any, walletClient: walletClient as any },
-            deployParams,
-        );
+        const resultDeploy = await getOrDeployDeterministicContract(walletClient, deployParams);
         expect(resultDeploy.address).toBe(address);
 
         //Wait for receipt
@@ -81,11 +72,7 @@ describe("SimpleAccountFactory.test.ts", function () {
         }
 
         //Get existing
-        //TODO: viem type mismatch
-        const resultGet = await getOrDeployDeterministicContract(
-            { publicClient: publicClient as any, walletClient: walletClient as any },
-            deployParams,
-        );
+        const resultGet = await getOrDeployDeterministicContract(walletClient, deployParams);
         expect(resultGet.existed).toBe(true);
         expect(resultGet.hash).toBeUndefined();
         expect(resultGet.address).toBe(address);

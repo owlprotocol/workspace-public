@@ -53,18 +53,15 @@ describe("VerifyingPaymaster.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            //TODO: viem type mismatch
-            account: getLocalAccount(0) as unknown as HDAccount,
+            account: getLocalAccount(0),
             chain: localhost,
             transport,
         });
-        const contracts = await setupERC4337Contracts({ publicClient, walletClient });
+        const contracts = await setupERC4337Contracts(walletClient);
         // entryPoint = contracts.entrypoint.address;
         simpleAccountFactory = contracts.simpleAccountFactory.address;
         verifyingPaymaster = (
-            await setupVerifyingPaymaster({
-                publicClient,
-                walletClient,
+            await setupVerifyingPaymaster(walletClient, {
                 verifyingSignerAddress: walletClient.account.address,
             })
         ).address;
@@ -137,7 +134,7 @@ describe("VerifyingPaymaster.test.ts", function () {
                 },
             );
 
-            if (!(await publicClient.getBytecode({ address: simpleAccountAddress }))) {
+            if (!(await publicClient.getCode({ address: simpleAccountAddress }))) {
                 const simpleAccountFactoryData = encodeFunctionData({
                     abi: SimpleAccountFactory.abi,
                     functionName: "createAccount",

@@ -1,5 +1,5 @@
-import { Clients, getDeployContractsParams, getDeployFunctionData } from "@owlprotocol/contracts-create2factory";
-import { Address, Hex, zeroAddress, zeroHash } from "viem";
+import { getDeployContractsParams, getDeployFunctionData } from "@owlprotocol/contracts-create2factory";
+import { Address, Client, Hex, zeroAddress, zeroHash } from "viem";
 import { getAbiFunctionSelectors, getDiamondDeployData } from "./Diamond.js";
 
 import {
@@ -68,7 +68,7 @@ export function getERC721DiamondDeployData(initParams: ERC721DiamondInitParams &
     };
 }
 
-export async function getERC721ImplementationDeployParams(clients: Pick<Clients, "publicClient">) {
+export async function getERC721ImplementationDeployParams(client: Client) {
     const artifacts = [
         ...Object.values(ERC721PresetDiamondSpec.facets),
         ...Object.values(ERC721PresetDiamondSpec.initializers),
@@ -79,7 +79,7 @@ export async function getERC721ImplementationDeployParams(clients: Pick<Clients,
     // - Diamond inits (delegate call post-cut)
     // `getDeployContractsParams` returns only contracts required for deployment
     const deployParams = await getDeployContractsParams(
-        clients,
+        client,
         zeroAddress,
         Object.values(artifacts).map((a) => {
             return { salt: zeroHash, bytecode: a.bytecode, initData: "0x" };

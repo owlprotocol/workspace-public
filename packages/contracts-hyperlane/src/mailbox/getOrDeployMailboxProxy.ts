@@ -1,42 +1,25 @@
 import { getOrDeployContracts, getCloneDeterministicBytecode } from "@owlprotocol/contracts-create2factory";
-import {
-    zeroHash,
-    PublicClient,
-    Transport,
-    Chain,
-    WalletClient,
-    Account,
-    Address,
-    Hash,
-    zeroAddress,
-    encodeFunctionData,
-} from "viem";
+import { zeroHash, Transport, Chain, Account, Address, Hash, zeroAddress, encodeFunctionData, Client } from "viem";
 import { initialize as initializeAbi } from "../artifacts/Mailbox.js";
 
-export async function getOrDeployMailboxProxy({
-    publicClient,
-    walletClient,
-    mailboxImplAddress,
-    ismAddress,
-    defaultHookAddress,
-    requiredHookAddress,
-    salt = zeroHash,
-}: {
-    publicClient: PublicClient<Transport, Chain>;
-    walletClient: WalletClient<Transport, Chain, Account>;
-    mailboxImplAddress: Address;
-    ismAddress: Address;
-    defaultHookAddress: Address;
-    requiredHookAddress: Address;
-    salt?: Hash;
-}): Promise<{ hash?: Hash; address: Address; exists: boolean }> {
-    const deployMailbox = await getOrDeployContracts({ publicClient, walletClient }, zeroAddress, [
+export async function getOrDeployMailboxProxy(
+    client: Client<Transport, Chain, Account>,
+    parameters: {
+        mailboxImplAddress: Address;
+        ismAddress: Address;
+        defaultHookAddress: Address;
+        requiredHookAddress: Address;
+        salt?: Hash;
+    },
+): Promise<{ hash?: Hash; address: Address; exists: boolean }> {
+    const { mailboxImplAddress, ismAddress, defaultHookAddress, requiredHookAddress, salt = zeroHash } = parameters;
+    const deployMailbox = await getOrDeployContracts(client, zeroAddress, [
         {
             bytecode: getCloneDeterministicBytecode(mailboxImplAddress),
             initData: encodeFunctionData({
                 abi: [initializeAbi],
                 functionName: "initialize",
-                args: [walletClient.account.address, ismAddress, defaultHookAddress, requiredHookAddress],
+                args: [client.account.address, ismAddress, defaultHookAddress, requiredHookAddress],
             }),
             salt,
         },

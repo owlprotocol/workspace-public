@@ -9,8 +9,13 @@ import {
     bytesToHex,
     encodeDeployData,
     parseEventLogs,
+    Account,
+    Chain,
+    PublicClient,
+    Transport,
+    WalletClient,
 } from "viem";
-import { getLocalAccount, Clients, numberToAddress, getOrDeployDeterministicContract } from "@owlprotocol/viem-utils";
+import { getLocalAccount, numberToAddress, getOrDeployDeterministicContract } from "@owlprotocol/viem-utils";
 import { localhost } from "viem/chains";
 import { randomBytes } from "crypto";
 import { port, port2, localhostRemote, chainId2 } from "./constants.js";
@@ -32,8 +37,14 @@ describe("warpRoute.test.ts", function () {
 
     const testToken = { name: "Test Token", totalSupply: 0n, symbol: "TT", decimals: 18 };
 
-    let clientsOrigin: Clients;
-    let clientsRemote: Clients;
+    let clientsOrigin: {
+        publicClient: PublicClient<Transport, Chain>;
+        walletClient: WalletClient<Transport, Chain, Account>;
+    };
+    let clientsRemote: {
+        publicClient: PublicClient<Transport, Chain>;
+        walletClient: WalletClient<Transport, Chain, Account>;
+    };
 
     let mailboxAddressOrigin: Address;
     let mailboxAddressRemote: Address;
@@ -57,14 +68,13 @@ describe("warpRoute.test.ts", function () {
             }),
         };
 
-        const mailboxContractsOrigin = await setupTestMailboxContractsWithProxy(clientsOrigin);
+        const mailboxContractsOrigin = await setupTestMailboxContractsWithProxy(clientsOrigin.walletClient);
         mailboxAddressOrigin = mailboxContractsOrigin.mailbox.address;
 
-        const mailboxContractsRemote = await setupTestMailboxContractsWithProxy(clientsRemote);
+        const mailboxContractsRemote = await setupTestMailboxContractsWithProxy(clientsRemote.walletClient);
         mailboxAddressRemote = mailboxContractsRemote.mailbox.address;
 
-        const hypERC20ImplRemote = await getOrDeployHypERC20Impl({
-            ...clientsRemote,
+        const hypERC20ImplRemote = await getOrDeployHypERC20Impl(clientsRemote.walletClient, {
             mailboxAddress: mailboxAddressRemote,
         });
         if (hypERC20ImplRemote.hash) {
@@ -74,8 +84,7 @@ describe("warpRoute.test.ts", function () {
     });
 
     test("Deploy HypERC20Collateral token", async () => {
-        const hypERC20CollateralImplOrigin = await getOrDeployHypERC20CollateralImpl({
-            ...clientsOrigin,
+        const hypERC20CollateralImplOrigin = await getOrDeployHypERC20CollateralImpl(clientsOrigin.walletClient, {
             mailboxAddress: mailboxAddressOrigin,
             erc20Address: zeroAddress,
         });
@@ -83,8 +92,7 @@ describe("warpRoute.test.ts", function () {
             clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypERC20CollateralImplOrigin.hash });
         }
 
-        const hypERC20CollateralOrigin = await getOrDeployHypERC20CollateralProxy({
-            ...clientsOrigin,
+        const hypERC20CollateralOrigin = await getOrDeployHypERC20CollateralProxy(clientsOrigin.walletClient, {
             hypERC20CollateralImplAddress: hypERC20CollateralImplOrigin.address,
             owner: clientsOrigin.walletClient.account.address,
         });
@@ -111,8 +119,7 @@ describe("warpRoute.test.ts", function () {
     });
 
     test("Deploy HypERC20token", async () => {
-        const hypERC20Remote = await getOrDeployHypERC20Proxy({
-            ...clientsRemote,
+        const hypERC20Remote = await getOrDeployHypERC20Proxy(clientsRemote.walletClient, {
             ...testToken,
             hypERC20ImplAddress: hypERC20ImplAddressRemote,
             owner: clientsRemote.walletClient.account.address,
@@ -141,7 +148,7 @@ describe("warpRoute.test.ts", function () {
 
     test("Mint a HypERC20 and transfer to remote chain", async () => {
         const randomSalt = bytesToHex(randomBytes(32));
-        const erc20 = await getOrDeployDeterministicContract(clientsOrigin, {
+        const erc20 = await getOrDeployDeterministicContract(clientsOrigin.walletClient, {
             salt: randomSalt,
             bytecode: encodeDeployData({
                 abi: ERC20Test.abi,
@@ -151,24 +158,21 @@ describe("warpRoute.test.ts", function () {
         });
         await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: erc20.hash! });
 
-        const hypERC20CollateralImplOrigin = await getOrDeployHypERC20CollateralImpl({
-            ...clientsOrigin,
+        const hypERC20CollateralImplOrigin = await getOrDeployHypERC20CollateralImpl(clientsOrigin.walletClient, {
             mailboxAddress: mailboxAddressOrigin,
             erc20Address: erc20.address,
             salt: randomSalt,
         });
         await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypERC20CollateralImplOrigin.hash! });
 
-        const hypERC20CollateralOrigin = await getOrDeployHypERC20CollateralProxy({
-            ...clientsOrigin,
+        const hypERC20CollateralOrigin = await getOrDeployHypERC20CollateralProxy(clientsOrigin.walletClient, {
             hypERC20CollateralImplAddress: hypERC20CollateralImplOrigin.address,
             owner: clientsOrigin.walletClient.account.address,
             salt: randomSalt,
         });
         await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypERC20CollateralOrigin.hash! });
 
-        const hypERC20Remote = await getOrDeployHypERC20Proxy({
-            ...clientsRemote,
+        const hypERC20Remote = await getOrDeployHypERC20Proxy(clientsRemote.walletClient, {
             ...testToken,
             hypERC20ImplAddress: hypERC20ImplAddressRemote,
             owner: clientsRemote.walletClient.account.address,

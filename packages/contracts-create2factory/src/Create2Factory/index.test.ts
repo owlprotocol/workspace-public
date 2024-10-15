@@ -42,7 +42,7 @@ describe.skip("deployCreate2Factory.test.ts", function () {
         });
 
         //Deploy DeterministicDeployer
-        const { hash } = await getOrDeployDeterministicDeployer({ publicClient, walletClient });
+        const { hash } = await getOrDeployDeterministicDeployer(walletClient);
         if (hash) {
             await publicClient.waitForTransactionReceipt({ hash });
         }
@@ -59,10 +59,7 @@ describe.skip("deployCreate2Factory.test.ts", function () {
 
     test("getOrDeployContracts", async () => {
         //Deploy Create2Factory
-        const resultDeployCreate2Factory = await getOrDeployCreate2Factory({
-            publicClient,
-            walletClient,
-        });
+        const resultDeployCreate2Factory = await getOrDeployCreate2Factory(walletClient);
         expect(resultDeployCreate2Factory.address).toBe(CREATE2_FACTORY_ADDRESS);
 
         //Wait for receipt
@@ -73,7 +70,7 @@ describe.skip("deployCreate2Factory.test.ts", function () {
         }
 
         //Get existing Create2Factory
-        const resultGetCreate2Factory = await getOrDeployCreate2Factory({ publicClient, walletClient });
+        const resultGetCreate2Factory = await getOrDeployCreate2Factory(walletClient);
         expect(resultGetCreate2Factory.existed).toBe(true);
         expect(resultGetCreate2Factory.hash).toBeUndefined();
         expect(resultGetCreate2Factory.address).toBe(CREATE2_FACTORY_ADDRESS);
@@ -83,9 +80,7 @@ describe.skip("deployCreate2Factory.test.ts", function () {
         const contractArgs = { bytecode: MyContract.bytecode, initData: "0x" as Hex, salt: zeroHash };
         const address = getDeployAddress(msgSender, contractArgs);
 
-        const resultDeployMyContract = await getOrDeployContracts({ publicClient, walletClient }, zeroAddress, [
-            contractArgs,
-        ]);
+        const resultDeployMyContract = await getOrDeployContracts(walletClient, zeroAddress, [contractArgs]);
         expect(resultDeployMyContract.addresses[0].address).toBe(address);
 
         //Wait for receipt
@@ -96,9 +91,7 @@ describe.skip("deployCreate2Factory.test.ts", function () {
         }
 
         //Get existing MyContract
-        const resultGetMyContract = await getOrDeployContracts({ publicClient, walletClient }, msgSender, [
-            contractArgs,
-        ]);
+        const resultGetMyContract = await getOrDeployContracts(walletClient, msgSender, [contractArgs]);
         expect(resultGetMyContract.hash).toBeUndefined();
         expect(resultGetMyContract.addresses[0].address).toBe(address);
         expect(resultGetMyContract.addresses[0].exists).toBe(true);

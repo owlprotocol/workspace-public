@@ -1,8 +1,9 @@
-import { Account, Transport, Chain, PublicClient, parseEther, WalletClient, Address, walletActions } from "viem";
+import { Account, Transport, Chain, parseEther, Address, Client } from "viem";
 import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { isProductionOrStaging } from "@owlprotocol/envvars";
 import { topupAddressL2 } from "@owlprotocol/viem-utils";
-import { publicActionsL2, walletActionsL1 } from "viem/op-stack";
+import { getAction } from "viem/utils";
+import { getBalance, sendTransaction, waitForTransactionReceipt } from "viem/actions";
 
 /**
  * Topup chain utility account params. `chainL1` required if using L2 Topup
@@ -14,38 +15,42 @@ export type TopupUtilityAccountParams = {
     minBalance?: bigint;
     /** Target balance for topup */
     targetBalance?: bigint;
-    /** Public Client */
-    publicClient: PublicClient<Transport, Chain>;
-} & (
-    | { publicClientL1: PublicClient<Transport, Chain>; walletClientL1: WalletClient<Transport, Chain, Account> }
-    | { publicClientL1?: undefined; walletClientL1?: undefined }
-);
+    /** L1 Client for OPStack bridging */
+    clientL1?: Client<Transport, Chain, Account>;
+};
 /**
  * Topup chain utility account
  * @param params
  */
-export async function topupUtilityAccount(params: TopupUtilityAccountParams) {
-    const { address, publicClient, targetBalance, publicClientL1, walletClientL1 } = params;
+export async function topupUtilityAccount(client: Client<Transport, Chain>, params: TopupUtilityAccountParams) {
+    const { address, targetBalance, clientL1 } = params;
     const minBalance = params.minBalance ?? 0n;
-    const chain = publicClient.chain;
+    const chain = client.chain;
 
     // Local development
     // chainId is local L1 network (anvil/L1 Optimism Devnet)
     if (!isProductionOrStaging() && (chain.id === 1337 || chain.id === 900)) {
         // Check account balance
-        const balance = await publicClient.getBalance({ address });
+        const balance = await getAction(client, getBalance, "getBalance")({ address });
         if (balance === 0n) {
             // One-time topup from local seed account
             // note: this is kinda a no-no in viem but works (should be using .extend usually)
-            const client = { ...publicClient, account: getLocalAccount(1) };
-            const localWalletClient = walletActions(client) as unknown as WalletClient<Transport, Chain, Account>;
-
-            const hash = await localWalletClient.sendTransaction({
+            const hash = await getAction(
+                client,
+                sendTransaction,
+                "sendTransaction",
+            )({
                 to: address,
                 // One-time 1,000 ETH transfer
                 value: parseEther("1000"),
+                chain,
+                account: getLocalAccount(1),
             });
-            const receipt = await publicClient.waitForTransactionReceipt({
+            const receipt = await getAction(
+                client,
+                waitForTransactionReceipt,
+                "waitForTransactionReceipt",
+            )({
                 hash,
             });
 
@@ -53,14 +58,13 @@ export async function topupUtilityAccount(params: TopupUtilityAccountParams) {
         }
 
         return { balance };
-    } else if (publicClientL1) {
+    } else if (clientL1) {
         //TODO: Can crash when waiting for receipt too long
         //TODO: Maybe add longer confirmation time?
         // Topup from L1 balance
         return topupAddressL2({
-            publicClientL1,
-            publicClientL2: publicClient.extend(publicActionsL2()),
-            walletClientL1: walletClientL1.extend(walletActionsL1()),
+            clientL1,
+            clientL2: client,
             address,
             minBalance,
             targetBalance,

@@ -1,21 +1,22 @@
-import { Address, formatEther } from "viem";
-import { Clients } from "./clients.js";
+import { Account, Address, Chain, Client, formatEther, Transport } from "viem";
+import { getBalance, sendTransaction } from "viem/actions";
+import { getAction } from "viem/utils";
 
 /**
  * Address balance topup params
  */
-export type TopupAddressParams = Clients & {
+export type TopupAddressParams = {
     address: Address;
 } & (
-        | {
-              minBalance: bigint;
-              targetBalance?: bigint;
-          }
-        | {
-              minBalance?: bigint;
-              targetBalance: bigint;
-          }
-    );
+    | {
+          minBalance: bigint;
+          targetBalance?: bigint;
+      }
+    | {
+          minBalance?: bigint;
+          targetBalance: bigint;
+      }
+);
 /**
  * Topup address up to `targetBalance` if balance is below `minBalance` (undefined = Always topup)
  *
@@ -23,8 +24,8 @@ export type TopupAddressParams = Clients & {
  * @param params publicClient, walletClient **with funds**, minBalance, targetBalance
  * @returns current address balance & transaction hash for topup (if required)
  */
-export async function topupAddress(params: TopupAddressParams) {
-    const { publicClient, walletClient, address, minBalance } = params;
+export async function topupAddress(client: Client<Transport, Chain, Account>, params: TopupAddressParams) {
+    const { address, minBalance } = params;
     if (params.minBalance == undefined && params.targetBalance == undefined) {
         //Ensure invariant either minBalance or targetBalance defined
         throw new Error(`topupAddress: minBalance AND targetBalance undefined`);
@@ -43,7 +44,7 @@ export async function topupAddress(params: TopupAddressParams) {
         throw new Error(`topupAddress: 0 >= targetBalance (${formatEther(targetBalance)})`);
     }
 
-    const balance = await publicClient.getBalance({ address });
+    const balance = await getAction(client, getBalance, "getBalance")({ address });
     // Amount to topup
     const targetDeficit = targetBalance - balance;
 
@@ -55,9 +56,15 @@ export async function topupAddress(params: TopupAddressParams) {
         (minBalance == undefined || (minBalance == 0n && balance == 0n) || balance < minBalance)
     ) {
         //Address under-funded => deposit from wallet account
-        const paymasterDepositHash = await walletClient.sendTransaction({
+        const paymasterDepositHash = await getAction(
+            client,
+            sendTransaction,
+            "sendTransaction",
+        )({
             to: address,
             value: targetDeficit,
+            account: client.account,
+            chain: client.chain,
         });
         return { balance, hash: paymasterDepositHash };
     }

@@ -49,12 +49,11 @@ describe("SimpleAccount.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            //TODO: viem type mismatch
-            account: getLocalAccount(0) as unknown as HDAccount,
+            account: getLocalAccount(0),
             chain: localhost,
             transport,
         });
-        const contracts = await setupERC4337Contracts({ publicClient, walletClient: walletClient });
+        const contracts = await setupERC4337Contracts(walletClient);
         entryPoint = contracts.entrypoint.address;
         simpleAccountFactory = contracts.simpleAccountFactory.address;
     });
@@ -98,7 +97,7 @@ describe("SimpleAccount.test.ts", function () {
             expect(simpleAccountAddressOffchain).toBe(simpleAccountAddressFromFactory);
 
             //Counterfactual address no code
-            const accountExistingBytecode = await publicClient.getBytecode({ address: simpleAccountAddressOffchain });
+            const accountExistingBytecode = await publicClient.getCode({ address: simpleAccountAddressOffchain });
             expect(
                 accountExistingBytecode,
                 "Generated smart account counterfactual address should have 0x code",
@@ -115,7 +114,7 @@ describe("SimpleAccount.test.ts", function () {
             const createAccountHash = await walletClient.writeContract(createAccountRequest);
             await publicClient.waitForTransactionReceipt({ hash: createAccountHash });
 
-            const accountBytecode = await publicClient.getBytecode({ address: simpleAccountAddressOffchain });
+            const accountBytecode = await publicClient.getCode({ address: simpleAccountAddressOffchain });
             expect(accountBytecode).toBeDefined();
             const accountOwner = await publicClient.readContract({
                 address: simpleAccountAddressOffchain,

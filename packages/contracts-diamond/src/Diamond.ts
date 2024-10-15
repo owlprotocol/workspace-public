@@ -1,5 +1,4 @@
-import { Clients } from "@owlprotocol/contracts-create2factory";
-import { Abi, Address, Hex, encodeDeployData, encodeFunctionData, toFunctionSelector, zeroAddress } from "viem";
+import { Abi, Address, Client, Hex, encodeDeployData, encodeFunctionData, toFunctionSelector, zeroAddress } from "viem";
 import { Diamond, DiamondInitMulti } from "./artifacts/index.js";
 
 export function getAbiFunctionSelectors(abi: Abi): Hex[] {
@@ -56,7 +55,7 @@ export function validateDiamondCutUpgrades(
  * @returns
  */
 export async function getDiamondCutUpgrades(
-    _clients: Pick<Clients, "publicClient">,
+    _clients: Client,
     facets: { facetAddress: Address; functionSelectors: Hex[] }[],
 ): Promise<{ facetAddress: Address; functionSelectors: Hex[]; action: FacetCutAction }[]> {
     //TODO: Add logic above, for now just return all

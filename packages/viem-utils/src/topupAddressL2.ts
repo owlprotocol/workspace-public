@@ -1,13 +1,14 @@
-import { Account, Address, Chain, formatEther, PublicClient, Transport, WalletClient } from "viem";
-import { getL2TransactionHashes, PublicActionsL2, WalletActionsL1 } from "viem/op-stack";
+import { Account, Address, Chain, Client, formatEther, Transport } from "viem";
+import { getBalance, waitForTransactionReceipt } from "viem/actions";
+import { buildDepositTransaction, depositTransaction, getL2TransactionHashes } from "viem/op-stack";
+import { getAction } from "viem/utils";
 
 /**
  * Address balance topup params
  */
 export type TopupAddressL2Params = {
-    publicClientL1: PublicClient<Transport, Chain>;
-    publicClientL2: PublicClient<Transport, Chain> & PublicActionsL2<Chain>;
-    walletClientL1: WalletClient<Transport, Chain, Account> & WalletActionsL1<Chain, Account>;
+    clientL2: Client<Transport, Chain>;
+    clientL1: Client<Transport, Chain, Account>;
     address: Address;
     l1Gas?: number | null;
 } & (
@@ -28,7 +29,7 @@ export type TopupAddressL2Params = {
  * @returns current address balance & transaction hashes & receipts (resolves on confirmation) for topup (if required)
  */
 export async function topupAddressL2(params: TopupAddressL2Params) {
-    const { publicClientL1, publicClientL2, walletClientL1, address, minBalance, l1Gas } = params;
+    const { clientL1, clientL2, address, minBalance, l1Gas } = params;
     if (params.minBalance == undefined && params.targetBalance == undefined) {
         //Ensure invariant either minBalance or targetBalance defined
         throw new Error(`topupAddressL2: minBalance AND targetBalance undefined`);
@@ -47,7 +48,7 @@ export async function topupAddressL2(params: TopupAddressL2Params) {
         throw new Error(`topupAddressL2: 0 >= targetBalance (${formatEther(targetBalance)})`);
     }
 
-    const balance = await publicClientL2.getBalance({ address });
+    const balance = await getAction(clientL2, getBalance, "getBalance")({ address });
     // Amount to topup
     const targetDeficit = targetBalance - balance;
 
@@ -61,9 +62,14 @@ export async function topupAddressL2(params: TopupAddressL2Params) {
         // Address under-funded => deposit from wallet account
         // Follow viem guide https://viem.sh/op-stack/guides/deposits
         // Build parameters for the transaction on the L2.
-        const args = await publicClientL2.buildDepositTransaction({
+        const args = await getAction(
+            clientL2,
+            buildDepositTransaction,
+            "buildDepositTransaction",
+        )({
             mint: targetDeficit,
             to: address,
+            chain: clientL2.chain,
         });
 
         //Opposite of if statement for depositTransaction.ts (viem)
@@ -73,16 +79,28 @@ export async function topupAddressL2(params: TopupAddressL2Params) {
         }
 
         // Execute the deposit transaction on the L1.
-        const l1DepositHash = await walletClientL1.depositTransaction(args);
+        const l1DepositHash = await getAction(
+            clientL1,
+            depositTransaction,
+            "depositTransaction",
+        )({ ...args, chain: clientL1.chain, account: clientL1.account });
         // Wait for the L1 transaction to be processed.
-        const l1DepositReceipt = await publicClientL1.waitForTransactionReceipt({
+        const l1DepositReceipt = await getAction(
+            clientL1,
+            waitForTransactionReceipt,
+            "waitForTransactionReceipt",
+        )({
             hash: l1DepositHash,
         });
         console.debug(l1DepositReceipt);
         // Get the L2 transaction hash from the L1 transaction receipt.
         const [l2DepositHash] = getL2TransactionHashes(l1DepositReceipt);
         // Wait for the L2 transaction to be processed.
-        const l2DepositReceipt = await publicClientL2.waitForTransactionReceipt({
+        const l2DepositReceipt = await getAction(
+            clientL2,
+            waitForTransactionReceipt,
+            "waitForTransactionReceipt",
+        )({
             hash: l2DepositHash,
         });
 
