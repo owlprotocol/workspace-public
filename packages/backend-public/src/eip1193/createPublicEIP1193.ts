@@ -1,6 +1,6 @@
 import { PublicRpcSchema, EIP1193Parameters, EIP1193RequestFn, RpcRequestError, Hex, RpcSchema } from "viem";
-import { ParameterValidationError } from "@open-rpc/schema-utils-js";
-import { getPublicOpenRpcSchema } from "../publicOpenRpcSchema.js";
+// import { ParameterValidationError } from "@open-rpc/schema-utils-js";
+// import { getPublicOpenRpcSchema } from "../publicOpenRpcSchema.js";
 
 export type PublicRpcMethod = Parameters<(typeof publicRpcMethods)["has"]>[0];
 
@@ -76,6 +76,7 @@ export async function requestPublicEIP1193(request: EIP1193RequestFn, args: EIP1
     }
 
     // Validate params
+    /*
     const publicRpcValidator = (await getPublicOpenRpcSchema()).publicRpcValidator;
     const errors = publicRpcValidator.validate(args.method, args.params ?? []) as ParameterValidationError[];
     if (errors.length > 0) {
@@ -88,6 +89,7 @@ export async function requestPublicEIP1193(request: EIP1193RequestFn, args: EIP1
             },
         });
     }
+    */
 
     try {
         return request(args);

@@ -1,9 +1,9 @@
 import { PublicRpcSchema, EIP1193Parameters, EIP1193RequestFn, RpcRequestError } from "viem";
-import { ParameterValidationError } from "@open-rpc/schema-utils-js";
+// import { ParameterValidationError } from "@open-rpc/schema-utils-js";
 
 import {
     requestWithMemoizedChainId,
-    getPublicOpenRpcSchema,
+    // getPublicOpenRpcSchema,
     requestPublicEIP1193,
     concatRequests,
     isPublicRpcMethod,
@@ -64,6 +64,7 @@ export async function requestIndexerEIP1193(request: EIP1193RequestFn, args: EIP
     }
 
     // Validate params
+    /*
     const publicRpcValidator = (await getPublicOpenRpcSchema()).publicRpcValidator;
     const errors = publicRpcValidator.validate(args.method, args.params ?? []) as ParameterValidationError[];
     if (errors.length > 0) {
@@ -76,6 +77,7 @@ export async function requestIndexerEIP1193(request: EIP1193RequestFn, args: EIP
             },
         });
     }
+    */
 
     try {
         if (args.method === "eth_getBlockByHash") {
