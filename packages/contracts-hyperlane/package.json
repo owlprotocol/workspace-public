@@ -94,7 +94,7 @@
     "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
     "dotenv": "^16.4.5",
-    "viem": "2.9.20",
+    "viem": "2.21.19",
     "zod": "3.22.4"
   },
   "devDependencies": {

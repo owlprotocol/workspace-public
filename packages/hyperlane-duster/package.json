@@ -13,7 +13,7 @@
     "@oclif/plugin-help": "^6",
     "@oclif/plugin-plugins": "^5",
     "@owlprotocol/contracts-hyperlane": "workspace:*",
-    "viem": "2.9.20"
+    "viem": "2.21.19"
   },
   "devDependencies": {
     "@oclif/prettier-config": "^0.2.1",

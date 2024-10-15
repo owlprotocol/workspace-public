@@ -9,6 +9,7 @@ export * from "./EthLogAbi.js";
 export * from "./EthTransaction.js";
 export * from "./EthTransactionReceipt.js";
 export * from "./EthUserOp.js";
+export * from "./EthUserOpReceipt.js";
 
 export * from "./Chain.js";
 export * from "./Network.js";

@@ -1,6 +1,6 @@
 import { describe, test, beforeEach, expect } from "vitest";
 import {
-    Account,
+    LocalAccount,
     Address,
     Chain,
     Transport,
@@ -17,24 +17,26 @@ import {
     concatHex,
     decodeErrorResult,
     HDAccount,
+    zeroAddress,
+    Hash,
 } from "viem";
 import { localhost } from "viem/chains";
 import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { signUserOperationHashWithECDSA } from "permissionless/utils";
-import { UserOperation } from "permissionless/types";
+import { entryPoint07Address, UserOperation, getUserOperationHash } from "viem/account-abstraction";
+
 import { port } from "./test/constants.js";
 import { VerifyingPaymaster } from "./artifacts/VerifyingPaymaster.js";
-import { ENTRYPOINT_ADDRESS_V07 } from "./constants.js";
 import { IEntryPoint } from "./artifacts/IEntryPoint.js";
 import { abi as EntryPointAbi } from "./artifacts/EntryPoint.js";
 import { getSimpleAccountAddress } from "./SimpleAccount.js";
 import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
-import { encodeUserOp } from "./models/UserOperation.js";
+import { dummySignature, encodeUserOp } from "./models/UserOperation.js";
 import { decodeViemError } from "./isViemError.js";
 import { setupERC4337Contracts, setupVerifyingPaymaster } from "./setupERC4337Contracts.js";
 import { toPackedUserOperation } from "./models/PackedUserOperation.js";
+import { getVerifyingPaymasterHash } from "./VerifyingPaymaster.js";
 
 describe("VerifyingPaymaster.test.ts", function () {
     let publicClient: PublicClient<Transport, Chain>;
@@ -51,7 +53,8 @@ describe("VerifyingPaymaster.test.ts", function () {
             transport,
         });
         walletClient = createWalletClient({
-            account: getLocalAccount(0),
+            //TODO: viem type mismatch
+            account: getLocalAccount(0) as unknown as HDAccount,
             chain: localhost,
             transport,
         });
@@ -67,9 +70,52 @@ describe("VerifyingPaymaster.test.ts", function () {
         ).address;
     });
 
+    test.only("getVerifyingPaymasterHash", async () => {
+        const validUntil = Date.now() + 3600;
+        const validAfter = 0;
+        const paymasterDataUnsigned = encodeAbiParameters(
+            [
+                { name: "validUntil", type: "uint48" },
+                { name: "validAfter", type: "uint48" },
+            ],
+            [validUntil, validAfter],
+        );
+
+        const userOperation: UserOperation<"0.7"> = {
+            sender: zeroAddress,
+            nonce: 0n,
+            factory: zeroAddress,
+            factoryData: "0x",
+            callData: "0x",
+            preVerificationGas: 0n,
+            verificationGasLimit: 0n,
+            callGasLimit: 0n,
+            maxFeePerGas: 0n,
+            maxPriorityFeePerGas: 0n,
+            signature: dummySignature,
+            paymaster: verifyingPaymaster,
+            paymasterVerificationGasLimit: 0n,
+            paymasterPostOpGasLimit: 0n,
+            paymasterData: paymasterDataUnsigned,
+        };
+        const userOperationPacked = toPackedUserOperation(encodeUserOp(userOperation));
+
+        const hashExpected = (await publicClient.readContract({
+            address: verifyingPaymaster,
+            abi: VerifyingPaymaster.abi,
+            functionName: "getHash",
+            args: [userOperationPacked as any, validUntil, validAfter],
+        })) as Hash;
+        const hash = getVerifyingPaymasterHash({
+            chainId: publicClient.chain.id,
+            userOperation: userOperationPacked,
+        });
+        expect(hash).toBe(hashExpected);
+    });
+
     /** Tests involving interacting with an existing paymaster */
     describe("Exec existing Simple Account", () => {
-        let account: Account;
+        let account: LocalAccount;
         let simpleAccount: {
             address: Address;
             factoryData: Hex;
@@ -159,7 +205,7 @@ describe("VerifyingPaymaster.test.ts", function () {
                 ],
                 [validUntil, validAfter],
             );
-            const userOp: UserOperation<"v0.7"> = {
+            const userOp: UserOperation<"0.7"> = {
                 sender: simpleAccount.address,
                 nonce: 0n,
                 signature:
@@ -189,7 +235,6 @@ describe("VerifyingPaymaster.test.ts", function () {
                 },
             });
             const paymasterSignatureBytes = hexToBytes(paymasterSignature);
-            console.debug(paymasterSignatureBytes.length);
 
             expect(paymasterSignatureBytes.length).toBeGreaterThanOrEqual(64);
             expect(paymasterSignatureBytes.length).toBeLessThanOrEqual(65);
@@ -197,11 +242,14 @@ describe("VerifyingPaymaster.test.ts", function () {
             const paymasterDataSigned = concatHex([paymasterDataUnsigned, paymasterSignature]);
             userOp.paymasterData = paymasterDataSigned;
 
-            const signature = await signUserOperationHashWithECDSA({
-                account,
+            const userOpHash = getUserOperationHash({
                 userOperation: userOp,
+                entryPointAddress: entryPoint07Address,
+                entryPointVersion: "0.7",
                 chainId: localhost.id,
-                entryPoint: ENTRYPOINT_ADDRESS_V07,
+            });
+            const signature = await account.signMessage({
+                message: { raw: userOpHash },
             });
             userOp.signature = signature;
 
@@ -232,7 +280,7 @@ describe("VerifyingPaymaster.test.ts", function () {
             try {
                 const { request } = await publicClient.simulateContract({
                     account: walletClient.account,
-                    address: ENTRYPOINT_ADDRESS_V07,
+                    address: entryPoint07Address,
                     abi: IEntryPoint.abi,
                     functionName: "handleOps",
                     args: handleOpsArgs,

@@ -31,6 +31,11 @@
       "types": "./lib/types/index.d.ts",
       "require": "./lib/cjs/index.js",
       "import": "./lib/esm/index.js"
+    },
+    "./*": {
+      "types": "./lib/types/*.d.ts",
+      "require": "./lib/cjs/*.js",
+      "import": "./lib/esm/*.js"
     }
   },
   "scripts": {
@@ -52,7 +57,6 @@
     "tsc:watch": "tsc -w"
   },
   "dependencies": {
-    "@latticexyz/common": "2.0.9",
     "@owlprotocol/chains": "workspace:*",
     "@owlprotocol/contracts-account-abstraction": "workspace:*",
     "@owlprotocol/contracts-create2factory": "workspace:*",
@@ -60,7 +64,7 @@
     "@owlprotocol/core-firebase": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/viem-utils": "workspace:*",
-    "viem": "2.9.20"
+    "viem": "2.21.19"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",

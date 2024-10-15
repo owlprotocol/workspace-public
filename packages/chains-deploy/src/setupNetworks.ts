@@ -6,7 +6,6 @@ import * as chains from "@owlprotocol/chains/chains";
 import { getUtilityAccount, getRelayerAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
 import { Chain, createPublicClient, createWalletClient, http } from "viem";
 import { setupChain } from "./setupChain.js";
-import { extendWalletClient } from "./extendWalletClient.js";
 
 /**
  * Upload chain configurations to firebase
@@ -113,14 +112,11 @@ export async function setupNetworksForEnv() {
             transport: http(chain.rpcUrls.default.http[0]),
             chain,
         });
-        const walletClient = extendWalletClient(
-            createWalletClient({
-                transport: http(chain.rpcUrls.default.http[0]),
-                chain,
-                account: utilityAccount,
-            }),
-        );
-
+        const walletClient = createWalletClient({
+            transport: http(chain.rpcUrls.default.http[0]),
+            chain,
+            account: utilityAccount,
+        });
         // L1 (opstack)
         const networkL1 = chain.sourceId ? await networkPrivateResource.getOrNull({ chainId: chain.sourceId }) : null;
         const chainL1 = networkL1 ? ({ id: networkL1.chainId, ...networkL1 } as Chain) : undefined;
@@ -131,13 +127,11 @@ export async function setupNetworksForEnv() {
               })
             : undefined;
         const walletClientL1 = chainL1
-            ? extendWalletClient(
-                  createWalletClient({
-                      transport: http(chainL1.rpcUrls.default.http[0]),
-                      chain,
-                      account: utilityAccount,
-                  }),
-              )
+            ? createWalletClient({
+                  transport: http(chainL1.rpcUrls.default.http[0]),
+                  chain,
+                  account: utilityAccount,
+              })
             : undefined;
 
         console.debug(`🛠️  Deploying ${network.name}`);

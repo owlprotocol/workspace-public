@@ -95,7 +95,7 @@
     "@owlprotocol/zod-sol": "workspace:*",
     "@owlprotocol/utils": "workspace:*",
     "bignumber.js": "^9.1.1",
-    "viem": "2.9.20",
+    "viem": "2.21.19",
     "zod": "3.22.4"
   },
   "devDependencies": {

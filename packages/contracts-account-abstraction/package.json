@@ -39,6 +39,21 @@
       "require": "./lib/cjs/index.js",
       "import": "./lib/esm/index.js"
     },
+    "./actions": {
+      "types": "./lib/types/actions/index.d.ts",
+      "require": "./lib/cjs/actions/index.js",
+      "import": "./lib/esm/actions/index.js"
+    },
+    "./clients": {
+      "types": "./lib/types/clients/index.d.ts",
+      "require": "./lib/cjs/clients/index.js",
+      "import": "./lib/esm/clients/index.js"
+    },
+    "./eip1193": {
+      "types": "./lib/types/eip1193/index.d.ts",
+      "require": "./lib/cjs/eip1193/index.js",
+      "import": "./lib/esm/eip1193/index.js"
+    },
     "./artifacts": {
       "types": "./lib/types/artifacts/index.d.ts",
       "require": "./lib/cjs/artifacts/index.js",
@@ -96,12 +111,14 @@
   },
   "dependencies": {
     "@account-abstraction/contracts": "0.7.0",
+    "@open-rpc/meta-schema": "1.14.9",
+    "@open-rpc/schema-utils-js": "2.0.5",
     "@openzeppelin/contracts": "5.0.2",
+    "@owlprotocol/backend-public": "workspace:*",
     "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
-    "abitype": "1.0.6",
-    "permissionless": "^0.1.19",
-    "viem": "2.9.20",
+    "permissionless": "0.2.6",
+    "viem": "2.21.19",
     "zod": "3.22.4"
   },
   "devDependencies": {
@@ -111,7 +128,6 @@
     "@owlprotocol/hardhat-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
-    "@owlprotocol/utils": "workspace:*",
     "@types/lodash-es": "4.17.12",
     "@types/node": "^20.11.10",
     "@typescript/analyze-trace": "^0.10.1",

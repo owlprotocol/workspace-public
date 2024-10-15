@@ -48,7 +48,7 @@ import {
     EthRoleAbiData,
     EthRoleAdminData,
     EthRoleData,
-    EthUserOpEncoded,
+    EthUserOpReceiptEncoded,
     OperatorData,
     NetworkDataEncoded,
     NetworkId,
@@ -87,9 +87,9 @@ export const ethTransactionReceiptCol = (collectionId: NetworkId) =>
 export const ethLogColGroup = getColGroupRef<LogEncoded>(firestore, ethLogGroupPath);
 export const ethLogCol = (collectionId: NetworkId) => getColRef<LogEncoded>(firestore, ethLogPath(collectionId));
 
-export const ethUserOpColGroup = getColGroupRef<EthUserOpEncoded>(firestore, ethUserOpGroupPath);
+export const ethUserOpColGroup = getColGroupRef<EthUserOpReceiptEncoded>(firestore, ethUserOpGroupPath);
 export const ethUserOpCol = (collectionId: NetworkId) =>
-    getColRef<EthUserOpEncoded>(firestore, ethUserOpPath(collectionId));
+    getColRef<EthUserOpReceiptEncoded>(firestore, ethUserOpPath(collectionId));
 
 //contractmodels
 export const erc20ColGroup = getColGroupRef<ERC20Data>(firestore, erc20GroupPath);

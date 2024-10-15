@@ -29,7 +29,6 @@ describe("decodeLog.test.ts", function () {
             expect(logArgs.from).toBe("0x0000000000000000000000000000000000000001");
             expect(logArgs.to).toBe("0x0000000000000000000000000000000000000002");
             expect(logArgs.value).toBe(3n);
-            console.debug(logArgs);
         });
     });
 
@@ -59,7 +58,6 @@ describe("decodeLog.test.ts", function () {
             expect(logArgs.from).toBe("0x0000000000000000000000000000000000000001");
             expect(logArgs.to).toBe("0x0000000000000000000000000000000000000002");
             expect(logArgs.value).toBe(3n);
-            console.debug(logArgs);
         });
     });
 });

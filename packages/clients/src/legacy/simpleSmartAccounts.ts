@@ -1,6 +1,8 @@
 import { type Address, type Chain, createPublicClient } from "viem";
-import { signerToSimpleSmartAccount } from "permissionless/accounts";
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless/utils";
+import { entryPoint07Address } from "viem/account-abstraction";
+
+import { toSimpleSmartAccount, ToSimpleSmartAccountReturnType } from "permissionless/accounts";
+
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
 import { type Auth, getOwlRpcTransport, getOwlUserRpcTransport } from "./transports.js";
 import { createAdminLocalAccount, createUserLocalAccount } from "./localAccounts.js";
@@ -11,7 +13,7 @@ export async function getUserSimpleSmartAccount(
     chain: Chain,
     owlApiRestBaseUrl = API_REST_BASE_URL,
     factoryAddress: Address = "0xe7A78BA9be87103C317a66EF78e6085BD74Dd538",
-) {
+): Promise<ToSimpleSmartAccountReturnType<"0.7">> {
     const publicClient = createPublicClient({
         chain,
         transport: getOwlUserRpcTransport(jwt, projectId, chain.id, owlApiRestBaseUrl),
@@ -19,9 +21,13 @@ export async function getUserSimpleSmartAccount(
 
     const localClient = await createUserLocalAccount({ jwt, projectId }, owlApiRestBaseUrl);
 
-    return signerToSimpleSmartAccount(publicClient, {
-        signer: localClient,
-        entryPoint: ENTRYPOINT_ADDRESS_V07,
+    return toSimpleSmartAccount({
+        client: publicClient,
+        owner: localClient,
+        entryPoint: {
+            address: entryPoint07Address,
+            version: "0.7",
+        },
         factoryAddress,
     });
 }
@@ -32,7 +38,7 @@ export async function getAdminSimpleSmartAccount(
     chain: Chain,
     owlApiRestBaseUrl = API_REST_BASE_URL,
     factoryAddress: Address = "0xe7A78BA9be87103C317a66EF78e6085BD74Dd538",
-) {
+): Promise<ToSimpleSmartAccountReturnType<"0.7">> {
     const publicClient = createPublicClient({
         chain,
         transport: getOwlRpcTransport(chain.id, owlApiRestBaseUrl),
@@ -46,9 +52,13 @@ export async function getAdminSimpleSmartAccount(
         owlApiRestBaseUrl,
     );
 
-    return signerToSimpleSmartAccount(publicClient, {
-        signer: localClient,
-        entryPoint: ENTRYPOINT_ADDRESS_V07,
+    return toSimpleSmartAccount({
+        client: publicClient,
+        owner: localClient,
+        entryPoint: {
+            address: entryPoint07Address,
+            version: "0.7",
+        },
         factoryAddress,
     });
 }

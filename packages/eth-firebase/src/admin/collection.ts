@@ -34,6 +34,8 @@ import {
     ethRolePath,
     networkPath,
     networkPrivatePath,
+    ethUserOpReceiptGroupPath,
+    ethUserOpReceiptPath,
 } from "../collections.js";
 import {
     ERC1155BalanceEncoded,
@@ -52,6 +54,7 @@ import {
     OperatorData,
     NetworkDataEncoded,
     NetworkId,
+    EthUserOpReceiptEncoded,
 } from "../models/index.js";
 
 //networks
@@ -90,6 +93,10 @@ export const ethLogCol = (collectionId: NetworkId) => getColRef<LogEncoded>(fire
 export const ethUserOpColGroup = getColGroupRef<EthUserOpEncoded>(firestore, ethUserOpGroupPath);
 export const ethUserOpCol = (collectionId: NetworkId) =>
     getColRef<EthUserOpEncoded>(firestore, ethUserOpPath(collectionId));
+
+export const ethUserOpReceiptColGroup = getColGroupRef<EthUserOpReceiptEncoded>(firestore, ethUserOpReceiptGroupPath);
+export const ethUserOpReceiptCol = (collectionId: NetworkId) =>
+    getColRef<EthUserOpReceiptEncoded>(firestore, ethUserOpReceiptPath(collectionId));
 
 //contractmodels
 export const erc20ColGroup = getColGroupRef<ERC20Data>(firestore, erc20GroupPath);

@@ -79,7 +79,7 @@
   "dependencies": {
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/eth-firebase": "workspace:*",
-    "viem": "2.9.20"
+    "viem": "2.21.19"
   },
   "devDependencies": {
     "@owlprotocol/esbuild-config": "workspace:*",

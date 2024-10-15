@@ -1,8 +1,6 @@
 import { http } from "viem";
-import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
-import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
+import { createBundlerClient, BundlerClient } from "viem/account-abstraction";
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless/utils";
 
 /**
  * Params for instantiating API URL for Bundler Client
@@ -27,9 +25,8 @@ export function getBundlerUrl(params: BundlerUrlParams): string {
  * @param params
  * @returns Bundler Client
  */
-export function createOwlBundlerClient(params: BundlerUrlParams) {
-    return createPimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE>({
+export function createOwlBundlerClient(params: BundlerUrlParams): BundlerClient {
+    return createBundlerClient({
         transport: http(getBundlerUrl(params)),
-        entryPoint: ENTRYPOINT_ADDRESS_V07,
     });
 }
