@@ -56,7 +56,7 @@ const FIREBASE_ENVVARS: EnvVarDef[] = [
     // https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks
     { name: "FIREBASE_AUTH_EMULATOR_HOST", platform: "neutral" },
     // https://firebase.google.com/docs/emulator-suite/connect_storage#admin_sdks
-    { name: "FIREBASE_STORAGE_EMULATOR_HOST", platform: "neutral" }
+    { name: "FIREBASE_STORAGE_EMULATOR_HOST", platform: "neutral" },
 ];
 
 //GCloud config
@@ -226,6 +226,7 @@ export const ENVVARS: EnvVarDef[] = [
     { name: "API_TRPC_BASE_URL", platform: "neutral", defaultValue: "https://api.owl.build/api/trpc" },
     { name: "CORS_PROXY", platform: "browser" },
     { name: "CHAIN_ID_FALLBACK", platform: "browser", defaultValue: "80001" },
+    { name: "ANVIL_RPCS", platform: "neutral", defaultValue: "http://127.0.0.1:8545" },
     ...README_ENVVARS,
     ...RESEND_ENVVARS,
     ...DFNS_ENVVARS,
