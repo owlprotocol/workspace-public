@@ -6,14 +6,16 @@ export async function relayMessage(params: {
     mailboxAddress: Address;
     message: Hex;
     metadata: Hex;
+    value?: bigint;
 }) {
-    const { walletClient, message, metadata, mailboxAddress } = params;
+    const { walletClient, message, metadata, mailboxAddress, value } = params;
 
     const hash = await walletClient.writeContract({
         address: mailboxAddress,
         abi: Mailbox.abi,
         functionName: "process",
         args: [metadata, message],
+        value,
     });
     return hash;
 }
