@@ -25,6 +25,7 @@ import {NoopIsm} from "@hyperlane-xyz/core/contracts/isms/NoopIsm.sol";
 import {TokenRouter} from "@hyperlane-xyz/core/contracts/token/libs/TokenRouter.sol";
 import {HypERC20} from "@hyperlane-xyz/core/contracts/token/HypERC20.sol";
 import {HypERC20Collateral} from "@hyperlane-xyz/core/contracts/token/HypERC20Collateral.sol";
+import {HypNative} from "@hyperlane-xyz/core/contracts/token/HypNative.sol";
 
 import {PausableHook} from "@hyperlane-xyz/core/contracts/hooks/PausableHook.sol";
 import {TestRecipient} from "@hyperlane-xyz/core/contracts/test/TestRecipient.sol";

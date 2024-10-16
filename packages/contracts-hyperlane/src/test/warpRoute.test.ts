@@ -30,6 +30,8 @@ import { ERC20Test } from "../artifacts/ERC20Test.js";
 import { IERC20 } from "../artifacts/IERC20.js";
 import { getMessageFromReceipt } from "../mailbox/getMessageFromReceipt.js";
 import { relayMessage } from "../relayer/relayMessage.js";
+import { getOrDeployHypNativeImpl } from "../token/getOrDeployHypNativeImpl.js";
+import { getOrDeployHypNativeProxy } from "../token/getOrDeployHypNativeProxy.js";
 
 describe("warpRoute.test.ts", function () {
     const chainIdOrigin = localhost.id;
@@ -48,6 +50,9 @@ describe("warpRoute.test.ts", function () {
 
     let mailboxAddressOrigin: Address;
     let mailboxAddressRemote: Address;
+
+    let hypNativeImplAddressOrigin: Address;
+    let hypNativeImplAddressRemote: Address;
 
     let hypERC20ImplAddressRemote: Address;
 
@@ -74,6 +79,22 @@ describe("warpRoute.test.ts", function () {
         const mailboxContractsRemote = await setupTestMailboxContractsWithProxy(clientsRemote.walletClient);
         mailboxAddressRemote = mailboxContractsRemote.mailbox.address;
 
+        const hypNativeOrigin = await getOrDeployHypNativeImpl(clientsOrigin.walletClient, {
+            mailboxAddress: mailboxAddressOrigin,
+        });
+        if (hypNativeOrigin.hash) {
+            clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypNativeOrigin.hash });
+        }
+        hypNativeImplAddressOrigin = hypNativeOrigin.address;
+
+        const hypNativeRemote = await getOrDeployHypNativeImpl(clientsRemote.walletClient, {
+            mailboxAddress: mailboxAddressRemote,
+        });
+        if (hypNativeRemote.hash) {
+            clientsRemote.publicClient.waitForTransactionReceipt({ hash: hypNativeRemote.hash });
+        }
+        hypNativeImplAddressRemote = hypNativeRemote.address;
+
         const hypERC20ImplRemote = await getOrDeployHypERC20Impl(clientsRemote.walletClient, {
             mailboxAddress: mailboxAddressRemote,
         });
@@ -83,7 +104,7 @@ describe("warpRoute.test.ts", function () {
         hypERC20ImplAddressRemote = hypERC20ImplRemote.address;
     });
 
-    test("Deploy HypERC20Collateral token", async () => {
+    test("Deploy HypERC20Collateral", async () => {
         const hypERC20CollateralImplOrigin = await getOrDeployHypERC20CollateralImpl(clientsOrigin.walletClient, {
             mailboxAddress: mailboxAddressOrigin,
             erc20Address: zeroAddress,
@@ -264,6 +285,220 @@ describe("warpRoute.test.ts", function () {
             abi: IERC20.abi,
             functionName: "balanceOf",
             args: [recipient],
+        });
+        expect(balanceRecipientRemote2).toStrictEqual(amount);
+    });
+
+    test("Deploy HypNative", async () => {
+        const randomSalt = bytesToHex(randomBytes(32));
+
+        const hypNativeOrigin = await getOrDeployHypNativeProxy(clientsOrigin.walletClient, {
+            hypNativeImplAddress: hypNativeImplAddressOrigin,
+            owner: clientsOrigin.walletClient.account.address,
+            salt: randomSalt,
+        });
+        if (hypNativeOrigin.hash) {
+            clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypNativeOrigin.hash });
+        }
+
+        const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
+        const fakeChainId = 150150;
+
+        await clientsOrigin.walletClient.writeContract({
+            address: hypNativeOrigin.address,
+            abi: Router.abi,
+            functionName: "enrollRemoteRouter",
+            args: [fakeChainId, fakeRouterAddressPadded],
+        });
+
+        const routerDomains = await clientsOrigin.publicClient.readContract({
+            address: hypNativeOrigin.address,
+            abi: Router.abi,
+            functionName: "domains",
+        });
+        expect(routerDomains).toContain(fakeChainId);
+    });
+
+    test("Transfer native to remote HypERC20", async () => {
+        const randomSalt = bytesToHex(randomBytes(32));
+
+        const hypNativeOrigin = await getOrDeployHypNativeProxy(clientsOrigin.walletClient, {
+            hypNativeImplAddress: hypNativeImplAddressOrigin,
+            owner: clientsOrigin.walletClient.account.address,
+            salt: randomSalt,
+        });
+        if (hypNativeOrigin.hash) {
+            clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypNativeOrigin.hash });
+        }
+
+        const hypERC20Remote = await getOrDeployHypERC20Proxy(clientsRemote.walletClient, {
+            ...localhost.nativeCurrency,
+            totalSupply: 0n,
+            hypERC20ImplAddress: hypERC20ImplAddressRemote,
+            owner: clientsRemote.walletClient.account.address,
+            salt: randomSalt,
+        });
+        if (hypERC20Remote.hash) {
+            clientsRemote.publicClient.waitForTransactionReceipt({ hash: hypERC20Remote.hash });
+        }
+
+        const enrollRemoteRouterHashOrigin = await clientsOrigin.walletClient.writeContract({
+            address: hypNativeOrigin.address,
+            abi: Router.abi,
+            functionName: "enrollRemoteRouter",
+            args: [chainIdRemote, padHex(hypERC20Remote.address, { size: 32 })],
+        });
+        await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: enrollRemoteRouterHashOrigin });
+
+        const enrollRemoteRouterHashRemote = await clientsRemote.walletClient.writeContract({
+            address: hypERC20Remote.address,
+            abi: Router.abi,
+            functionName: "enrollRemoteRouter",
+            args: [chainIdOrigin, padHex(hypNativeOrigin.address, { size: 32 })],
+        });
+        await clientsRemote.publicClient.waitForTransactionReceipt({ hash: enrollRemoteRouterHashRemote });
+
+        const amount = 10_000n;
+
+        const recipient = numberToAddress(1);
+
+        const balanceRecipientRemote = await clientsRemote.publicClient.readContract({
+            address: hypERC20Remote.address,
+            abi: IERC20.abi,
+            functionName: "balanceOf",
+            args: [recipient],
+        });
+        expect(balanceRecipientRemote).toStrictEqual(0n);
+
+        const transferRemoteHash = await clientsOrigin.walletClient.writeContract({
+            address: hypNativeOrigin.address,
+            abi: [transferRemoteAbi],
+            functionName: "transferRemote",
+            args: [chainIdRemote, padHex(recipient, { size: 32 }), amount],
+            value: amount,
+        });
+
+        const transferRemoteReceipt = await clientsOrigin.publicClient.waitForTransactionReceipt({
+            hash: transferRemoteHash,
+        });
+        const message = getMessageFromReceipt(transferRemoteReceipt);
+
+        const emptyMetadata = "0x0";
+
+        const relayHash = await relayMessage({
+            walletClient: clientsRemote.walletClient,
+            message,
+            metadata: emptyMetadata,
+            mailboxAddress: mailboxAddressRemote,
+            value: amount,
+        });
+        const relayReceipt = await clientsRemote.publicClient.waitForTransactionReceipt({ hash: relayHash });
+
+        const receivedTransferRemoteLogs = parseEventLogs({
+            abi: TokenRouter.abi,
+            eventName: "ReceivedTransferRemote",
+            logs: relayReceipt.logs,
+        })[0];
+
+        expect(receivedTransferRemoteLogs.args).toEqual({
+            origin: clientsOrigin.publicClient.chain.id,
+            recipient: padHex(recipient, { size: 32 }),
+            amount,
+        });
+
+        const balanceRecipientRemote2 = await clientsRemote.publicClient.readContract({
+            address: hypERC20Remote.address,
+            abi: IERC20.abi,
+            functionName: "balanceOf",
+            args: [recipient],
+        });
+        expect(balanceRecipientRemote2).toStrictEqual(amount);
+    });
+
+    test("Transfer native to native", async () => {
+        const randomSalt = bytesToHex(randomBytes(32));
+
+        const hypNativeOrigin = await getOrDeployHypNativeProxy(clientsOrigin.walletClient, {
+            hypNativeImplAddress: hypNativeImplAddressOrigin,
+            owner: clientsOrigin.walletClient.account.address,
+            salt: randomSalt,
+        });
+        if (hypNativeOrigin.hash) {
+            clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypNativeOrigin.hash });
+        }
+
+        const hypNativeRemote = await getOrDeployHypNativeProxy(clientsRemote.walletClient, {
+            hypNativeImplAddress: hypNativeImplAddressRemote,
+            owner: clientsRemote.walletClient.account.address,
+            salt: randomSalt,
+        });
+        if (hypNativeRemote.hash) {
+            clientsRemote.publicClient.waitForTransactionReceipt({ hash: hypNativeRemote.hash });
+        }
+
+        const enrollRemoteRouterHashOrigin = await clientsOrigin.walletClient.writeContract({
+            address: hypNativeOrigin.address,
+            abi: Router.abi,
+            functionName: "enrollRemoteRouter",
+            args: [chainIdRemote, padHex(hypNativeRemote.address, { size: 32 })],
+        });
+        await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: enrollRemoteRouterHashOrigin });
+
+        const enrollRemoteRouterHashRemote = await clientsRemote.walletClient.writeContract({
+            address: hypNativeRemote.address,
+            abi: Router.abi,
+            functionName: "enrollRemoteRouter",
+            args: [chainIdOrigin, padHex(hypNativeOrigin.address, { size: 32 })],
+        });
+        await clientsRemote.publicClient.waitForTransactionReceipt({ hash: enrollRemoteRouterHashRemote });
+
+        const amount = 10_000n;
+
+        const recipient = numberToAddress(1);
+
+        const balanceRecipientRemote = await clientsRemote.publicClient.getBalance({
+            address: recipient,
+        });
+        expect(balanceRecipientRemote).toStrictEqual(0n);
+
+        const transferRemoteHash = await clientsOrigin.walletClient.writeContract({
+            address: hypNativeOrigin.address,
+            abi: [transferRemoteAbi],
+            functionName: "transferRemote",
+            args: [chainIdRemote, padHex(recipient, { size: 32 }), amount],
+            value: amount,
+        });
+
+        const transferRemoteReceipt = await clientsOrigin.publicClient.waitForTransactionReceipt({
+            hash: transferRemoteHash,
+        });
+        const message = getMessageFromReceipt(transferRemoteReceipt);
+
+        const emptyMetadata = "0x0";
+
+        const relayHash = await relayMessage({
+            walletClient: clientsRemote.walletClient,
+            message,
+            metadata: emptyMetadata,
+            mailboxAddress: mailboxAddressRemote,
+            value: amount,
+        });
+        const relayReceipt = await clientsRemote.publicClient.waitForTransactionReceipt({ hash: relayHash });
+
+        const receivedTransferRemoteLogs = parseEventLogs({
+            abi: TokenRouter.abi,
+            eventName: "ReceivedTransferRemote",
+            logs: relayReceipt.logs,
+        })[0];
+
+        expect(receivedTransferRemoteLogs.args).toEqual({
+            origin: clientsOrigin.publicClient.chain.id,
+            recipient: padHex(recipient, { size: 32 }),
+            amount,
+        });
+
+        const balanceRecipientRemote2 = await clientsRemote.publicClient.getBalance({
+            address: recipient,
         });
         expect(balanceRecipientRemote2).toStrictEqual(amount);
     });
