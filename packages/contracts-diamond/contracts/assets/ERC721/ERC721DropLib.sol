@@ -110,7 +110,7 @@ library ERC721DropLib {
         ERC721ClaimLib.ClaimCondition calldata condition,
         bytes32[] calldata proof
     ) internal pure returns (bool) {
-        bytes32 leaf = keccak256(abi.encode(account, condition));
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(account, condition))));
 
         return MerkleProof.verify(proof, merkleRoot, leaf);
     }

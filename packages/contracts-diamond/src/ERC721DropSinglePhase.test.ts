@@ -12,7 +12,8 @@ import {
     zeroAddress,
     parseEther,
     hexToBigInt,
-    numberToHex,
+    Hex,
+    encodeAbiParameters,
 } from "viem";
 import { localhost } from "viem/chains";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
@@ -22,6 +23,21 @@ import { ERC721DropPreset } from "./artifacts/ERC721DropPreset.js";
 import { port } from "./test/constants.js";
 
 const MAX_INT = hexToBigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+
+const ClaimConditionAbi = {
+    components: [
+        { internalType: "uint256", name: "startTimestamp", type: "uint256" },
+        { internalType: "uint256", name: "endTimestamp", type: "uint256" },
+        { internalType: "uint256", name: "maxClaimableSupply", type: "uint256" },
+        { internalType: "uint256", name: "supplyClaimed", type: "uint256" },
+        { internalType: "uint256", name: "quantityLimitPerWallet", type: "uint256" },
+        { internalType: "uint256", name: "pricePerToken", type: "uint256" },
+        { internalType: "address", name: "currency", type: "address" },
+    ],
+    internalType: "struct ERC721ClaimLib.ClaimCondition",
+    name: "condition",
+    type: "tuple",
+};
 
 describe("ERC721DropPreset with Single Valid and Invalid User", () => {
     let transport: Transport;
@@ -79,29 +95,23 @@ describe("ERC721DropPreset with Single Valid and Invalid User", () => {
         validAddress = userWalletClients[0].account.address;
         invalidAddress = userWalletClients[1].account.address;
 
+        const valuesAbi = [{ type: "address" }, ClaimConditionAbi] as any;
         const values = [
             [
                 validAddress,
-                numberToHex(claimCondition.startTimestamp),
-                numberToHex(claimCondition.endTimestamp),
-                numberToHex(claimCondition.maxClaimableSupply),
-                numberToHex(claimCondition.supplyClaimed),
-                numberToHex(claimCondition.quantityLimitPerWallet),
-                numberToHex(claimCondition.pricePerToken),
-                claimCondition.currency,
+                [
+                    claimCondition.startTimestamp,
+                    claimCondition.endTimestamp,
+                    claimCondition.maxClaimableSupply,
+                    claimCondition.supplyClaimed,
+                    claimCondition.quantityLimitPerWallet,
+                    claimCondition.pricePerToken,
+                    claimCondition.currency,
+                ],
             ],
         ];
 
-        tree = StandardMerkleTree.of(values, [
-            "address",
-            "uint256",
-            "uint256",
-            "uint256",
-            "uint256",
-            "uint256",
-            "uint256",
-            "address",
-        ]);
+        tree = StandardMerkleTree.of(values, valuesAbi);
 
         const hashDeploy = await adminWalletClient.deployContract({
             abi: ERC721DropPreset.abi,
@@ -113,7 +123,7 @@ describe("ERC721DropPreset with Single Valid and Invalid User", () => {
                 "baseUri",
                 adminWalletClient.account.address,
                 500n,
-                tree.root as Address,
+                tree.root as Hex,
             ],
             bytecode: ERC721DropPreset.bytecode,
         });
@@ -123,7 +133,7 @@ describe("ERC721DropPreset with Single Valid and Invalid User", () => {
     });
 
     test("Mint and batch mint with the valid user in the Merkle Tree", async () => {
-        const proof = tree.getProof(0) as Address[];
+        const proof = tree.getProof(0) as Hex[];
 
         const { request } = await publicClient.simulateContract({
             account: userWalletClients[0].account,
