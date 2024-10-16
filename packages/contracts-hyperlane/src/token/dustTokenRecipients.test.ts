@@ -69,9 +69,7 @@ describe("dustTokenRecipients.test.ts", function () {
         const receiverBytes32 = padHex(receiverAddress, { size: 32 });
 
         // Watch Remote Transfers
-        const stopWatching = dustTokenRecipientsForChain({
-            publicClient,
-            walletClient,
+        const stopWatching = dustTokenRecipientsForChain(walletClient, {
             tokens: [{ address: tokenRouterAddress }],
             amount: 1n,
             onTransaction: async ({ hash, to }) => {
