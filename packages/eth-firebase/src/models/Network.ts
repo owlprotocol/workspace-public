@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z, ZodArray } from "zod";
 import { Chain } from "viem";
 import { quantityDecodeZod, quantityEncodeZod } from "@owlprotocol/zod-sol";
 import type { FirebaseQueryResource, FirebaseResource, FirestoreSDK } from "@owlprotocol/crud-firebase";
@@ -186,6 +186,14 @@ export const networkDataEncodeWithIdZod = networkDataEncodeWithIdZodInternal as 
 > & {
     _input: NetworkDataInput & { id: number };
     _output: NetworkDataEncoded & { id: number };
+};
+
+export const networkDataEncodeWithIdZodArray = z.array(networkDataEncodeWithIdZodInternal) as unknown as Omit<
+    ZodArray<typeof networkDataEncodeWithIdZodInternal>,
+    "_output" | "_input"
+> & {
+    _input: Array<NetworkDataInput & { id: number }>;
+    _output: Array<NetworkDataEncoded & { id: number }>;
 };
 
 /**
