@@ -1,21 +1,35 @@
-import { getOrDeployContracts, getCloneDeterministicBytecode } from "@owlprotocol/contracts-create2factory";
-import { zeroHash, Transport, Chain, Account, Address, Hash, zeroAddress, encodeFunctionData, Client } from "viem";
-import { initialize as initializeAbi } from "../artifacts/Mailbox.js";
+import { getOrDeployContracts } from "@owlprotocol/contracts-create2factory";
+import {
+    zeroHash,
+    Transport,
+    Chain,
+    Account,
+    Address,
+    Hash,
+    zeroAddress,
+    encodeFunctionData,
+    Client,
+    encodeDeployData,
+} from "viem";
+import { Mailbox, initialize as initializeAbi } from "../artifacts/Mailbox.js";
 
-export async function getOrDeployMailboxProxy(
+export async function getOrDeployMailbox(
     client: Client<Transport, Chain, Account>,
     parameters: {
-        mailboxImplAddress: Address;
         ismAddress: Address;
         defaultHookAddress: Address;
         requiredHookAddress: Address;
         salt?: Hash;
     },
 ): Promise<{ hash?: Hash; address: Address; exists: boolean }> {
-    const { mailboxImplAddress, ismAddress, defaultHookAddress, requiredHookAddress, salt = zeroHash } = parameters;
+    const { ismAddress, defaultHookAddress, requiredHookAddress, salt = zeroHash } = parameters;
     const deployMailbox = await getOrDeployContracts(client, zeroAddress, [
         {
-            bytecode: getCloneDeterministicBytecode(mailboxImplAddress),
+            bytecode: encodeDeployData({
+                abi: Mailbox.abi,
+                bytecode: Mailbox.bytecode,
+                args: [client.chain.id],
+            }),
             initData: encodeFunctionData({
                 abi: [initializeAbi],
                 functionName: "initialize",

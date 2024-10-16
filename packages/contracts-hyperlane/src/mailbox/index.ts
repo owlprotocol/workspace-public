@@ -1,2 +1,1 @@
-export * from "./getOrDeployMailboxImpl.js";
-export * from "./getOrDeployMailboxProxy.js";
+export * from "./getOrDeployMailbox.js";
