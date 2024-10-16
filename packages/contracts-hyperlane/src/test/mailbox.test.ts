@@ -24,7 +24,7 @@ import { getOrDeployTestRecipient, setupTestMailboxContracts } from "./mailboxTe
 import { Mailbox } from "../artifacts/Mailbox.js";
 import { MailboxClient } from "../artifacts/MailboxClient.js";
 import { TestRecipient } from "../artifacts/TestRecipient.js";
-import { getOrDeployMailboxProxy } from "../mailbox/getOrDeployMailboxProxy.js";
+import { getOrDeployMailbox } from "../mailbox/getOrDeployMailbox.js";
 import { getMessageIdFromReceipt } from "../mailbox/getMessageIdFromReceipt.js";
 import { getMessageFromReceipt } from "../mailbox/getMessageFromReceipt.js";
 import { relayMessage } from "../relayer/relayMessage.js";
@@ -58,11 +58,8 @@ describe("mailbox.test.ts", function () {
     let testIsmAddressOrigin: Address;
     let testHookAddressOrigin: Address;
 
-    let testIsmAddressRemote: Address;
-    let testHookAddressRemote: Address;
-
-    let mailboxImplAddressOrigin: Address;
-    let mailboxImplAddressRemote: Address;
+    let mailboxAddressOrigin: Address;
+    let mailboxAddressRemote: Address;
 
     beforeAll(async () => {
         const transport = http(`http://127.0.0.1:${port}`);
@@ -84,21 +81,18 @@ describe("mailbox.test.ts", function () {
         const mailboxContractsOrigin = await setupTestMailboxContracts(clientsOrigin.walletClient);
         testIsmAddressOrigin = mailboxContractsOrigin.testIsm.address;
         testHookAddressOrigin = mailboxContractsOrigin.testHook.address;
-        mailboxImplAddressOrigin = mailboxContractsOrigin.mailboxImpl.address;
+        mailboxAddressOrigin = mailboxContractsOrigin.mailbox.address;
 
         const mailboxContractsRemote = await setupTestMailboxContracts(clientsRemote.walletClient);
-        testIsmAddressRemote = mailboxContractsRemote.testIsm.address;
-        testHookAddressRemote = mailboxContractsRemote.testHook.address;
-        mailboxImplAddressRemote = mailboxContractsRemote.mailboxImpl.address;
+        mailboxAddressRemote = mailboxContractsRemote.mailbox.address;
     });
 
     test("Deploy Mailbox and dispatch a mesasge", async () => {
         const randomSalt = bytesToHex(randomBytes(32));
 
-        const { address: mailboxAddressOrigin, hash: mailboxHashOrigin } = await getOrDeployMailboxProxy(
+        const { address: mailboxAddressOrigin, hash: mailboxHashOrigin } = await getOrDeployMailbox(
             clientsOrigin.walletClient,
             {
-                mailboxImplAddress: mailboxImplAddressOrigin,
                 ismAddress: testIsmAddressOrigin,
                 defaultHookAddress: testHookAddressOrigin,
                 requiredHookAddress: testHookAddressOrigin,
@@ -130,30 +124,6 @@ describe("mailbox.test.ts", function () {
     });
 
     test("Relay a message with mailboxes", async () => {
-        const randomSalt = bytesToHex(randomBytes(32));
-
-        const mailboxOrigin = await getOrDeployMailboxProxy(clientsOrigin.walletClient, {
-            mailboxImplAddress: mailboxImplAddressOrigin,
-            ismAddress: testIsmAddressOrigin,
-            defaultHookAddress: testHookAddressOrigin,
-            requiredHookAddress: testHookAddressOrigin,
-            salt: randomSalt,
-        });
-        if (mailboxOrigin.hash) {
-            await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: mailboxOrigin.hash });
-        }
-
-        const mailboxRemote = await getOrDeployMailboxProxy(clientsRemote.walletClient, {
-            mailboxImplAddress: mailboxImplAddressRemote,
-            ismAddress: testIsmAddressRemote,
-            defaultHookAddress: testHookAddressRemote,
-            requiredHookAddress: testHookAddressRemote,
-            salt: randomSalt,
-        });
-        if (mailboxRemote.hash) {
-            await clientsRemote.publicClient.waitForTransactionReceipt({ hash: mailboxRemote.hash });
-        }
-
         const { address: recipient, hash: testRecipientHash } = await getOrDeployTestRecipient(
             clientsRemote.walletClient,
         );
@@ -168,7 +138,7 @@ describe("mailbox.test.ts", function () {
             walletClient: clientsOrigin.walletClient,
             recipient,
             destination: clientsRemote.publicClient.chain.id,
-            mailboxAddress: mailboxOrigin.address,
+            mailboxAddress: mailboxAddressOrigin,
             message: messageHex,
         });
         const dispatchReceipt = await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: dispatchHash });
@@ -185,7 +155,7 @@ describe("mailbox.test.ts", function () {
             walletClient: clientsRemote.walletClient,
             message,
             metadata: emptyMetadata,
-            mailboxAddress: mailboxRemote.address,
+            mailboxAddress: mailboxAddressRemote,
         });
         const relayReceipt = await clientsRemote.publicClient.waitForTransactionReceipt({ hash: relayHash });
 
@@ -206,7 +176,7 @@ describe("mailbox.test.ts", function () {
 
         // Check mailbox on remote
         const processedAt = await clientsRemote.publicClient.readContract({
-            address: mailboxRemote.address,
+            address: mailboxAddressRemote,
             abi: Mailbox.abi,
             functionName: "processedAt",
             args: [messageId!],

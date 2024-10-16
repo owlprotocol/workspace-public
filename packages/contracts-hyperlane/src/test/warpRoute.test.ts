@@ -19,19 +19,16 @@ import { getLocalAccount, numberToAddress, getOrDeployDeterministicContract } fr
 import { localhost } from "viem/chains";
 import { randomBytes } from "crypto";
 import { port, port2, localhostRemote, chainId2 } from "./constants.js";
-import { setupTestMailboxContractsWithProxy } from "./mailboxTestHelpers.js";
-import { getOrDeployHypERC20Proxy } from "../token/getOrDeployHypERC20Proxy.js";
-import { getOrDeployHypERC20Impl } from "../token/getOrDeployHypERC20Impl.js";
+import { setupTestMailboxContracts } from "./mailboxTestHelpers.js";
+import { getOrDeployHypERC20 } from "../token/getOrDeployHypERC20.js";
 import { Router } from "../artifacts/Router.js";
 import { TokenRouter, transferRemote_uint32_bytes32_uint256 as transferRemoteAbi } from "../artifacts/TokenRouter.js";
-import { getOrDeployHypERC20CollateralImpl } from "../token/getOrDeployHypERC20CollateralImpl.js";
-import { getOrDeployHypERC20CollateralProxy } from "../token/getOrDeployHypERC20CollateralProxy.js";
+import { getOrDeployHypERC20Collateral } from "../token/getOrDeployHypERC20Collateral.js";
 import { ERC20Test } from "../artifacts/ERC20Test.js";
 import { IERC20 } from "../artifacts/IERC20.js";
 import { getMessageFromReceipt } from "../mailbox/getMessageFromReceipt.js";
 import { relayMessage } from "../relayer/relayMessage.js";
-import { getOrDeployHypNativeImpl } from "../token/getOrDeployHypNativeImpl.js";
-import { getOrDeployHypNativeProxy } from "../token/getOrDeployHypNativeProxy.js";
+import { getOrDeployHypNative } from "../token/getOrDeployHypNative.js";
 
 describe("warpRoute.test.ts", function () {
     const chainIdOrigin = localhost.id;
@@ -51,11 +48,6 @@ describe("warpRoute.test.ts", function () {
     let mailboxAddressOrigin: Address;
     let mailboxAddressRemote: Address;
 
-    let hypNativeImplAddressOrigin: Address;
-    let hypNativeImplAddressRemote: Address;
-
-    let hypERC20ImplAddressRemote: Address;
-
     beforeAll(async () => {
         const transport = http(`http://127.0.0.1:${port}`);
         const transportRemote = http(`http://127.0.0.1:${port2}`);
@@ -73,48 +65,17 @@ describe("warpRoute.test.ts", function () {
             }),
         };
 
-        const mailboxContractsOrigin = await setupTestMailboxContractsWithProxy(clientsOrigin.walletClient);
+        const mailboxContractsOrigin = await setupTestMailboxContracts(clientsOrigin.walletClient);
         mailboxAddressOrigin = mailboxContractsOrigin.mailbox.address;
 
-        const mailboxContractsRemote = await setupTestMailboxContractsWithProxy(clientsRemote.walletClient);
+        const mailboxContractsRemote = await setupTestMailboxContracts(clientsRemote.walletClient);
         mailboxAddressRemote = mailboxContractsRemote.mailbox.address;
-
-        const hypNativeOrigin = await getOrDeployHypNativeImpl(clientsOrigin.walletClient, {
-            mailboxAddress: mailboxAddressOrigin,
-        });
-        if (hypNativeOrigin.hash) {
-            clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypNativeOrigin.hash });
-        }
-        hypNativeImplAddressOrigin = hypNativeOrigin.address;
-
-        const hypNativeRemote = await getOrDeployHypNativeImpl(clientsRemote.walletClient, {
-            mailboxAddress: mailboxAddressRemote,
-        });
-        if (hypNativeRemote.hash) {
-            clientsRemote.publicClient.waitForTransactionReceipt({ hash: hypNativeRemote.hash });
-        }
-        hypNativeImplAddressRemote = hypNativeRemote.address;
-
-        const hypERC20ImplRemote = await getOrDeployHypERC20Impl(clientsRemote.walletClient, {
-            mailboxAddress: mailboxAddressRemote,
-        });
-        if (hypERC20ImplRemote.hash) {
-            clientsRemote.publicClient.waitForTransactionReceipt({ hash: hypERC20ImplRemote.hash });
-        }
-        hypERC20ImplAddressRemote = hypERC20ImplRemote.address;
     });
 
     test("Deploy HypERC20Collateral", async () => {
-        const hypERC20CollateralImplOrigin = await getOrDeployHypERC20CollateralImpl(clientsOrigin.walletClient, {
+        const hypERC20CollateralOrigin = await getOrDeployHypERC20Collateral(clientsOrigin.walletClient, {
             mailboxAddress: mailboxAddressOrigin,
             erc20Address: zeroAddress,
-        });
-        if (hypERC20CollateralImplOrigin.hash) {
-            clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypERC20CollateralImplOrigin.hash });
-        }
-
-        const hypERC20CollateralOrigin = await getOrDeployHypERC20CollateralProxy(clientsOrigin.walletClient, {
-            hypERC20CollateralImplAddress: hypERC20CollateralImplOrigin.address,
             owner: clientsOrigin.walletClient.account.address,
         });
         if (hypERC20CollateralOrigin.hash) {
@@ -140,9 +101,9 @@ describe("warpRoute.test.ts", function () {
     });
 
     test("Deploy HypERC20token", async () => {
-        const hypERC20Remote = await getOrDeployHypERC20Proxy(clientsRemote.walletClient, {
+        const hypERC20Remote = await getOrDeployHypERC20(clientsRemote.walletClient, {
+            mailboxAddress: mailboxAddressRemote,
             ...testToken,
-            hypERC20ImplAddress: hypERC20ImplAddressRemote,
             owner: clientsRemote.walletClient.account.address,
         });
         if (hypERC20Remote.hash) {
@@ -179,23 +140,18 @@ describe("warpRoute.test.ts", function () {
         });
         await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: erc20.hash! });
 
-        const hypERC20CollateralImplOrigin = await getOrDeployHypERC20CollateralImpl(clientsOrigin.walletClient, {
+        const hypERC20CollateralOrigin = await getOrDeployHypERC20Collateral(clientsOrigin.walletClient, {
             mailboxAddress: mailboxAddressOrigin,
             erc20Address: erc20.address,
-            salt: randomSalt,
-        });
-        await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypERC20CollateralImplOrigin.hash! });
-
-        const hypERC20CollateralOrigin = await getOrDeployHypERC20CollateralProxy(clientsOrigin.walletClient, {
-            hypERC20CollateralImplAddress: hypERC20CollateralImplOrigin.address,
             owner: clientsOrigin.walletClient.account.address,
             salt: randomSalt,
         });
         await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypERC20CollateralOrigin.hash! });
 
-        const hypERC20Remote = await getOrDeployHypERC20Proxy(clientsRemote.walletClient, {
+        const hypERC20Remote = await getOrDeployHypERC20(clientsRemote.walletClient, {
+            mailboxAddress: mailboxAddressRemote,
             ...testToken,
-            hypERC20ImplAddress: hypERC20ImplAddressRemote,
+            totalSupply: 0n,
             owner: clientsRemote.walletClient.account.address,
             salt: randomSalt,
         });
@@ -292,8 +248,9 @@ describe("warpRoute.test.ts", function () {
     test("Deploy HypNative", async () => {
         const randomSalt = bytesToHex(randomBytes(32));
 
-        const hypNativeOrigin = await getOrDeployHypNativeProxy(clientsOrigin.walletClient, {
-            hypNativeImplAddress: hypNativeImplAddressOrigin,
+        const hypNativeOrigin = await getOrDeployHypNative(clientsOrigin.walletClient, {
+            mailboxAddress: mailboxAddressOrigin,
+            ...localhost.nativeCurrency,
             owner: clientsOrigin.walletClient.account.address,
             salt: randomSalt,
         });
@@ -322,8 +279,8 @@ describe("warpRoute.test.ts", function () {
     test("Transfer native to remote HypERC20", async () => {
         const randomSalt = bytesToHex(randomBytes(32));
 
-        const hypNativeOrigin = await getOrDeployHypNativeProxy(clientsOrigin.walletClient, {
-            hypNativeImplAddress: hypNativeImplAddressOrigin,
+        const hypNativeOrigin = await getOrDeployHypNative(clientsOrigin.walletClient, {
+            mailboxAddress: mailboxAddressOrigin,
             owner: clientsOrigin.walletClient.account.address,
             salt: randomSalt,
         });
@@ -331,10 +288,10 @@ describe("warpRoute.test.ts", function () {
             clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypNativeOrigin.hash });
         }
 
-        const hypERC20Remote = await getOrDeployHypERC20Proxy(clientsRemote.walletClient, {
+        const hypERC20Remote = await getOrDeployHypERC20(clientsRemote.walletClient, {
+            mailboxAddress: mailboxAddressRemote,
             ...localhost.nativeCurrency,
             totalSupply: 0n,
-            hypERC20ImplAddress: hypERC20ImplAddressRemote,
             owner: clientsRemote.walletClient.account.address,
             salt: randomSalt,
         });
@@ -418,8 +375,8 @@ describe("warpRoute.test.ts", function () {
     test("Transfer native to native", async () => {
         const randomSalt = bytesToHex(randomBytes(32));
 
-        const hypNativeOrigin = await getOrDeployHypNativeProxy(clientsOrigin.walletClient, {
-            hypNativeImplAddress: hypNativeImplAddressOrigin,
+        const hypNativeOrigin = await getOrDeployHypNative(clientsOrigin.walletClient, {
+            mailboxAddress: mailboxAddressOrigin,
             owner: clientsOrigin.walletClient.account.address,
             salt: randomSalt,
         });
@@ -427,8 +384,8 @@ describe("warpRoute.test.ts", function () {
             clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypNativeOrigin.hash });
         }
 
-        const hypNativeRemote = await getOrDeployHypNativeProxy(clientsRemote.walletClient, {
-            hypNativeImplAddress: hypNativeImplAddressRemote,
+        const hypNativeRemote = await getOrDeployHypNative(clientsRemote.walletClient, {
+            mailboxAddress: mailboxAddressRemote,
             owner: clientsRemote.walletClient.account.address,
             salt: randomSalt,
         });

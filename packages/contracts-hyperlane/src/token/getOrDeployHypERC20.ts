@@ -1,12 +1,24 @@
-import { getCloneDeterministicBytecode, getOrDeployContracts } from "@owlprotocol/contracts-create2factory";
-import { Account, Address, Chain, Client, encodeFunctionData, Hex, Transport, zeroAddress, zeroHash } from "viem";
-import { initialize as initializeAbi } from "../artifacts/HypERC20.js";
+import { getOrDeployContracts } from "@owlprotocol/contracts-create2factory";
+import {
+    Account,
+    Address,
+    Chain,
+    Client,
+    encodeDeployData,
+    encodeFunctionData,
+    Hex,
+    Transport,
+    zeroAddress,
+    zeroHash,
+} from "viem";
+import { HypERC20, initialize as initializeAbi } from "../artifacts/HypERC20.js";
 
-export async function getOrDeployHypERC20Proxy(
+export async function getOrDeployHypERC20(
     client: Client<Transport, Chain, Account>,
     parameters: {
-        hypERC20ImplAddress: Address;
-        totalSupply: bigint;
+        mailboxAddress: Address;
+        decimals?: number;
+        totalSupply?: bigint;
         name: string;
         symbol: string;
         hookAddress?: Address;
@@ -16,8 +28,9 @@ export async function getOrDeployHypERC20Proxy(
     },
 ) {
     const {
-        hypERC20ImplAddress,
-        totalSupply,
+        mailboxAddress,
+        decimals = 18,
+        totalSupply = 0n,
         name,
         symbol,
         hookAddress = zeroAddress,
@@ -27,7 +40,11 @@ export async function getOrDeployHypERC20Proxy(
     } = parameters;
     const deployERC20 = await getOrDeployContracts(client, zeroAddress, [
         {
-            bytecode: getCloneDeterministicBytecode(hypERC20ImplAddress),
+            bytecode: encodeDeployData({
+                abi: HypERC20.abi,
+                bytecode: HypERC20.bytecode,
+                args: [decimals, mailboxAddress],
+            }),
             initData: encodeFunctionData({
                 abi: [initializeAbi],
                 functionName: "initialize",
