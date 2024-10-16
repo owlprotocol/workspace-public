@@ -17,8 +17,8 @@ export default class Dust extends Command {
   static override flags = {
     amount: Flags.string({description: 'amount to dust in wei', required: true}),
     chainId: Flags.integer({ description: 'chainId', required: true }),
-    rpc: Flags.string({ description: "custom rpc" }),
     privateKey: Flags.string({description: 'private key', required: true}),
+    rpc: Flags.string({ description: "custom rpc" }),
     token: Flags.string({description: 'token address', required: true}),
   }
 
@@ -26,7 +26,7 @@ export default class Dust extends Command {
     const { flags} = await this.parse(Dust)
     const { amount, chainId, privateKey, token } = flags as { amount: string, chainId: number, privateKey: Hex, token: Address};
 
-    let rpc = flags.rpc;
+    let {rpc} = flags;
     let chain = (Object.values(chains) as Chain[]).find((c) => c.id === chainId)
 
     if (!rpc) {
@@ -48,7 +48,7 @@ export default class Dust extends Command {
     const walletClient = createWalletClient({ account, chain, transport })
 
     const rpcChainId = await getChainId(walletClient)
-    if (rpcChainId !=- chainId) {
+    if (rpcChainId !== chainId) {
         throw new Error(`Invalid rpc ${rpc} eth_chainId ${rpcChainId} != ${chainId}`)
     }
 
