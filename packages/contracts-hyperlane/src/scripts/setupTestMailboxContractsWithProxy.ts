@@ -41,11 +41,11 @@ const clientsRemote = {
 async function main() {
     try {
         console.log("Setting up contracts on Origin chain...");
-        const contractsOrigin = await setupTestMailboxContractsWithProxy(clientsOrigin);
+        const contractsOrigin = await setupTestMailboxContractsWithProxy(clientsOrigin.walletClient);
         console.log("Contracts deployed on Origin:", contractsOrigin);
 
         console.log("Setting up contracts on Remote chain...");
-        const contractsRemote = await setupTestMailboxContractsWithProxy(clientsRemote);
+        const contractsRemote = await setupTestMailboxContractsWithProxy(clientsRemote.walletClient);
         console.log("Contracts deployed on Remote:", contractsRemote);
     } catch (error) {
         console.error("Error setting up contracts:", error);
