@@ -13,7 +13,6 @@ import {
     parseEther,
     hexToBigInt,
     Hex,
-    encodeAbiParameters,
 } from "viem";
 import { localhost } from "viem/chains";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";

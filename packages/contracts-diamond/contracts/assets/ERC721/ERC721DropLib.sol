@@ -17,11 +17,15 @@ library ERC721DropLib {
     /// @custom:storage-location erc7201:erc721.drop.storage
     struct DropCondition {
         bytes32 merkleRoot;
+    }
+
+    struct DropConditionState {
         mapping(address => uint256) accountClaims;
     }
 
     struct DropStorage {
         mapping(bytes32 => DropCondition) dropConditions;
+        mapping(bytes32 => DropConditionState) dropConditionStates;
     }
 
     // Errors
@@ -79,6 +83,7 @@ library ERC721DropLib {
     ) internal {
         DropStorage storage ds = getData();
         DropCondition storage drop = ds.dropConditions[dropConditionId];
+        DropConditionState storage state = ds.dropConditionStates[dropConditionId];
 
         if (drop.merkleRoot == bytes32(0)) {
             revert DropConditionNotFound(dropConditionId);
@@ -88,12 +93,11 @@ library ERC721DropLib {
             revert InvalidProof();
         }
 
-        condition._checkClaim(quantity, drop.accountClaims[account]);
+        condition._checkClaim(state, quantity, account);
         condition._payClaim(account, quantity);
+        state.accountClaims[account] += quantity;
 
-        drop.accountClaims[account] += quantity;
-
-        emit TokensClaimedWithProof(dropConditionId, account, quantity, drop.accountClaims[account]);
+        emit TokensClaimedWithProof(dropConditionId, account, quantity, state.accountClaims[account]);
     }
 
     /**
@@ -133,6 +137,6 @@ library ERC721DropLib {
      */
     function _getDropConditionAccountClaimed(bytes32 dropConditionId, address account) internal view returns (uint256) {
         DropStorage storage ds = getData();
-        return ds.dropConditions[dropConditionId].accountClaims[account];
+        return ds.dropConditionStates[dropConditionId].accountClaims[account];
     }
 }

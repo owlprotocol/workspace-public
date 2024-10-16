@@ -35,5 +35,5 @@ interface IERC721ClaimSinglePhase {
      * @param account The address of the wallet to check.
      * @return uint256 The number of claims made by the account.
      */
-    function getWalletClaims(address account) external view returns (uint256);
+    function getAccountClaims(address account) external view returns (uint256);
 }

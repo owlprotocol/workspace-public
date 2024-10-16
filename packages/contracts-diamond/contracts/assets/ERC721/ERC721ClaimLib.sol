@@ -3,10 +3,10 @@ pragma solidity ^0.8.20;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {AccessControlRecursiveLib} from "../../access/AccessControlRecursiveLib.sol";
-import {IERC721ClaimMultiPhase} from "./IERC721ClaimMultiPhase.sol";
+import {IERC721ClaimSinglePhase} from "./IERC721ClaimSinglePhase.sol";
 
 library ERC721ClaimLib {
-    bytes32 internal constant ERC721_CLAIM_ROLE = bytes32(IERC721ClaimMultiPhase.setClaimCondition.selector);
+    bytes32 internal constant ERC721_CLAIM_ROLE = bytes32(IERC721ClaimSinglePhase.setClaimCondition.selector);
 
     bytes32 constant ERC721_CLAIM_STORAGE =
         keccak256(abi.encode(uint256(keccak256("erc721.claim.storage")) - 1)) & ~bytes32(uint256(0xff));
@@ -16,15 +16,19 @@ library ERC721ClaimLib {
         uint256 startTimestamp;
         uint256 endTimestamp;
         uint256 maxClaimableSupply;
-        uint256 supplyClaimed;
         uint256 quantityLimitPerWallet;
         uint256 pricePerToken;
         address currency;
     }
 
+    struct ClaimConditionState {
+        uint256 supplyClaimed;
+        mapping(address => uint256) accountClaims;
+    }
+
     struct ERC721ClaimStorage {
         mapping(bytes32 => ClaimCondition) claimConditions;
-        mapping(bytes32 => mapping(address => uint256)) walletClaims;
+        mapping(bytes32 => ClaimConditionState) claimConditionStates;
     }
 
     // Errors
@@ -52,11 +56,6 @@ library ERC721ClaimLib {
             revert InvalidClaimCondition("maxClaimableSupply cannot be zero.");
         }
 
-        ClaimCondition storage existingCondition = ds.claimConditions[conditionId];
-
-        // condition.supplyClaimed cannot be edited
-        newCondition.supplyClaimed = existingCondition.supplyClaimed;
-
         ds.claimConditions[conditionId] = newCondition;
         emit ClaimConditionSet(conditionId, newCondition);
     }
@@ -66,24 +65,25 @@ library ERC721ClaimLib {
         return ds.claimConditions[conditionId];
     }
 
-    function _getWalletClaims(bytes32 conditionId, address account) internal view returns (uint256) {
+    function _getAccountClaims(bytes32 conditionId, address account) internal view returns (uint256) {
         ERC721ClaimStorage storage ds = getData();
-        return ds.walletClaims[conditionId][account];
+        return ds.claimConditionStates[conditionId].accountClaims[account];
     }
 
-    function _conditionExists(bytes32 conditionId, ERC721ClaimStorage storage ds) internal view returns (bool) {
-        return ds.claimConditions[conditionId].maxClaimableSupply != 0;
-    }
-
-    function _checkClaim(ClaimCondition memory condition, uint256 quantity, uint256 accountClaimed) internal view {
+    function _checkClaim(
+        ClaimCondition memory condition,
+        ClaimConditionState storage state,
+        uint256 quantity,
+        address account
+    ) internal view {
         if (!_isWithinClaimPeriod(condition)) {
             revert ClaimPeriodNotActive(block.timestamp, condition.startTimestamp, condition.endTimestamp);
         }
-        if (!_hasSufficientSupply(condition, quantity)) {
-            revert ExceedsMaxClaimableSupply(condition.supplyClaimed + quantity, condition.maxClaimableSupply);
+        if (!_hasSufficientSupply(state, condition, quantity)) {
+            revert ExceedsMaxClaimableSupply(state.supplyClaimed + quantity, condition.maxClaimableSupply);
         }
-        if (!_isWithinUserLimit(condition, quantity, accountClaimed)) {
-            uint256 remainingLimit = condition.quantityLimitPerWallet - accountClaimed;
+        if (!_isWithinUserLimit(condition, quantity, state.accountClaims[account])) {
+            uint256 remainingLimit = condition.quantityLimitPerWallet - state.accountClaims[account];
             revert ExceedsWalletLimit(quantity, remainingLimit);
         }
     }
@@ -92,8 +92,12 @@ library ERC721ClaimLib {
         return block.timestamp >= condition.startTimestamp && block.timestamp <= condition.endTimestamp;
     }
 
-    function _hasSufficientSupply(ClaimCondition memory condition, uint256 quantity) internal pure returns (bool) {
-        return condition.supplyClaimed + quantity <= condition.maxClaimableSupply;
+    function _hasSufficientSupply(
+        ClaimConditionState storage state,
+        ClaimCondition memory condition,
+        uint256 quantity
+    ) internal view returns (bool) {
+        return state.supplyClaimed + quantity <= condition.maxClaimableSupply;
     }
 
     function _isWithinUserLimit(
@@ -104,14 +108,9 @@ library ERC721ClaimLib {
         return userClaimed + quantity <= condition.quantityLimitPerWallet;
     }
 
-    function _updateClaim(
-        ClaimCondition storage condition,
-        mapping(address => uint256) storage conditionWalletClaims,
-        address to,
-        uint256 quantity
-    ) internal {
-        conditionWalletClaims[to] += quantity;
-        condition.supplyClaimed += quantity;
+    function _updateClaim(ClaimConditionState storage state, address account, uint256 quantity) internal {
+        state.accountClaims[account] += quantity;
+        state.supplyClaimed += quantity;
     }
 
     function _payClaim(ClaimCondition memory condition, address account, uint256 quantity) internal {
@@ -132,13 +131,14 @@ library ERC721ClaimLib {
 
     function _claim(bytes32 conditionId, address account, uint256 quantity) internal returns (uint256) {
         ERC721ClaimStorage storage ds = getData();
-        ClaimCondition storage condition = ds.claimConditions[conditionId];
+        ClaimCondition memory condition = ds.claimConditions[conditionId];
+        ClaimConditionState storage state = ds.claimConditionStates[conditionId];
 
-        _checkClaim(condition, quantity, ds.walletClaims[conditionId][account]);
-        _updateClaim(condition, ds.walletClaims[conditionId], account, quantity);
+        _checkClaim(condition, state, quantity, account);
+        _updateClaim(state, account, quantity);
         _payClaim(condition, account, quantity);
 
         emit TokensClaimed(account, conditionId, quantity);
-        return ds.walletClaims[conditionId][account];
+        return state.accountClaims[account];
     }
 }
