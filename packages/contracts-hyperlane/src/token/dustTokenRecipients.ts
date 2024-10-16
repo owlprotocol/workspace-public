@@ -1,47 +1,9 @@
-import {
-    Account,
-    Address,
-    Chain,
-    Client,
-    formatEther,
-    Hash,
-    PublicClient,
-    sliceHex,
-    Transport,
-    WalletClient,
-} from "viem";
+import { Account, Address, Chain, Client, formatEther, Hash, sliceHex, Transport } from "viem";
+import { getAction } from "viem/utils";
+import { getBalance, sendTransaction, watchEvent } from "viem/actions";
 import { ReceivedTransferRemote } from "../artifacts/TokenRouter.js";
 
-export interface DustTokenRecipientsParams {
-    /** Clients by chain id which will be extended with public/wallet actions */
-    clients: Client;
-    /** Account that will be used to create wallet clients*/
-    account: Account;
-    /** Tokens */
-    tokens: { chainId: number; address: Address }[];
-}
-
-/**
- * Dust Warp Token Recipients across multiple chains
- * @param params
- */
-
-/*
-export function dustTokenRecipients(_params: DustTokenRecipientsParams) {
-    const { clients, tokens } = params;
-    const clientsByChainId = groupBy(client);
-    const tokensByChainId = groupBy(tokens, "chainId");
-}
-*/
-
 export interface DustTokenRecipientsForChain {
-    /** Public client for chain, preferably a websocket client to avoid polling */
-    publicClient: PublicClient;
-    /**
-     * Wallet client for chain
-     * @warning MUST have a `nonceManager` or some mechanism for concurrent transactions
-     */
-    walletClient: WalletClient<Transport, Chain, Account>;
     tokens: { address: Address }[];
     /** Amount in native tokens to dust */
     amount: bigint;
@@ -55,11 +17,14 @@ export interface DustTokenRecipientsForChain {
  * @param params publicClient, walletClient (with `nonceManager`)
  * @returns A function that can be invoked to stop watching for new Event Logs.
  */
-export function dustTokenRecipientsForChain(params: DustTokenRecipientsForChain): () => void {
-    const { publicClient, walletClient, tokens, amount } = params;
+export function dustTokenRecipientsForChain(
+    client: Client<Transport, Chain, Account>,
+    params: DustTokenRecipientsForChain,
+): () => void {
+    const { tokens, amount } = params;
 
     // chain metadata (for logging)
-    const chain = publicClient.chain;
+    const chain = client.chain;
     const symbol = chain?.nativeCurrency.symbol ?? "ETH";
     const blockExplorer = chain?.blockExplorers?.default;
 
@@ -78,7 +43,11 @@ export function dustTokenRecipientsForChain(params: DustTokenRecipientsForChain)
     // Track pending dust transactions
     const pendingTx: Record<Address, Hash | undefined> = {};
 
-    return publicClient.watchEvent({
+    return getAction(
+        client,
+        watchEvent,
+        "watchEvent",
+    )({
         address: tokens.map((t) => t.address),
         event: ReceivedTransferRemote,
         onLogs: async (logs) => {
@@ -91,15 +60,23 @@ export function dustTokenRecipientsForChain(params: DustTokenRecipientsForChain)
                         // convert to Address
                         const recipient = sliceHex(recipientBytes32, 12, 32, { strict: true });
                         // recipient balance
-                        const balance = balances[recipient] ?? (await publicClient.getBalance({ address: recipient }));
+                        const balance =
+                            balances[recipient] ??
+                            (await getAction(client, getBalance, "getBalance")({ address: recipient }));
 
                         if (balance === 0n && !pendingTx[recipient]) {
                             // Avoid race condition (async call to get tx hash)
                             pendingTx[recipient] = "0x";
                             // Send dust transaction (assumes wallet is funded)
-                            const hash = await walletClient.sendTransaction({
+                            const hash = await getAction(
+                                client,
+                                sendTransaction,
+                                "sendTransaction",
+                            )({
                                 to: recipient,
                                 value: amount,
+                                chain: client.chain,
+                                account: client.account,
                             });
                             pendingTx[recipient] = hash;
 
