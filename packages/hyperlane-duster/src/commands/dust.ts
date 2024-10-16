@@ -48,7 +48,7 @@ export default class Dust extends Command {
     const walletClient = createWalletClient({ account, chain, transport })
 
     const rpcChainId = await getChainId(walletClient)
-    if (rpcChainId != chainId) {
+    if (rpcChainId !=- chainId) {
         throw new Error(`Invalid rpc ${rpc} eth_chainId ${rpcChainId} != ${chainId}`)
     }
 
