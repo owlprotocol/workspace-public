@@ -13,6 +13,7 @@ import {ContractURILib} from "../../../ContractURI/ContractURILib.sol";
 import {ContractURIFacet} from "../../../ContractURI/ContractURIFacet.sol";
 
 import {IERC721} from "../IERC721.sol";
+import {ERC721Facet} from "../ERC721Facet.sol";
 import {ERC721Lib} from "../ERC721Lib.sol";
 
 import {IERC721MintableAutoId} from "../IERC721MintableAutoId.sol";
@@ -27,22 +28,17 @@ import {IERC2981} from "../../../ERC2981/IERC2981.sol";
 import {ERC2981Lib} from "../../../ERC2981/ERC2981Lib.sol";
 import {ERC2981Facet} from "../../../ERC2981/ERC2981Facet.sol";
 
-import {InitializableMulti} from "../../../utils/InitializableMulti.sol";
-
 contract ERC721MintableAutoIdBaseURIFacet is
     ERC165Facet,
     AccessControlRecursiveFacet,
     ContractURIFacet,
+    ERC721Facet,
     ERC721MintableAutoIdFacet,
     ERC721BaseURIFacet,
     ERC2981Facet
 {}
 
-contract ERC721MintableAutoIdBaseURIFacetInit is InitializableMulti {
-    bytes32 constant ERC721MintableAutoIdBaseURI_STORAGE =
-        keccak256(abi.encode(uint256(keccak256("owlprotocol.storage.ERC721MintableAutoIdBaseURI")) - 1)) &
-            ~bytes32(uint256(0xff));
-
+contract ERC721MintableAutoIdBaseURIFacetInit {
     function initialize(
         string memory contractUri,
         string memory name,
@@ -50,7 +46,7 @@ contract ERC721MintableAutoIdBaseURIFacetInit is InitializableMulti {
         string memory baseUri,
         address royaltyReceiver,
         uint96 feeNumerator
-    ) external initializer(ERC721MintableAutoIdBaseURI_STORAGE) {
+    ) external {
         ERC165Lib._init();
         ERC165Lib.__unsafe_registerInterface(type(IAccessControl).interfaceId, true);
         ERC165Lib.__unsafe_registerInterface(type(IAccessControlRecursive).interfaceId, true);

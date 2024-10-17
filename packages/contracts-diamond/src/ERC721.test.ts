@@ -27,6 +27,7 @@ import { port } from "./test/constants.js";
 import { getERC721DiamondDeployData } from "./ERC721.js";
 import { setupERC721Facets } from "./setupERC721Facets.js";
 import { setupDiamondFacets } from "./setupDiamondFacets.js";
+import { setupCoreContractFacets } from "./setupCoreContractFacets.js";
 
 describe("ERC721.test.ts", function () {
     let transport: Transport;
@@ -55,10 +56,16 @@ describe("ERC721.test.ts", function () {
 
         //Deploy Diamond facets
         const resultDeployDiamondFacets = await setupDiamondFacets(localWalletClient);
+        //Deploy Core facets
+        const resultDeployCoreContractFacets = await setupCoreContractFacets(localWalletClient);
         //Deploy ERC721 facets
         const resultDeploERC721Facets = await setupERC721Facets(localWalletClient);
 
-        const transactions = [...resultDeployDiamondFacets.transactions, ...resultDeploERC721Facets.transactions];
+        const transactions = [
+            ...resultDeployDiamondFacets.transactions,
+            ...resultDeployCoreContractFacets.transactions,
+            ...resultDeploERC721Facets.transactions,
+        ];
         await Promise.all(transactions.map((hash) => publicClient.waitForTransactionReceipt({ hash })));
     });
 

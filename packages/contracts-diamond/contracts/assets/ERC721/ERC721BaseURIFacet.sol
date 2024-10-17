@@ -5,9 +5,8 @@ import {IERC721BaseURI} from "./IERC721BaseURI.sol";
 import {IERC721Metadata} from "./IERC721Metadata.sol";
 import {ERC721Lib} from "./ERC721Lib.sol";
 import {ERC721BaseURILib} from "./ERC721BaseURILib.sol";
-import {ERC721Facet} from "./ERC721Facet.sol";
 
-contract ERC721BaseURIFacet is IERC721Metadata, IERC721BaseURI, ERC721Facet {
+contract ERC721BaseURIFacet is IERC721Metadata, IERC721BaseURI {
     /**
      * @dev Returns the token collection name.
      */

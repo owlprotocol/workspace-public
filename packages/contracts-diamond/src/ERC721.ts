@@ -2,14 +2,21 @@ import { Address } from "viem";
 import { getAbiFunctionSelectors, getDiamondDeployData } from "./Diamond.js";
 
 import {
+    AccessControlRecursiveFacet,
+    ContractURIFacet,
     DiamondCutFacet,
     DiamondInit,
     DiamondLoupeFacet,
-    ERC721MintableAutoIdBaseURIFacet,
+    ERC165Facet,
+    ERC2981Facet,
+    ERC721BaseURIFacet,
+    ERC721Facet,
     ERC721MintableAutoIdBaseURIFacetInit,
+    ERC721MintableAutoIdFacet,
 } from "./artifacts/index.js";
 import { diamondFacets } from "./setupDiamondFacets.js";
 import { erc721Facets } from "./setupERC721Facets.js";
+import { coreContractFacets } from "./setupCoreContractFacets.js";
 
 export interface DiamondInitParams {
     admin: Address;
@@ -35,8 +42,32 @@ export function getERC721DiamondDeployData(initParams: ERC721DiamondInitParams &
             functionSelectors: getAbiFunctionSelectors(DiamondLoupeFacet.abi),
         },
         {
-            facetAddress: erc721Facets.erc721Preset,
-            functionSelectors: getAbiFunctionSelectors(ERC721MintableAutoIdBaseURIFacet.abi),
+            facetAddress: coreContractFacets.erc165,
+            functionSelectors: getAbiFunctionSelectors(ERC165Facet.abi),
+        },
+        {
+            facetAddress: coreContractFacets.accessControlRecursive,
+            functionSelectors: getAbiFunctionSelectors(AccessControlRecursiveFacet.abi),
+        },
+        {
+            facetAddress: coreContractFacets.contractUri,
+            functionSelectors: getAbiFunctionSelectors(ContractURIFacet.abi),
+        },
+        {
+            facetAddress: coreContractFacets.erc2981,
+            functionSelectors: getAbiFunctionSelectors(ERC2981Facet.abi),
+        },
+        {
+            facetAddress: erc721Facets.erc721,
+            functionSelectors: getAbiFunctionSelectors(ERC721Facet.abi),
+        },
+        {
+            facetAddress: erc721Facets.erc721MintableAutoId,
+            functionSelectors: getAbiFunctionSelectors(ERC721MintableAutoIdFacet.abi),
+        },
+        {
+            facetAddress: erc721Facets.erc721BaseUri,
+            functionSelectors: getAbiFunctionSelectors(ERC721BaseURIFacet.abi),
         },
     ];
     const initializers = [
