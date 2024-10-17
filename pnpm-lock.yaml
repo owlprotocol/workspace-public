@@ -682,6 +682,9 @@ importers:
       '@typescript/analyze-trace':
         specifier: ^0.10.1
         version: 0.10.1
+      core-js:
+        specifier: ^3.37.1
+        version: 3.37.1
       depcheck:
         specifier: ^1.4.7
         version: 1.4.7
@@ -694,6 +697,9 @@ importers:
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
+      prool:
+        specifier: ^0.0.15
+        version: 0.0.15
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
