@@ -1,10 +1,10 @@
-import { NODE_ENV, isProductionOrStaging } from "@owlprotocol/envvars";
+import { ANVIL_RPCS, NODE_ENV, isProductionOrStaging } from "@owlprotocol/envvars";
 import { Network, NetworkDataInput, networkPrivateResource, networkResource } from "@owlprotocol/core-firebase/admin";
 
 import { localhost, opBedrockL1, opBedrockL2 } from "@owlprotocol/chains";
 import * as chains from "@owlprotocol/chains/chains";
 import { getUtilityAccount, getRelayerAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
-import { Chain, createWalletClient, http } from "viem";
+import { Chain, createPublicClient, createWalletClient, http } from "viem";
 import { setupChain } from "./setupChain.js";
 
 /**
@@ -97,8 +97,27 @@ export async function setupNetworksForEnv() {
     if (!isProductionOrStaging()) {
         console.debug(`NODE_ENV (${NODE_ENV}) Uploading local development networks`);
         //Local dev networks
+        const rpcs = ANVIL_RPCS.replace(/^\[|\]$/g, "")
+            .split(",")
+            .map((rpc) => rpc.trim());
+
+        const clients = rpcs.map((rpc) => createPublicClient({ transport: http(rpc) }));
+
+        const chainIds = await Promise.all(clients.map((client) => client.getChainId()));
+
+        data = rpcs.map((rpc, index) => ({
+            ...localhost,
+            name: `Localhost ${chainIds[index]}`,
+            slug: `localhost-${chainIds[index]}`,
+            id: chainIds[index],
+            chainId: chainIds[index],
+            rpcUrls: { default: { http: [rpc] } },
+            rpcDefault: rpc,
+        }));
+
         //TODO: Enable OPStack tests
-        data = [localhost];
+        // data = [localhost];
+        // throw new Error("");
     } else {
         console.debug(`NODE_ENV (${NODE_ENV}) Uploading all networks`);
         //Upload all networks
@@ -108,6 +127,7 @@ export async function setupNetworksForEnv() {
     const { networksPrivate } = await uploadNetworks(data);
     for (const network of networksPrivate) {
         const chain = { id: network.chainId, ...network } as Chain;
+
         const walletClient = createWalletClient({
             transport: http(chain.rpcUrls.default.http[0]),
             chain,
