@@ -4,7 +4,7 @@ import { Network, NetworkDataInput, networkPrivateResource, networkResource } fr
 import { localhost, opBedrockL1, opBedrockL2 } from "@owlprotocol/chains";
 import * as chains from "@owlprotocol/chains/chains";
 import { getUtilityAccount, getRelayerAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
-import { Chain, createWalletClient, http } from "viem";
+import { Chain, createWalletClient, http, nonceManager } from "viem";
 import { setupChain } from "./setupChain.js";
 
 /**
@@ -86,11 +86,11 @@ export async function setupNetworksForEnv() {
 
     // Accounts
     //Load viem utility account
-    const utilityAccount = getUtilityAccount();
+    const utilityAccount = getUtilityAccount({ nonceManager });
     // Load viem bundler account
-    const bundlerAccount = getRelayerAccount();
+    const bundlerAccount = getRelayerAccount({ nonceManager });
     //Load viem paymaster signer account
-    const paymasterSignerAccount = getPaymasterSignerAccount();
+    const paymasterSignerAccount = getPaymasterSignerAccount({ nonceManager });
 
     let data: NetworkDataInput[];
 
