@@ -52,4 +52,4 @@ async function main() {
     }
 }
 
-main();
+main().then(() => console.log("Done"));
