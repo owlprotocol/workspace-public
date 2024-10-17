@@ -1,36 +1,47 @@
-import { describe, test, expect, beforeAll } from "vitest";
+import { describe, test, expect, beforeEach } from "vitest";
 import {
     Account,
     Chain,
     Transport,
-    PublicClient,
     WalletClient,
     createPublicClient,
     createWalletClient,
     http,
     nonceManager,
     zeroAddress,
+    parseEther,
 } from "viem";
 import { localhost } from "viem/chains";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { port } from "./test/constants.js";
 import { getLocalAccount } from "./accounts.js";
 
 describe("nonceManager.test.ts", function () {
-    let publicClient: PublicClient<Transport, Chain>;
+    const transport = http(`http://127.0.0.1:${port}`);
+    const chain = localhost;
+    const publicClient = createPublicClient({
+        chain,
+        transport,
+    });
+
     let walletClient: WalletClient<Transport, Chain, Account>;
 
-    beforeAll(async () => {
-        const transport = http(`http://127.0.0.1:${port}`);
-        publicClient = createPublicClient({
-            chain: localhost,
-            transport,
-        }) as unknown as PublicClient<Transport, Chain>;
-
+    beforeEach(async () => {
+        const account = privateKeyToAccount(generatePrivateKey(), { nonceManager });
         walletClient = createWalletClient({
-            account: getLocalAccount(0, { nonceManager }),
-            chain: localhost,
+            account,
+            chain,
+            transport,
+        });
+
+        const localWalletClient = createWalletClient({
+            account: getLocalAccount(0),
+            chain,
             transport,
         }) as unknown as WalletClient<Transport, Chain, Account>;
+
+        const hash = await localWalletClient.sendTransaction({ to: account.address, value: parseEther("10") });
+        await publicClient.waitForTransactionReceipt({ hash });
     });
 
     //https://viem.sh/docs/accounts/local/createNonceManager#integration-with-local-accounts
