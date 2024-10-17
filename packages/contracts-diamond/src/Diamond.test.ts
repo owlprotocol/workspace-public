@@ -14,21 +14,25 @@ import {
 } from "viem";
 import { localhost } from "viem/chains";
 import {
-    getOrDeployCreate2Factory,
-    getOrDeployContracts,
-    getDeployAddress,
-    getOrDeployImplementations,
-} from "@owlprotocol/contracts-create2factory";
-import { getLocalAccount, getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
-import { MyContract } from "@owlprotocol/contracts-create2factory/artifacts/MyContract";
+    getDeployDeterministicAddress,
+    getLocalAccount,
+    getOrDeployDeterministicContract,
+    getOrDeployDeterministicDeployer,
+} from "@owlprotocol/viem-utils";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { topupAddress } from "@owlprotocol/viem-utils";
 import { port } from "./test/constants.js";
-import { FacetCutAction, getAbiFunctionSelectors, getDiamondDeployData } from "./Diamond.js";
+
 import { DiamondCutFacet } from "./artifacts/DiamondCutFacet.js";
 import { DiamondLoupeFacet } from "./artifacts/DiamondLoupeFacet.js";
 import { IDiamondLoupe } from "./artifacts/IDiamondLoupe.js";
 import { IDiamondCut } from "./artifacts/IDiamondCut.js";
+import { MyContract } from "./artifacts/MyContract.js";
+
+import { getAbiFunctionSelectors, getDiamondDeployData } from "./Diamond.js";
+import { FacetCutAction } from "./DiamondCut.js";
+import { diamondFacets, setupDiamondFacets } from "./setupDiamondFacets.js";
+import { DiamondInit } from "./artifacts/DiamondInit.js";
 
 describe("Diamond.test.ts", function () {
     let transport: Transport;
@@ -54,22 +58,21 @@ describe("Diamond.test.ts", function () {
         if (hash0) {
             await publicClient.waitForTransactionReceipt({ hash: hash0 });
         }
-        //Deploy Create2Factory
-        const { hash: hash1 } = await getOrDeployCreate2Factory(localWalletClient);
-        if (hash1) {
-            await publicClient.waitForTransactionReceipt({ hash: hash1 });
-        }
 
-        //Deploy implementations
-        const resultDeployFacets = await getOrDeployImplementations(localWalletClient, [
-            { bytecode: DiamondCutFacet.bytecode },
-            { bytecode: DiamondLoupeFacet.bytecode },
-            { bytecode: MyContract.bytecode },
-        ]);
-        expect(resultDeployFacets.hash).toBeDefined();
-        expect(resultDeployFacets.addresses[0].address).toBe(DiamondCutFacet.implementation);
-        expect(resultDeployFacets.addresses[1].address).toBe(DiamondLoupeFacet.implementation);
-        await publicClient.waitForTransactionReceipt({ hash: resultDeployFacets.hash! });
+        //Deploy Diamond facets
+        const resultDeployDiamondFacets = await setupDiamondFacets(localWalletClient);
+        await Promise.all(
+            resultDeployDiamondFacets.transactions.map((hash) => publicClient.waitForTransactionReceipt({ hash })),
+        );
+
+        //Deploy MyContract facet
+        const facet = await getOrDeployDeterministicContract(localWalletClient, {
+            salt: zeroHash,
+            bytecode: MyContract.bytecode,
+        });
+        if (facet.hash) {
+            await publicClient.waitForTransactionReceipt({ hash: facet.hash });
+        }
     });
 
     beforeEach(async () => {
@@ -89,15 +92,15 @@ describe("Diamond.test.ts", function () {
         await publicClient.waitForTransactionReceipt({ hash: hash! });
     });
 
-    test("deploy Hello World diamond", async () => {
+    test("Diamond - no init", async () => {
         //Deploy diamond
         const facets = [
             {
-                facetAddress: DiamondCutFacet.implementation,
+                facetAddress: diamondFacets.diamondCut,
                 functionSelectors: getAbiFunctionSelectors(DiamondCutFacet.abi),
             },
             {
-                facetAddress: DiamondLoupeFacet.implementation,
+                facetAddress: diamondFacets.diamondLoupe,
                 functionSelectors: getAbiFunctionSelectors(DiamondLoupeFacet.abi),
             },
         ];
@@ -105,23 +108,24 @@ describe("Diamond.test.ts", function () {
             facets,
             initializers: [],
         });
-        const diamondAddress = getDeployAddress(zeroAddress, {
+        const diamondAddress = getDeployDeterministicAddress({
             salt: zeroHash,
             bytecode: diamondDeployData.deployData,
-            initData: "0x",
         });
 
-        const resultDeploy = await getOrDeployContracts(walletClient, zeroAddress, [
-            {
-                salt: zeroHash,
-                bytecode: diamondDeployData.deployData,
-                initData: "0x",
-            },
-        ]);
+        const resultDeploy = await getOrDeployDeterministicContract(walletClient, {
+            salt: zeroHash,
+            bytecode: diamondDeployData.deployData,
+        });
         expect(resultDeploy.hash).toBeDefined();
-        expect(resultDeploy.addresses[0].address).toBe(diamondAddress);
+        expect(resultDeploy.address).toBe(diamondAddress);
+        if (resultDeploy.hash) {
+            await publicClient.waitForTransactionReceipt({ hash: resultDeploy.hash });
+        }
+        const diamondBytecode = await publicClient.getCode({ address: diamondAddress });
+        expect(diamondBytecode).toBeDefined();
 
-        //Loupe diamond
+        //Diamond Loupe
         const facets0 = await publicClient.readContract({
             address: diamondAddress,
             abi: IDiamondLoupe.abi,
@@ -129,10 +133,137 @@ describe("Diamond.test.ts", function () {
         });
         expect(facets0.length).toBe(2);
         expect(facets0).to.deep.eq(facets);
+    });
 
-        //Cut diamond
+    test("Diamond - single init", async () => {
+        //Deploy diamond
+        const facets = [
+            {
+                facetAddress: diamondFacets.diamondCut,
+                functionSelectors: getAbiFunctionSelectors(DiamondCutFacet.abi),
+            },
+            {
+                facetAddress: diamondFacets.diamondLoupe,
+                functionSelectors: getAbiFunctionSelectors(DiamondLoupeFacet.abi),
+            },
+        ];
+        const diamondDeployData = getDiamondDeployData(walletClient.account.address, {
+            facets,
+            initializers: [
+                // Diamond ERC165 initializer
+                {
+                    abi: DiamondInit.abi,
+                    address: diamondFacets.diamondInit,
+                    functionName: "initialize",
+                    args: [],
+                },
+            ],
+        });
+        const diamondAddress = getDeployDeterministicAddress({
+            salt: zeroHash,
+            bytecode: diamondDeployData.deployData,
+        });
+
+        const resultDeploy = await getOrDeployDeterministicContract(walletClient, {
+            salt: zeroHash,
+            bytecode: diamondDeployData.deployData,
+        });
+        expect(resultDeploy.hash).toBeDefined();
+        expect(resultDeploy.address).toBe(diamondAddress);
+        if (resultDeploy.hash) {
+            await publicClient.waitForTransactionReceipt({ hash: resultDeploy.hash });
+        }
+        const diamondBytecode = await publicClient.getCode({ address: diamondAddress });
+        expect(diamondBytecode).toBeDefined();
+    });
+
+    test("Diamond - multi init", async () => {
+        //Deploy diamond
+        const facets = [
+            {
+                facetAddress: diamondFacets.diamondCut,
+                functionSelectors: getAbiFunctionSelectors(DiamondCutFacet.abi),
+            },
+            {
+                facetAddress: diamondFacets.diamondLoupe,
+                functionSelectors: getAbiFunctionSelectors(DiamondLoupeFacet.abi),
+            },
+        ];
+        const diamondDeployData = getDiamondDeployData(walletClient.account.address, {
+            facets,
+            initializers: [
+                // Diamond ERC165 initializer
+                {
+                    abi: DiamondInit.abi,
+                    address: diamondFacets.diamondInit,
+                    functionName: "initialize",
+                    args: [],
+                },
+                {
+                    abi: DiamondInit.abi,
+                    address: diamondFacets.diamondInit,
+                    functionName: "initialize",
+                    args: [],
+                },
+            ],
+        });
+        const diamondAddress = getDeployDeterministicAddress({
+            salt: zeroHash,
+            bytecode: diamondDeployData.deployData,
+        });
+
+        const resultDeploy = await getOrDeployDeterministicContract(walletClient, {
+            salt: zeroHash,
+            bytecode: diamondDeployData.deployData,
+        });
+        expect(resultDeploy.hash).toBeDefined();
+        expect(resultDeploy.address).toBe(diamondAddress);
+        if (resultDeploy.hash) {
+            await publicClient.waitForTransactionReceipt({ hash: resultDeploy.hash });
+        }
+        const diamondBytecode = await publicClient.getCode({ address: diamondAddress });
+        expect(diamondBytecode).toBeDefined();
+    });
+
+    test("MyContract - diamondCut", async () => {
+        //Deploy diamond
+        const facets = [
+            {
+                facetAddress: diamondFacets.diamondCut,
+                functionSelectors: getAbiFunctionSelectors(DiamondCutFacet.abi),
+            },
+            {
+                facetAddress: diamondFacets.diamondLoupe,
+                functionSelectors: getAbiFunctionSelectors(DiamondLoupeFacet.abi),
+            },
+        ];
+        const diamondDeployData = getDiamondDeployData(walletClient.account.address, {
+            facets,
+            initializers: [],
+        });
+        const diamondAddress = getDeployDeterministicAddress({
+            salt: zeroHash,
+            bytecode: diamondDeployData.deployData,
+        });
+
+        const resultDeploy = await getOrDeployDeterministicContract(walletClient, {
+            salt: zeroHash,
+            bytecode: diamondDeployData.deployData,
+        });
+        expect(resultDeploy.hash).toBeDefined();
+        expect(resultDeploy.address).toBe(diamondAddress);
+        if (resultDeploy.hash) {
+            await publicClient.waitForTransactionReceipt({ hash: resultDeploy.hash });
+        }
+        const diamondBytecode = await publicClient.getCode({ address: diamondAddress });
+        expect(diamondBytecode).toBeDefined();
+
+        //Diamond Cut
         const facetAdd = {
-            facetAddress: MyContract.implementation,
+            facetAddress: getDeployDeterministicAddress({
+                salt: zeroHash,
+                bytecode: MyContract.bytecode,
+            }),
             functionSelectors: getAbiFunctionSelectors(MyContract.abi),
         };
         await walletClient.writeContract({
@@ -142,6 +273,7 @@ describe("Diamond.test.ts", function () {
             args: [[{ ...facetAdd, action: FacetCutAction.Add }], zeroAddress, "0x"],
         });
 
+        //Diamond Loupe
         const facets1 = await publicClient.readContract({
             address: diamondAddress,
             abi: IDiamondLoupe.abi,

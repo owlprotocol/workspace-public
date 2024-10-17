@@ -91,7 +91,6 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "5.0.2",
-    "@owlprotocol/contracts-create2factory": "workspace:*",
     "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/zod-sol": "workspace:*",
     "viem": "2.21.19",

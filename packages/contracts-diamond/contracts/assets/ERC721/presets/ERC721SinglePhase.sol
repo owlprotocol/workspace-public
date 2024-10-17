@@ -15,6 +15,7 @@ import {ContractURILib} from "../../../ContractURI/ContractURILib.sol";
 import {ContractURIFacet} from "../../../ContractURI/ContractURIFacet.sol";
 
 import {IERC721} from "../IERC721.sol";
+import {ERC721Facet} from "../ERC721Facet.sol";
 import {ERC721Lib} from "../ERC721Lib.sol";
 
 import {IERC721MintableAutoId} from "../IERC721MintableAutoId.sol";
@@ -35,6 +36,7 @@ contract ERC721SinglePhasePreset is
     ERC165Facet,
     AccessControlRecursiveFacet,
     ContractURIFacet,
+    ERC721Facet,
     ERC721ClaimSinglePhaseFacet,
     ERC721BaseURIFacet,
     ERC2981Facet

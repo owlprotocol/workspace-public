@@ -8,22 +8,26 @@ import {
     createPublicClient,
     createWalletClient,
     http,
-    zeroAddress,
     zeroHash,
     parseEther,
 } from "viem";
 import { localhost } from "viem/chains";
 import {
-    getOrDeployCreate2Factory,
-    getOrDeployContracts,
-    getDeployAddress,
-} from "@owlprotocol/contracts-create2factory";
-import { getLocalAccount, getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
+    getDeployDeterministicAddress,
+    getLocalAccount,
+    getOrDeployDeterministicContract,
+    getOrDeployDeterministicDeployer,
+} from "@owlprotocol/viem-utils";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { topupAddress } from "@owlprotocol/viem-utils";
+
 import { symbol as symbolAbi } from "./artifacts/IERC721Metadata.js";
 import { port } from "./test/constants.js";
-import { getERC721DiamondDeployData, getERC721ImplementationDeployParams } from "./ERC721.js";
+
+import { getERC721DiamondDeployData } from "./ERC721.js";
+import { setupERC721Facets } from "./setupERC721Facets.js";
+import { setupDiamondFacets } from "./setupDiamondFacets.js";
+import { setupCoreContractFacets } from "./setupCoreContractFacets.js";
 
 describe("ERC721.test.ts", function () {
     let transport: Transport;
@@ -49,17 +53,20 @@ describe("ERC721.test.ts", function () {
         if (hash0) {
             await publicClient.waitForTransactionReceipt({ hash: hash0 });
         }
-        //Deploy Create2Factory
-        const { hash: hash1 } = await getOrDeployCreate2Factory(localWalletClient);
-        if (hash1) {
-            await publicClient.waitForTransactionReceipt({ hash: hash1 });
-        }
-        //Deploy implementations
-        const { deployTransaction } = await getERC721ImplementationDeployParams(publicClient);
-        if (deployTransaction) {
-            const deployFacetsHash = await localWalletClient.sendTransaction(deployTransaction);
-            await publicClient.waitForTransactionReceipt({ hash: deployFacetsHash });
-        }
+
+        //Deploy Diamond facets
+        const resultDeployDiamondFacets = await setupDiamondFacets(localWalletClient);
+        //Deploy Core facets
+        const resultDeployCoreContractFacets = await setupCoreContractFacets(localWalletClient);
+        //Deploy ERC721 facets
+        const resultDeploERC721Facets = await setupERC721Facets(localWalletClient);
+
+        const transactions = [
+            ...resultDeployDiamondFacets.transactions,
+            ...resultDeployCoreContractFacets.transactions,
+            ...resultDeploERC721Facets.transactions,
+        ];
+        await Promise.all(transactions.map((hash) => publicClient.waitForTransactionReceipt({ hash })));
     });
 
     beforeEach(async () => {
@@ -90,25 +97,17 @@ describe("ERC721.test.ts", function () {
             feeNumerator: 500n,
         });
 
-        const diamondAddress = getDeployAddress(zeroAddress, {
+        const diamondAddress = getDeployDeterministicAddress({
             salt: zeroHash,
             bytecode: diamondDeployData.deployData,
-            initData: "0x",
         });
 
-        const diamondBytecode = await publicClient.getCode({ address: diamondAddress });
-        expect(diamondBytecode).toBeUndefined();
-
-        const resultDeploy = await getOrDeployContracts(walletClient, zeroAddress, [
-            {
-                salt: zeroHash,
-                bytecode: diamondDeployData.deployData,
-                initData: "0x",
-            },
-        ]);
+        const resultDeploy = await getOrDeployDeterministicContract(walletClient, {
+            salt: zeroHash,
+            bytecode: diamondDeployData.deployData,
+        });
         expect(resultDeploy.hash).toBeDefined();
-        expect(resultDeploy.addresses[0].address).toBe(diamondAddress);
-
+        expect(resultDeploy.address).toBe(diamondAddress);
         if (resultDeploy.hash) {
             await publicClient.waitForTransactionReceipt({ hash: resultDeploy.hash });
         }

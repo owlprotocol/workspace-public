@@ -3,9 +3,8 @@ pragma solidity ^0.8.4;
 
 import {IERC721MintableAutoId} from "./IERC721MintableAutoId.sol";
 import {ERC721MintableAutoIdLib} from "./ERC721MintableAutoIdLib.sol";
-import {ERC721Facet} from "./ERC721Facet.sol";
 
-contract ERC721MintableAutoIdFacet is IERC721MintableAutoId, ERC721Facet {
+contract ERC721MintableAutoIdFacet is IERC721MintableAutoId {
     /**
      * @notice Must have `erc721.roles.mint`
      * @dev Allows `erc721.roles.mint` to mint NFTs

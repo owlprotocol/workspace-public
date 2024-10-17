@@ -1,9 +1,9 @@
 import { Account, Address, Chain, Client, Transport } from "viem";
 import { setupERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
 import { getOrDeployCreate2Factory } from "@owlprotocol/contracts-create2factory";
-import { getERC721ImplementationDeployParams } from "@owlprotocol/contracts-diamond";
+import { setupDiamondFacets, setupERC721Facets, setupCoreContractFacets } from "@owlprotocol/contracts-diamond";
 import { getAction } from "viem/utils";
-import { sendTransaction, waitForTransactionReceipt } from "viem/actions";
+import { waitForTransactionReceipt } from "viem/actions";
 
 /**
  * Setup network by deploying core contracts required by our infra. We try to only deployed contracts
@@ -35,21 +35,25 @@ export async function setupChainContracts(
         await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash: create2Factory.hash });
     }
 
-    //4. Deploy ERC721 Implementations
-    const erc721Implementations = await getERC721ImplementationDeployParams(client);
-    if (erc721Implementations.deployTransaction) {
-        const hash = await getAction(
-            client,
-            sendTransaction,
-            "sendTransaction",
-        )({ ...erc721Implementations.deployTransaction, account: client.account, chain: client.chain });
-        await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
-    }
+    //4. Deploy Implementations
+    //Deploy Diamond facets
+    const diamondFacets = await setupDiamondFacets(client);
+    //Deploy Core facets
+    const coreFacets = await setupCoreContractFacets(client);
+    //Deploy ERC721 facets
+    const erc721Facets = await setupERC721Facets(client);
+
+    const transactions = [...diamondFacets.transactions, ...coreFacets.transactions, ...erc721Facets.transactions];
+    await Promise.all(
+        transactions.map((hash) => getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash })),
+    );
 
     return {
         ...erc4337Contracts,
+        ...diamondFacets,
+        ...coreFacets,
+        ...erc721Facets,
         create2Factory,
         verifyingPaymaster,
-        erc721Implementations,
     };
 }
