@@ -5,3 +5,4 @@ export * from "./actions/ica/writeContract.js";
 export * from "./mailbox/index.js";
 
 export * from "./token/index.js";
+export * from "./artifacts/index.js";
