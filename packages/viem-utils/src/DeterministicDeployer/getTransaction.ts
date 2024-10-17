@@ -1,6 +1,18 @@
-import { Account, Address, Chain, Client, Hash, Hex, Transport, concat, encodeAbiParameters, isHex } from "viem";
+import {
+    Account,
+    Address,
+    Chain,
+    Client,
+    Hash,
+    Hex,
+    TransactionRequest,
+    Transport,
+    concat,
+    encodeAbiParameters,
+    isHex,
+} from "viem";
 import { getAction } from "viem/utils";
-import { getCode, sendTransaction } from "viem/actions";
+import { getCode, prepareTransactionRequest, sendTransaction } from "viem/actions";
 import { DETERMINISTIC_DEPLOYER_ADDRESS } from "./constants.js";
 import { getDeployDeterministicAddress } from "./getAddress.js";
 
@@ -27,6 +39,53 @@ export function getDeployDeterministicFunctionData({ salt, bytecode }: { salt: H
 }
 
 /**
+ * Get or prepare contract deployment using DeterministicDeployer
+ * @param client Client with chain & account
+ * @param salt Hex
+ * @param bytecode Hex
+ * @returns deploy transaction hash
+ */
+export async function getOrPrepareDeterministicContract(
+    client: Client<Transport, Chain, Account>,
+    { salt, bytecode }: { salt: Hash; bytecode: Hex },
+): Promise<{
+    address: Address;
+    request: TransactionRequest | undefined;
+    existed: boolean;
+}> {
+    const address = getDeployDeterministicAddress({ salt, bytecode });
+    //Check if contract exists
+    const existingByteCode = await getAction(client, getCode, "getCode")({ address });
+    if (existingByteCode != undefined) {
+        return {
+            address,
+            request: undefined,
+            existed: true,
+        };
+    }
+
+    const { to, data } = getDeployDeterministicFunctionData({ salt, bytecode });
+    const request = await getAction(
+        client,
+        prepareTransactionRequest,
+        "prepareTransactionRequest",
+    )({
+        to,
+        data,
+        account: client.account,
+        chain: client.chain,
+        // Avoid computing nonce
+        parameters: ["blobVersionedHashes", "chainId", "fees", "gas", "type"],
+    });
+
+    return {
+        address,
+        request,
+        existed: false,
+    };
+}
+
+/**
  * Get or deploy contract using DeterministicDeployer
  * @param client Client with chain & account
  * @param salt Hex
@@ -41,27 +100,16 @@ export async function getOrDeployDeterministicContract(
     hash: Hash | undefined;
     existed: boolean;
 }> {
-    const address = getDeployDeterministicAddress({ salt, bytecode });
-    //Check if contract exists
-    const existingByteCode = await getAction(client, getCode, "getCode")({ address });
-    if (existingByteCode != undefined) {
-        return {
-            address,
-            hash: undefined,
-            existed: true,
-        };
-    }
+    const { address, request, existed } = await getOrPrepareDeterministicContract(client, { salt, bytecode });
 
-    const { to, data } = getDeployDeterministicFunctionData({ salt, bytecode });
-    const hash = await getAction(
-        client,
-        sendTransaction,
-        "sendTransaction",
-    )({ to, data, account: client.account, chain: client.chain });
+    let hash: Hash | undefined;
+    if (request) {
+        hash = await getAction(client, sendTransaction, "sendTransaction")(request as any);
+    }
 
     return {
         address,
         hash,
-        existed: false,
+        existed,
     };
 }

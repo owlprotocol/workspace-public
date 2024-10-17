@@ -17,10 +17,9 @@ import { getOrDeployDeterministicContract } from "./getTransaction.js";
 import { getDeployDeterministicAddress } from "./getAddress.js";
 import { port } from "../test/constants.js";
 import { getLocalAccount } from "../accounts.js";
-//Copied artifact just for testing contract deployment
 import { MyContract } from "../artifacts/MyContract.js";
 
-describe.skip("DeterministicDeployer.test.ts", function () {
+describe("DeterministicDeployer.test.ts", function () {
     let publicClient: PublicClient<Transport, Chain>;
     let walletClient: WalletClient<Transport, Chain, Account>;
 
