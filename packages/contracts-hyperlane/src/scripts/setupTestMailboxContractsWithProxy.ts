@@ -2,7 +2,7 @@ import { createPublicClient, createWalletClient, http } from "viem";
 
 import { localhost } from "viem/chains";
 import { getLocalAccount } from "@owlprotocol/viem-utils";
-import { setupTestMailboxContractsWithProxy } from "../test/mailboxTestHelpers.js";
+import { setupTestMailboxContracts } from "../test/mailboxTestHelpers.js";
 
 // TODO: must run two chains locally to test this script
 // run: anvil -p 8546 --chain-id 1338
@@ -41,11 +41,11 @@ const clientsRemote = {
 async function main() {
     try {
         console.log("Setting up contracts on Origin chain...");
-        const contractsOrigin = await setupTestMailboxContractsWithProxy(clientsOrigin.walletClient);
+        const contractsOrigin = await setupTestMailboxContracts(clientsOrigin.walletClient);
         console.log("Contracts deployed on Origin:", contractsOrigin);
 
         console.log("Setting up contracts on Remote chain...");
-        const contractsRemote = await setupTestMailboxContractsWithProxy(clientsRemote.walletClient);
+        const contractsRemote = await setupTestMailboxContracts(clientsRemote.walletClient);
         console.log("Contracts deployed on Remote:", contractsRemote);
     } catch (error) {
         console.error("Error setting up contracts:", error);
