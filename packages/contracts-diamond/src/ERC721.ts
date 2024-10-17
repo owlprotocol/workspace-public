@@ -14,9 +14,9 @@ import {
     ERC721MintableAutoIdBaseURIFacetInit,
     ERC721MintableAutoIdFacet,
 } from "./artifacts/index.js";
-import { diamondFacets } from "./setupDiamondFacets.js";
-import { erc721Facets } from "./setupERC721Facets.js";
-import { coreContractFacets } from "./setupCoreContractFacets.js";
+import { diamondFacets } from "./prepareDiamondFacets.js";
+import { erc721Facets } from "./prepareERC721Facets.js";
+import { coreContractFacets } from "./prepareCoreContractFacets.js";
 
 export interface DiamondInitParams {
     admin: Address;

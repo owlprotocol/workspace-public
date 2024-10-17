@@ -2,7 +2,7 @@ import { Abi, Address, Hex, encodeDeployData, encodeFunctionData, toFunctionSele
 import { Diamond } from "./artifacts/index.js";
 import { getDiamondInitMultiData } from "./DiamondInitMulti.js";
 import { validateDiamondCutUpgrades } from "./DiamondCut.js";
-import { diamondFacets } from "./setupDiamondFacets.js";
+import { diamondFacets } from "./prepareDiamondFacets.js";
 
 export function getAbiFunctionSelectors(abi: Abi): Hex[] {
     return abi

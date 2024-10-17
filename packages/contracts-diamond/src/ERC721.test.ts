@@ -10,6 +10,7 @@ import {
     http,
     zeroHash,
     parseEther,
+    nonceManager,
 } from "viem";
 import { localhost } from "viem/chains";
 import {
@@ -25,9 +26,9 @@ import { symbol as symbolAbi } from "./artifacts/IERC721Metadata.js";
 import { port } from "./test/constants.js";
 
 import { getERC721DiamondDeployData } from "./ERC721.js";
-import { setupERC721Facets } from "./setupERC721Facets.js";
-import { setupDiamondFacets } from "./setupDiamondFacets.js";
-import { setupCoreContractFacets } from "./setupCoreContractFacets.js";
+import { prepareERC721Facets } from "./prepareERC721Facets.js";
+import { prepareDiamondFacets } from "./prepareDiamondFacets.js";
+import { prepareCoreContractFacets } from "./prepareCoreContractFacets.js";
 
 describe("ERC721.test.ts", function () {
     let transport: Transport;
@@ -44,7 +45,7 @@ describe("ERC721.test.ts", function () {
             transport,
         });
         localWalletClient = createWalletClient({
-            account: getLocalAccount(0),
+            account: getLocalAccount(0, { nonceManager }),
             chain: localhost,
             transport,
         });
@@ -55,17 +56,18 @@ describe("ERC721.test.ts", function () {
         }
 
         //Deploy Diamond facets
-        const resultDeployDiamondFacets = await setupDiamondFacets(localWalletClient);
+        const resultDeployDiamondFacets = await prepareDiamondFacets(localWalletClient);
         //Deploy Core facets
-        const resultDeployCoreContractFacets = await setupCoreContractFacets(localWalletClient);
+        const resultDeployCoreContractFacets = await prepareCoreContractFacets(localWalletClient);
         //Deploy ERC721 facets
-        const resultDeploERC721Facets = await setupERC721Facets(localWalletClient);
+        const resultDeploERC721Facets = await prepareERC721Facets(localWalletClient);
 
-        const transactions = [
-            ...resultDeployDiamondFacets.transactions,
-            ...resultDeployCoreContractFacets.transactions,
-            ...resultDeploERC721Facets.transactions,
+        const requests = [
+            ...resultDeployDiamondFacets.requests,
+            ...resultDeployCoreContractFacets.requests,
+            ...resultDeploERC721Facets.requests,
         ];
+        const transactions = await Promise.all(requests.map((request) => localWalletClient.sendTransaction(request)));
         await Promise.all(transactions.map((hash) => publicClient.waitForTransactionReceipt({ hash })));
     });
 

@@ -1,41 +1,52 @@
-import { describe, test, expect, beforeAll } from "vitest";
+import { describe, test, expect, beforeEach } from "vitest";
 import {
     Account,
     Chain,
     Transport,
-    PublicClient,
     WalletClient,
     createPublicClient,
     createWalletClient,
     http,
     zeroHash,
+    nonceManager,
+    parseEther,
 } from "viem";
 import { localhost } from "viem/chains";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { DETERMINISTIC_DEPLOYER_ADDRESS } from "./constants.js";
 import { getOrDeployDeterministicDeployer } from "./deployDeterministicDeployer.js";
 import { getOrDeployDeterministicContract } from "./getTransaction.js";
 import { getDeployDeterministicAddress } from "./getAddress.js";
 import { port } from "../test/constants.js";
 import { getLocalAccount } from "../accounts.js";
-//Copied artifact just for testing contract deployment
 import { MyContract } from "../artifacts/MyContract.js";
 
-describe.skip("DeterministicDeployer.test.ts", function () {
-    let publicClient: PublicClient<Transport, Chain>;
+describe("DeterministicDeployer.test.ts", function () {
+    const transport = http(`http://127.0.0.1:${port}`);
+    const chain = localhost;
+    const publicClient = createPublicClient({
+        chain,
+        transport,
+    });
+
     let walletClient: WalletClient<Transport, Chain, Account>;
 
-    beforeAll(async () => {
-        const transport = http(`http://127.0.0.1:${port}`);
-        publicClient = createPublicClient({
-            chain: localhost,
-            transport,
-        }) as unknown as PublicClient<Transport, Chain>;
-
+    beforeEach(async () => {
+        const account = privateKeyToAccount(generatePrivateKey(), { nonceManager });
         walletClient = createWalletClient({
+            account,
+            chain,
+            transport,
+        });
+
+        const localWalletClient = createWalletClient({
             account: getLocalAccount(0),
-            chain: localhost,
+            chain,
             transport,
         }) as unknown as WalletClient<Transport, Chain, Account>;
+
+        const hash = await localWalletClient.sendTransaction({ to: account.address, value: parseEther("10") });
+        await publicClient.waitForTransactionReceipt({ hash });
     });
 
     test("getOrDeployDeterministicContract", async () => {

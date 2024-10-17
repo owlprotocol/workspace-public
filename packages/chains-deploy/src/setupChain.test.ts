@@ -1,7 +1,7 @@
 import { expect } from "vitest";
 
 import { getPaymasterSignerAccount, getRelayerAccount, getUtilityAccount } from "@owlprotocol/viem-utils";
-import { createClient, http } from "viem";
+import { createClient, http, nonceManager } from "viem";
 import { localhost } from "viem/chains";
 import { describe, test } from "vitest";
 import { setupChain } from "./setupChain.js";
@@ -18,7 +18,7 @@ describe("setupChain.test.ts", function () {
             },
         };
         //Load viem utility account
-        const utilityAccount = getUtilityAccount();
+        const utilityAccount = getUtilityAccount({ nonceManager });
         // Load viem bundler account
         const bundlerAccount = getRelayerAccount();
         //Load viem paymaster signer account
