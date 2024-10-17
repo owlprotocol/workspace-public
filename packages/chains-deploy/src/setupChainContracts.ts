@@ -1,6 +1,6 @@
-import { Account, Address, Chain, Client, Transport } from "viem";
+import { Account, Address, Chain, Client, TransactionRequest, Transport } from "viem";
 import { setupERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
-import { getOrDeployCreate2Factory } from "@owlprotocol/contracts-create2factory";
+import { getOrPrepareCreate2Factory } from "@owlprotocol/contracts-create2factory";
 import { prepareDiamondFacets, prepareERC721Facets, prepareCoreContractFacets } from "@owlprotocol/contracts-diamond";
 import { getAction } from "viem/utils";
 import { sendTransaction, waitForTransactionReceipt } from "viem/actions";
@@ -24,15 +24,16 @@ export async function setupChainContracts(
     },
 ) {
     const { verifyingSignerAddress } = parameters;
+    const requests: TransactionRequest[] = [];
 
     //1. Deploy ERC4337 contracts (+ Arachnid deployer)
     const erc4337Contracts = await setupERC4337Contracts(client);
     //2. Deploy ERC4337 Paymaster
     const verifyingPaymaster = await setupVerifyingPaymaster(client, { verifyingSignerAddress });
     //3. Deploy Create2Factory
-    const create2Factory = await getOrDeployCreate2Factory(client);
-    if (create2Factory.hash) {
-        await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash: create2Factory.hash });
+    const create2Factory = await getOrPrepareCreate2Factory(client);
+    if (create2Factory.request) {
+        requests.push(create2Factory.request);
     }
 
     //4. Deploy Implementations
@@ -42,8 +43,8 @@ export async function setupChainContracts(
     const coreFacets = await prepareCoreContractFacets(client);
     //Deploy ERC721 facets
     const erc721Facets = await prepareERC721Facets(client);
+    requests.push(...diamondFacets.requests, ...coreFacets.requests, ...erc721Facets.requests);
 
-    const requests = [...diamondFacets.requests, ...coreFacets.requests, ...erc721Facets.requests];
     const transactions = await Promise.all(
         requests.map((request) => getAction(client, sendTransaction, "sendTransaction")(request as any)),
     );

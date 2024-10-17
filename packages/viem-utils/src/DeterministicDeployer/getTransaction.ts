@@ -53,6 +53,13 @@ export async function getOrPrepareDeterministicContract(
     request: TransactionRequest | undefined;
     existed: boolean;
 }> {
+    //Make sure DeterministicDeployer exists
+    if ((await getAction(client, getCode, "getCode")({ address: DETERMINISTIC_DEPLOYER_ADDRESS })) === undefined) {
+        throw new Error(
+            `DeterministicDeployer not deployed at ${DETERMINISTIC_DEPLOYER_ADDRESS}! Please deploy DeterministicDeployer first or use pre-signed deployment.`,
+        );
+    }
+
     const address = getDeployDeterministicAddress({ salt, bytecode });
     //Check if contract exists
     const existingByteCode = await getAction(client, getCode, "getCode")({ address });

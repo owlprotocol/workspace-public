@@ -1,11 +1,5 @@
-import {
-    DETERMINISTIC_DEPLOYER_ADDRESS,
-    getDeployDeterministicAddress,
-    getOrPrepareDeterministicContract,
-} from "@owlprotocol/viem-utils";
+import { getDeployDeterministicAddress, getOrPrepareDeterministicContract } from "@owlprotocol/viem-utils";
 import { Chain, Transport, Account, zeroHash, Client, TransactionRequest } from "viem";
-import { getCode } from "viem/actions";
-import { getAction } from "viem/utils";
 import {
     ERC721BaseURIFacet,
     ERC721Facet,
@@ -53,11 +47,6 @@ export function getERC721Facets() {
  * @param client with account and nonceManager
  */
 export async function prepareERC721Facets(client: Client<Transport, Chain, Account>) {
-    //DeterminsticDeployer MUST exists
-    if (!(await getAction(client, getCode, "getCode")({ address: DETERMINISTIC_DEPLOYER_ADDRESS }))) {
-        throw new Error(`DeterministicDeployer MUST be deployed at ${DETERMINISTIC_DEPLOYER_ADDRESS}`);
-    }
-
     const requests: TransactionRequest[] = [];
 
     const erc721 = await getOrPrepareDeterministicContract(client, {
