@@ -38,7 +38,7 @@ export function getDiamondFacets() {
 
 /**
  * Prepare diamond deployment transactions. Useful to do gas estimations before sending transaction
- * @param client with account and nonceManager
+ * @param client with account
  */
 export async function prepareDiamondFacets(client: Client<Transport, Chain, Account>) {
     const requests: TransactionRequest[] = [];

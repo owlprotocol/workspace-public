@@ -44,7 +44,7 @@ export function getERC721Facets() {
 
 /**
  * Prepare erc721 facet deployment transactions. Useful to do gas estimations before sending transaction
- * @param client with account and nonceManager
+ * @param client with account
  */
 export async function prepareERC721Facets(client: Client<Transport, Chain, Account>) {
     const requests: TransactionRequest[] = [];

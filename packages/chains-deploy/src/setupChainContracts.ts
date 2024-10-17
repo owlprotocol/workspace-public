@@ -1,5 +1,5 @@
 import { Account, Address, Chain, Client, TransactionRequest, Transport } from "viem";
-import { setupERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
+import { prepareERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
 import { getOrPrepareCreate2Factory } from "@owlprotocol/contracts-create2factory";
 import { prepareDiamondFacets, prepareERC721Facets, prepareCoreContractFacets } from "@owlprotocol/contracts-diamond";
 import { getAction } from "viem/utils";
@@ -27,21 +27,12 @@ export async function setupChainContracts(
     const requests: TransactionRequest[] = [];
 
     //1. Deploy ERC4337 contracts (+ Arachnid deployer)
-    const erc4337Contracts = await setupERC4337Contracts(client);
-    //2. Deploy ERC4337 Paymaster
-    const verifyingPaymaster = await setupVerifyingPaymaster(client, { verifyingSignerAddress });
-    //3. Deploy Create2Factory
-    const create2Factory = await getOrPrepareCreate2Factory(client);
-    if (create2Factory.request) {
-        requests.push(create2Factory.request);
-    }
+    const erc4337Contracts = await prepareERC4337Contracts(client);
+    requests.push(...erc4337Contracts.requests);
 
-    //4. Deploy Implementations
-    //Deploy Diamond facets
+    //2. Deploy Diamond contracts
     const diamondFacets = await prepareDiamondFacets(client);
-    //Deploy Core facets
     const coreFacets = await prepareCoreContractFacets(client);
-    //Deploy ERC721 facets
     const erc721Facets = await prepareERC721Facets(client);
     requests.push(...diamondFacets.requests, ...coreFacets.requests, ...erc721Facets.requests);
 
@@ -49,9 +40,18 @@ export async function setupChainContracts(
         requests.map((request) => getAction(client, sendTransaction, "sendTransaction")(request as any)),
     );
 
+    //3. Deploy Create2Factory
+    const create2Factory = await getOrPrepareCreate2Factory(client);
+    if (create2Factory.request) {
+        requests.push(create2Factory.request);
+    }
+
     await Promise.all(
         transactions.map((hash) => getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash })),
     );
+
+    //2. Deploy ERC4337 Paymaster (constructor requires EntryPoint deployment so need to wait for receipt)
+    const verifyingPaymaster = await setupVerifyingPaymaster(client, { verifyingSignerAddress });
 
     return {
         ...erc4337Contracts,

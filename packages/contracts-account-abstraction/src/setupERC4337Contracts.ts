@@ -3,8 +3,20 @@ import {
     getOrDeployDeterministicContract,
     DETERMINISTIC_DEPLOYER_ADDRESS,
     getDeployDeterministicAddress,
+    getOrPrepareDeterministicContract,
 } from "@owlprotocol/viem-utils";
-import { Address, Hash, encodeDeployData, formatEther, zeroHash, Account, Chain, Client, Transport } from "viem";
+import {
+    Address,
+    Hash,
+    encodeDeployData,
+    formatEther,
+    zeroHash,
+    Account,
+    Chain,
+    Client,
+    Transport,
+    TransactionRequest,
+} from "viem";
 import { entryPoint07Address } from "viem/account-abstraction";
 import { getCode, readContract, simulateContract, waitForTransactionReceipt, writeContract } from "viem/actions";
 import { getAction } from "viem/utils";
@@ -58,6 +70,81 @@ export function getERC4337Contracts() {
 }
 
 export const erc4337Contracts = getERC4337Contracts();
+
+/**
+ * Prepare erc4337 deployment transactions. Useful to do gas estimations before sending transaction
+ * @param client with account
+ */
+export async function prepareERC4337Contracts(client: Client<Transport, Chain, Account>) {
+    const requests: TransactionRequest[] = [];
+    //Step 1 - EntryPoint
+    const entrypoint = await getOrPrepareDeterministicContract(
+        client,
+        //Extracted salt (first 32 bytes) from original tx
+        //https://etherscan.io/tx/0x5c81ea86f6c54481d3e21c78675b4f1d985c1fa62b678dcdfdf7934ddd6e127e
+        {
+            salt: ENTRYPOINT_SALT_V07,
+            bytecode: EntryPoint.bytecode,
+        },
+    );
+    if (entrypoint.address != entryPoint07Address) {
+        throw new Error(
+            `Entrypoint v0.7 deployed address ${entryPoint07Address} (expected) != ${entrypoint.address} (actual)`,
+        );
+    }
+    if (entrypoint.request) {
+        requests.push(entrypoint.request);
+    }
+
+    //Step 2 - SimpleAccountFactory
+    const simpleAccountFactory = await getOrPrepareDeterministicContract(client, {
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: SimpleAccountFactory.abi,
+            bytecode: SimpleAccountFactory.bytecode,
+            args: [entrypoint.address],
+        }),
+    });
+    if (simpleAccountFactory.request) {
+        requests.push(simpleAccountFactory.request);
+    }
+
+    //Step 3 - EntryPointSimulations
+    const entrypointSimulations = await getOrPrepareDeterministicContract(client, {
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: EntryPointSimulations.abi,
+            bytecode: EntryPointSimulations.bytecode,
+            args: [],
+        }),
+    });
+    // console.debug(entrypointSimulations);
+    if (entrypointSimulations.request) {
+        requests.push(entrypointSimulations.request);
+    }
+
+    //Step 5 - EntryPointSimulations
+    const pimlicoEntrypointSimulations = await getOrPrepareDeterministicContract(client, {
+        salt: zeroHash,
+        bytecode: encodeDeployData({
+            abi: PimlicoEntryPointSimulations.abi,
+            bytecode: PimlicoEntryPointSimulations.bytecode,
+            args: [entrypointSimulations.address],
+        }),
+    });
+    // console.debug(entrypointSimulations);
+    if (pimlicoEntrypointSimulations.request) {
+        requests.push(pimlicoEntrypointSimulations.request);
+    }
+
+    return {
+        requests,
+        entrypoint,
+        simpleAccountFactory,
+        entrypointSimulations,
+        pimlicoEntrypointSimulations,
+    };
+}
 
 /**
  * Deploy public ERC4337 contracts.
