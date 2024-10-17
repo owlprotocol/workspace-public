@@ -4,4 +4,6 @@ export async function main() {
     await uploadTestData();
 }
 
-main().catch(console.error);
+main()
+    .then(() => console.log("Done"))
+    .catch(console.error);
