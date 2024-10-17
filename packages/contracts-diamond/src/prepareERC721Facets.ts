@@ -1,9 +1,9 @@
 import {
     DETERMINISTIC_DEPLOYER_ADDRESS,
     getDeployDeterministicAddress,
-    getOrDeployDeterministicContract,
+    getOrPrepareDeterministicContract,
 } from "@owlprotocol/viem-utils";
-import { Chain, Transport, Account, zeroHash, Client, Hash } from "viem";
+import { Chain, Transport, Account, zeroHash, Client, TransactionRequest } from "viem";
 import { getCode } from "viem/actions";
 import { getAction } from "viem/utils";
 import {
@@ -16,8 +16,8 @@ import {
 export const erc721Facets = getERC721Facets();
 
 /**
- * Get ERC721 contracts
- * @returns
+ * Get erc721 facet addresses
+ * @returns addresses
  */
 export function getERC721Facets() {
     const erc721 = getDeployDeterministicAddress({
@@ -49,53 +49,51 @@ export function getERC721Facets() {
 }
 
 /**
- * Deploy ERC721 Facets
- * - ERC721Preset
- * - ERC721PresetInit
- * @param client
+ * Prepare erc721 facet deployment transactions. Useful to do gas estimations before sending transaction
+ * @param client with account and nonceManager
  */
-export async function setupERC721Facets(client: Client<Transport, Chain, Account>) {
+export async function prepareERC721Facets(client: Client<Transport, Chain, Account>) {
     //DeterminsticDeployer MUST exists
     if (!(await getAction(client, getCode, "getCode")({ address: DETERMINISTIC_DEPLOYER_ADDRESS }))) {
         throw new Error(`DeterministicDeployer MUST be deployed at ${DETERMINISTIC_DEPLOYER_ADDRESS}`);
     }
 
-    const transactions: Hash[] = [];
+    const requests: TransactionRequest[] = [];
 
-    const erc721 = await getOrDeployDeterministicContract(client, {
+    const erc721 = await getOrPrepareDeterministicContract(client, {
         salt: zeroHash,
         bytecode: ERC721Facet.bytecode,
     });
-    if (erc721.hash) {
-        transactions.push(erc721.hash);
+    if (erc721.request) {
+        requests.push(erc721.request);
     }
 
-    const erc721MintableAutoId = await getOrDeployDeterministicContract(client, {
+    const erc721MintableAutoId = await getOrPrepareDeterministicContract(client, {
         salt: zeroHash,
         bytecode: ERC721MintableAutoIdFacet.bytecode,
     });
-    if (erc721MintableAutoId.hash) {
-        transactions.push(erc721MintableAutoId.hash);
+    if (erc721MintableAutoId.request) {
+        requests.push(erc721MintableAutoId.request);
     }
 
-    const erc721BaseUri = await getOrDeployDeterministicContract(client, {
+    const erc721BaseUri = await getOrPrepareDeterministicContract(client, {
         salt: zeroHash,
         bytecode: ERC721BaseURIFacet.bytecode,
     });
-    if (erc721BaseUri.hash) {
-        transactions.push(erc721BaseUri.hash);
+    if (erc721BaseUri.request) {
+        requests.push(erc721BaseUri.request);
     }
 
-    const erc721PresetInit = await getOrDeployDeterministicContract(client, {
+    const erc721PresetInit = await getOrPrepareDeterministicContract(client, {
         salt: zeroHash,
         bytecode: ERC721MintableAutoIdBaseURIFacetInit.bytecode,
     });
-    if (erc721PresetInit.hash) {
-        transactions.push(erc721PresetInit.hash);
+    if (erc721PresetInit.request) {
+        requests.push(erc721PresetInit.request);
     }
 
     return {
-        transactions,
+        requests,
         erc721,
         erc721MintableAutoId,
         erc721BaseUri,

@@ -1,21 +1,17 @@
 import {
     DETERMINISTIC_DEPLOYER_ADDRESS,
     getDeployDeterministicAddress,
-    getOrDeployDeterministicContract,
+    getOrPrepareDeterministicContract,
 } from "@owlprotocol/viem-utils";
-import { Chain, Transport, Account, zeroHash, Client, Hash } from "viem";
+import { Chain, Transport, Account, zeroHash, Client, TransactionRequest } from "viem";
 import { getCode } from "viem/actions";
 import { getAction } from "viem/utils";
 import { DiamondCutFacet, DiamondLoupeFacet, DiamondInit, DiamondInitMulti } from "./artifacts/index.js";
 
 export const diamondFacets = getDiamondFacets();
 /**
- * Get Diamond facets
- * - DiamondCutFacet
- * - DiamondLoupeFacet
- * - DiamondInit
- * - DiamondInitMulti
- * @returns
+ * Get diamond facet addresses
+ * @returns addresses
  */
 export function getDiamondFacets() {
     const diamondCut = getDeployDeterministicAddress({
@@ -47,55 +43,51 @@ export function getDiamondFacets() {
 }
 
 /**
- * Deploy Diamond contract facets
- * - DiamondCutFacet
- * - DiamondLoupeFacet
- * - DiamondInit
- * - DiamondInitMulti
- * @param client
+ * Prepare diamond deployment transactions. Useful to do gas estimations before sending transaction
+ * @param client with account and nonceManager
  */
-export async function setupDiamondFacets(client: Client<Transport, Chain, Account>) {
+export async function prepareDiamondFacets(client: Client<Transport, Chain, Account>) {
     //DeterminsticDeployer MUST exists
     if (!(await getAction(client, getCode, "getCode")({ address: DETERMINISTIC_DEPLOYER_ADDRESS }))) {
         throw new Error(`DeterministicDeployer MUST be deployed at ${DETERMINISTIC_DEPLOYER_ADDRESS}`);
     }
 
-    const transactions: Hash[] = [];
+    const requests: TransactionRequest[] = [];
 
-    const diamondCut = await getOrDeployDeterministicContract(client, {
+    const diamondCut = await getOrPrepareDeterministicContract(client, {
         salt: zeroHash,
         bytecode: DiamondCutFacet.bytecode,
     });
-    if (diamondCut.hash) {
-        transactions.push(diamondCut.hash);
+    if (diamondCut.request) {
+        requests.push(diamondCut.request);
     }
 
-    const diamondLoupe = await getOrDeployDeterministicContract(client, {
+    const diamondLoupe = await getOrPrepareDeterministicContract(client, {
         salt: zeroHash,
         bytecode: DiamondLoupeFacet.bytecode,
     });
-    if (diamondLoupe.hash) {
-        transactions.push(diamondLoupe.hash);
+    if (diamondLoupe.request) {
+        requests.push(diamondLoupe.request);
     }
 
-    const diamondInit = await getOrDeployDeterministicContract(client, {
+    const diamondInit = await getOrPrepareDeterministicContract(client, {
         salt: zeroHash,
         bytecode: DiamondInit.bytecode,
     });
-    if (diamondInit.hash) {
-        transactions.push(diamondInit.hash);
+    if (diamondInit.request) {
+        requests.push(diamondInit.request);
     }
 
-    const diamondInitMulti = await getOrDeployDeterministicContract(client, {
+    const diamondInitMulti = await getOrPrepareDeterministicContract(client, {
         salt: zeroHash,
         bytecode: DiamondInitMulti.bytecode,
     });
-    if (diamondInitMulti.hash) {
-        transactions.push(diamondInitMulti.hash);
+    if (diamondInitMulti.request) {
+        requests.push(diamondInitMulti.request);
     }
 
     return {
-        transactions,
+        requests,
         diamondCut,
         diamondLoupe,
         diamondInit,

@@ -11,6 +11,7 @@ import {
     zeroAddress,
     zeroHash,
     parseEther,
+    nonceManager,
 } from "viem";
 import { localhost } from "viem/chains";
 import {
@@ -31,7 +32,7 @@ import { MyContract } from "./artifacts/MyContract.js";
 
 import { getAbiFunctionSelectors, getDiamondDeployData } from "./Diamond.js";
 import { FacetCutAction } from "./DiamondCut.js";
-import { diamondFacets, setupDiamondFacets } from "./setupDiamondFacets.js";
+import { diamondFacets, prepareDiamondFacets } from "./prepareDiamondFacets.js";
 import { DiamondInit } from "./artifacts/DiamondInit.js";
 
 describe("Diamond.test.ts", function () {
@@ -49,7 +50,7 @@ describe("Diamond.test.ts", function () {
             transport,
         });
         localWalletClient = createWalletClient({
-            account: getLocalAccount(0),
+            account: getLocalAccount(0, { nonceManager }),
             chain: localhost,
             transport,
         });
@@ -60,10 +61,11 @@ describe("Diamond.test.ts", function () {
         }
 
         //Deploy Diamond facets
-        const resultDeployDiamondFacets = await setupDiamondFacets(localWalletClient);
-        await Promise.all(
-            resultDeployDiamondFacets.transactions.map((hash) => publicClient.waitForTransactionReceipt({ hash })),
+        const resultDeployDiamondFacets = await prepareDiamondFacets(localWalletClient);
+        const transactions = await Promise.all(
+            resultDeployDiamondFacets.requests.map((request) => localWalletClient.sendTransaction(request)),
         );
+        await Promise.all(transactions.map((hash) => publicClient.waitForTransactionReceipt({ hash })));
 
         //Deploy MyContract facet
         const facet = await getOrDeployDeterministicContract(localWalletClient, {

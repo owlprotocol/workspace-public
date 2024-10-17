@@ -3,6 +3,6 @@ export * from "./DiamondCut.js";
 export * from "./DiamondInitMulti.js";
 export * from "./ERC721.js";
 
-export * from "./setupCoreContractFacets.js";
-export * from "./setupDiamondFacets.js";
-export * from "./setupERC721Facets.js";
+export * from "./prepareCoreContractFacets.js";
+export * from "./prepareDiamondFacets.js";
+export * from "./prepareERC721Facets.js";

@@ -1,9 +1,9 @@
 import { Account, Address, Chain, Client, Transport } from "viem";
 import { setupERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
 import { getOrDeployCreate2Factory } from "@owlprotocol/contracts-create2factory";
-import { setupDiamondFacets, setupERC721Facets, setupCoreContractFacets } from "@owlprotocol/contracts-diamond";
+import { prepareDiamondFacets, prepareERC721Facets, prepareCoreContractFacets } from "@owlprotocol/contracts-diamond";
 import { getAction } from "viem/utils";
-import { waitForTransactionReceipt } from "viem/actions";
+import { sendTransaction, waitForTransactionReceipt } from "viem/actions";
 
 /**
  * Setup network by deploying core contracts required by our infra. We try to only deployed contracts
@@ -37,13 +37,17 @@ export async function setupChainContracts(
 
     //4. Deploy Implementations
     //Deploy Diamond facets
-    const diamondFacets = await setupDiamondFacets(client);
+    const diamondFacets = await prepareDiamondFacets(client);
     //Deploy Core facets
-    const coreFacets = await setupCoreContractFacets(client);
+    const coreFacets = await prepareCoreContractFacets(client);
     //Deploy ERC721 facets
-    const erc721Facets = await setupERC721Facets(client);
+    const erc721Facets = await prepareERC721Facets(client);
 
-    const transactions = [...diamondFacets.transactions, ...coreFacets.transactions, ...erc721Facets.transactions];
+    const requests = [...diamondFacets.requests, ...coreFacets.requests, ...erc721Facets.requests];
+    const transactions = await Promise.all(
+        requests.map((request) => getAction(client, sendTransaction, "sendTransaction")(request as any)),
+    );
+
     await Promise.all(
         transactions.map((hash) => getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash })),
     );
