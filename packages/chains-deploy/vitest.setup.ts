@@ -14,7 +14,8 @@ export async function setup() {
         host: "127.0.0.1",
         port,
         chainId: 1337,
-        blockTime: 1,
+        //Test without auto-confirmation
+        // blockTime: 1,
     });
     await instance.start();
 }
