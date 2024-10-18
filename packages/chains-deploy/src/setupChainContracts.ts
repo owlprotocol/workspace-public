@@ -1,10 +1,10 @@
-import { Account, Address, Chain, Client, TransactionRequest, Transport } from "viem";
+import { Account, Address, Chain, Client, formatEther, TransactionRequest, Transport } from "viem";
 import { prepareERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
 import { getOrPrepareCreate2Factory } from "@owlprotocol/contracts-create2factory";
 import { prepareDiamondFacets, prepareERC721Facets, prepareCoreContractFacets } from "@owlprotocol/contracts-diamond";
 import { getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
 import { getAction } from "viem/utils";
-import { sendTransaction, waitForTransactionReceipt } from "viem/actions";
+import { getBalance, sendTransaction, waitForTransactionReceipt } from "viem/actions";
 
 export async function prepareChainContracts(client: Client<Transport, Chain, Account>) {
     const requests: TransactionRequest[] = [];
@@ -63,6 +63,23 @@ export async function setupChainContracts(
 
     //1. Deploy contracts
     const contracts = await prepareChainContracts(client);
+
+    // Check balance
+    const contractsFee = contracts.requests.reduce(
+        (acc, request) => acc + (request.gas ?? 0n) * (request.maxFeePerGas ?? request.gasPrice ?? 0n),
+        0n,
+    );
+
+    if (contractsFee > 0n) {
+        const balance = await getAction(client, getBalance, "getBalance")({ address: client.account.address });
+        if (balance < contractsFee) {
+            throw new Error(
+                `Insufficient funds on ${client.account.address} ${formatEther(balance)} < ${formatEther(
+                    contractsFee,
+                )}`,
+            );
+        }
+    }
 
     const transactions = await Promise.all(
         contracts.requests.map((request) => getAction(client, sendTransaction, "sendTransaction")(request as any)),

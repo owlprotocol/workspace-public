@@ -1,49 +1,44 @@
 import { expect } from "vitest";
 
-import {
-    DETERMINISTIC_DEPLOYER_ADDRESS,
-    getPaymasterSignerAccount,
-    getRelayerAccount,
-    getUtilityAccount,
-} from "@owlprotocol/viem-utils";
-import { createClient, createPublicClient, http, nonceManager } from "viem";
+import { DETERMINISTIC_DEPLOYER_ADDRESS, getLocalAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
+import { createPublicClient, createWalletClient, http, nonceManager } from "viem";
 import { localhost } from "viem/chains";
 import { describe, test } from "vitest";
-import { setupChain } from "./setupChain.js";
 import { port } from "./test/constants.js";
+import { prepareChainContracts, setupChainContracts } from "./setupChainContracts.js";
 
-describe("setupChain.test.ts", function () {
-    test("setupChain", async () => {
-        const chain = {
-            ...localhost,
-            rpcUrls: {
-                default: {
-                    http: [`http://127.0.0.1:${port}`],
-                },
+describe("setupChainContracts.test.ts", function () {
+    const chain = {
+        ...localhost,
+        rpcUrls: {
+            default: {
+                http: [`http://127.0.0.1:${port}`],
             },
-        };
-        const transport = http(chain.rpcUrls.default.http[0]);
+        },
+    };
+    const transport = http(chain.rpcUrls.default.http[0]);
+    const publicClient = createPublicClient({
+        chain,
+        transport,
+    });
+    const walletClient = createWalletClient({
+        account: getLocalAccount(0, { nonceManager }),
+        chain,
+        transport,
+    });
 
-        const publicClient = createPublicClient({
-            transport,
-            chain,
-        });
-        //Load viem utility account
-        const utilityAccount = getUtilityAccount({ nonceManager });
-        // Load viem bundler account
-        const bundlerAccount = getRelayerAccount();
+    test("prepareChainContracts", async () => {
+        const contracts = await prepareChainContracts(walletClient);
+        const contractsGas = contracts.requests.reduce((acc, request) => acc + (request.gas ?? 0n), 0n);
+
+        console.debug(contractsGas);
+        expect(contractsGas).toBeGreaterThan(0n);
+    });
+
+    test("setupChainContracts", async () => {
         //Load viem paymaster signer account
         const paymasterSignerAccount = getPaymasterSignerAccount();
-
-        //Utility wallet client
-        const utilityClient = createClient({
-            transport,
-            chain,
-            account: utilityAccount,
-        });
-
-        const result = await setupChain(utilityClient, {
-            bundlerAddress: bundlerAccount.address,
+        const result = await setupChainContracts(walletClient, {
             verifyingSignerAddress: paymasterSignerAccount.address,
         });
         expect(result).toBeDefined();

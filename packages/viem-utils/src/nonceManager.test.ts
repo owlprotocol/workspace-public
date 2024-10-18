@@ -76,6 +76,10 @@ describe("nonceManager.test.ts", function () {
         expect(requests[1].nonce).toBe(undefined);
         expect(requests[0].gas).toBeDefined();
         expect(requests[1].gas).toBeDefined();
+        expect(requests[0].gasPrice).toBeUndefined();
+        expect(requests[1].gasPrice).toBeUndefined();
+        expect(requests[0].maxFeePerGas).toBeDefined();
+        expect(requests[1].maxFeePerGas).toBeDefined();
 
         const transactions = await Promise.all(requests.map((request) => walletClient.sendTransaction(request)));
         const receipts = await Promise.all(
