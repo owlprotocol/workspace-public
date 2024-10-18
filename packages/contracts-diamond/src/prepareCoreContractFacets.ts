@@ -47,37 +47,28 @@ export function getCoreContractFacets() {
 export async function prepareCoreContractFacets(client: Client<Transport, Chain, Account>) {
     const requests: TransactionRequest[] = [];
 
-    const erc165 = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: ERC165Facet.bytecode,
-    });
-    if (erc165.request) {
-        requests.push(erc165.request);
-    }
-
-    const accessControlRecursive = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: AccessControlRecursiveFacet.bytecode,
-    });
-    if (accessControlRecursive.request) {
-        requests.push(accessControlRecursive.request);
-    }
-
-    const contractUri = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: ContractURIFacet.bytecode,
-    });
-    if (contractUri.request) {
-        requests.push(contractUri.request);
-    }
-
-    const erc2981 = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: ERC2981Facet.bytecode,
-    });
-    if (erc2981.request) {
-        requests.push(erc2981.request);
-    }
+    const [erc165, accessControlRecursive, contractUri, erc2981] = await Promise.all([
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: ERC165Facet.bytecode,
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: AccessControlRecursiveFacet.bytecode,
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: ContractURIFacet.bytecode,
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: ERC2981Facet.bytecode,
+        }),
+    ]);
+    if (erc165.request) requests.push(erc165.request);
+    if (accessControlRecursive.request) requests.push(accessControlRecursive.request);
+    if (contractUri.request) requests.push(contractUri.request);
+    if (erc2981.request) requests.push(erc2981.request);
 
     return {
         requests,

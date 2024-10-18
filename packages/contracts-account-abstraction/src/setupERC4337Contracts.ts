@@ -83,65 +83,52 @@ export const erc4337Contracts = getERC4337Contracts();
  */
 export async function prepareERC4337Contracts(client: Client<Transport, Chain, Account>) {
     const requests: TransactionRequest[] = [];
-    //Step 1 - EntryPoint
-    const entrypoint = await getOrPrepareDeterministicContract(
-        client,
-        //Extracted salt (first 32 bytes) from original tx
-        //https://etherscan.io/tx/0x5c81ea86f6c54481d3e21c78675b4f1d985c1fa62b678dcdfdf7934ddd6e127e
-        {
-            salt: ENTRYPOINT_SALT_V07,
-            bytecode: EntryPoint.bytecode,
-        },
-    );
+    const [entrypoint, simpleAccountFactory, entrypointSimulations, pimlicoEntrypointSimulations] = await Promise.all([
+        getOrPrepareDeterministicContract(
+            client,
+            //Extracted salt (first 32 bytes) from original tx
+            //https://etherscan.io/tx/0x5c81ea86f6c54481d3e21c78675b4f1d985c1fa62b678dcdfdf7934ddd6e127e
+            {
+                salt: ENTRYPOINT_SALT_V07,
+                bytecode: EntryPoint.bytecode,
+            },
+        ),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: encodeDeployData({
+                abi: SimpleAccountFactory.abi,
+                bytecode: SimpleAccountFactory.bytecode,
+                args: [erc4337Contracts.entrypoint],
+            }),
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: encodeDeployData({
+                abi: EntryPointSimulations.abi,
+                bytecode: EntryPointSimulations.bytecode,
+                args: [],
+            }),
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: encodeDeployData({
+                abi: PimlicoEntryPointSimulations.abi,
+                bytecode: PimlicoEntryPointSimulations.bytecode,
+                args: [erc4337Contracts.entrypointSimulations],
+            }),
+        }),
+    ]);
+
     if (entrypoint.address != entryPoint07Address) {
         throw new Error(
             `Entrypoint v0.7 deployed address ${entryPoint07Address} (expected) != ${entrypoint.address} (actual)`,
         );
     }
-    if (entrypoint.request) {
-        requests.push(entrypoint.request);
-    }
 
-    //Step 2 - SimpleAccountFactory
-    const simpleAccountFactory = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: encodeDeployData({
-            abi: SimpleAccountFactory.abi,
-            bytecode: SimpleAccountFactory.bytecode,
-            args: [entrypoint.address],
-        }),
-    });
-    if (simpleAccountFactory.request) {
-        requests.push(simpleAccountFactory.request);
-    }
-
-    //Step 3 - EntryPointSimulations
-    const entrypointSimulations = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: encodeDeployData({
-            abi: EntryPointSimulations.abi,
-            bytecode: EntryPointSimulations.bytecode,
-            args: [],
-        }),
-    });
-    // console.debug(entrypointSimulations);
-    if (entrypointSimulations.request) {
-        requests.push(entrypointSimulations.request);
-    }
-
-    //Step 5 - EntryPointSimulations
-    const pimlicoEntrypointSimulations = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: encodeDeployData({
-            abi: PimlicoEntryPointSimulations.abi,
-            bytecode: PimlicoEntryPointSimulations.bytecode,
-            args: [entrypointSimulations.address],
-        }),
-    });
-    // console.debug(entrypointSimulations);
-    if (pimlicoEntrypointSimulations.request) {
-        requests.push(pimlicoEntrypointSimulations.request);
-    }
+    if (entrypoint.request) requests.push(entrypoint.request);
+    if (simpleAccountFactory.request) requests.push(simpleAccountFactory.request);
+    if (entrypointSimulations.request) requests.push(entrypointSimulations.request);
+    if (pimlicoEntrypointSimulations.request) requests.push(pimlicoEntrypointSimulations.request);
 
     return {
         requests,

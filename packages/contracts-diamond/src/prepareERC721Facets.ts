@@ -49,37 +49,29 @@ export function getERC721Facets() {
 export async function prepareERC721Facets(client: Client<Transport, Chain, Account>) {
     const requests: TransactionRequest[] = [];
 
-    const erc721 = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: ERC721Facet.bytecode,
-    });
-    if (erc721.request) {
-        requests.push(erc721.request);
-    }
+    const [erc721, erc721MintableAutoId, erc721BaseUri, erc721PresetInit] = await Promise.all([
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: ERC721Facet.bytecode,
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: ERC721MintableAutoIdFacet.bytecode,
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: ERC721BaseURIFacet.bytecode,
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: ERC721MintableAutoIdBaseURIFacetInit.bytecode,
+        }),
+    ]);
 
-    const erc721MintableAutoId = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: ERC721MintableAutoIdFacet.bytecode,
-    });
-    if (erc721MintableAutoId.request) {
-        requests.push(erc721MintableAutoId.request);
-    }
-
-    const erc721BaseUri = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: ERC721BaseURIFacet.bytecode,
-    });
-    if (erc721BaseUri.request) {
-        requests.push(erc721BaseUri.request);
-    }
-
-    const erc721PresetInit = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: ERC721MintableAutoIdBaseURIFacetInit.bytecode,
-    });
-    if (erc721PresetInit.request) {
-        requests.push(erc721PresetInit.request);
-    }
+    if (erc721.request) requests.push(erc721.request);
+    if (erc721MintableAutoId.request) requests.push(erc721MintableAutoId.request);
+    if (erc721BaseUri.request) requests.push(erc721BaseUri.request);
+    if (erc721PresetInit.request) requests.push(erc721PresetInit.request);
 
     return {
         requests,

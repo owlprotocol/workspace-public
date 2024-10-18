@@ -43,37 +43,28 @@ export function getDiamondFacets() {
 export async function prepareDiamondFacets(client: Client<Transport, Chain, Account>) {
     const requests: TransactionRequest[] = [];
 
-    const diamondCut = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: DiamondCutFacet.bytecode,
-    });
-    if (diamondCut.request) {
-        requests.push(diamondCut.request);
-    }
-
-    const diamondLoupe = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: DiamondLoupeFacet.bytecode,
-    });
-    if (diamondLoupe.request) {
-        requests.push(diamondLoupe.request);
-    }
-
-    const diamondInit = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: DiamondInit.bytecode,
-    });
-    if (diamondInit.request) {
-        requests.push(diamondInit.request);
-    }
-
-    const diamondInitMulti = await getOrPrepareDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: DiamondInitMulti.bytecode,
-    });
-    if (diamondInitMulti.request) {
-        requests.push(diamondInitMulti.request);
-    }
+    const [diamondCut, diamondLoupe, diamondInit, diamondInitMulti] = await Promise.all([
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: DiamondCutFacet.bytecode,
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: DiamondLoupeFacet.bytecode,
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: DiamondInit.bytecode,
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: DiamondInitMulti.bytecode,
+        }),
+    ]);
+    if (diamondCut.request) requests.push(diamondCut.request);
+    if (diamondLoupe.request) requests.push(diamondLoupe.request);
+    if (diamondInit.request) requests.push(diamondInit.request);
+    if (diamondInitMulti.request) requests.push(diamondInitMulti.request);
 
     return {
         requests,
