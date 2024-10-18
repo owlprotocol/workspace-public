@@ -6,7 +6,7 @@ import { toSimpleSmartAccount, ToSimpleSmartAccountReturnType } from "permission
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
 import { type Auth, getOwlRpcTransport, getOwlUserRpcTransport } from "./transports.js";
 import { createAdminLocalAccount, createUserLocalAccount } from "./localAccounts.js";
-import { getSimpleAccountAddress } from "../../../contracts-account-abstraction/src/SimpleAccount.js";
+import { getSimpleAccountAddress } from "@owlprotocol/contracts-account-abstraction";
 
 export async function getUserSimpleSmartAccount(
     jwt: string,
