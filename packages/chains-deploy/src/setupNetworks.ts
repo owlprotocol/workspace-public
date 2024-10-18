@@ -4,7 +4,7 @@ import { Network, NetworkDataInput, networkPrivateResource, networkResource } fr
 import { localhost, opBedrockL1, opBedrockL2 } from "@owlprotocol/chains";
 import * as chains from "@owlprotocol/chains/chains";
 import { getUtilityAccount, getRelayerAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
-import { Chain, createWalletClient, http } from "viem";
+import { Chain, createWalletClient, http, nonceManager } from "viem";
 import { setupChain } from "./setupChain.js";
 
 /**
@@ -86,11 +86,11 @@ export async function setupNetworksForEnv() {
 
     // Accounts
     //Load viem utility account
-    const utilityAccount = getUtilityAccount();
+    const utilityAccount = getUtilityAccount({ nonceManager });
     // Load viem bundler account
-    const bundlerAccount = getRelayerAccount();
+    const bundlerAccount = getRelayerAccount({ nonceManager });
     //Load viem paymaster signer account
-    const paymasterSignerAccount = getPaymasterSignerAccount();
+    const paymasterSignerAccount = getPaymasterSignerAccount({ nonceManager });
 
     let data: NetworkDataInput[];
 
@@ -106,8 +106,15 @@ export async function setupNetworksForEnv() {
     }
 
     const { networksPrivate } = await uploadNetworks(data);
+    //TODO: Chains that don't work
+    const skipChainIds: number[] = [chains.linea.chainId, chains.lineaSepolia.chainId, chains.mainnet.chainId];
+
     for (const network of networksPrivate) {
         const chain = { id: network.chainId, ...network } as Chain;
+        if (skipChainIds.includes(chain.id)) {
+            continue;
+        }
+
         const walletClient = createWalletClient({
             transport: http(chain.rpcUrls.default.http[0]),
             chain,

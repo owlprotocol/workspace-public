@@ -8,9 +8,13 @@ export default defineConfig({
         globals: false,
         globalSetup: "vitest.setup.ts",
         testTimeout: 60000,
-        threads: false,
         watch: true,
         include: ["src/**/*.test.ts"],
+        poolOptions: {
+            threads: {
+                singleThread: true,
+            },
+        },
         //setupFiles: "./src/test/setup.ts",
     },
 });

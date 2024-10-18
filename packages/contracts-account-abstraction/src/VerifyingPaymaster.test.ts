@@ -1,12 +1,8 @@
-import { describe, test, beforeEach, expect } from "vitest";
+import { describe, test, beforeEach, expect, beforeAll } from "vitest";
 import {
     LocalAccount,
     Address,
-    Chain,
-    Transport,
     Hex,
-    PublicClient,
-    WalletClient,
     createPublicClient,
     createWalletClient,
     http,
@@ -15,12 +11,12 @@ import {
     parseEther,
     hexToBytes,
     concatHex,
-    HDAccount,
     zeroAddress,
     Hash,
+    nonceManager,
 } from "viem";
 import { localhost } from "viem/chains";
-import { getLocalAccount } from "@owlprotocol/viem-utils";
+import { getLocalAccount, getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { entryPoint07Address, UserOperation, getUserOperationHash } from "viem/account-abstraction";
 
@@ -36,24 +32,35 @@ import { toPackedUserOperation } from "./models/PackedUserOperation.js";
 import { getVerifyingPaymasterHash } from "./VerifyingPaymaster.js";
 
 describe("VerifyingPaymaster.test.ts", function () {
-    let publicClient: PublicClient<Transport, Chain>;
-    let walletClient: WalletClient<Transport, Chain, HDAccount>;
+    const chain = {
+        ...localhost,
+        rpcUrls: {
+            default: {
+                http: [`http://127.0.0.1:${port}`],
+            },
+        },
+    };
+    const transport = http(chain.rpcUrls.default.http[0]);
+    const publicClient = createPublicClient({
+        chain,
+        transport,
+    });
+    const walletClient = createWalletClient({
+        account: getLocalAccount(0, { nonceManager }),
+        chain,
+        transport,
+    });
 
-    // let entryPoint: ENTRYPOINT_ADDRESS_V07_TYPE;
     let simpleAccountFactory: Address;
     let verifyingPaymaster: Address;
 
-    beforeEach(async () => {
-        const transport = http(`http://127.0.0.1:${port}`);
-        publicClient = createPublicClient({
-            chain: localhost,
-            transport,
-        });
-        walletClient = createWalletClient({
-            account: getLocalAccount(0),
-            chain: localhost,
-            transport,
-        });
+    beforeAll(async () => {
+        //Deploy Deterministic Deployer first
+        const { hash } = await getOrDeployDeterministicDeployer(walletClient);
+        if (hash) {
+            await publicClient.waitForTransactionReceipt({ hash });
+        }
+
         const contracts = await setupERC4337Contracts(walletClient);
         // entryPoint = contracts.entrypoint.address;
         simpleAccountFactory = contracts.simpleAccountFactory.address;

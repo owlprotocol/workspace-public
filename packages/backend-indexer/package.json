@@ -82,6 +82,7 @@
     "@owlprotocol/contracts-create2factory": "workspace:*",
     "@owlprotocol/contracts-account-abstraction": "workspace:*",
     "@owlprotocol/contracts-diamond": "workspace:*",
+    "@owlprotocol/viem-utils": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/eth-firebase": "workspace:*",
     "abitype": "1.0.6",

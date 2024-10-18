@@ -1,12 +1,30 @@
 import {
-    getOrDeployDeterministicDeployer,
     getOrDeployDeterministicContract,
     DETERMINISTIC_DEPLOYER_ADDRESS,
     getDeployDeterministicAddress,
+    getOrPrepareDeterministicContract,
 } from "@owlprotocol/viem-utils";
-import { Address, Hash, encodeDeployData, formatEther, zeroHash, Account, Chain, Client, Transport } from "viem";
+import {
+    Address,
+    Hash,
+    encodeDeployData,
+    formatEther,
+    zeroHash,
+    Account,
+    Chain,
+    Client,
+    Transport,
+    TransactionRequest,
+} from "viem";
 import { entryPoint07Address } from "viem/account-abstraction";
-import { getCode, readContract, simulateContract, waitForTransactionReceipt, writeContract } from "viem/actions";
+import {
+    getCode,
+    readContract,
+    sendTransaction,
+    simulateContract,
+    waitForTransactionReceipt,
+    writeContract,
+} from "viem/actions";
 import { getAction } from "viem/utils";
 import { ENTRYPOINT_SALT_V07 } from "./constants.js";
 import { EntryPoint } from "./artifacts/EntryPoint.js";
@@ -50,7 +68,7 @@ export function getERC4337Contracts() {
 
     return {
         deterministicDeployer,
-        entrypoint,
+        entrypoint: entrypoint as typeof entryPoint07Address,
         simpleAccountFactory,
         entrypointSimulations,
         pimlicoEntrypointSimulations,
@@ -58,6 +76,72 @@ export function getERC4337Contracts() {
 }
 
 export const erc4337Contracts = getERC4337Contracts();
+
+/**
+ * Prepare erc4337 deployment transactions. Useful to do gas estimations before sending transaction
+ * @param client with account
+ */
+export async function prepareERC4337Contracts(client: Client<Transport, Chain, Account>) {
+    const requests: TransactionRequest[] = [];
+    const [entrypoint, simpleAccountFactory, entrypointSimulations, pimlicoEntrypointSimulations] = await Promise.all([
+        getOrPrepareDeterministicContract(
+            client,
+            //Extracted salt (first 32 bytes) from original tx
+            //https://etherscan.io/tx/0x5c81ea86f6c54481d3e21c78675b4f1d985c1fa62b678dcdfdf7934ddd6e127e
+            {
+                salt: ENTRYPOINT_SALT_V07,
+                bytecode: EntryPoint.bytecode,
+            },
+        ),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: encodeDeployData({
+                abi: SimpleAccountFactory.abi,
+                bytecode: SimpleAccountFactory.bytecode,
+                args: [erc4337Contracts.entrypoint],
+            }),
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: encodeDeployData({
+                abi: EntryPointSimulations.abi,
+                bytecode: EntryPointSimulations.bytecode,
+                args: [],
+            }),
+        }),
+        getOrPrepareDeterministicContract(client, {
+            salt: zeroHash,
+            bytecode: encodeDeployData({
+                abi: PimlicoEntryPointSimulations.abi,
+                bytecode: PimlicoEntryPointSimulations.bytecode,
+                args: [erc4337Contracts.entrypointSimulations],
+            }),
+        }),
+    ]);
+
+    if (entrypoint.address != entryPoint07Address) {
+        throw new Error(
+            `Entrypoint v0.7 deployed address ${entryPoint07Address} (expected) != ${entrypoint.address} (actual)`,
+        );
+    }
+
+    if (entrypoint.request) requests.push(entrypoint.request);
+    if (simpleAccountFactory.request) requests.push(simpleAccountFactory.request);
+    if (entrypointSimulations.request) requests.push(entrypointSimulations.request);
+    if (pimlicoEntrypointSimulations.request) requests.push(pimlicoEntrypointSimulations.request);
+
+    return {
+        requests,
+        entrypoint: entrypoint as {
+            address: typeof entryPoint07Address;
+            request: TransactionRequest | undefined;
+            existed: boolean;
+        },
+        simpleAccountFactory,
+        entrypointSimulations,
+        pimlicoEntrypointSimulations,
+    };
+}
 
 /**
  * Deploy public ERC4337 contracts.
@@ -71,112 +155,20 @@ export const erc4337Contracts = getERC4337Contracts();
  * @returns contract info
  */
 export async function setupERC4337Contracts(client: Client<Transport, Chain, Account>) {
-    //Step 1 - Deterministic Deployer
-    //If no DeterminsticDeployer, wait for deploy (mostly used for local testing)
-    const deterministicDeployer = await getOrDeployDeterministicDeployer(client);
-    // console.debug(deterministicDeployer);
-    if (deterministicDeployer.hash) {
-        await getAction(
-            client,
-            waitForTransactionReceipt,
-            "waitForTransactionReceipt",
-        )({ hash: deterministicDeployer.hash });
-    }
-
-    //Step 2 - EntryPoint
-    //If no EntryPoint v0.7, wait for deploy (mostly used for local testing)
-    const entrypoint = (await getOrDeployDeterministicContract(
-        client,
-        //Extracted salt (first 32 bytes) from original tx
-        //https://etherscan.io/tx/0x5c81ea86f6c54481d3e21c78675b4f1d985c1fa62b678dcdfdf7934ddd6e127e
-        {
-            salt: ENTRYPOINT_SALT_V07,
-            bytecode: EntryPoint.bytecode,
-        },
-    )) as { address: typeof entryPoint07Address; hash: Hash | undefined; existed: boolean };
-    // console.debug(entrypoint);
-    if (entrypoint.address != entryPoint07Address) {
-        throw new Error(
-            `Entrypoint v0.7 deployed address ${entryPoint07Address} (expected) != ${entrypoint.address} (actual)`,
-        );
-    }
-    if (entrypoint.hash) {
-        await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash: entrypoint.hash });
-    }
-
-    //Step 3 - SimpleAccountFactory
-    //If no SimpleAccountFactory, wait for deploy (mostly used for local testing)
-    const simpleAccountFactory = await getOrDeployDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: encodeDeployData({
-            abi: SimpleAccountFactory.abi,
-            bytecode: SimpleAccountFactory.bytecode,
-            args: [entrypoint.address],
-        }),
-    });
-    // console.debug(simpleAccountFactory);
-    if (simpleAccountFactory.hash) {
-        await getAction(
-            client,
-            waitForTransactionReceipt,
-            "waitForTransactionReceipt",
-        )({ hash: simpleAccountFactory.hash });
-    }
-
-    //Step 4 - EntryPointSimulations
-    const entrypointSimulations = await getOrDeployDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: encodeDeployData({
-            abi: EntryPointSimulations.abi,
-            bytecode: EntryPointSimulations.bytecode,
-            args: [],
-        }),
-    });
-    // console.debug(entrypointSimulations);
-    if (entrypointSimulations.hash) {
-        await getAction(
-            client,
-            waitForTransactionReceipt,
-            "waitForTransactionReceipt",
-        )({ hash: entrypointSimulations.hash });
-    }
-
-    //Step 5 - EntryPointSimulations
-    const pimlicoEntrypointSimulations = await getOrDeployDeterministicContract(client, {
-        salt: zeroHash,
-        bytecode: encodeDeployData({
-            abi: PimlicoEntryPointSimulations.abi,
-            bytecode: PimlicoEntryPointSimulations.bytecode,
-            args: [entrypointSimulations.address],
-        }),
-    });
-    // console.debug(entrypointSimulations);
-    if (pimlicoEntrypointSimulations.hash) {
-        await getAction(
-            client,
-            waitForTransactionReceipt,
-            "waitForTransactionReceipt",
-        )({ hash: pimlicoEntrypointSimulations.hash });
-    }
-
-    //EntryPoint & SimpleAccountFactory & PimlicoEntryPointSimulations can be deployed concurrently
-    //TODO: For when walletClient supports concurrent transactions
-    /*
-    const transactions: Hash[] = [];
-    if (entrypoint.hash) transactions.push(entrypoint.hash);
-    if (simpleAccountFactory.hash) transactions.push(simpleAccountFactory.hash);
-
-    if (transactions.length > 0) {
-        await Promise.all(transactions.map((hash) => publicClient.waitForTransactionReceipt({ hash })));
-    }
-    */
+    const erc4337Contracts = await prepareERC4337Contracts(client);
+    const transactions = await Promise.all(
+        erc4337Contracts.requests.map((request) =>
+            getAction(client, sendTransaction, "sendTransaction")(request as any),
+        ),
+    );
+    const receipts = await Promise.all(
+        transactions.map((hash) => getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash })),
+    );
 
     return {
-        deterministicDeployer,
-        entrypoint,
-        simpleAccountFactory,
-        entrypointSimulations,
-        pimlicoEntrypointSimulations,
+        ...erc4337Contracts,
+        transactions,
+        receipts,
     };
 }
 

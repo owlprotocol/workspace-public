@@ -1,15 +1,5 @@
-import { describe, test, expect, beforeAll } from "vitest";
-import {
-    Account,
-    Chain,
-    Transport,
-    PublicClient,
-    WalletClient,
-    createPublicClient,
-    createWalletClient,
-    http,
-    zeroHash,
-} from "viem";
+import { describe, test, expect } from "vitest";
+import { createPublicClient, createWalletClient, http, zeroHash, nonceManager } from "viem";
 import { localhost } from "viem/chains";
 import { DETERMINISTIC_DEPLOYER_ADDRESS } from "./constants.js";
 import { getOrDeployDeterministicDeployer } from "./deployDeterministicDeployer.js";
@@ -17,25 +7,27 @@ import { getOrDeployDeterministicContract } from "./getTransaction.js";
 import { getDeployDeterministicAddress } from "./getAddress.js";
 import { port } from "../test/constants.js";
 import { getLocalAccount } from "../accounts.js";
-//Copied artifact just for testing contract deployment
 import { MyContract } from "../artifacts/MyContract.js";
 
-describe.skip("DeterministicDeployer.test.ts", function () {
-    let publicClient: PublicClient<Transport, Chain>;
-    let walletClient: WalletClient<Transport, Chain, Account>;
+describe("DeterministicDeployer.test.ts", function () {
+    const chain = {
+        ...localhost,
+        rpcUrls: {
+            default: {
+                http: [`http://127.0.0.1:${port}`],
+            },
+        },
+    };
+    const transport = http(chain.rpcUrls.default.http[0]);
+    const publicClient = createPublicClient({
+        chain,
+        transport,
+    });
 
-    beforeAll(async () => {
-        const transport = http(`http://127.0.0.1:${port}`);
-        publicClient = createPublicClient({
-            chain: localhost,
-            transport,
-        }) as unknown as PublicClient<Transport, Chain>;
-
-        walletClient = createWalletClient({
-            account: getLocalAccount(0),
-            chain: localhost,
-            transport,
-        }) as unknown as WalletClient<Transport, Chain, Account>;
+    const walletClient = createWalletClient({
+        account: getLocalAccount(0, { nonceManager }),
+        chain,
+        transport,
     });
 
     test("getOrDeployDeterministicContract", async () => {

@@ -55,7 +55,7 @@ export async function setupChain(client: Client<Transport, Chain, Account>, para
     // topup at 1/3
     const bundlerMinBalance = params.bundlerMinBalance ?? bundlerTargetBalance / 3n;
 
-    const paymasterGasBudget = params.paymasterGasBudget ?? 100_000_000n;
+    const paymasterGasBudget = params.paymasterGasBudget ?? 50_000_000n;
     const paymasterTargetBalance = params.paymasterTargetBalance ?? paymasterGasBudget * gasPrice;
     // topup at 1/4
     const paymasterMinBalance = params.paymasterMinBalance ?? paymasterTargetBalance / 4n;
