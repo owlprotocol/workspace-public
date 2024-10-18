@@ -3,13 +3,10 @@ import {
     Address,
     Chain,
     Transport,
-    PublicClient,
-    WalletClient,
     createPublicClient,
     createWalletClient,
     http,
     parseEther,
-    HDAccount,
     PrivateKeyAccount,
     padHex,
     LocalAccount,
@@ -17,6 +14,7 @@ import {
     Hex,
     EIP1193RequestFn,
     zeroHash,
+    nonceManager,
 } from "viem";
 import { localhost } from "viem/chains";
 import {
@@ -31,6 +29,7 @@ import {
     getLocalAccount,
     getDeployDeterministicAddress,
     getDeployDeterministicFunctionData,
+    getOrDeployDeterministicDeployer,
 } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
@@ -53,9 +52,24 @@ import { port } from "../test/constants.js";
 import { createBackendBundlerWithFirebase } from "../clients/createBackendBundler.js";
 
 describe("eip1993/creatBundlerEIP1193.test.ts", function () {
-    let transport: Transport;
-    let publicClient: PublicClient<Transport, Chain>;
-    let walletClient: WalletClient<Transport, Chain, HDAccount>;
+    const chain = {
+        ...localhost,
+        rpcUrls: {
+            default: {
+                http: [`http://127.0.0.1:${port}`],
+            },
+        },
+    };
+    const transport = http(chain.rpcUrls.default.http[0]);
+    const publicClient = createPublicClient({
+        chain,
+        transport,
+    });
+    const walletClient = createWalletClient({
+        account: getLocalAccount(0, { nonceManager }),
+        chain,
+        transport,
+    });
 
     // Contracts
     let entryPointAddress: typeof entryPoint07Address;
@@ -68,17 +82,11 @@ describe("eip1993/creatBundlerEIP1193.test.ts", function () {
     let bundlerClient: BundlerClient;
 
     beforeAll(async () => {
-        transport = http(`http://127.0.0.1:${port}`);
-        publicClient = createPublicClient({
-            chain: localhost,
-            transport,
-        });
-        walletClient = createWalletClient({
-            account: getLocalAccount(0) as unknown as HDAccount,
-            chain: localhost,
-            transport,
-        });
-
+        //Deploy Deterministic Deployer first
+        const { hash } = await getOrDeployDeterministicDeployer(walletClient);
+        if (hash) {
+            await publicClient.waitForTransactionReceipt({ hash });
+        }
         // ERC4337 Contracts
         const contracts = await setupERC4337Contracts(walletClient);
         entryPointAddress = contracts.entrypoint.address;

@@ -1,9 +1,5 @@
-import { expect, describe, test, beforeAll, beforeEach } from "vitest";
+import { expect, describe, test, beforeEach } from "vitest";
 import {
-    Transport,
-    Chain,
-    PublicClient,
-    WalletClient,
     createPublicClient,
     createWalletClient,
     http,
@@ -15,6 +11,7 @@ import {
     Hash,
     Hex,
     RpcBlock,
+    nonceManager,
 } from "viem";
 import { localhost } from "viem/chains";
 import { getAddress } from "viem/utils";
@@ -26,6 +23,7 @@ import {
     ethTransactionResource,
 } from "@owlprotocol/eth-firebase/admin";
 import { createHttpEIP1193 } from "@owlprotocol/backend-public";
+import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { createIndexerEIP1193 } from "./createIndexerEIP1193.js";
 import { port } from "../test/constants.js";
 
@@ -68,29 +66,29 @@ function sleep(ms: number) {
 }
 
 describe("createIndexerEIP1193.test.ts", function () {
-    let transport: Transport;
-    let publicClient: PublicClient;
-    let publicEIP1193Client: PublicClient;
+    const chain = {
+        ...localhost,
+        rpcUrls: {
+            default: {
+                http: [`http://127.0.0.1:${port}`],
+            },
+        },
+    };
+    const transport = http(chain.rpcUrls.default.http[0]);
+    const publicClient = createPublicClient({
+        chain,
+        transport,
+    });
+    const walletClient = createWalletClient({
+        account: getLocalAccount(0, { nonceManager }),
+        chain,
+        transport,
+    });
 
-    let walletClient: WalletClient<Transport, Chain>;
-
-    beforeAll(async () => {
-        transport = http(`http://127.0.0.1:${port}`);
-        publicClient = createPublicClient({
-            chain: localhost,
-            transport,
-        });
-
-        walletClient = createWalletClient({
-            chain: localhost,
-            transport,
-        });
-
-        publicEIP1193Client = createPublicClient({
-            transport: custom({
-                request: createIndexerEIP1193(createHttpEIP1193(`http://127.0.0.1:${port}`)),
-            }),
-        });
+    const publicEIP1193Client = createPublicClient({
+        transport: custom({
+            request: createIndexerEIP1193(createHttpEIP1193(`http://127.0.0.1:${port}`)),
+        }),
     });
 
     //TODO: Test log fetching

@@ -1,14 +1,5 @@
 import { describe, test, expect, beforeAll } from "vitest";
-import {
-    Account,
-    Chain,
-    Transport,
-    PublicClient,
-    WalletClient,
-    createPublicClient,
-    createWalletClient,
-    http,
-} from "viem";
+import { createPublicClient, createWalletClient, http, nonceManager } from "viem";
 import { localhost } from "viem/chains";
 import {
     getOrDeployDeterministicDeployer,
@@ -22,21 +13,26 @@ import { EntryPoint } from "./artifacts/EntryPoint.js";
 import { ENTRYPOINT_SALT_V07 } from "./constants.js";
 
 describe("EntryPoint.test.ts", function () {
-    let publicClient: PublicClient<Transport, Chain>;
-    let walletClient: WalletClient<Transport, Chain, Account>;
+    const chain = {
+        ...localhost,
+        rpcUrls: {
+            default: {
+                http: [`http://127.0.0.1:${port}`],
+            },
+        },
+    };
+    const transport = http(chain.rpcUrls.default.http[0]);
+    const publicClient = createPublicClient({
+        chain,
+        transport,
+    });
+    const walletClient = createWalletClient({
+        account: getLocalAccount(0, { nonceManager }),
+        chain,
+        transport,
+    });
 
     beforeAll(async () => {
-        const transport = http(`http://127.0.0.1:${port}`);
-        publicClient = createPublicClient({
-            chain: localhost,
-            transport,
-        });
-        walletClient = createWalletClient({
-            account: getLocalAccount(0),
-            chain: localhost,
-            transport,
-        });
-
         //Deploy DeterministicDeployer
         const { hash } = await getOrDeployDeterministicDeployer(walletClient);
         if (hash) {
