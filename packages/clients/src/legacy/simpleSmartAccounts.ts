@@ -4,6 +4,7 @@ import { entryPoint07Address } from "viem/account-abstraction";
 import { toSimpleSmartAccount, ToSimpleSmartAccountReturnType } from "permissionless/accounts";
 
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
+import { getSimpleAccountAddress } from "@owlprotocol/contracts-account-abstraction/SimpleAccount";
 import { type Auth, getOwlRpcTransport, getOwlUserRpcTransport } from "./transports.js";
 import { createAdminLocalAccount, createUserLocalAccount } from "./localAccounts.js";
 
@@ -60,5 +61,6 @@ export async function getAdminSimpleSmartAccount(
             version: "0.7",
         },
         factoryAddress,
+        address: getSimpleAccountAddress({ owner: localClient.address }),
     });
 }

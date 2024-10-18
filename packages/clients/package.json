@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "@owlprotocol/envvars": "workspace:*",
+    "@owlprotocol/contracts-account-abstraction": "workspace:*",
     "permissionless": "0.2.6",
     "viem": "2.21.19"
   },

@@ -1,5 +1,5 @@
 import { bytesToHex, numberToHex, hexToBigInt, concat } from "viem";
-import { randomBytes } from "crypto";
+import { getRandomValues } from "crypto";
 
 //TODO: Add range checks
 /**
@@ -13,7 +13,7 @@ export function getERC4337Nonce(parameters?: { key: bigint; nonce: bigint }): bi
     if (!parameters) {
         // Random key with nonce 0
         // 192 bits
-        const key = bytesToHex(randomBytes(24));
+        const key = bytesToHex(getRandomValues(new Uint8Array(24)));
         // 64 bits
         const nonce = numberToHex(0, { size: 8 });
         return hexToBigInt(concat([key, nonce]));
