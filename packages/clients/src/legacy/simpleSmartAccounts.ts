@@ -6,6 +6,7 @@ import { toSimpleSmartAccount, ToSimpleSmartAccountReturnType } from "permission
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
 import { type Auth, getOwlRpcTransport, getOwlUserRpcTransport } from "./transports.js";
 import { createAdminLocalAccount, createUserLocalAccount } from "./localAccounts.js";
+import { getSimpleAccountAddress } from "../../../contracts-account-abstraction/src/SimpleAccount.js";
 
 export async function getUserSimpleSmartAccount(
     jwt: string,
@@ -60,5 +61,6 @@ export async function getAdminSimpleSmartAccount(
             version: "0.7",
         },
         factoryAddress,
+        address: getSimpleAccountAddress({ owner: localClient.address }),
     });
 }
