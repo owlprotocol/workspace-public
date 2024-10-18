@@ -9,21 +9,21 @@ import { getBalance, sendTransaction, waitForTransactionReceipt } from "viem/act
 export async function prepareChainContracts(client: Client<Transport, Chain, Account>) {
     const requests: TransactionRequest[] = [];
 
-    //1. Deploy ERC4337 contracts (+ Arachnid deployer)
-    const erc4337Contracts = await prepareERC4337Contracts(client);
-    requests.push(...erc4337Contracts.requests);
+    const [erc4337Contracts, diamondFacets, coreFacets, erc721Facets, create2Factory] = await Promise.all([
+        prepareERC4337Contracts(client),
+        prepareDiamondFacets(client),
+        prepareCoreContractFacets(client),
+        prepareERC721Facets(client),
+        getOrPrepareCreate2Factory(client),
+    ]);
 
-    //2. Deploy Diamond contracts
-    const diamondFacets = await prepareDiamondFacets(client);
-    const coreFacets = await prepareCoreContractFacets(client);
-    const erc721Facets = await prepareERC721Facets(client);
-    requests.push(...diamondFacets.requests, ...coreFacets.requests, ...erc721Facets.requests);
-
-    //3. Deploy Create2Factory
-    const create2Factory = await getOrPrepareCreate2Factory(client);
-    if (create2Factory.request) {
-        requests.push(create2Factory.request);
-    }
+    requests.push(
+        ...erc4337Contracts.requests,
+        ...diamondFacets.requests,
+        ...coreFacets.requests,
+        ...erc721Facets.requests,
+    );
+    if (create2Factory.request) requests.push(create2Factory.request);
 
     return {
         ...erc4337Contracts,

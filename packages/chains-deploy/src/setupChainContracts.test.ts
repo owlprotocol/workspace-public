@@ -17,6 +17,15 @@ describe("setupChainContracts.test.ts", function () {
         },
     };
     const transport = http(chain.rpcUrls.default.http[0]);
+
+    /*
+    const chain = {
+        ...linea,
+        id: linea.chainId,
+    } as Chain;
+    const transport = webSocket(chain.rpcUrls.private.webSocket![0]);
+    */
+
     const publicClient = createPublicClient({
         chain,
         transport,
@@ -26,12 +35,17 @@ describe("setupChainContracts.test.ts", function () {
         chain,
         transport,
     });
+    /*
+    const walletClient = createWalletClient({
+        account: getUtilityAccount({ nonceManager }),
+        chain,
+        transport,
+    });
+    */
 
     test("prepareChainContracts", async () => {
         const contracts = await prepareChainContracts(walletClient);
         const contractsGas = contracts.requests.reduce((acc, request) => acc + (request.gas ?? 0n), 0n);
-
-        console.debug(contractsGas);
         expect(contractsGas).toBeGreaterThan(0n);
     });
 
