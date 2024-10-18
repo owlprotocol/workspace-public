@@ -46,6 +46,8 @@ export async function prepareChainContracts(client: Client<Transport, Chain, Acc
  * Production / Staging
  *   - VerifyingPaymaster (TBD / 0x2e23ef1375aA642504bED97676A566F5A3E4ae5A)
  *   - Diamond contracts
+ * @param client with accoutn and nonceManager
+ * @param parameters paymaster signer address
  */
 export async function setupChainContracts(
     client: Client<Transport, Chain, Account>,
@@ -53,6 +55,9 @@ export async function setupChainContracts(
         verifyingSignerAddress: Address;
     },
 ) {
+    if (!client.account.nonceManager) {
+        throw new Error("client.account.nonceManager undefined");
+    }
     const { verifyingSignerAddress } = parameters;
 
     //0. Deploy Deterministic Deployer
@@ -91,6 +96,13 @@ export async function setupChainContracts(
 
     //2. Deploy ERC4337 Paymaster (constructor requires EntryPoint deployment so need to wait for receipt)
     const verifyingPaymaster = await setupVerifyingPaymaster(client, { verifyingSignerAddress });
+    if (verifyingPaymaster.hash) {
+        await getAction(
+            client,
+            waitForTransactionReceipt,
+            "waitForTransactionReceipt",
+        )({ hash: verifyingPaymaster.hash });
+    }
 
     return {
         ...contracts,
