@@ -1,8 +1,9 @@
-import { createPublicClient, createWalletClient, http } from "viem";
+import { createPublicClient, createWalletClient, encodeDeployData, http, zeroHash } from "viem";
 
 import { localhost } from "viem/chains";
-import { getLocalAccount } from "@owlprotocol/viem-utils";
+import { getLocalAccount, getOrDeployDeterministicContract } from "@owlprotocol/viem-utils";
 import { setupTestMailboxContracts } from "../test/mailboxTestHelpers.js";
+import { ERC20Test } from "../artifacts/ERC20Test.js";
 
 // TODO: must run two chains locally to test this script
 // run: anvil -p 8546 --chain-id 1338
@@ -47,6 +48,22 @@ async function main() {
         console.log("Setting up contracts on Remote chain...");
         const contractsRemote = await setupTestMailboxContracts(clientsRemote.walletClient);
         console.log("Contracts deployed on Remote:", contractsRemote);
+
+        const testToken = { name: "Test Token", totalSupply: 0n, symbol: "TT", decimals: 18 };
+        const tokenContract = await getOrDeployDeterministicContract(clientsOrigin.walletClient, {
+            salt: zeroHash,
+            bytecode: encodeDeployData({
+                abi: ERC20Test.abi,
+                bytecode: ERC20Test.bytecode,
+                args: [testToken.name, testToken.symbol, testToken.totalSupply, testToken.decimals],
+            }),
+        });
+
+        if (tokenContract.hash) {
+            await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: tokenContract.hash });
+        }
+
+        console.log("Test Token on Origin: ", tokenContract.address);
     } catch (error) {
         console.error("Error setting up contracts:", error);
     }
