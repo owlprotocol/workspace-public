@@ -106,8 +106,15 @@ export async function setupNetworksForEnv() {
     }
 
     const { networksPrivate } = await uploadNetworks(data);
+    //TODO: Chains that don't work
+    const skipChainIds: number[] = [chains.linea.chainId, chains.lineaSepolia.chainId, chains.mainnet.chainId];
+
     for (const network of networksPrivate) {
         const chain = { id: network.chainId, ...network } as Chain;
+        if (skipChainIds.includes(chain.id)) {
+            continue;
+        }
+
         const walletClient = createWalletClient({
             transport: http(chain.rpcUrls.default.http[0]),
             chain,
