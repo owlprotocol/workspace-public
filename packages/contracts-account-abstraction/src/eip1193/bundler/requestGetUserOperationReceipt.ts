@@ -5,6 +5,7 @@ import {
     EIP1193RequestFn,
     encodeEventTopics,
     Hex,
+    hexToNumber,
     numberToHex,
     Prettify,
     PublicRpcSchema,
@@ -24,6 +25,15 @@ export function createRequestGetUserOperationReceipt(request: EIP1193RequestFn<P
     ): Promise<RpcGetUserOperationReceiptReturnType07> {
         const [hash] = args.params;
 
+        const blockNumberHex = await request({
+            method: "eth_blockNumber",
+        });
+        //TODO: Parametrize rpc max range
+        // Certain RPCs enforce a max block range
+        const rpcMaxRange = 90_000;
+        const blockNumber = hexToNumber(blockNumberHex);
+        const fromBlock = Math.max(blockNumber - rpcMaxRange, 0);
+
         const filterResult = await request({
             method: "eth_getLogs",
             params: [
@@ -36,7 +46,7 @@ export function createRequestGetUserOperationReceipt(request: EIP1193RequestFn<P
                             userOpHash: hash,
                         },
                     }),
-                    fromBlock: "0x0",
+                    fromBlock: numberToHex(fromBlock),
                     toBlock: "latest",
                 },
             ],
