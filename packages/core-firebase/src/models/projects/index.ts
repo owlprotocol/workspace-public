@@ -15,3 +15,4 @@ export * from "./ProjectUserWalletDfns.js";
 export * from "./ProjectUserWalletSafe.js";
 export * from "./ProjectWalletDfns.js";
 export * from "./ProjectWalletSafe.js";
+export * from "./ProjectWarpConfig.js";

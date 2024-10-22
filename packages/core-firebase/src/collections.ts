@@ -58,6 +58,11 @@ export const projectUserListMemberPath = (collectionId: ProjectId & ProjectUserL
     );
 };
 
+export const projectWarpConfigGroupPath = "projectWarpConfig";
+export const projectWarpConfigPath = (collectionId: ProjectId) => {
+    return join(projectPath, encodeProjectId(collectionId), projectWarpConfigGroupPath);
+};
+
 //wallets used by project
 export const projectWalletDfnsGroupPath = "projectWalletDfns";
 export const projectWalletDfnsPath = (collectionId: ProjectId) => {

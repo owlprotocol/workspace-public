@@ -28,6 +28,7 @@ import {
     projectWalletSafeGroupPath,
     erc721MintGroupPath,
     erc721MintPath,
+    projectWarpConfigPath,
 } from "../collections.js";
 import {
     ERC721MintData,
@@ -48,6 +49,7 @@ import {
     ProjectUserWalletSafeData,
     ProjectWalletDfnsData,
     ProjectWalletSafeData,
+    ProjectWarpConfigData,
     TeamData,
     TeamId,
     TeamMemberData,
@@ -82,6 +84,9 @@ export const projectUserListCol = (collectionId: ProjectId) =>
 
 export const projectUserListMemberCol = (collectionId: ProjectId & ProjectUserListId) =>
     getColRef<ProjectUserListMemberData>(firestore, projectUserListMemberPath(collectionId));
+
+export const projectWarpConfigCol = (collectionId: ProjectId) =>
+    getColRef<ProjectWarpConfigData>(firestore, projectWarpConfigPath(collectionId));
 
 //wallets used by project
 export const projectWalletDfnsColGroup = getColGroupRef<ProjectWalletDfnsData>(firestore, projectWalletDfnsGroupPath);
