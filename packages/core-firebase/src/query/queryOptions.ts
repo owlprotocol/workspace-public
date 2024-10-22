@@ -37,6 +37,7 @@ import {
     teamResource,
     userResource,
     teamNetworkResource,
+    projectWarpConfigResource,
 } from "../web/resources.js";
 import {
     projectPath,
@@ -54,6 +55,7 @@ import {
     projectUserWalletSafeGroupPath,
     projectWalletDfnsGroupPath,
     projectWalletSafeGroupPath,
+    projectWarpConfigGroupPath,
 } from "../collections.js";
 import {
     projectApiKeyGroupQuery,
@@ -170,6 +172,16 @@ export const projectUserWalletSafeQueryOptions = getFirebaseResourceReactQueryOp
         return {
             prefixPath: [projectPath, encodeProjectId(collectionId)],
             collectionGroup: projectUserWalletSafeGroupPath,
+        };
+    },
+);
+
+export const projectWarpConfigQueryOptions = getFirebaseResourceReactQueryOptions(
+    projectWarpConfigResource,
+    (collectionId: ProjectId) => {
+        return {
+            prefixPath: [projectPath, encodeProjectId(collectionId)],
+            collectionGroup: projectWarpConfigGroupPath,
         };
     },
 );

@@ -23,6 +23,7 @@ import {
     projectUserWalletSafeCol,
     projectWalletDfnsCol,
     projectWalletSafeCol,
+    projectWarpConfigCol,
     teamCol,
     teamMemberCol,
     teamNetworkCol,
@@ -116,6 +117,12 @@ import {
     encodeERC721MintData,
     encodeERC721MintDataPartial,
     encodeERC721MintId,
+    ProjectWarpConfigData,
+    ProjectWarpConfigId,
+    decodeProjectWarpConfigId,
+    encodeProjectWarpConfigData,
+    encodeProjectWarpConfigDataPartial,
+    encodeProjectWarpConfigId,
 } from "../models/index.js";
 
 //user & team
@@ -260,6 +267,19 @@ export const projectWalletSafeResource = getFirebaseResource<ProjectWalletSafeDa
         decodeId: decodeProjectWalletSafeId,
         encodeDataPartial: encodeProjectWalletSafeDataPartial,
         encodeData: encodeProjectWalletSafeData,
+        encodeParentDocId: encodeProjectId,
+        decodeParentDocId: decodeProjectId,
+    },
+);
+
+export const projectWarpConfigResource = getFirebaseResource<ProjectWarpConfigData, ProjectWarpConfigId, ProjectId>(
+    firestore,
+    projectWarpConfigCol,
+    {
+        encodeId: encodeProjectWarpConfigId,
+        decodeId: decodeProjectWarpConfigId,
+        encodeDataPartial: encodeProjectWarpConfigDataPartial,
+        encodeData: encodeProjectWarpConfigData,
         encodeParentDocId: encodeProjectId,
         decodeParentDocId: decodeProjectId,
     },

@@ -30,6 +30,7 @@ import {
     projectUserManagedGroupPath,
     erc721MintGroupPath,
     erc721MintPath,
+    projectWarpConfigPath,
 } from "../collections.js";
 import {
     NetworkDataEncoded,
@@ -55,6 +56,7 @@ import {
     UserData,
     ERC721MintData,
     NetworkId,
+    ProjectWarpConfigData,
 } from "../models/index.js";
 
 //users
@@ -92,6 +94,9 @@ export const projectUserListCol = (collectionId: ProjectId) =>
 
 export const projectUserListMemberCol = (collectionId: ProjectId & ProjectUserListId) =>
     getColRef<ProjectUserListMemberData>(firestore, projectUserListMemberPath(collectionId));
+
+export const projectWarpConfigCol = (collectionId: ProjectId) =>
+    getColRef<ProjectWarpConfigData>(firestore, projectWarpConfigPath(collectionId));
 
 //wallets used by project
 export const projectWalletDfnsColGroup = getColGroupRef<ProjectWalletDfnsData>(firestore, projectWalletDfnsGroupPath);
