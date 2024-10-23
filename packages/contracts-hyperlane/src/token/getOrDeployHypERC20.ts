@@ -1,17 +1,6 @@
 import { getOrDeployContracts } from "@owlprotocol/contracts-create2factory";
-import {
-    Account,
-    Address,
-    Chain,
-    Client,
-    encodeDeployData,
-    encodeFunctionData,
-    Hex,
-    Transport,
-    zeroAddress,
-    zeroHash,
-} from "viem";
-import { HypERC20, initialize as initializeAbi } from "../artifacts/HypERC20.js";
+import { Account, Address, Chain, Client, Hex, Transport, zeroAddress, zeroHash } from "viem";
+import { getHypERC20DeployArgs } from "./getHypERC20DeployArgs.js";
 
 export async function getOrDeployHypERC20(
     client: Client<Transport, Chain, Account>,
@@ -27,29 +16,10 @@ export async function getOrDeployHypERC20(
         salt?: Hex;
     },
 ) {
-    const {
-        mailboxAddress,
-        decimals = 18,
-        totalSupply = 0n,
-        name,
-        symbol,
-        hookAddress = zeroAddress,
-        ismAddress = zeroAddress,
-        owner,
-        salt = zeroHash,
-    } = parameters;
+    const { salt = zeroHash } = parameters;
     const deployERC20 = await getOrDeployContracts(client, zeroAddress, [
         {
-            bytecode: encodeDeployData({
-                abi: HypERC20.abi,
-                bytecode: HypERC20.bytecode,
-                args: [decimals, mailboxAddress],
-            }),
-            initData: encodeFunctionData({
-                abi: [initializeAbi],
-                functionName: "initialize",
-                args: [totalSupply, name, symbol, hookAddress, ismAddress, owner],
-            }),
+            ...getHypERC20DeployArgs(parameters),
             salt,
         },
     ]);
