@@ -257,8 +257,8 @@ export const ethLogs: EthLog[] = map(ethAddresses, ({ address }, i) => {
         transactionIndex: i,
         address,
         topics: [],
-        data: "0x1",
-    };
+        data: "0x1" satisfies `0x${string}`,
+    } satisfies EthLog;
 });
 
 export const ethBlocks: EthBlock[] = map(ethLogs, ({ blockHash, blockNumber }) => {
