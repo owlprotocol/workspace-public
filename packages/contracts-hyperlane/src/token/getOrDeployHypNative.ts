@@ -1,17 +1,6 @@
 import { getOrDeployContracts } from "@owlprotocol/contracts-create2factory";
-import {
-    Account,
-    Address,
-    Chain,
-    Client,
-    encodeDeployData,
-    encodeFunctionData,
-    Hex,
-    Transport,
-    zeroAddress,
-    zeroHash,
-} from "viem";
-import { HypNative, initialize as initializeAbi } from "../artifacts/HypNative.js";
+import { Account, Address, Chain, Client, Hex, Transport, zeroAddress, zeroHash } from "viem";
+import { getHypNativeDeployArgs } from "./getHypNativeDeployArgs.js";
 
 export async function getOrDeployHypNative(
     client: Client<Transport, Chain, Account>,
@@ -23,19 +12,10 @@ export async function getOrDeployHypNative(
         salt?: Hex;
     },
 ) {
-    const { mailboxAddress, hookAddress = zeroAddress, ismAddress = zeroAddress, owner, salt = zeroHash } = parameters;
+    const { salt = zeroHash } = parameters;
     const deployNative = await getOrDeployContracts(client, zeroAddress, [
         {
-            bytecode: encodeDeployData({
-                abi: HypNative.abi,
-                bytecode: HypNative.bytecode,
-                args: [mailboxAddress],
-            }),
-            initData: encodeFunctionData({
-                abi: [initializeAbi],
-                functionName: "initialize",
-                args: [hookAddress, ismAddress, owner],
-            }),
+            ...getHypNativeDeployArgs(parameters),
             salt,
         },
     ]);
