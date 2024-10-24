@@ -28,6 +28,7 @@ export interface WarpTokenConfig {
 
 export interface ProjectWarpConfigData {
     readonly warpConfigId: string;
+    readonly bridgeUrl?: string;
     readonly tokens: WarpTokenConfig[];
 }
 
@@ -36,6 +37,7 @@ const tokenConnectionZod = z.object({ token: z.string() });
 export const projectWarpConfigDataZod = z
     .object({
         warpConfigId: z.string(),
+        bridgeUrl: z.string().optional(),
         tokens: z.array(
             z.object({
                 standard: z.string(),
