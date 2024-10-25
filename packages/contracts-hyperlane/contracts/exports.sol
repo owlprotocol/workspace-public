@@ -27,8 +27,20 @@ import {HypERC20} from "@hyperlane-xyz/core/contracts/token/HypERC20.sol";
 import {HypERC20Collateral} from "@hyperlane-xyz/core/contracts/token/HypERC20Collateral.sol";
 import {HypNative} from "@hyperlane-xyz/core/contracts/token/HypNative.sol";
 
+import {FastHypERC20} from "@hyperlane-xyz/core/contracts/token/extensions/FastHypERC20.sol";
+import {FastHypERC20Collateral} from "@hyperlane-xyz/core/contracts/token/extensions/FastHypERC20Collateral.sol";
+import {HypERC4626} from "@hyperlane-xyz/core/contracts/token/extensions/HypERC4626.sol";
+import {HypERC4626Collateral} from "@hyperlane-xyz/core/contracts/token/extensions/HypERC4626Collateral.sol";
+import {HypERC4626OwnerCollateral} from "@hyperlane-xyz/core/contracts/token/extensions/HypERC4626OwnerCollateral.sol";
+import {HypFiatToken} from "@hyperlane-xyz/core/contracts/token/extensions/HypFiatToken.sol";
+import {HypNativeScaled} from "@hyperlane-xyz/core/contracts/token/extensions/HypNativeScaled.sol";
+import {HypXERC20} from "@hyperlane-xyz/core/contracts/token/extensions/HypXERC20.sol";
+import {HypXERC20Lockbox} from "@hyperlane-xyz/core/contracts/token/extensions/HypXERC20Lockbox.sol";
+
 import {PausableHook} from "@hyperlane-xyz/core/contracts/hooks/PausableHook.sol";
 import {TestRecipient} from "@hyperlane-xyz/core/contracts/test/TestRecipient.sol";
 import {ERC20Test} from "@hyperlane-xyz/core/contracts/test/ERC20Test.sol";
+import {MockERC4626YieldSharing} from "@hyperlane-xyz/core/contracts/mock/MockERC4626YieldSharing.sol";
+
 
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";

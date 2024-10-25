@@ -4,4 +4,8 @@ export * from "./getOrDeployHypERC20.js";
 export * from "./getOrDeployHypNative.js";
 export * from "./getHypERC20DeployArgs.js";
 export * from "./getHypERC20CollateralDeployArgs.js";
+export * from "./getHypERC4626CollateralDeployArgs.js";
+export * from "./getHypERC4626OwnerCollateralDeployArgs.js";
+export * from "./getOrDeployHypERC4626Collateral.js";
+export * from "./getOrDeployHypERC4626OwnerCollateral.js";
 export * from "./getHypNativeDeployArgs.js";
