@@ -14,6 +14,7 @@ export async function getOrDeployHypERC20(
         ismAddress?: Address;
         owner: Address;
         salt?: Hex;
+        extension?: "fastSynthetic";
     },
 ) {
     const { salt = zeroHash } = parameters;

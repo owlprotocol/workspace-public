@@ -11,6 +11,7 @@ export async function getOrDeployHypERC20Collateral(
         ismAddress?: Address;
         owner: Address;
         salt?: Hex;
+        extension?: "fastCollateral" | "collateralFiat";
     },
 ) {
     const { salt = zeroHash } = parameters;

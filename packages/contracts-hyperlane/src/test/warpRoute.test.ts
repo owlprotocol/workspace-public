@@ -100,7 +100,7 @@ describe("warpRoute.test.ts", function () {
         expect(routerDomains).toContain(fakeChainId);
     });
 
-    test("Deploy HypERC20token", async () => {
+    test("Deploy HypERC20 token", async () => {
         const hypERC20Remote = await getOrDeployHypERC20(clientsRemote.walletClient, {
             mailboxAddress: mailboxAddressRemote,
             ...testToken,
@@ -458,5 +458,91 @@ describe("warpRoute.test.ts", function () {
             address: recipient,
         });
         expect(balanceRecipientRemote2).toStrictEqual(amount);
+    });
+
+    test("Deploy FastHypERC20 token", async () => {
+        const fastHypERC20Remote = await getOrDeployHypERC20(clientsRemote.walletClient, {
+            mailboxAddress: mailboxAddressRemote,
+            ...testToken,
+            owner: clientsRemote.walletClient.account.address,
+            extension: "fastSynthetic",
+        });
+        if (fastHypERC20Remote.hash) {
+            clientsRemote.publicClient.waitForTransactionReceipt({ hash: fastHypERC20Remote.hash });
+        }
+
+        const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
+        const fakeChainId = 150150;
+        const enrollHash = await clientsRemote.walletClient.writeContract({
+            address: fastHypERC20Remote.address,
+            abi: Router.abi,
+            functionName: "enrollRemoteRouter",
+            args: [fakeChainId, fakeRouterAddressPadded],
+        });
+        await clientsRemote.publicClient.waitForTransactionReceipt({ hash: enrollHash });
+
+        const routerDomains = await clientsRemote.publicClient.readContract({
+            address: fastHypERC20Remote.address,
+            abi: Router.abi,
+            functionName: "domains",
+        });
+        expect(routerDomains).toContain(fakeChainId);
+    });
+
+    test("Deploy FastHypERC20Collateral", async () => {
+        const fastHypERC20CollateralOrigin = await getOrDeployHypERC20Collateral(clientsOrigin.walletClient, {
+            mailboxAddress: mailboxAddressOrigin,
+            erc20Address: zeroAddress,
+            owner: clientsOrigin.walletClient.account.address,
+            extension: "fastCollateral",
+        });
+        if (fastHypERC20CollateralOrigin.hash) {
+            clientsOrigin.publicClient.waitForTransactionReceipt({ hash: fastHypERC20CollateralOrigin.hash });
+        }
+
+        const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
+        const fakeChainId = 150150;
+
+        await clientsOrigin.walletClient.writeContract({
+            address: fastHypERC20CollateralOrigin.address,
+            abi: Router.abi,
+            functionName: "enrollRemoteRouter",
+            args: [fakeChainId, fakeRouterAddressPadded],
+        });
+
+        const routerDomains = await clientsOrigin.publicClient.readContract({
+            address: fastHypERC20CollateralOrigin.address,
+            abi: Router.abi,
+            functionName: "domains",
+        });
+        expect(routerDomains).toContain(fakeChainId);
+    });
+    test("Deploy HypFiatToken", async () => {
+        const hypFiatTokenOrigin = await getOrDeployHypERC20Collateral(clientsOrigin.walletClient, {
+            mailboxAddress: mailboxAddressOrigin,
+            erc20Address: zeroAddress,
+            owner: clientsOrigin.walletClient.account.address,
+            extension: "collateralFiat",
+        });
+        if (hypFiatTokenOrigin.hash) {
+            clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypFiatTokenOrigin.hash });
+        }
+
+        const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
+        const fakeChainId = 150150;
+
+        await clientsOrigin.walletClient.writeContract({
+            address: hypFiatTokenOrigin.address,
+            abi: Router.abi,
+            functionName: "enrollRemoteRouter",
+            args: [fakeChainId, fakeRouterAddressPadded],
+        });
+
+        const routerDomains = await clientsOrigin.publicClient.readContract({
+            address: hypFiatTokenOrigin.address,
+            abi: Router.abi,
+            functionName: "domains",
+        });
+        expect(routerDomains).toContain(fakeChainId);
     });
 });
