@@ -32,6 +32,7 @@ import {
     TransferAssetRequest,
     TransferAssetResponse,
 } from "@dfns/sdk/generated/wallets/types.js";
+import { DFNS_API_URL } from "@owlprotocol/envvars";
 import { Hex, isHex, keccak256, hexToSignature, toHex, Signature } from "viem";
 import { english, generateMnemonic, mnemonicToAccount, privateKeyToAccount, sign } from "viem/accounts";
 
@@ -187,7 +188,17 @@ export class WalletsClientMock implements WalletsClientInterface {
     async getWallet(request: GetWalletRequest): Promise<GetWalletResponse> {
         const { walletId } = request;
         const wallet = this.wallets[walletId];
-        if (!wallet) throw new Error(`Wallet ${walletId} not found!`);
+        // if (!wallet) throw new Error(`Wallet ${walletId} not found!`);
+        if (!wallet) {
+            // Assume that if we request any mock wallet, then it should exist
+            // This avoids errors when restarting core-trpc
+            return await this.createWallet({
+                body: {
+                    externalId: walletId,
+                    network: DFNS_API_URL === "https://api.dfns.io" ? "Ethereum" : "EthereumSepolia",
+                },
+            });
+        }
 
         return wallet;
     }
