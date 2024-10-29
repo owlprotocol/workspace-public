@@ -1,4 +1,4 @@
-import { GithubRegistry, IRegistry } from "@hyperlane-xyz/registry";
+import { GithubRegistry } from "@hyperlane-xyz/registry";
 import { Address } from "viem";
 
 type MaybePromise<T> = T | Promise<T> | PromiseLike<T>;
@@ -47,13 +47,13 @@ export interface HyperlaneRegistryData {
     addresses: Record<string, HyperlaneChainAddresses>;
 }
 
-/** Partial IRegistry interface for commond read functionality */
-export interface IRegistryRead {
+/** Partial IRegistry interface for commond read functionality with better types */
+export interface IHyperlaneRegistryRead {
     getChains(): MaybePromise<string[]>;
     getMetadata(): MaybePromise<Record<string, HyperlaneChainMetadata>>;
     getChainMetadata(chainName: string): MaybePromise<HyperlaneChainMetadata | null>;
-    getAddresses(): MaybePromise<Record<string, Record<string, string>>>;
-    getChainAddresses(chainName: string): MaybePromise<Record<string, string> | null>;
+    getAddresses(): MaybePromise<Record<string, HyperlaneChainAddresses>>;
+    getChainAddresses(chainName: string): MaybePromise<HyperlaneChainAddresses | null>;
     getChainLogoUri(chainName: string): Promise<string | null>;
 }
 
@@ -62,7 +62,7 @@ export interface IRegistryRead {
  * @warning Only implements read functionality
  * @returns IRegistryRead
  */
-export function creatHyperlaneRegistryWithData(data: HyperlaneRegistryData): IRegistryRead {
+export function createHyperlaneRegistryWithData(data: HyperlaneRegistryData): IHyperlaneRegistryRead {
     return {
         getChains: () => {
             return Object.keys(data.metadata);
@@ -77,15 +77,15 @@ export function creatHyperlaneRegistryWithData(data: HyperlaneRegistryData): IRe
             return data.metadata[chainName].logoUri ?? null;
         },
         getChainAddresses: async (chainName: string) => {
-            return (data.addresses[chainName] as Record<string, string>) ?? null;
+            return data.addresses[chainName] ?? null;
         },
         getAddresses: () => {
-            return data.addresses as Record<string, Record<string, string>>;
+            return data.addresses;
         },
     };
 }
 
-/** Default Hyperlane Registyr URL */
+/** Default Hyperlane Registry URL */
 export const REGISTRY_URL = "https://proxy.hyperlane.xyz";
 
 /**
@@ -100,29 +100,4 @@ export function getHyperlaneRegistry(url = REGISTRY_URL) {
 }
 
 /** Default Hyperlane Registry */
-export const hyperlaneRegistry = getHyperlaneRegistry();
-
-/**
- * Get Hyperlane addresses for chain
- * @param chainName
- * @param registry
- * @returns HyperlaneChainAddresses or null
- */
-export function getHyperlaneRegistryChainAddresses(
-    chainName: string,
-    registry: Pick<IRegistry, "getChainAddresses"> = hyperlaneRegistry,
-): Promise<HyperlaneChainAddresses | null> {
-    return registry.getChainAddresses(chainName) as Promise<HyperlaneChainAddresses | null>;
-}
-
-//TODO: memoize?
-/**
- * Get Hyperlane metadata
- * @param registry
- * @returns
- */
-export function getHyperlaneRegistryMetadata(
-    registry: Pick<IRegistry, "getMetadata"> = hyperlaneRegistry,
-): Promise<Record<string, HyperlaneChainMetadata>> {
-    return registry.getMetadata();
-}
+export const hyperlaneRegistry = getHyperlaneRegistry() as IHyperlaneRegistryRead;
