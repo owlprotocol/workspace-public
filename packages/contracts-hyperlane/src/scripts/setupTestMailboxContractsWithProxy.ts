@@ -71,7 +71,9 @@ async function main() {
         try {
             const contractsRemote2 = await setupTestMailboxContracts(clientsRemote2.walletClient);
             console.log("Contracts deployed on Remote:", contractsRemote2);
-        } catch (e) {}
+        } catch (e) {
+            console.log(e);
+        }
 
         const testToken = { name: "Test Token", totalSupply: 0n, symbol: "TT", decimals: 18 };
         const tokenContract = await getOrDeployDeterministicContract(clientsOrigin.walletClient, {
