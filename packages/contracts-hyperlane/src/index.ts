@@ -8,3 +8,5 @@ export * from "./token/index.js";
 export * from "./artifacts/index.js";
 
 export * from "./prepareHyperlaneContracts.js";
+
+export * from "./registry.js";
