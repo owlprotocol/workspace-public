@@ -1,12 +1,18 @@
 import { Account, Address, Chain, Client, formatEther, TransactionRequest, Transport } from "viem";
-import { prepareERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
-import { getOrPrepareCreate2Factory } from "@owlprotocol/contracts-create2factory";
-import { prepareDiamondFacets, prepareERC721Facets, prepareCoreContractFacets } from "@owlprotocol/contracts-diamond";
-import { getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
 import { getAction } from "viem/utils";
 import { getBalance, sendTransaction, waitForTransactionReceipt } from "viem/actions";
 
-export async function prepareChainContracts(client: Client<Transport, Chain, Account>) {
+import { getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
+import { prepareERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
+import { prepareDiamondFacets, prepareERC721Facets, prepareCoreContractFacets } from "@owlprotocol/contracts-diamond";
+import { prepareHyperlaneContracts } from "@owlprotocol/contracts-hyperlane";
+import { getOrPrepareCreate2Factory } from "@owlprotocol/contracts-create2factory";
+
+export async function prepareChainContracts(
+    client: Client<Transport, Chain, Account>,
+    parameters?: { mailboxAddress?: Address },
+) {
+    const { mailboxAddress } = parameters ?? {};
     const requests: TransactionRequest[] = [];
 
     const [erc4337Contracts, diamondFacets, coreFacets, erc721Facets, create2Factory] = await Promise.all([
@@ -25,7 +31,7 @@ export async function prepareChainContracts(client: Client<Transport, Chain, Acc
     );
     if (create2Factory.request) requests.push(create2Factory.request);
 
-    return {
+    const result = {
         ...erc4337Contracts,
         ...diamondFacets,
         ...coreFacets,
@@ -33,6 +39,19 @@ export async function prepareChainContracts(client: Client<Transport, Chain, Acc
         create2Factory,
         requests,
     };
+
+    //TODO: Refactor for more optional deployments, for now this is enough for type inference
+    if (mailboxAddress) {
+        //Deploy Hyperlane implementations if mailbox defined
+        const hyperlaneImplementations = await prepareHyperlaneContracts(client, { mailboxAddress });
+        if (hyperlaneImplementations.requests) requests.push(...hyperlaneImplementations.requests);
+        return {
+            ...result,
+            ...hyperlaneImplementations,
+        };
+    } else {
+        return result;
+    }
 }
 
 /**
@@ -43,9 +62,10 @@ export async function prepareChainContracts(client: Client<Transport, Chain, Acc
  *   - Create2Factory (0x62366409c9E4D9c7b255d6A8990320A6e4c29B17)
  *   - EntryPointV07  (0x0000000071727De22E5E9d8BAf0edAc6f37da032)
  *   - SimpleAccountFactory (0x91E60e0613810449d098b0b5Ec8b51A0FE8c8985)
+ *   - Diamond contracts
+ *   - Hyperlane implementations
  * Production / Staging
  *   - VerifyingPaymaster (TBD / 0x2e23ef1375aA642504bED97676A566F5A3E4ae5A)
- *   - Diamond contracts
  * @param client with accoutn and nonceManager
  * @param parameters paymaster signer address
  */
@@ -53,6 +73,7 @@ export async function setupChainContracts(
     client: Client<Transport, Chain, Account>,
     parameters: {
         verifyingSignerAddress: Address;
+        mailboxAddress?: Address;
     },
 ) {
     if (!client.account.nonceManager) {

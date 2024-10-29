@@ -654,6 +654,9 @@ importers:
       '@owlprotocol/contracts-diamond':
         specifier: workspace:*
         version: link:../contracts-diamond
+      '@owlprotocol/contracts-hyperlane':
+        specifier: workspace:*
+        version: link:../contracts-hyperlane
       '@owlprotocol/core-firebase':
         specifier: workspace:*
         version: link:../core-firebase

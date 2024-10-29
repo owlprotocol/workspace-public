@@ -61,6 +61,7 @@
     "@owlprotocol/contracts-account-abstraction": "workspace:*",
     "@owlprotocol/contracts-create2factory": "workspace:*",
     "@owlprotocol/contracts-diamond": "workspace:*",
+    "@owlprotocol/contracts-hyperlane": "workspace:*",
     "@owlprotocol/core-firebase": "workspace:*",
     "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/viem-utils": "workspace:*",
