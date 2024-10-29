@@ -15,6 +15,12 @@ const localRemoteChain = {
     rpcUrls: { default: { http: ["http://127.0.0.1:8546"] } },
 };
 
+const localRemoteChain2 = {
+    ...localhost,
+    id: 1339,
+    rpcUrls: { default: { http: ["http://127.0.0.1:8547"] } },
+};
+
 const clientsOrigin = {
     publicClient: createPublicClient({
         chain: localMainChain,
@@ -39,6 +45,18 @@ const clientsRemote = {
     }),
 };
 
+const clientsRemote2 = {
+    publicClient: createPublicClient({
+        chain: localRemoteChain2,
+        transport: http(localRemoteChain2.rpcUrls.default.http[0]),
+    }),
+    walletClient: createWalletClient({
+        account: getLocalAccount(0),
+        chain: localRemoteChain2,
+        transport: http(localRemoteChain2.rpcUrls.default.http[0]),
+    }),
+};
+
 async function main() {
     try {
         console.log("Setting up contracts on Origin chain...");
@@ -48,6 +66,12 @@ async function main() {
         console.log("Setting up contracts on Remote chain...");
         const contractsRemote = await setupTestMailboxContracts(clientsRemote.walletClient);
         console.log("Contracts deployed on Remote:", contractsRemote);
+
+        console.log("Setting up contracts on Remote chain...");
+        try {
+            const contractsRemote2 = await setupTestMailboxContracts(clientsRemote2.walletClient);
+            console.log("Contracts deployed on Remote:", contractsRemote2);
+        } catch (e) {}
 
         const testToken = { name: "Test Token", totalSupply: 0n, symbol: "TT", decimals: 18 };
         const tokenContract = await getOrDeployDeterministicContract(clientsOrigin.walletClient, {
