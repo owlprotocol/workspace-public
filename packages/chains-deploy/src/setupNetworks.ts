@@ -4,7 +4,7 @@ import { Network, NetworkDataInput, networkPrivateResource, networkResource } fr
 import { localhost, opBedrockL1, opBedrockL2 } from "@owlprotocol/chains";
 import * as chains from "@owlprotocol/chains/chains";
 import { getUtilityAccount, getRelayerAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
-import { getHyperlaneRegistryChainAddresses, getHyperlaneRegistryMetadata } from "@owlprotocol/contracts-hyperlane";
+import { hyperlaneRegistry } from "@owlprotocol/contracts-hyperlane";
 
 import { Chain, createPublicClient, createWalletClient, http, nonceManager } from "viem";
 import { setupChain } from "./setupChain.js";
@@ -133,7 +133,8 @@ export async function setupNetworksForEnv() {
     //TODO: Enable localhost custom registry override?
 
     //Fetch full metadata to simply use chainIds instead of Hyperlane chain names
-    const hyperlaneMetadata = await getHyperlaneRegistryMetadata();
+    const hyperlaneMetadata = await hyperlaneRegistry.getMetadata();
+    const hyperlaneAddresses = await hyperlaneRegistry.getAddresses();
 
     for (const network of networksPrivate) {
         const chain = { id: network.chainId, ...network } as Chain;
@@ -168,12 +169,8 @@ export async function setupNetworksForEnv() {
             return chainId === chain.id;
         });
         const hyperlaneChainName = hyperlaneChain?.name;
-
-        const hyperlaneAddresses = hyperlaneChainName
-            ? await getHyperlaneRegistryChainAddresses(hyperlaneChainName)
-            : null;
-
-        const mailboxAddress = hyperlaneAddresses ? hyperlaneAddresses.mailbox : undefined;
+        const hyperlaneChainAddresses = hyperlaneChainName ? hyperlaneAddresses[hyperlaneChainName] : undefined;
+        const mailboxAddress = hyperlaneChainAddresses?.mailbox;
 
         const result = await setupChain(walletClient, {
             bundlerAddress: bundlerAccount.address,
