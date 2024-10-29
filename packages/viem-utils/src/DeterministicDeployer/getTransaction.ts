@@ -38,6 +38,11 @@ export function getDeployDeterministicFunctionData({ salt, bytecode }: { salt: H
     };
 }
 
+export interface GetOrPrepareDeterministicContractReturnType {
+    address: Address;
+    request: TransactionRequest | undefined;
+    existed: boolean;
+}
 /**
  * Get or prepare contract deployment using DeterministicDeployer
  * @param client Client with chain & account
@@ -48,11 +53,7 @@ export function getDeployDeterministicFunctionData({ salt, bytecode }: { salt: H
 export async function getOrPrepareDeterministicContract(
     client: Client<Transport, Chain, Account>,
     { salt, bytecode }: { salt: Hash; bytecode: Hex },
-): Promise<{
-    address: Address;
-    request: TransactionRequest | undefined;
-    existed: boolean;
-}> {
+): Promise<GetOrPrepareDeterministicContractReturnType> {
     //Make sure DeterministicDeployer exists
     if ((await getAction(client, getCode, "getCode")({ address: DETERMINISTIC_DEPLOYER_ADDRESS })) === undefined) {
         throw new Error(
@@ -92,6 +93,11 @@ export async function getOrPrepareDeterministicContract(
     };
 }
 
+export interface GetOrDeployDeterministicContractReturnType {
+    address: Address;
+    hash: Hash | undefined;
+    existed: boolean;
+}
 /**
  * Get or deploy contract using DeterministicDeployer
  * @param client Client with chain & account
@@ -102,11 +108,7 @@ export async function getOrPrepareDeterministicContract(
 export async function getOrDeployDeterministicContract(
     client: Client<Transport, Chain, Account>,
     { salt, bytecode }: { salt: Hash; bytecode: Hex },
-): Promise<{
-    address: Address;
-    hash: Hash | undefined;
-    existed: boolean;
-}> {
+): Promise<GetOrDeployDeterministicContractReturnType> {
     const { address, request, existed } = await getOrPrepareDeterministicContract(client, { salt, bytecode });
 
     let hash: Hash | undefined;

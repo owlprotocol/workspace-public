@@ -1,10 +1,10 @@
-import { Address, Transport, Chain, WalletClient, Account, Client } from "viem";
+import { Address, Transport, Chain, WalletClient, Account, Client, Prettify } from "viem";
 import { topupAddress } from "@owlprotocol/viem-utils";
 import { topupPaymaster } from "@owlprotocol/contracts-account-abstraction";
 import { getAction } from "viem/utils";
 import { getGasPrice, waitForTransactionReceipt } from "viem/actions";
 import { topupUtilityAccount } from "./topupUtilityAccount.js";
-import { setupChainContracts } from "./setupChainContracts.js";
+import { SetupChainContractParameters, setupChainContracts } from "./setupChainContracts.js";
 
 /**
  * Setup network end to end.
@@ -14,30 +14,30 @@ import { setupChainContracts } from "./setupChainContracts.js";
  * 3. Topup Bundler
  * 4. Topup Paymaster
  */
-export type SetupChainParams = {
-    /** Bundler relayer */
-    bundlerAddress: Address;
-    /** Paymaster signer */
-    verifyingSignerAddress: Address;
-    /** Bundler gas budget */
-    bundlerGasBudget?: bigint;
-    /** Bundler target balance */
-    bundlerTargetBalance?: bigint;
-    /** Bundler min balance */
-    bundlerMinBalance?: bigint;
-    /** Paymaster gas budget */
-    paymasterGasBudget?: bigint;
-    /** Paymaster target balance */
-    paymasterTargetBalance?: bigint;
-    /** Paymaster min balance */
-    paymasterMinBalance?: bigint;
-    /** Target utility balance for topup */
-    utilityTargetBalance?: bigint;
-    /** Min utility balance to trigger topup */
-    utilityMinBalance?: bigint;
-    /** L1 Client for topup */
-    clientL1?: WalletClient<Transport, Chain, Account>;
-};
+export type SetupChainParams = Prettify<
+    {
+        /** Bundler relayer */
+        bundlerAddress: Address;
+        /** Bundler gas budget */
+        bundlerGasBudget?: bigint;
+        /** Bundler target balance */
+        bundlerTargetBalance?: bigint;
+        /** Bundler min balance */
+        bundlerMinBalance?: bigint;
+        /** Paymaster gas budget */
+        paymasterGasBudget?: bigint;
+        /** Paymaster target balance */
+        paymasterTargetBalance?: bigint;
+        /** Paymaster min balance */
+        paymasterMinBalance?: bigint;
+        /** Target utility balance for topup */
+        utilityTargetBalance?: bigint;
+        /** Min utility balance to trigger topup */
+        utilityMinBalance?: bigint;
+        /** L1 Client for topup */
+        clientL1?: WalletClient<Transport, Chain, Account>;
+    } & SetupChainContractParameters
+>;
 
 /**
  * Topup chain utility account
@@ -75,8 +75,8 @@ export async function setupChain(client: Client<Transport, Chain, Account>, para
     });
 
     //2. Contracts
-    const { verifyingSignerAddress } = params;
-    const contracts = await setupChainContracts(client, { verifyingSignerAddress });
+    const { verifyingSignerAddress, mailboxAddress } = params;
+    const contracts = await setupChainContracts(client, { verifyingSignerAddress, mailboxAddress });
 
     //3. Bundler Topup
     const { bundlerAddress } = params;

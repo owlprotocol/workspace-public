@@ -1,9 +1,17 @@
-import { expect } from "vitest";
+import { beforeAll, expect } from "vitest";
 
-import { DETERMINISTIC_DEPLOYER_ADDRESS, getLocalAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
-import { createPublicClient, createWalletClient, http, nonceManager } from "viem";
+import {
+    DETERMINISTIC_DEPLOYER_ADDRESS,
+    getLocalAccount,
+    getOrDeployDeterministicContract,
+    getOrDeployDeterministicDeployer,
+    getPaymasterSignerAccount,
+} from "@owlprotocol/viem-utils";
+import { Address, createPublicClient, createWalletClient, encodeDeployData, http, nonceManager, zeroHash } from "viem";
 import { localhost } from "viem/chains";
 import { describe, test } from "vitest";
+
+import { Mailbox } from "@owlprotocol/contracts-hyperlane/artifacts/Mailbox";
 import { port } from "./test/constants.js";
 import { prepareChainContracts, setupChainContracts } from "./setupChainContracts.js";
 
@@ -43,6 +51,37 @@ describe("setupChainContracts.test.ts", function () {
     });
     */
 
+    let mailboxAddress: Address;
+
+    beforeAll(async () => {
+        const walletClient = createWalletClient({
+            account: getLocalAccount(0, { nonceManager }),
+            chain,
+            transport,
+        });
+        // Deploy DeterministicDeployer (for dummy Mailbox)
+        const deployer = await getOrDeployDeterministicDeployer(walletClient);
+        if (deployer.hash) {
+            await publicClient.waitForTransactionReceipt({ hash: deployer.hash });
+        }
+
+        // Deploy dummy Mailbox contract deployments dont't fail
+        // Warning: This mailbox is NOT initialized and cannot be used directly
+        const mailbox = await getOrDeployDeterministicContract(walletClient, {
+            salt: zeroHash,
+            bytecode: encodeDeployData({
+                abi: Mailbox.abi,
+                bytecode: Mailbox.bytecode,
+                args: [walletClient.chain.id],
+            }),
+        });
+        if (mailbox.hash) {
+            await publicClient.waitForTransactionReceipt({ hash: mailbox.hash });
+        }
+
+        mailboxAddress = mailbox.address;
+    });
+
     test("prepareChainContracts", async () => {
         const contracts = await prepareChainContracts(walletClient);
         const contractsGas = contracts.requests.reduce((acc, request) => acc + (request.gas ?? 0n), 0n);
@@ -54,6 +93,7 @@ describe("setupChainContracts.test.ts", function () {
         const paymasterSignerAccount = getPaymasterSignerAccount();
         const result = await setupChainContracts(walletClient, {
             verifyingSignerAddress: paymasterSignerAccount.address,
+            mailboxAddress,
         });
         expect(result).toBeDefined();
 
@@ -84,6 +124,11 @@ describe("setupChainContracts.test.ts", function () {
 
         // Create2Factory
         expect(await publicClient.getCode({ address: result.create2Factory.address })).toBeDefined();
+
+        // Hyperlane
+        expect(await publicClient.getCode({ address: result.hypErc20!.address })).toBeDefined();
+        expect(await publicClient.getCode({ address: result.hypErc20Fast!.address })).toBeDefined();
+        expect(await publicClient.getCode({ address: result.hypNative!.address })).toBeDefined();
 
         // Verifying Payaster
         expect(await publicClient.getCode({ address: result.verifyingPaymaster.address })).toBeDefined();

@@ -268,12 +268,13 @@ describe("Diamond.test.ts", function () {
             }),
             functionSelectors: getAbiFunctionSelectors(MyContract.abi),
         };
-        await walletClient.writeContract({
+        const hash = await walletClient.writeContract({
             address: diamondAddress,
             abi: IDiamondCut.abi,
             functionName: "diamondCut",
             args: [[{ ...facetAdd, action: FacetCutAction.Add }], zeroAddress, "0x"],
         });
+        await publicClient.waitForTransactionReceipt({ hash });
 
         //Diamond Loupe
         const facets1 = await publicClient.readContract({
