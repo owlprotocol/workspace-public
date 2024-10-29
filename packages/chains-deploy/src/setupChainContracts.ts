@@ -2,7 +2,8 @@ import { Account, Address, Chain, Client, formatEther, TransactionRequest, Trans
 import { getAction } from "viem/utils";
 import { getBalance, sendTransaction, waitForTransactionReceipt } from "viem/actions";
 
-import { getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
+import { getOrDeployDeterministicDeployer, GetOrPrepareDeterministicContractReturnType } from "@owlprotocol/viem-utils";
+
 import { prepareERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
 import { prepareDiamondFacets, prepareERC721Facets, prepareCoreContractFacets } from "@owlprotocol/contracts-diamond";
 import { prepareHyperlaneContracts } from "@owlprotocol/contracts-hyperlane";
@@ -38,6 +39,9 @@ export async function prepareChainContracts(
         ...erc721Facets,
         create2Factory,
         requests,
+        hypErc20: undefined as undefined | GetOrPrepareDeterministicContractReturnType,
+        hypErc20Fast: undefined as undefined | GetOrPrepareDeterministicContractReturnType,
+        hypNative: undefined as undefined | GetOrPrepareDeterministicContractReturnType,
     };
 
     //TODO: Refactor for more optional deployments, for now this is enough for type inference
@@ -45,13 +49,20 @@ export async function prepareChainContracts(
         //Deploy Hyperlane implementations if mailbox defined
         const hyperlaneImplementations = await prepareHyperlaneContracts(client, { mailboxAddress });
         if (hyperlaneImplementations.requests) requests.push(...hyperlaneImplementations.requests);
-        return {
-            ...result,
-            ...hyperlaneImplementations,
-        };
-    } else {
-        return result;
+
+        result.hypErc20 = hyperlaneImplementations.hypErc20;
+        result.hypErc20Fast = hyperlaneImplementations.hypErc20Fast;
+        result.hypNative = hyperlaneImplementations.hypNative;
     }
+
+    return result;
+}
+
+export interface SetupChainContractParameters {
+    /** Paymaster signer */
+    verifyingSignerAddress: Address;
+    /** Hyperlane Mailbox */
+    mailboxAddress?: Address;
 }
 
 /**
@@ -71,10 +82,7 @@ export async function prepareChainContracts(
  */
 export async function setupChainContracts(
     client: Client<Transport, Chain, Account>,
-    parameters: {
-        verifyingSignerAddress: Address;
-        mailboxAddress?: Address;
-    },
+    parameters: SetupChainContractParameters,
 ) {
     if (!client.account.nonceManager) {
         throw new Error("client.account.nonceManager undefined");
@@ -88,7 +96,7 @@ export async function setupChainContracts(
     }
 
     //1. Deploy contracts
-    const contracts = await prepareChainContracts(client);
+    const contracts = await prepareChainContracts(client, parameters);
 
     // Check balance
     const contractsFee = contracts.requests.reduce(
