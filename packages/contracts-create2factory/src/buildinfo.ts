@@ -16,14 +16,12 @@ async function verifyContract({
     contractAddress,
     contractName,
     metadata,
-    compilerVersion,
 }: {
     apiUrl: string;
     apiKey: string;
     contractAddress: Address;
     contractName: string;
     metadata: HardhatMetadata;
-    compilerVersion: string;
 }) {
     const abiCheck = await etherscanGetAbi({ apiUrl, apiKey, contractAddress });
 
@@ -51,6 +49,8 @@ async function verifyContract({
             },
         },
     };
+
+    const compilerVersion = "v" + metadata.compiler.version;
 
     const standardJSONInput: StandardJSONInput = {
         language: metadata.language,
@@ -90,7 +90,6 @@ export async function main() {
     const metadata: HardhatMetadata =
         typeof Create2Factory.metadata === "string" ? JSON.parse(Create2Factory.metadata) : Create2Factory.metadata;
 
-    const compilerVersion = "v" + metadata.compiler.version;
     const contractName = `${name}:Create2Factory`;
 
     const apiUrl = "https://api-sepolia.etherscan.io/api";
@@ -100,7 +99,7 @@ export async function main() {
     //TODO: Already verified on Polygonscan, but try with different chain?
     const contractAddress: Address = "0x57318Dc30FE4da0a1b20eBbD4Dfd16aa66cfDB46";
 
-    await verifyContract({ apiUrl, apiKey, contractAddress, contractName, metadata, compilerVersion });
+    await verifyContract({ apiUrl, apiKey, contractAddress, contractName, metadata });
 }
 
 /**
