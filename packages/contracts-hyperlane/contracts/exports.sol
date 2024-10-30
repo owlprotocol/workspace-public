@@ -42,5 +42,7 @@ import {TestRecipient} from "@hyperlane-xyz/core/contracts/test/TestRecipient.so
 import {ERC20Test} from "@hyperlane-xyz/core/contracts/test/ERC20Test.sol";
 import {MockERC4626YieldSharing} from "@hyperlane-xyz/core/contracts/mock/MockERC4626YieldSharing.sol";
 
-
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
+
+import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
