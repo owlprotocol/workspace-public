@@ -88,7 +88,7 @@ describe("warpRoute.test.ts", function () {
             functionName: "enrollRemoteRouter",
             args: [fakeChainId, fakeRouterAddressPadded],
         });
-        await clientsRemote.publicClient.waitForTransactionReceipt({ hash });
+        await clientsOrigin.publicClient.waitForTransactionReceipt({ hash });
 
         const routerDomains = await clientsOrigin.publicClient.readContract({
             address: tokenRouterProxyAddress,
