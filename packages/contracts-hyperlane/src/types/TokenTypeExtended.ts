@@ -17,26 +17,18 @@ export enum TokenTypeExtended {
     nativeScaled = "nativeScaled",
 }
 
-export const TOKEN_TYPE_EXTENDED_TO_STANDARD: Record<
-    TokenTypeExtended,
-    TokenStandardExtended
-> = {
+export const TOKEN_TYPE_EXTENDED_TO_STANDARD: Record<TokenTypeExtended, TokenStandardExtended> = {
     [TokenTypeExtended.native]: TokenStandardExtended.EvmHypNative,
     [TokenTypeExtended.collateral]: TokenStandardExtended.EvmHypCollateral,
-    [TokenTypeExtended.collateralFiat]:
-        TokenStandardExtended.EvmHypCollateralFiat,
+    [TokenTypeExtended.collateralFiat]: TokenStandardExtended.EvmHypCollateralFiat,
     [TokenTypeExtended.XERC20]: TokenStandardExtended.EvmHypXERC20,
-    [TokenTypeExtended.XERC20Lockbox]:
-        TokenStandardExtended.EvmHypXERC20Lockbox,
-    [TokenTypeExtended.collateralVault]:
-        TokenStandardExtended.EvmHypOwnerCollateral,
-    [TokenTypeExtended.collateralVaultRebase]:
-        TokenStandardExtended.EvmHypRebaseCollateral,
+    [TokenTypeExtended.XERC20Lockbox]: TokenStandardExtended.EvmHypXERC20Lockbox,
+    [TokenTypeExtended.collateralVault]: TokenStandardExtended.EvmHypOwnerCollateral,
+    [TokenTypeExtended.collateralVaultRebase]: TokenStandardExtended.EvmHypRebaseCollateral,
     [TokenTypeExtended.collateralUri]: TokenStandardExtended.EvmHypCollateral,
     [TokenTypeExtended.fastCollateral]: TokenStandardExtended.EvmHypCollateral,
     [TokenTypeExtended.synthetic]: TokenStandardExtended.EvmHypSynthetic,
-    [TokenTypeExtended.syntheticRebase]:
-        TokenStandardExtended.EvmHypSyntheticRebase,
+    [TokenTypeExtended.syntheticRebase]: TokenStandardExtended.EvmHypSyntheticRebase,
     [TokenTypeExtended.syntheticUri]: TokenStandardExtended.EvmHypSynthetic,
     [TokenTypeExtended.fastSynthetic]: TokenStandardExtended.EvmHypSynthetic,
     [TokenTypeExtended.nativeScaled]: TokenStandardExtended.EvmHypNative,

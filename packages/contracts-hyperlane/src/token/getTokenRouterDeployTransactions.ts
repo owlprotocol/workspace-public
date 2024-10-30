@@ -13,6 +13,8 @@ import { getFastHypERC20ProxyDeployData } from "./getFastHypERC20ProxyDeployData
 import { getFastHypERC20CollateralProxyDeployData } from "./getFastHypERC20CollateralProxyDeployData.js";
 import { getHypFiatTokenProxyDeployData } from "./getHypFiatTokenProxyDeployData.js";
 import { getHypNativeProxyDeployData } from "./getHypNativeProxyDeployData.js";
+import { getHypERC4626OwnerCollateralProxyDeployData } from "./getHypERC4626OwnerCollateralProxyDeployData.js";
+import { getHypERC4626CollateralProxyDeployData } from "./getHypERC4626CollateralProxyDeployData.js";
 import { ProxyAdmin } from "../artifacts/ProxyAdmin.js";
 import { Ownable } from "../artifacts/Ownable.js";
 import { TokenTypeExtended } from "../types/TokenTypeExtended.js";
@@ -22,6 +24,8 @@ import { HypERC20Collateral } from "../artifacts/HypERC20Collateral.js";
 import { FastHypERC20 } from "../artifacts/FastHypERC20.js";
 import { FastHypERC20Collateral } from "../artifacts/FastHypERC20Collateral.js";
 import { HypFiatToken } from "../artifacts/HypFiatToken.js";
+import { HypERC4626OwnerCollateral } from "../artifacts/HypERC4626OwnerCollateral.js";
+import { HypERC4626Collateral } from "../artifacts/HypERC4626Collateral.js";
 
 const contractExists = async (client: Client, address: Address) => {
     const code = await getAction(client, getCode, "getCode")({ address });
@@ -206,9 +210,48 @@ export async function getTokenRouterDeployTransactions(
                 proxyAdminAddress,
             });
             break;
-        // TODO 4626 cases
         case TokenTypeExtended.collateralVault:
+            if (!collateralAddress) {
+                throw new Error("Collateral address required for this token type");
+            }
+            tokenRouterImplDeployData = {
+                salt: zeroHash,
+                bytecode: encodeDeployData({
+                    abi: HypERC4626OwnerCollateral.abi,
+                    bytecode: HypERC4626OwnerCollateral.bytecode,
+                    args: [collateralAddress, mailboxAddress],
+                }),
+            };
+            tokenRouterImplAddress = getDeployDeterministicAddress(tokenRouterImplDeployData);
+
+            tokenRouterProxyDeployData = getHypERC4626OwnerCollateralProxyDeployData({
+                salt: proxyDeploySalt,
+                owner,
+                tokenRouterImplAddress,
+                proxyAdminAddress,
+            });
+            break;
         case TokenTypeExtended.collateralVaultRebase:
+            if (!collateralAddress) {
+                throw new Error("Collateral address required for this token type");
+            }
+            tokenRouterImplDeployData = {
+                salt: zeroHash,
+                bytecode: encodeDeployData({
+                    abi: HypERC4626Collateral.abi,
+                    bytecode: HypERC4626Collateral.bytecode,
+                    args: [collateralAddress, mailboxAddress],
+                }),
+            };
+            tokenRouterImplAddress = getDeployDeterministicAddress(tokenRouterImplDeployData);
+
+            tokenRouterProxyDeployData = getHypERC4626CollateralProxyDeployData({
+                salt: proxyDeploySalt,
+                owner,
+                tokenRouterImplAddress,
+                proxyAdminAddress,
+            });
+            break;
         default:
             throw new Error("Token type unsupported");
     }
