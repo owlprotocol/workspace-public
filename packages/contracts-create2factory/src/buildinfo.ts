@@ -10,32 +10,22 @@ import { etherscanGetAbi, etherscanVerifySourceCode, waitForEtherscanVerifyStatu
  * all of its output.
  */
 
-export async function main() {
-    const buildInfoPath = "artifacts/build-info/1afa25cf92de5ec814b300b7ef4c7ee1.json";
-    const buildInfo: BuildInfo = JSON.parse(readFileSync(buildInfoPath, "utf-8"));
-
-    // file name key
-    const name = "contracts/Create2Factory.sol";
-    const contract = buildInfo.output.contracts[name];
-    // contract name (inside of file)
-    const Create2Factory = contract.Create2Factory;
-
-    const metadata: HardhatMetadata =
-        typeof Create2Factory.metadata === "string" ? JSON.parse(Create2Factory.metadata) : Create2Factory.metadata;
-
-    const compilerVersion = "v" + metadata.compiler.version;
-    const contractName = `${name}:Create2Factory`;
-
-    const apiUrl = "https://api-sepolia.etherscan.io/api";
-
-    //TODO: Add api key here
-    const apiKey = "xxx";
-    //TODO: Already verified on Polygonscan, but try with different chain?
-    const contractAddress: Address = "0x57318Dc30FE4da0a1b20eBbD4Dfd16aa66cfDB46";
-
+async function verifyContract({
+    apiUrl,
+    apiKey,
+    contractAddress,
+    contractName,
+    metadata,
+    compilerVersion,
+}: {
+    apiUrl: string;
+    apiKey: string;
+    contractAddress: Address;
+    contractName: string;
+    metadata: HardhatMetadata;
+    compilerVersion: string;
+}) {
     const abiCheck = await etherscanGetAbi({ apiUrl, apiKey, contractAddress });
-
-    console.debug(abiCheck);
 
     if (abiCheck) {
         console.log("Contract already verified.");
@@ -85,6 +75,32 @@ export async function main() {
     console.debug(guid);
 
     await waitForEtherscanVerifyStatus({ apiUrl, apiKey, guid });
+}
+
+export async function main() {
+    const buildInfoPath = "artifacts/build-info/1afa25cf92de5ec814b300b7ef4c7ee1.json";
+    const buildInfo: BuildInfo = JSON.parse(readFileSync(buildInfoPath, "utf-8"));
+
+    // file name key
+    const name = "contracts/Create2Factory.sol";
+    const contract = buildInfo.output.contracts[name];
+    // contract name (inside of file)
+    const Create2Factory = contract.Create2Factory;
+
+    const metadata: HardhatMetadata =
+        typeof Create2Factory.metadata === "string" ? JSON.parse(Create2Factory.metadata) : Create2Factory.metadata;
+
+    const compilerVersion = "v" + metadata.compiler.version;
+    const contractName = `${name}:Create2Factory`;
+
+    const apiUrl = "https://api-sepolia.etherscan.io/api";
+
+    //TODO: Add api key here
+    const apiKey = "xxx";
+    //TODO: Already verified on Polygonscan, but try with different chain?
+    const contractAddress: Address = "0x57318Dc30FE4da0a1b20eBbD4Dfd16aa66cfDB46";
+
+    await verifyContract({ apiUrl, apiKey, contractAddress, contractName, metadata, compilerVersion });
 }
 
 /**
