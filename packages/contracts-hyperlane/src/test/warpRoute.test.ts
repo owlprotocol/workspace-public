@@ -82,12 +82,13 @@ describe("warpRoute.test.ts", function () {
         const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
         const fakeChainId = 150150;
 
-        await clientsOrigin.walletClient.writeContract({
+        const hash = await clientsOrigin.walletClient.writeContract({
             address: tokenRouterProxyAddress,
             abi: Router.abi,
             functionName: "enrollRemoteRouter",
             args: [fakeChainId, fakeRouterAddressPadded],
         });
+        await clientsRemote.publicClient.waitForTransactionReceipt({ hash });
 
         const routerDomains = await clientsOrigin.publicClient.readContract({
             address: tokenRouterProxyAddress,
@@ -108,13 +109,13 @@ describe("warpRoute.test.ts", function () {
 
         const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
         const fakeChainId = 150150;
-        const enrollHash = await clientsRemote.walletClient.writeContract({
+        const hash = await clientsRemote.walletClient.writeContract({
             address: tokenRouterProxyAddress,
             abi: Router.abi,
             functionName: "enrollRemoteRouter",
             args: [fakeChainId, fakeRouterAddressPadded],
         });
-        await clientsRemote.publicClient.waitForTransactionReceipt({ hash: enrollHash });
+        await clientsRemote.publicClient.waitForTransactionReceipt({ hash });
 
         const routerDomains = await clientsRemote.publicClient.readContract({
             address: tokenRouterProxyAddress,
@@ -255,12 +256,13 @@ describe("warpRoute.test.ts", function () {
         const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
         const fakeChainId = 150150;
 
-        await clientsOrigin.walletClient.writeContract({
+        const hash = await clientsOrigin.walletClient.writeContract({
             address: tokenRouterProxyAddress,
             abi: Router.abi,
             functionName: "enrollRemoteRouter",
             args: [fakeChainId, fakeRouterAddressPadded],
         });
+        await clientsOrigin.publicClient.waitForTransactionReceipt({ hash });
 
         const routerDomains = await clientsOrigin.publicClient.readContract({
             address: tokenRouterProxyAddress,
@@ -468,13 +470,13 @@ describe("warpRoute.test.ts", function () {
 
         const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
         const fakeChainId = 150150;
-        const enrollHash = await clientsRemote.walletClient.writeContract({
+        const hash = await clientsRemote.walletClient.writeContract({
             address: tokenRouterProxyAddress,
             abi: Router.abi,
             functionName: "enrollRemoteRouter",
             args: [fakeChainId, fakeRouterAddressPadded],
         });
-        await clientsRemote.publicClient.waitForTransactionReceipt({ hash: enrollHash });
+        await clientsRemote.publicClient.waitForTransactionReceipt({ hash });
 
         const routerDomains = await clientsRemote.publicClient.readContract({
             address: tokenRouterProxyAddress,
@@ -495,12 +497,13 @@ describe("warpRoute.test.ts", function () {
         const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
         const fakeChainId = 150150;
 
-        await clientsOrigin.walletClient.writeContract({
+        const hash = await clientsOrigin.walletClient.writeContract({
             address: tokenRouterProxyAddress,
             abi: Router.abi,
             functionName: "enrollRemoteRouter",
             args: [fakeChainId, fakeRouterAddressPadded],
         });
+        await clientsOrigin.publicClient.waitForTransactionReceipt({ hash });
 
         const routerDomains = await clientsOrigin.publicClient.readContract({
             address: tokenRouterProxyAddress,
@@ -520,12 +523,13 @@ describe("warpRoute.test.ts", function () {
         const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
         const fakeChainId = 150150;
 
-        await clientsOrigin.walletClient.writeContract({
+        const hash = await clientsOrigin.walletClient.writeContract({
             address: tokenRouterProxyAddress,
             abi: Router.abi,
             functionName: "enrollRemoteRouter",
             args: [fakeChainId, fakeRouterAddressPadded],
         });
+        await clientsOrigin.publicClient.waitForTransactionReceipt({ hash });
 
         const routerDomains = await clientsOrigin.publicClient.readContract({
             address: tokenRouterProxyAddress,
