@@ -12,3 +12,5 @@ export * from "./getHypERC4626OwnerCollateralDeployArgs.js";
 export * from "./getOrDeployHypERC4626Collateral.js";
 export * from "./getOrDeployHypERC4626OwnerCollateral.js";
 export * from "./getHypNativeDeployArgs.js";
+export * from "./getOrDeployTokenRouter.js";
+export * from "./getTokenRouterDeployTransactions.js";
