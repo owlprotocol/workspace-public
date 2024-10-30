@@ -27,6 +27,10 @@ import { TransparentUpgradeableProxy } from "../artifacts/TransparentUpgradeable
 import { HypERC20 } from "../artifacts/HypERC20.js";
 import { HypERC20Collateral } from "../artifacts/HypERC20Collateral.js";
 import { FastHypERC20 } from "../artifacts/FastHypERC20.js";
+import { FastHypERC20Collateral } from "../artifacts/FastHypERC20Collateral.js";
+import { getFastHypERC20CollateralProxyDeployData } from "./getFastHypERC20CollateralProxyDeployData.js";
+import { getHypFiatTokenProxyDeployData } from "./getHypFiatTokenProxyDeployData.js";
+import { HypFiatToken } from "../artifacts/HypFiatToken.js";
 
 const contractExists = async (client: Client, address: Address) => {
     const code = await getAction(client, getCode, "getCode")({ address });
@@ -174,6 +178,48 @@ export async function getTokenRouterDeployTransactions(
             tokenRouterImplAddress = getDeployDeterministicAddress(tokenRouterImplDeployData);
 
             tokenRouterProxyDeployData = getHypERC20CollateralProxyDeployData({
+                salt: proxyDeploySalt,
+                owner,
+                tokenRouterImplAddress,
+                proxyAdminAddress,
+            });
+            break;
+        case TokenTypeExtended.fastCollateral:
+            if (!collateralAddress) {
+                throw new Error("Collateral address required for this token type");
+            }
+            tokenRouterImplDeployData = {
+                salt: zeroHash,
+                bytecode: encodeDeployData({
+                    abi: FastHypERC20Collateral.abi,
+                    bytecode: FastHypERC20Collateral.bytecode,
+                    args: [collateralAddress, mailboxAddress],
+                }),
+            };
+            tokenRouterImplAddress = getDeployDeterministicAddress(tokenRouterImplDeployData);
+
+            tokenRouterProxyDeployData = getFastHypERC20CollateralProxyDeployData({
+                salt: proxyDeploySalt,
+                owner,
+                tokenRouterImplAddress,
+                proxyAdminAddress,
+            });
+            break;
+        case TokenTypeExtended.collateralFiat:
+            if (!collateralAddress) {
+                throw new Error("Collateral address required for this token type");
+            }
+            tokenRouterImplDeployData = {
+                salt: zeroHash,
+                bytecode: encodeDeployData({
+                    abi: HypFiatToken.abi,
+                    bytecode: HypFiatToken.bytecode,
+                    args: [collateralAddress, mailboxAddress],
+                }),
+            };
+            tokenRouterImplAddress = getDeployDeterministicAddress(tokenRouterImplDeployData);
+
+            tokenRouterProxyDeployData = getHypFiatTokenProxyDeployData({
                 salt: proxyDeploySalt,
                 owner,
                 tokenRouterImplAddress,

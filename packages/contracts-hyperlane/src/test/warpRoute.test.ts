@@ -22,7 +22,6 @@ import { port, port2, localhostRemote, chainId2 } from "./constants.js";
 import { setupTestMailboxContracts } from "./mailboxTestHelpers.js";
 import { Router } from "../artifacts/Router.js";
 import { TokenRouter, transferRemote_uint32_bytes32_uint256 as transferRemoteAbi } from "../artifacts/TokenRouter.js";
-import { getOrDeployHypERC20Collateral } from "../token/getOrDeployHypERC20Collateral.js";
 import { ERC20Test } from "../artifacts/ERC20Test.js";
 import { IERC20 } from "../artifacts/IERC20.js";
 import { getMessageFromReceipt } from "../mailbox/getMessageFromReceipt.js";
@@ -486,56 +485,50 @@ describe("warpRoute.test.ts", function () {
     });
 
     test("Deploy FastHypERC20Collateral", async () => {
-        const fastHypERC20CollateralOrigin = await getOrDeployHypERC20Collateral(clientsOrigin.walletClient, {
+        const { tokenRouterProxyAddress } = await getOrDeployTokenRouter(clientsOrigin.walletClient, {
+            tokenType: TokenTypeExtended.fastCollateral,
             mailboxAddress: mailboxAddressOrigin,
-            erc20Address: zeroAddress,
+            collateralAddress: zeroAddress,
             owner: clientsOrigin.walletClient.account.address,
-            extension: "fastCollateral",
         });
-        if (fastHypERC20CollateralOrigin.hash) {
-            clientsOrigin.publicClient.waitForTransactionReceipt({ hash: fastHypERC20CollateralOrigin.hash });
-        }
 
         const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
         const fakeChainId = 150150;
 
         await clientsOrigin.walletClient.writeContract({
-            address: fastHypERC20CollateralOrigin.address,
+            address: tokenRouterProxyAddress,
             abi: Router.abi,
             functionName: "enrollRemoteRouter",
             args: [fakeChainId, fakeRouterAddressPadded],
         });
 
         const routerDomains = await clientsOrigin.publicClient.readContract({
-            address: fastHypERC20CollateralOrigin.address,
+            address: tokenRouterProxyAddress,
             abi: Router.abi,
             functionName: "domains",
         });
         expect(routerDomains).toContain(fakeChainId);
     });
     test("Deploy HypFiatToken", async () => {
-        const hypFiatTokenOrigin = await getOrDeployHypERC20Collateral(clientsOrigin.walletClient, {
+        const { tokenRouterProxyAddress } = await getOrDeployTokenRouter(clientsOrigin.walletClient, {
+            tokenType: TokenTypeExtended.collateralFiat,
             mailboxAddress: mailboxAddressOrigin,
-            erc20Address: zeroAddress,
+            collateralAddress: zeroAddress,
             owner: clientsOrigin.walletClient.account.address,
-            extension: "collateralFiat",
         });
-        if (hypFiatTokenOrigin.hash) {
-            clientsOrigin.publicClient.waitForTransactionReceipt({ hash: hypFiatTokenOrigin.hash });
-        }
 
         const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
         const fakeChainId = 150150;
 
         await clientsOrigin.walletClient.writeContract({
-            address: hypFiatTokenOrigin.address,
+            address: tokenRouterProxyAddress,
             abi: Router.abi,
             functionName: "enrollRemoteRouter",
             args: [fakeChainId, fakeRouterAddressPadded],
         });
 
         const routerDomains = await clientsOrigin.publicClient.readContract({
-            address: hypFiatTokenOrigin.address,
+            address: tokenRouterProxyAddress,
             abi: Router.abi,
             functionName: "domains",
         });
