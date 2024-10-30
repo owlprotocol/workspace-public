@@ -1,13 +1,4 @@
-import {
-    type Client,
-    type Address,
-    zeroHash,
-    encodeFunctionData,
-    Hash,
-    Hex,
-    encodeDeployData,
-    zeroAddress,
-} from "viem";
+import { type Client, type Address, zeroHash, encodeFunctionData, Hash, Hex, encodeDeployData } from "viem";
 import {
     getDeployAddress,
     getDeployDeterministicAddress,
@@ -19,19 +10,18 @@ import { getCode } from "viem/actions";
 import { getHypERC20CollateralProxyDeployData } from "./getHypERC20CollateralProxyDeployData.js";
 import { getHypERC20ProxyDeployData } from "./getHypERC20ProxyDeployData.js";
 import { getFastHypERC20ProxyDeployData } from "./getFastHypERC20ProxyDeployData.js";
+import { getFastHypERC20CollateralProxyDeployData } from "./getFastHypERC20CollateralProxyDeployData.js";
+import { getHypFiatTokenProxyDeployData } from "./getHypFiatTokenProxyDeployData.js";
+import { getHypNativeProxyDeployData } from "./getHypNativeProxyDeployData.js";
 import { ProxyAdmin } from "../artifacts/ProxyAdmin.js";
 import { Ownable } from "../artifacts/Ownable.js";
 import { TokenTypeExtended } from "../types/TokenTypeExtended.js";
 import { HypNative } from "../artifacts/HypNative.js";
-import { TransparentUpgradeableProxy } from "../artifacts/TransparentUpgradeableProxy.js";
 import { HypERC20 } from "../artifacts/HypERC20.js";
 import { HypERC20Collateral } from "../artifacts/HypERC20Collateral.js";
 import { FastHypERC20 } from "../artifacts/FastHypERC20.js";
 import { FastHypERC20Collateral } from "../artifacts/FastHypERC20Collateral.js";
-import { getFastHypERC20CollateralProxyDeployData } from "./getFastHypERC20CollateralProxyDeployData.js";
-import { getHypFiatTokenProxyDeployData } from "./getHypFiatTokenProxyDeployData.js";
 import { HypFiatToken } from "../artifacts/HypFiatToken.js";
-import { getHypNativeProxyDeployData } from "./getHypNativeProxyDeployData.js";
 
 const contractExists = async (client: Client, address: Address) => {
     const code = await getAction(client, getCode, "getCode")({ address });
@@ -216,6 +206,9 @@ export async function getTokenRouterDeployTransactions(
                 proxyAdminAddress,
             });
             break;
+        // TODO 4626 cases
+        case TokenTypeExtended.collateralVault:
+        case TokenTypeExtended.collateralVaultRebase:
         default:
             throw new Error("Token type unsupported");
     }

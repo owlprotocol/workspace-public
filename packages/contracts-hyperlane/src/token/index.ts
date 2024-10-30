@@ -3,6 +3,8 @@ export * from "./getHypERC20CollateralProxyDeployData.js";
 export * from "./getHypERC20ProxyDeployData.js";
 export * from "./getHypNativeProxyDeployData.js";
 export * from "./getFastHypERC20ProxyDeployData.js";
+export * from "./getHypERC4626CollateralProxyDeployData.js";
+export * from "./getHypERC4626OwnerCollateralProxyDeployData.js";
 export * from "./getHypERC20DeployArgs.js";
 export * from "./getHypERC20CollateralDeployArgs.js";
 export * from "./getHypERC4626CollateralDeployArgs.js";
