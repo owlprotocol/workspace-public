@@ -10,3 +10,5 @@ export * from "./artifacts/index.js";
 export * from "./prepareHyperlaneContracts.js";
 
 export * from "./registry.js";
+
+export * from "./types/index.js";
