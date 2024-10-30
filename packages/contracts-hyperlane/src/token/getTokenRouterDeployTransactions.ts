@@ -31,6 +31,7 @@ import { FastHypERC20Collateral } from "../artifacts/FastHypERC20Collateral.js";
 import { getFastHypERC20CollateralProxyDeployData } from "./getFastHypERC20CollateralProxyDeployData.js";
 import { getHypFiatTokenProxyDeployData } from "./getHypFiatTokenProxyDeployData.js";
 import { HypFiatToken } from "../artifacts/HypFiatToken.js";
+import { getHypNativeProxyDeployData } from "./getHypNativeProxyDeployData.js";
 
 const contractExists = async (client: Client, address: Address) => {
     const code = await getAction(client, getCode, "getCode")({ address });
@@ -95,23 +96,12 @@ export async function getTokenRouterDeployTransactions(
             };
             tokenRouterImplAddress = getDeployDeterministicAddress(tokenRouterImplDeployData);
 
-            tokenRouterProxyDeployData = {
+            tokenRouterProxyDeployData = getHypNativeProxyDeployData({
                 salt: proxyDeploySalt,
-                bytecode: encodeDeployData({
-                    abi: TransparentUpgradeableProxy.abi,
-                    bytecode: TransparentUpgradeableProxy.bytecode,
-                    args: [
-                        tokenRouterImplAddress,
-                        proxyAdminAddress,
-                        encodeFunctionData({
-                            abi: HypNative.abi,
-                            functionName: "initialize",
-                            args: [zeroAddress, zeroAddress, owner],
-                        }),
-                    ],
-                }),
-                initData: "0x",
-            };
+                owner,
+                tokenRouterImplAddress,
+                proxyAdminAddress,
+            });
             break;
         case TokenTypeExtended.synthetic:
             if (!name || !symbol) {
