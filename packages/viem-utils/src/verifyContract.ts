@@ -1,4 +1,77 @@
-import { VerifyEtherscanParameters } from "../types/buildinfo.js";
+import { Address } from "viem";
+import { SlocMetadata, StandardJSONInput, VerifyEtherscanParameters } from "./types/buildinfo.js";
+
+export async function verifyContract({
+    apiUrl,
+    apiKey,
+    contractAddress,
+    metadata,
+}: {
+    apiUrl: string;
+    apiKey: string;
+    contractAddress: Address;
+    metadata: SlocMetadata;
+}) {
+    const contractName = Object.entries(metadata.settings.compilationTarget)[0].join(":");
+
+    const abiCheck = await etherscanGetAbi({ apiUrl, apiKey, contractAddress });
+
+    if (abiCheck) {
+        console.log(`Contract '${contractName}' at address ${contractAddress} is already verified.`);
+        return;
+    } else {
+        console.log(
+            `ABI not found or contract '${contractName}' at address ${contractAddress} is not verified. Proceeding with verification.`,
+        );
+    }
+
+    // Delete extranuous "license" key disliked by Etherscan
+    Object.values(metadata.sources).forEach((source: any) => {
+        delete source.license;
+    });
+    //https://gist.github.com/0xV4L3NT1N3/974d6bfb58070e0fe4e38d626cdf1c44
+    const settings = {
+        metadata: metadata.settings.metadata,
+        optimizer: metadata.settings.optimizer,
+        evmVersion: metadata.settings.evmVersion,
+        viaIR: metadata.settings.viaIR,
+        outputSelection: {
+            "*": {
+                "*": ["abi", "evm.bytecode", "evm.deployedBytecode", "evm.methodIdentifiers", "metadata"],
+                "": ["ast"],
+            },
+        },
+    };
+
+    const compilerVersion = "v" + metadata.compiler.version;
+
+    const standardJSONInput: StandardJSONInput = {
+        language: metadata.language,
+        sources: metadata.sources,
+        settings,
+    };
+
+    const sourceCode = JSON.stringify(standardJSONInput);
+    const evmVersion = metadata.settings.evmVersion;
+
+    const response = await etherscanVerifySourceCode({
+        apiUrl,
+        apiKey,
+        contractAddress,
+        contractName,
+        sourceCode,
+        compilerVersion,
+        evmVersion,
+    });
+
+    const { result: guid } = (await response.json()) as { result: string };
+    if (!guid || guid === "Contract source code already verified") {
+        console.debug("Contract source code already verified or invalid GUID.");
+        return;
+    }
+
+    await waitForEtherscanVerifyStatus({ apiUrl, apiKey, guid });
+}
 
 export async function etherscanVerifySourceCode({
     apiUrl,
@@ -78,14 +151,6 @@ export async function waitForEtherscanVerifyStatus({
     retries?: number;
     interval?: number;
 }): Promise<void> {
-    if (guid === "Contract source code already verified") {
-        console.log("Contract is already verified. Skipping verification.");
-        return;
-    }
-    if (!guid || guid.length < 10) {
-        throw new Error("Invalid GUID provided.");
-    }
-
     for (let attempt = 1; attempt <= retries; attempt++) {
         const status = await etherscanCheckVerifyStatus({ apiUrl, apiKey, guid });
 

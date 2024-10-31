@@ -83,11 +83,22 @@
       "types": "./lib/types/zsol/*.d.ts",
       "require": "./lib/cjs/zsol/*.js",
       "import": "./lib/esm/zsol/*.js"
+    },
+    "./solc-metadata": {
+      "types": "./lib/types/solc-metadata/index.d.ts",
+      "require": "./lib/cjs/solc-metadata/index.js",
+      "import": "./lib/esm/solc-metadata/index.js"
+    },
+    "./solc-metadata/*": {
+      "types": "./lib/types/solc-metadata/*.d.ts",
+      "require": "./lib/cjs/solc-metadata/*.js",
+      "import": "./lib/esm/solc-metadata/*.js"
     }
   },
   "scripts": {
-    "build": "npm-run-all build:hardhat build:artifacts build:zsol build:esm",
+    "build": "npm-run-all build:hardhat build:artifacts build:solcmetadata build:zsol build:esm",
     "build:artifacts": "tsx src/codegen/runHardhatArtifactsExport.ts",
+    "build:solcmetadata": "tsx src/codegen/runHardhatMetadataExport.ts",
     "build:esbuild": "node esbuild.config.mjs",
     "build:esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "build:esm": "npm-run-all -p build:esbuild build:tsc ",
@@ -96,7 +107,7 @@
     "build:tsc:watch": "tsc -w",
     "build:watch": "npm-run-all -p build:tsc:watch build:esbuild:watch",
     "build:zsol": "tsx src/codegen/runGenerateZodValidators.ts",
-    "clean": "rimraf lib cache artifacts src/artifacts src/zsol docs-contracts-reference",
+    "clean": "rimraf lib cache artifacts src/artifacts src/solc-metadata src/zsol docs-contracts-reference",
     "depcheck": "depcheck",
     "esbuild": "node esbuild.config.mjs",
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
@@ -128,6 +139,7 @@
     "@owlprotocol/hardhat-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
+    "@owlprotocol/viem-utils": "workspace:*",
     "@types/lodash-es": "4.17.12",
     "@types/node": "^20.11.10",
     "@typescript/analyze-trace": "^0.10.1",
