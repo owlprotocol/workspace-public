@@ -107,16 +107,23 @@ export interface SlocMetadata {
     output: {
         abi: any[];
         devdoc?: {
+            author?: string;
             details?: string;
             errors?: Record<string, any>;
+            events?: Record<string, any>;
             kind: string;
             methods?: Record<string, any>;
+            stateVariables?: Record<string, any>;
+            title?: string;
             version: number;
+            [key: string]: any;
         };
         userdoc?: {
+            errors?: Record<string, any>;
             events?: Record<string, any>;
             kind: string;
             methods: Record<string, any>;
+            notice?: string;
             version: number;
         };
     };
