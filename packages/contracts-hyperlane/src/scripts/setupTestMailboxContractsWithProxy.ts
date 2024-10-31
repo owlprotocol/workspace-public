@@ -67,12 +67,12 @@ async function main() {
         const contractsRemote = await setupTestMailboxContracts(clientsRemote.walletClient);
         console.log("Contracts deployed on Remote:", contractsRemote);
 
-        console.log("Setting up contracts on Remote chain...");
+        console.log("Setting up contracts on Remote chain 2...");
         try {
             const contractsRemote2 = await setupTestMailboxContracts(clientsRemote2.walletClient);
             console.log("Contracts deployed on Remote:", contractsRemote2);
         } catch (e) {
-            console.log(e);
+            console.log("Ignoring Remote chain 2");
         }
 
         const testToken = { name: "Test Token", totalSupply: 0n, symbol: "TT", decimals: 18 };
