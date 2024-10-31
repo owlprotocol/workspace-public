@@ -10,7 +10,8 @@ export async function getOrDeployTokenRouter(
     walletClient: WalletClient<Transport, Chain, Account>,
     params: GetTokenRouterDeployTransactionsParameters,
 ) {
-    const { transactions, tokenRouterProxyAddress } = await getTokenRouterDeployTransactions(walletClient, params);
+    const { transactions, tokenRouterProxyAddress, proxyAdminAddress, tokenRouterImplAddress } =
+        await getTokenRouterDeployTransactions(walletClient, params);
 
     if (transactions.length > 0) {
         for (const tx of transactions) {
@@ -19,5 +20,5 @@ export async function getOrDeployTokenRouter(
         }
     }
 
-    return { tokenRouterProxyAddress };
+    return { tokenRouterProxyAddress, tokenRouterImplAddress, proxyAdminAddress };
 }

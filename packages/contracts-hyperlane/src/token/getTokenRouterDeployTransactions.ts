@@ -33,7 +33,8 @@ const contractExists = async (client: Client, address: Address) => {
 };
 
 export interface GetTokenRouterDeployTransactionsParameters {
-    owner: Address;
+    account: Address;
+    proxyAdminOwner?: Address;
     mailboxAddress: Address;
     collateralAddress?: Address;
     tokenType: TokenTypeExtended;
@@ -47,7 +48,8 @@ export interface GetTokenRouterDeployTransactionsParameters {
 export async function getTokenRouterDeployTransactions(
     client: Client,
     {
-        owner,
+        account,
+        proxyAdminOwner = account,
         mailboxAddress,
         collateralAddress,
         tokenType,
@@ -68,14 +70,14 @@ export async function getTokenRouterDeployTransactions(
     const proxyAdminDeployArgs = {
         salt: zeroHash,
         bytecode: ProxyAdmin.bytecode,
-        initData: encodeFunctionData({ abi: Ownable.abi, functionName: "transferOwnership", args: [owner] }),
+        initData: encodeFunctionData({ abi: Ownable.abi, functionName: "transferOwnership", args: [proxyAdminOwner] }),
     };
-    const proxyAdminAddress = getDeployAddress(owner, proxyAdminDeployArgs);
+    const proxyAdminAddress = getDeployAddress(account, proxyAdminDeployArgs);
 
     const proxyAdminExists = await contractExists(client, proxyAdminAddress);
 
     if (!proxyAdminExists) {
-        transactions.push(getDeployFunctionData(owner, [proxyAdminDeployArgs]));
+        transactions.push(getDeployFunctionData(account, [proxyAdminDeployArgs]));
     }
 
     switch (tokenType) {
@@ -92,7 +94,7 @@ export async function getTokenRouterDeployTransactions(
 
             tokenRouterProxyDeployData = getHypNativeProxyDeployData({
                 salt: proxyDeploySalt,
-                owner,
+                account,
                 tokenRouterImplAddress,
                 proxyAdminAddress,
             });
@@ -114,7 +116,7 @@ export async function getTokenRouterDeployTransactions(
 
             tokenRouterProxyDeployData = getHypERC20ProxyDeployData({
                 salt: proxyDeploySalt,
-                owner,
+                account,
                 tokenRouterImplAddress,
                 proxyAdminAddress,
                 totalSupply,
@@ -139,7 +141,7 @@ export async function getTokenRouterDeployTransactions(
 
             tokenRouterProxyDeployData = getFastHypERC20ProxyDeployData({
                 salt: proxyDeploySalt,
-                owner,
+                account,
                 tokenRouterImplAddress,
                 proxyAdminAddress,
                 totalSupply,
@@ -163,7 +165,7 @@ export async function getTokenRouterDeployTransactions(
 
             tokenRouterProxyDeployData = getHypERC20CollateralProxyDeployData({
                 salt: proxyDeploySalt,
-                owner,
+                account,
                 tokenRouterImplAddress,
                 proxyAdminAddress,
             });
@@ -184,7 +186,7 @@ export async function getTokenRouterDeployTransactions(
 
             tokenRouterProxyDeployData = getFastHypERC20CollateralProxyDeployData({
                 salt: proxyDeploySalt,
-                owner,
+                account,
                 tokenRouterImplAddress,
                 proxyAdminAddress,
             });
@@ -205,7 +207,7 @@ export async function getTokenRouterDeployTransactions(
 
             tokenRouterProxyDeployData = getHypFiatTokenProxyDeployData({
                 salt: proxyDeploySalt,
-                owner,
+                account,
                 tokenRouterImplAddress,
                 proxyAdminAddress,
             });
@@ -226,7 +228,7 @@ export async function getTokenRouterDeployTransactions(
 
             tokenRouterProxyDeployData = getHypERC4626OwnerCollateralProxyDeployData({
                 salt: proxyDeploySalt,
-                owner,
+                account,
                 tokenRouterImplAddress,
                 proxyAdminAddress,
             });
@@ -247,7 +249,7 @@ export async function getTokenRouterDeployTransactions(
 
             tokenRouterProxyDeployData = getHypERC4626CollateralProxyDeployData({
                 salt: proxyDeploySalt,
-                owner,
+                account,
                 tokenRouterImplAddress,
                 proxyAdminAddress,
             });
@@ -261,10 +263,10 @@ export async function getTokenRouterDeployTransactions(
         transactions.push(getDeployDeterministicFunctionData(tokenRouterImplDeployData));
     }
 
-    const tokenRouterProxyAddress = getDeployAddress(owner, tokenRouterProxyDeployData);
+    const tokenRouterProxyAddress = getDeployAddress(account, tokenRouterProxyDeployData);
     const tokenRouterProxyExists = await contractExists(client, tokenRouterProxyAddress);
     if (!tokenRouterProxyExists) {
-        transactions.push(getDeployFunctionData(owner, [tokenRouterProxyDeployData]));
+        transactions.push(getDeployFunctionData(account, [tokenRouterProxyDeployData]));
     }
 
     return {

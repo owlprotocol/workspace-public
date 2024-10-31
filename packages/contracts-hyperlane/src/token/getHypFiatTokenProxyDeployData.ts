@@ -4,14 +4,14 @@ import { TransparentUpgradeableProxy } from "../artifacts/TransparentUpgradeable
 
 export function getHypFiatTokenProxyDeployData({
     salt = zeroHash,
-    owner,
+    account,
     tokenRouterImplAddress,
     proxyAdminAddress,
     hookAddress = zeroAddress,
     ismAddress = zeroAddress,
 }: {
     salt?: Hash;
-    owner: Address;
+    account: Address;
     tokenRouterImplAddress: Address;
     proxyAdminAddress: Address;
     hookAddress?: Address;
@@ -28,7 +28,7 @@ export function getHypFiatTokenProxyDeployData({
                 encodeFunctionData({
                     abi: HypFiatToken.abi,
                     functionName: "initialize",
-                    args: [hookAddress, ismAddress, owner],
+                    args: [hookAddress, ismAddress, account],
                 }),
             ],
         }),
