@@ -4,14 +4,14 @@ import { TransparentUpgradeableProxy } from "../artifacts/TransparentUpgradeable
 
 export function getHypERC4626OwnerCollateralProxyDeployData({
     salt = zeroHash,
-    owner,
+    account,
     tokenRouterImplAddress,
     proxyAdminAddress,
     hookAddress = zeroAddress,
     ismAddress = zeroAddress,
 }: {
     salt?: Hash;
-    owner: Address;
+    account: Address;
     tokenRouterImplAddress: Address;
     proxyAdminAddress: Address;
     hookAddress?: Address;
@@ -28,7 +28,7 @@ export function getHypERC4626OwnerCollateralProxyDeployData({
                 encodeFunctionData({
                     abi: HypERC4626OwnerCollateral.abi,
                     functionName: "initialize",
-                    args: [hookAddress, ismAddress, owner],
+                    args: [hookAddress, ismAddress, account],
                 }),
             ],
         }),

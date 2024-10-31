@@ -76,7 +76,7 @@ describe("warpRoute.test.ts", function () {
             tokenType: TokenTypeExtended.collateral,
             mailboxAddress: mailboxAddressOrigin,
             collateralAddress: zeroAddress,
-            owner: clientsOrigin.walletClient.account.address,
+            account: clientsOrigin.walletClient.account.address,
         });
 
         const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
@@ -102,7 +102,7 @@ describe("warpRoute.test.ts", function () {
         const tokenType = TokenTypeExtended.synthetic;
         const { tokenRouterProxyAddress } = await getOrDeployTokenRouter(clientsRemote.walletClient, {
             tokenType,
-            owner: clientsRemote.walletClient.account.address,
+            account: clientsRemote.walletClient.account.address,
             mailboxAddress: mailboxAddressRemote,
             ...testToken,
         });
@@ -141,7 +141,7 @@ describe("warpRoute.test.ts", function () {
             clientsOrigin.walletClient,
             {
                 tokenType: TokenTypeExtended.collateral,
-                owner: clientsOrigin.walletClient.account.address,
+                account: clientsOrigin.walletClient.account.address,
                 mailboxAddress: mailboxAddressOrigin,
                 collateralAddress: erc20.address,
                 ...testToken,
@@ -153,7 +153,7 @@ describe("warpRoute.test.ts", function () {
             clientsRemote.walletClient,
             {
                 tokenType: TokenTypeExtended.synthetic,
-                owner: clientsRemote.walletClient.account.address,
+                account: clientsRemote.walletClient.account.address,
                 mailboxAddress: mailboxAddressRemote,
                 ...testToken,
                 proxyDeploySalt: randomSalt,
@@ -249,7 +249,7 @@ describe("warpRoute.test.ts", function () {
     test("Deploy HypNative", async () => {
         const { tokenRouterProxyAddress } = await getOrDeployTokenRouter(clientsOrigin.walletClient, {
             tokenType: TokenTypeExtended.native,
-            owner: clientsOrigin.walletClient.account.address,
+            account: clientsOrigin.walletClient.account.address,
             mailboxAddress: mailboxAddressOrigin,
         });
 
@@ -272,6 +272,66 @@ describe("warpRoute.test.ts", function () {
         expect(routerDomains).toContain(fakeChainId);
     });
 
+    test("Deploy HypNative, different owner", async () => {
+        const randomSalt = bytesToHex(randomBytes(32));
+        const testOwner = numberToAddress(1);
+
+        const account = clientsOrigin.walletClient.account.address;
+
+        const { tokenRouterProxyAddress, proxyAdminAddress } = await getOrDeployTokenRouter(
+            clientsOrigin.walletClient,
+            {
+                tokenType: TokenTypeExtended.native,
+                proxyAdminOwner: testOwner,
+                account,
+                mailboxAddress: mailboxAddressOrigin,
+                proxyDeploySalt: randomSalt,
+            },
+        );
+
+        const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
+        const fakeChainId = 150150;
+        console.log({ account, testOwner, proxyAdminAddress });
+
+        const ownerInitial = await clientsOrigin.publicClient.readContract({
+            address: tokenRouterProxyAddress,
+            abi: Router.abi,
+            functionName: "owner",
+        });
+        expect(ownerInitial).toEqual(account);
+
+        console.log({ account, testOwner, proxyAdminAddress, ownerInitial });
+        const enrollHash = await clientsOrigin.walletClient.writeContract({
+            address: tokenRouterProxyAddress,
+            abi: Router.abi,
+            functionName: "enrollRemoteRouter",
+            args: [fakeChainId, fakeRouterAddressPadded],
+        });
+        await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: enrollHash });
+
+        const routerDomains = await clientsOrigin.publicClient.readContract({
+            address: tokenRouterProxyAddress,
+            abi: Router.abi,
+            functionName: "domains",
+        });
+        expect(routerDomains).toContain(fakeChainId);
+
+        const changeAdminHash = await clientsOrigin.walletClient.writeContract({
+            address: tokenRouterProxyAddress,
+            abi: Router.abi,
+            functionName: "transferOwnership",
+            args: [testOwner],
+        });
+        await clientsOrigin.publicClient.waitForTransactionReceipt({ hash: changeAdminHash });
+
+        const ownerUpdated = await clientsOrigin.publicClient.readContract({
+            address: tokenRouterProxyAddress,
+            abi: Router.abi,
+            functionName: "owner",
+        });
+        expect(ownerUpdated).toEqual(testOwner);
+    });
+
     test("Transfer native to remote HypERC20", async () => {
         const randomSalt = bytesToHex(randomBytes(32));
 
@@ -279,7 +339,7 @@ describe("warpRoute.test.ts", function () {
             clientsOrigin.walletClient,
             {
                 tokenType: TokenTypeExtended.native,
-                owner: clientsOrigin.walletClient.account.address,
+                account: clientsOrigin.walletClient.account.address,
                 mailboxAddress: mailboxAddressOrigin,
                 proxyDeploySalt: randomSalt,
             },
@@ -289,7 +349,7 @@ describe("warpRoute.test.ts", function () {
             clientsRemote.walletClient,
             {
                 tokenType: TokenTypeExtended.synthetic,
-                owner: clientsRemote.walletClient.account.address,
+                account: clientsRemote.walletClient.account.address,
                 mailboxAddress: mailboxAddressRemote,
                 ...testToken,
                 proxyDeploySalt: randomSalt,
@@ -376,7 +436,7 @@ describe("warpRoute.test.ts", function () {
             clientsOrigin.walletClient,
             {
                 tokenType: TokenTypeExtended.native,
-                owner: clientsOrigin.walletClient.account.address,
+                account: clientsOrigin.walletClient.account.address,
                 mailboxAddress: mailboxAddressOrigin,
                 ...testToken,
                 proxyDeploySalt: randomSalt,
@@ -387,7 +447,7 @@ describe("warpRoute.test.ts", function () {
             clientsRemote.walletClient,
             {
                 tokenType: TokenTypeExtended.native,
-                owner: clientsRemote.walletClient.account.address,
+                account: clientsRemote.walletClient.account.address,
                 mailboxAddress: mailboxAddressRemote,
                 ...testToken,
                 proxyDeploySalt: randomSalt,
@@ -465,7 +525,7 @@ describe("warpRoute.test.ts", function () {
             tokenType: TokenTypeExtended.fastSynthetic,
             mailboxAddress: mailboxAddressRemote,
             ...testToken,
-            owner: clientsRemote.walletClient.account.address,
+            account: clientsRemote.walletClient.account.address,
         });
 
         const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
@@ -491,7 +551,7 @@ describe("warpRoute.test.ts", function () {
             tokenType: TokenTypeExtended.fastCollateral,
             mailboxAddress: mailboxAddressOrigin,
             collateralAddress: zeroAddress,
-            owner: clientsOrigin.walletClient.account.address,
+            account: clientsOrigin.walletClient.account.address,
         });
 
         const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });
@@ -517,7 +577,7 @@ describe("warpRoute.test.ts", function () {
             tokenType: TokenTypeExtended.collateralFiat,
             mailboxAddress: mailboxAddressOrigin,
             collateralAddress: zeroAddress,
-            owner: clientsOrigin.walletClient.account.address,
+            account: clientsOrigin.walletClient.account.address,
         });
 
         const fakeRouterAddressPadded = padHex(zeroAddress, { size: 32 });

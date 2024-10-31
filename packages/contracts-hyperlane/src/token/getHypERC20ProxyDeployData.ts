@@ -4,7 +4,7 @@ import { TransparentUpgradeableProxy } from "../artifacts/TransparentUpgradeable
 
 export function getHypERC20ProxyDeployData({
     salt = zeroHash,
-    owner,
+    account,
     tokenRouterImplAddress,
     proxyAdminAddress,
     hookAddress = zeroAddress,
@@ -14,7 +14,7 @@ export function getHypERC20ProxyDeployData({
     symbol,
 }: {
     salt?: Hash;
-    owner: Address;
+    account: Address;
     tokenRouterImplAddress: Address;
     proxyAdminAddress: Address;
     hookAddress?: Address;
@@ -34,7 +34,7 @@ export function getHypERC20ProxyDeployData({
                 encodeFunctionData({
                     abi: HypERC20.abi,
                     functionName: "initialize",
-                    args: [totalSupply, name, symbol, hookAddress, ismAddress, owner],
+                    args: [totalSupply, name, symbol, hookAddress, ismAddress, account],
                 }),
             ],
         }),
