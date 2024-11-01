@@ -18,21 +18,15 @@ import * as ERC4337Metadata from "@owlprotocol/contracts-account-abstraction/sol
 import * as DiamondMetadata from "@owlprotocol/contracts-diamond/solc-metadata";
 import * as Create2FactoryMetadata from "@owlprotocol/contracts-create2factory/solc-metadata";
 
-const metadataRegistry: Record<string, Record<string, SlocMetadata>> = {
-    Hyperlane: HyperlaneMetadata,
-    ERC4337: ERC4337Metadata,
-    Diamond: DiamondMetadata,
-    Create2Factory: Create2FactoryMetadata,
+const allMetadata: Record<string, SlocMetadata> = {
+    ...HyperlaneMetadata,
+    ...ERC4337Metadata,
+    ...DiamondMetadata,
+    ...Create2FactoryMetadata,
 };
 
 function getContractMetadata(contractName: string): SlocMetadata | undefined {
-    for (const packageMetadata of Object.values(metadataRegistry)) {
-        if (packageMetadata[contractName]) {
-            return packageMetadata[contractName];
-        }
-    }
-    console.warn(`Metadata not found for contract: ${contractName}`);
-    return undefined;
+    return allMetadata[contractName] ?? undefined;
 }
 
 export async function prepareChainContracts(

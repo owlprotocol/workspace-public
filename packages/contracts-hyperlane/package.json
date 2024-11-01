@@ -99,6 +99,7 @@
   "dependencies": {
     "@hyperlane-xyz/core": "5.2.1",
     "@hyperlane-xyz/registry": "^4.3.6",
+    "@hyperlane-xyz/sdk": "^5.6.2",
     "@openzeppelin/contracts": "^4.9.3",
     "@openzeppelin/contracts-upgradeable": "^4.9.3",
     "@owlprotocol/contracts-create2factory": "workspace:*",
