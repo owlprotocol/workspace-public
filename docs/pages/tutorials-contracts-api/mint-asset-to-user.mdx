@@ -1,7 +1,7 @@
 import { Screenshot } from "components/screenshot";
 import { Callout, Steps } from "nextra/components";
 
-# Mint an Asset to a User
+# Mint An Asset To A User
 
 In this tutorial, you'll learn how to seamlessly mint an asset to a user using Owl Protocol. Along the way, we'll also cover how to deploy collections and add users to your project.
 
@@ -13,7 +13,7 @@ In this tutorial, you'll learn how to seamlessly mint an asset to a user using O
     The tutorials repository contains a basic `index.ts` file to follow along tutorials as well as the final code of all Owl Protocol tutorials under the `/tutorials` folder.
 </Callout>
 
-#### Clone the repo
+#### Clone The Repo
 
 We have created the Owl Protocol [tutorials repository](https://github.com/owlprotocol/tutorials.git) to quickly get started. It comes set up with Typescript, viem, permissionless, and Owl Protocol SDKs.
 
@@ -76,7 +76,7 @@ import { createClient } from "@owlprotocol/core-trpc/client";
 const client = createClient({ apiKey: API_KEY_SECRET });
 ```
 
-### Add users to your project
+### Add Users To Your Project
 
 To mint an asset for a user, first add the user to your project using the `createOrSet` method:
 
@@ -100,7 +100,7 @@ console.debug(
 );
 ```
 
-### Launch a collection
+### Launch A Collection
 
 Deploy a new ERC721 collection using the client, or use one of your existing collections.
 
@@ -119,7 +119,7 @@ const contract = await client.collection.deploy.mutate({
 });
 ```
 
-### Mint digital asset to user
+### Mint Digital Asset To User
 
 Call `collection.erc721AutoId.mint` to mint an asset to the user. Provide the collection address, recipient's email, and optional asset metadata (such as name, description, and image).
 
