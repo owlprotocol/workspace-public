@@ -4,34 +4,44 @@ import warpRoutePage from "../../public/assets/warpRoute/warpRoutePage.png";
 import warpRouteNativeToSyntheticForm from "../../public/assets/warpRoute/warpRouteNativeToSyntheticForm.png";
 import tokenRouteNativeToSyntheticDeployment from "../../public/assets/warpRoute/tokenRouteNativeToSyntheticDeployment.png";
 import superBridge from "../../public/assets/warpRoute/superBridge.png";
+import bridgeStart from "../../public/assets/warpRoute/bridgeStart.png";
+import viewOnExplorer from "../../public/assets/warpRoute/viewOnExplorer.png";
+import hyperlaneExplorerMessage from "../../public/assets/warpRoute/hyperlaneExplorerMessage.png";
+import amoyBridgingTransaction from "../../public/assets/warpRoute/amoyBridgingTransaction.png";
 
 # Deploy A Hyperlane Bridge With Owl Dashboard
 
 Hyperlane Warp Route enable you to have a permissionless, interchain token bridge. By using the Owl Dashboard, you can take advantage of smart wallets to have a gasless deployment.
 
 Hyperlane offers various types of token bridging, namely:
-* Native: the bridge uses the native chain token
-* Synthetic: the bridge creates an ERC20 that represents the bridged token. This token gets minted when receiving tokens from another chain
-* Collateral: the bridge locks an existing ERC20 when sending tokens, and transfers locked ERC20 when receivined tokens from another chain
+
+-   Native: the bridge uses the native chain token
+-   Synthetic: the bridge creates an ERC20 that represents the bridged token. This token gets minted when receiving tokens from another chain
+-   Collateral: the bridge locks an existing ERC20 when sending tokens, and transfers locked ERC20 when receivined tokens from another chain
 
 In this guide, you will deploy a Hyperlane Warp Route to bridge the Sepolia native token to the Polygon Amoy chain. You will create a synthetic token on Polygon Amoy to represent the Sepolia native token. This synthetic token will be minted when bridging from Sepolia, and will be burned when bridging back to Sepolia.
 
 ## Prerequisites
-* Have some native token on the first chain that you will deploy to. In this tutorial, we use Sepolia, but you could use any other supported testnet.
+
+-   Have MetaMask, and some native token on the first chain that you will deploy to. In this tutorial, we use Sepolia and, but you could use any other supported testnet. Note this is only necessary so that you can test bridging a token after deploying it.
+-   Ideally, have some native token on the second chain that you will deploy to to test bridging back your token.
 
 ## Steps
 
 ### Go To The Deploy Warp Route UI
+
 1. Go to the [Owl Dashboard](https://dashboard.owlprotocol.xyz) and create or select a project that will manage your warp route. Note that the dashboard creates a default project for you.
 2. On the project page, select the "Warp Route" tab. You should then see the "Deploy Warp Route" page.
 
 <Screenshot src={warpRoutePage} alt="warpRoutePage" />
 
 ### Select Bridge Chains And Tokens
+
 1. In the "Token 1" box, select "Sepolia" in the chains and "Native" for the token type. Notice that the token metadata on the right gets autocompleted with the Sepolia native token's name, symbol and decimals.
 2. In the "Token 2" box, select "Polygon Amoy" in the chains and "Synthetic" for the token type. Note that the synthetic token will use the token metadata defined to the right of the token lists.
-3. (Optionally) set the token metadata to use a custom name and symbol. We recommend to leave the decimals as is.
-4. (Optionally) set the bridge owner. By default, the owner will your project's smart wallet.
+3. (Optionally) Click on "+ Add Token" to deploy to more chains.
+4. (Optionally) Set the token metadata to use a custom name and symbol. We recommend leaving the decimals as is.
+5. (Optionally) Set the bridge owner. By default, the owner will your project's smart wallet.
 
 <Screenshot src={warpRouteNativeToSyntheticForm} alt="warpRouteNativeToSyntheticForm" />
 
@@ -43,15 +53,42 @@ Click on "Deploy Token Router". You should now see a table under the button. It 
 
 ### Bridge Sepolia Ether
 
-Click on the "View on SuperBridge" button at the bottom of the deployment table. It should take you to a bridge app similar to [this one](https://hyperlane.superbridge.app/?hyperlaneWarpRoutes=1e75b769-74bd-4ac3-9582-ae21b96002f2&fromChainId=11155111&toChainId=80002).
+1. Click on the "View on SuperBridge" button at the bottom of the deployment table. It should take you to a bridge app similar to [this one](https://hyperlane.superbridge.app/?hyperlaneWarpRoutes=1e75b769-74bd-4ac3-9582-ae21b96002f2&fromChainId=11155111&toChainId=80002).
 
 Notice that the "from" chain is already set to the "Token 1" chain, and the "to" chain is already set to the "Token 2" chain.
 
-<Screenshot src={superBridge} alt="superBridge" />
+Note that for this step, you will need some Sepolia Ether. You can for example use the [Chainlink Faucet](https://faucets.chain.link/sepolia).
 
-{/*TODO: bridge token, show hyperlane explorer and amoy result */}
+<Screenshot src={superBridge} alt="superBridge" width="50%"/>
 
+2. Enter any amount, such as 0.0001 ETH, then click on "Connect wallet", and "Review bridge", and "Continue" twice.
+
+<Screenshot src={bridgeStart} alt="bridgeStart" width="50%"/>
+
+3. Click on "Start", then approve the transaction in your wallet.
+
+After a few seconds, you should be able to see a "View on explorer" link under the "from" chain. It should look like [this](https://sepolia.etherscan.io/tx/0x5d13728b530c3b8d0616272f041149ce4d7917f30d464637eecbed50a154faed).
+
+<Screenshot src={viewOnExplorer} alt="viewOnExplorer"/>
+
+### View Bridging Message
+
+From the block explorer, grab the transaction hash. Then, head to [Hyperlane Explorer](https://explorer.hyperlane.xyz/), and type in the transaction hash. Clicking on the first result should take you to a page like [this](https://explorer.hyperlane.xyz/message/0x089fdcbf1cfd1cd28dae48efb34ebcdf6a819179d0086d7dd8fe95e9a9898157):
+
+<Screenshot src={hyperlaneExplorerMessage} alt="hyperlaneExplorerMessage"/>
+
+Notice that the status says: "Delivered", and that the timeline shows that the message has been relayed. The bridging succeeded!
+
+You can also click on "View in block explorer" on the right-hand side to the transaction on Polygon Amoy. It should look like [this](https://amoy.polygonscan.com/tx/0x933cf6d718e381bc9ca7114790780a5d9308c2da98bdd1167f46fb552b9611c7):
+
+<Screenshot src={amoyBridgingTransaction} alt="amoyBridgingTransaction" />
+
+Notice that synthetic tokens were minted to your wallet address.
 
 ## Further Steps
 
-{/* TODO: multi-chain explanation */}
+-   Try to bridge back your synthetic token by switching the "from" and "to" chains in the bridge UI.
+    -   Note that you will need to have native token on the second chain to run this transaction.
+-   You can try to deploy to as many chains as desired by clicking on "+ Add Token".
+    -   Note that each time your click on "Deploy Token Router", new bridging contracts will be deployed. Make sure to decide the chains you want to support before deploying your warp routes.
+-   Deploy a warp route for an ERC20. To do so, select "Collateral" for your first chain, and specify the ERC20 address.
