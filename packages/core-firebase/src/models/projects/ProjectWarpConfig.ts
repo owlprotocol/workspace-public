@@ -32,7 +32,7 @@ export interface ProjectWarpConfigData {
     readonly warpConfigId: string;
     readonly bridgeUrl?: string;
     readonly tokens: WarpTokenConfig[];
-    readonly proxyDeploySalt: Hex;
+    readonly proxyDeploySalt?: Hex;
 }
 
 const tokenConnectionZod = z.object({ token: z.string() });
@@ -53,7 +53,7 @@ export const projectWarpConfigDataZod = z
                 connections: z.array(tokenConnectionZod),
             }),
         ),
-        proxyDeploySalt: bytesZod,
+        proxyDeploySalt: bytesZod.optional(),
     })
     .describe("project warp config");
 export const encodeProjectWarpConfigData: (data: ProjectWarpConfigData) => ProjectWarpConfigData =
