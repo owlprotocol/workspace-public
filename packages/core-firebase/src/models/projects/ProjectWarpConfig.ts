@@ -2,6 +2,8 @@ import { TypeOf, expectType } from "ts-expect";
 import { z } from "zod";
 import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
 import { ProjectId } from "./Project.js";
+import { Hex } from "viem";
+import { bytesZod } from "@owlprotocol/zod-sol";
 
 export interface ProjectWarpConfigId {
     readonly warpConfigId: string;
@@ -30,6 +32,7 @@ export interface ProjectWarpConfigData {
     readonly warpConfigId: string;
     readonly bridgeUrl?: string;
     readonly tokens: WarpTokenConfig[];
+    readonly proxyDeploySalt?: Hex;
 }
 
 const tokenConnectionZod = z.object({ token: z.string() });
@@ -50,6 +53,7 @@ export const projectWarpConfigDataZod = z
                 connections: z.array(tokenConnectionZod),
             }),
         ),
+        proxyDeploySalt: bytesZod.optional(),
     })
     .describe("project warp config");
 export const encodeProjectWarpConfigData: (data: ProjectWarpConfigData) => ProjectWarpConfigData =
