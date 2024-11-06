@@ -11,15 +11,17 @@ import amoyBridgingTransaction from "../../public/assets/warpRoute/amoyBridgingT
 
 # Deploy A Hyperlane Bridge With Owl Dashboard
 
-Hyperlane Warp Route enable you to have a permissionless, interchain token bridge. By using the Owl Dashboard, you can take advantage of smart wallets to have a gasless deployment.
+Hyperlane Warp Routes enable you to have a permissionless, interchain token bridge. By using the Owl Dashboard, you can take advantage of smart wallets to have a gasless deployment.
 
-Hyperlane offers various types of token bridging, namely:
+Hyperlane enables you to create various types of token bridges with Warp Routes, namely:
 
--   Native: the bridge uses the native chain token
--   Synthetic: the bridge creates an ERC20 that represents the bridged token. This token gets minted when receiving tokens from another chain
--   Collateral: the bridge locks an existing ERC20 when sending tokens, and transfers locked ERC20 when receivined tokens from another chain
+-   Native to Native: transfer native tokens between chains that both use their own native tokens.
+-   Native to Synthetic: create a synthetic representation of a native token on another chain.
+-   Collateral to Synthetic: create synthetic tokens based on collateralized ERC20 tokens on another chain.
 
-In this guide, you will deploy a Hyperlane Warp Route to bridge the Sepolia native token to the Polygon Amoy chain. You will create a synthetic token on Polygon Amoy to represent the Sepolia native token. This synthetic token will be minted when bridging from Sepolia, and will be burned when bridging back to Sepolia.
+For more details on these bridge types, see [Warp Routes: Example Usage](https://docs.hyperlane.xyz/docs/protocol/warp-routes/warp-routes-example-usage).
+
+In this guide, you will deploy a Hyperlane Warp Route to bridge the Sepolia native token to a synthetic token on the Polygon Amoy chain. This synthetic token will be minted when bridging from Sepolia, and will be burned when bridging back to Sepolia.
 
 ## Prerequisites
 
