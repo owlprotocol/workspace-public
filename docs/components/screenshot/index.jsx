@@ -15,9 +15,9 @@ export function Screenshot({ src, alt, full, width }) {
                 className={cn(
                     "select-none bg-white",
                     width ? "" : "w-auto",
-                    full ? "" : "ring-1 ring-gray-200"
+                    full ? "" : "ring-1 ring-gray-200 dark:ring-gray-800"
                 )}
-                width={width}
+                style={{width}}
             />
         </div>
     );
