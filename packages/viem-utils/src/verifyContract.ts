@@ -1,4 +1,4 @@
-import { Address, Hex } from "viem";
+import { Address } from "viem";
 import { SlocMetadata, StandardJSONInput, VerifyEtherscanParameters } from "./types/buildinfo.js";
 
 export async function verifyContract({
@@ -11,7 +11,8 @@ export async function verifyContract({
     apiUrl: string;
     apiKey: string;
     contractAddress: Address;
-    constructorArguments?: Hex;
+    /** A hex-encoded string without the '0x' prefix */
+    constructorArguments?: string;
     metadata: SlocMetadata;
 }) {
     const contractName = Object.entries(metadata.settings.compilationTarget)[0].join(":");

@@ -1,4 +1,4 @@
-import { Address, Hex } from "viem";
+import { Address } from "viem";
 
 export interface BuildInfo {
     _format: string;
@@ -96,7 +96,8 @@ export interface VerifyEtherscanParameters {
     contractAddress: Address;
     compilerVersion: string;
     sourceCode: string;
-    constructorArguments?: Hex;
+    /** A hex-encoded string without the '0x' prefix */
+    constructorArguments?: string;
     evmVersion?: string;
 }
 export interface SlocMetadata {
