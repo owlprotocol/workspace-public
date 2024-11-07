@@ -54,7 +54,7 @@ interface CompilerOutputContract {
             [methodSignature: string]: string;
         };
     };
-    metadata: SlocMetadata;
+    metadata: SolcMetadata;
 }
 
 interface CompilerOutput {
@@ -100,7 +100,7 @@ export interface VerifyEtherscanParameters {
     constructorArguments?: string;
     evmVersion?: string;
 }
-export interface SlocMetadata {
+export interface SolcMetadata {
     compiler: {
         version: string;
     };

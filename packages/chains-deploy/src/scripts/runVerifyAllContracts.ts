@@ -1,7 +1,7 @@
 import { verifyContract } from "@owlprotocol/viem-utils";
 import { Address, encodeAbiParameters } from "viem";
 import { sepolia } from "@owlprotocol/chains";
-import { SlocMetadata } from "@owlprotocol/viem-utils";
+import { SolcMetadata } from "@owlprotocol/viem-utils";
 import { getMailboxAddressFromChainId } from "@owlprotocol/contracts-hyperlane";
 import * as HyperlaneMetadata from "@owlprotocol/contracts-hyperlane/solc-metadata";
 import * as ERC4337Metadata from "@owlprotocol/contracts-account-abstraction/solc-metadata";
@@ -10,7 +10,7 @@ import * as Create2FactoryMetadata from "@owlprotocol/contracts-create2factory/s
 import { NETWORK_11155111_EXPLORER_API_KEY } from "@owlprotocol/envvars";
 import { getAllContractAddresses } from "../getAllContractAddresses.js";
 
-const allMetadata: Record<string, SlocMetadata> = {
+const allMetadata: Record<string, SolcMetadata> = {
     ...HyperlaneMetadata,
     ...ERC4337Metadata,
     ...DiamondMetadata,

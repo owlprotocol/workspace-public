@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { SlocMetadata, StandardJSONInput, VerifyEtherscanParameters } from "./types/buildinfo.js";
+import { SolcMetadata, StandardJSONInput, VerifyEtherscanParameters } from "./types/buildinfo.js";
 
 export async function verifyContract({
     apiUrl,
@@ -13,7 +13,7 @@ export async function verifyContract({
     contractAddress: Address;
     /** A hex-encoded string without the '0x' prefix */
     constructorArguments?: string;
-    metadata: SlocMetadata;
+    metadata: SolcMetadata;
 }) {
     const contractName = Object.entries(metadata.settings.compilationTarget)[0].join(":");
 
@@ -71,10 +71,12 @@ export async function verifyContract({
     const { result: guid } = (await response.json()) as { result: string };
     if (!guid || guid === "Contract source code already verified") {
         console.debug("Contract source code already verified or invalid GUID.");
-        return;
+        return guid;
     }
 
     await waitForEtherscanVerifyStatus({ apiUrl, apiKey, guid });
+
+    return guid;
 }
 
 export async function etherscanVerifySourceCode({

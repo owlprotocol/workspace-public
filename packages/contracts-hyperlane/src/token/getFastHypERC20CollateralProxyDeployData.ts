@@ -25,13 +25,25 @@ export function getFastHypERC20CollateralProxyDeployData({
             args: [
                 tokenRouterImplAddress,
                 proxyAdminAddress,
-                encodeFunctionData({
-                    abi: FastHypERC20Collateral.abi,
-                    functionName: "initialize",
-                    args: [hookAddress, ismAddress, account],
-                }),
+                getFastHypERC20CollateralProxyInitData({ account, hookAddress, ismAddress }),
             ],
         }),
         initData: "0x" as const,
     };
+}
+
+export function getFastHypERC20CollateralProxyInitData({
+    account,
+    hookAddress = zeroAddress,
+    ismAddress = zeroAddress,
+}: {
+    account: Address;
+    hookAddress?: Address;
+    ismAddress?: Address;
+}) {
+    return encodeFunctionData({
+        abi: FastHypERC20Collateral.abi,
+        functionName: "initialize",
+        args: [hookAddress, ismAddress, account],
+    });
 }

@@ -4,7 +4,7 @@ import { ESLint } from "eslint";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
 import { createHash } from "crypto";
-import { BuildInfo, SlocMetadata } from "../types/buildinfo.js";
+import { BuildInfo, SolcMetadata } from "../types/buildinfo.js";
 
 export const BUILD_INFO_DIR = "artifacts/build-info";
 export const OUTPUT_DIR = "src/solc-metadata";
@@ -24,13 +24,13 @@ function getVerificationMetadata(buildInfo: BuildInfo, sourcePath: string, contr
         return null;
     }
 
-    const metadata: SlocMetadata =
+    const metadata: SolcMetadata =
         typeof contract.metadata === "string" ? JSON.parse(contract.metadata) : contract.metadata;
 
     return `
-import { SlocMetadata } from "@owlprotocol/viem-utils";
+import { SolcMetadata } from "@owlprotocol/viem-utils";
 
-export const ${contractName}: SlocMetadata = {
+export const ${contractName}: SolcMetadata = {
     compiler: {
         version: "${metadata.compiler.version}"
     },

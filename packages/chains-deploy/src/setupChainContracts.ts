@@ -12,20 +12,20 @@ import { prepareERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/c
 import { prepareDiamondFacets, prepareERC721Facets, prepareCoreContractFacets } from "@owlprotocol/contracts-diamond";
 import { prepareHyperlaneContracts } from "@owlprotocol/contracts-hyperlane";
 import { getOrPrepareCreate2Factory } from "@owlprotocol/contracts-create2factory";
-import { SlocMetadata } from "@owlprotocol/viem-utils";
+import { SolcMetadata } from "@owlprotocol/viem-utils";
 import * as HyperlaneMetadata from "@owlprotocol/contracts-hyperlane/solc-metadata";
 import * as ERC4337Metadata from "@owlprotocol/contracts-account-abstraction/solc-metadata";
 import * as DiamondMetadata from "@owlprotocol/contracts-diamond/solc-metadata";
 import * as Create2FactoryMetadata from "@owlprotocol/contracts-create2factory/solc-metadata";
 
-const allMetadata: Record<string, SlocMetadata> = {
+const allMetadata: Record<string, SolcMetadata> = {
     ...HyperlaneMetadata,
     ...ERC4337Metadata,
     ...DiamondMetadata,
     ...Create2FactoryMetadata,
 };
 
-function getContractMetadata(contractName: string): SlocMetadata | undefined {
+function getContractMetadata(contractName: string): SolcMetadata | undefined {
     return allMetadata[contractName] ?? undefined;
 }
 

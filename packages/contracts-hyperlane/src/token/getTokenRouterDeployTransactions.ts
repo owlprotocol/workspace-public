@@ -3,14 +3,26 @@ import { getDeployAddress, getDeployFunctionData } from "@owlprotocol/contracts-
 import { getAction } from "viem/utils";
 import { getDeployDeterministicAddress, getDeployDeterministicFunctionData } from "@owlprotocol/viem-utils";
 import { getCode } from "viem/actions";
-import { getHypERC20CollateralProxyDeployData } from "./getHypERC20CollateralProxyDeployData.js";
-import { getHypERC20ProxyDeployData } from "./getHypERC20ProxyDeployData.js";
-import { getFastHypERC20ProxyDeployData } from "./getFastHypERC20ProxyDeployData.js";
-import { getFastHypERC20CollateralProxyDeployData } from "./getFastHypERC20CollateralProxyDeployData.js";
-import { getHypFiatTokenProxyDeployData } from "./getHypFiatTokenProxyDeployData.js";
-import { getHypNativeProxyDeployData } from "./getHypNativeProxyDeployData.js";
-import { getHypERC4626OwnerCollateralProxyDeployData } from "./getHypERC4626OwnerCollateralProxyDeployData.js";
-import { getHypERC4626CollateralProxyDeployData } from "./getHypERC4626CollateralProxyDeployData.js";
+import {
+    getHypERC20CollateralProxyDeployData,
+    getHypERC20CollateralProxyInitData,
+} from "./getHypERC20CollateralProxyDeployData.js";
+import { getHypERC20ProxyDeployData, getHypERC20ProxyInitData } from "./getHypERC20ProxyDeployData.js";
+import { getFastHypERC20ProxyDeployData, getFastHypERC20ProxyInitData } from "./getFastHypERC20ProxyDeployData.js";
+import {
+    getFastHypERC20CollateralProxyDeployData,
+    getFastHypERC20CollateralProxyInitData,
+} from "./getFastHypERC20CollateralProxyDeployData.js";
+import { getHypFiatTokenProxyDeployData, getHypFiatTokenProxyInitData } from "./getHypFiatTokenProxyDeployData.js";
+import { getHypNativeProxyDeployData, getHypNativeProxyInitData } from "./getHypNativeProxyDeployData.js";
+import {
+    getHypERC4626OwnerCollateralProxyDeployData,
+    getHypERC4626OwnerCollateralProxyInitData,
+} from "./getHypERC4626OwnerCollateralProxyDeployData.js";
+import {
+    getHypERC4626CollateralProxyDeployData,
+    getHypERC4626CollateralProxyInitData,
+} from "./getHypERC4626CollateralProxyDeployData.js";
 import { ProxyAdmin } from "../artifacts/ProxyAdmin.js";
 import { Ownable } from "../artifacts/Ownable.js";
 import { TokenTypeExtended } from "../types/TokenTypeExtended.js";
@@ -63,6 +75,8 @@ export async function getTokenRouterDeployTransactions(
 
     let tokenRouterProxyDeployData: { salt: Hash; bytecode: Hex; initData: "0x" };
 
+    let proxyInitData: Hex;
+
     const proxyAdminDeployArgs = {
         salt: zeroHash,
         bytecode: ProxyAdmin.bytecode,
@@ -94,6 +108,8 @@ export async function getTokenRouterDeployTransactions(
                 tokenRouterImplAddress,
                 proxyAdminAddress,
             });
+
+            proxyInitData = getHypNativeProxyInitData({ account });
             break;
         case TokenTypeExtended.synthetic:
             if (!name || !symbol) {
@@ -119,6 +135,8 @@ export async function getTokenRouterDeployTransactions(
                 name,
                 symbol,
             });
+
+            proxyInitData = getHypERC20ProxyInitData({ account, name, symbol, totalSupply });
             break;
         case TokenTypeExtended.fastSynthetic:
             if (!name || !symbol) {
@@ -144,6 +162,8 @@ export async function getTokenRouterDeployTransactions(
                 name,
                 symbol,
             });
+
+            proxyInitData = getFastHypERC20ProxyInitData({ account, name, symbol, totalSupply });
             break;
         case TokenTypeExtended.collateral:
             if (!collateralAddress) {
@@ -165,6 +185,8 @@ export async function getTokenRouterDeployTransactions(
                 tokenRouterImplAddress,
                 proxyAdminAddress,
             });
+
+            proxyInitData = getHypERC20CollateralProxyInitData({ account });
             break;
         case TokenTypeExtended.fastCollateral:
             if (!collateralAddress) {
@@ -186,6 +208,8 @@ export async function getTokenRouterDeployTransactions(
                 tokenRouterImplAddress,
                 proxyAdminAddress,
             });
+
+            proxyInitData = getFastHypERC20CollateralProxyInitData({ account });
             break;
         case TokenTypeExtended.collateralFiat:
             if (!collateralAddress) {
@@ -207,6 +231,8 @@ export async function getTokenRouterDeployTransactions(
                 tokenRouterImplAddress,
                 proxyAdminAddress,
             });
+
+            proxyInitData = getHypFiatTokenProxyInitData({ account });
             break;
         case TokenTypeExtended.collateralVault:
             if (!collateralAddress) {
@@ -228,6 +254,8 @@ export async function getTokenRouterDeployTransactions(
                 tokenRouterImplAddress,
                 proxyAdminAddress,
             });
+
+            proxyInitData = getHypERC4626OwnerCollateralProxyInitData({ account });
             break;
         case TokenTypeExtended.collateralVaultRebase:
             if (!collateralAddress) {
@@ -249,6 +277,8 @@ export async function getTokenRouterDeployTransactions(
                 tokenRouterImplAddress,
                 proxyAdminAddress,
             });
+
+            proxyInitData = getHypERC4626CollateralProxyInitData({ account });
             break;
         default:
             throw new Error("Token type unsupported");
@@ -270,5 +300,6 @@ export async function getTokenRouterDeployTransactions(
         tokenRouterImplAddress,
         tokenRouterProxyAddress,
         transactions,
+        proxyInitData,
     };
 }

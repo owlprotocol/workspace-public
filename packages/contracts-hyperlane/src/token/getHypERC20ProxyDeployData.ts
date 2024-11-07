@@ -31,13 +31,31 @@ export function getHypERC20ProxyDeployData({
             args: [
                 tokenRouterImplAddress,
                 proxyAdminAddress,
-                encodeFunctionData({
-                    abi: HypERC20.abi,
-                    functionName: "initialize",
-                    args: [totalSupply, name, symbol, hookAddress, ismAddress, account],
-                }),
+                getHypERC20ProxyInitData({ account, hookAddress, ismAddress, totalSupply, name, symbol }),
             ],
         }),
         initData: "0x" as const,
     };
+}
+
+export function getHypERC20ProxyInitData({
+    account,
+    hookAddress = zeroAddress,
+    ismAddress = zeroAddress,
+    totalSupply = 0n,
+    name,
+    symbol,
+}: {
+    account: Address;
+    hookAddress?: Address;
+    ismAddress?: Address;
+    totalSupply?: bigint;
+    name: string;
+    symbol: string;
+}) {
+    return encodeFunctionData({
+        abi: HypERC20.abi,
+        functionName: "initialize",
+        args: [totalSupply, name, symbol, hookAddress, ismAddress, account],
+    });
 }
