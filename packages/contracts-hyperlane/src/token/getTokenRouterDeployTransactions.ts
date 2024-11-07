@@ -76,6 +76,7 @@ export async function getTokenRouterDeployTransactions(
     let tokenRouterProxyDeployData: { salt: Hash; bytecode: Hex; initData: "0x" };
 
     let proxyInitData: Hex;
+    let tokenRouterImplConstructorArgs: any[];
 
     const proxyAdminDeployArgs = {
         salt: zeroHash,
@@ -109,6 +110,7 @@ export async function getTokenRouterDeployTransactions(
                 proxyAdminAddress,
             });
 
+            tokenRouterImplConstructorArgs = [mailboxAddress];
             proxyInitData = getHypNativeProxyInitData({ account });
             break;
         case TokenTypeExtended.synthetic:
@@ -136,6 +138,7 @@ export async function getTokenRouterDeployTransactions(
                 symbol,
             });
 
+            tokenRouterImplConstructorArgs = [decimals, mailboxAddress];
             proxyInitData = getHypERC20ProxyInitData({ account, name, symbol, totalSupply });
             break;
         case TokenTypeExtended.fastSynthetic:
@@ -163,6 +166,7 @@ export async function getTokenRouterDeployTransactions(
                 symbol,
             });
 
+            tokenRouterImplConstructorArgs = [decimals, mailboxAddress];
             proxyInitData = getFastHypERC20ProxyInitData({ account, name, symbol, totalSupply });
             break;
         case TokenTypeExtended.collateral:
@@ -186,6 +190,7 @@ export async function getTokenRouterDeployTransactions(
                 proxyAdminAddress,
             });
 
+            tokenRouterImplConstructorArgs = [collateralAddress, mailboxAddress];
             proxyInitData = getHypERC20CollateralProxyInitData({ account });
             break;
         case TokenTypeExtended.fastCollateral:
@@ -209,6 +214,7 @@ export async function getTokenRouterDeployTransactions(
                 proxyAdminAddress,
             });
 
+            tokenRouterImplConstructorArgs = [collateralAddress, mailboxAddress];
             proxyInitData = getFastHypERC20CollateralProxyInitData({ account });
             break;
         case TokenTypeExtended.collateralFiat:
@@ -232,6 +238,7 @@ export async function getTokenRouterDeployTransactions(
                 proxyAdminAddress,
             });
 
+            tokenRouterImplConstructorArgs = [collateralAddress, mailboxAddress];
             proxyInitData = getHypFiatTokenProxyInitData({ account });
             break;
         case TokenTypeExtended.collateralVault:
@@ -255,6 +262,7 @@ export async function getTokenRouterDeployTransactions(
                 proxyAdminAddress,
             });
 
+            tokenRouterImplConstructorArgs = [collateralAddress, mailboxAddress];
             proxyInitData = getHypERC4626OwnerCollateralProxyInitData({ account });
             break;
         case TokenTypeExtended.collateralVaultRebase:
@@ -278,6 +286,7 @@ export async function getTokenRouterDeployTransactions(
                 proxyAdminAddress,
             });
 
+            tokenRouterImplConstructorArgs = [collateralAddress, mailboxAddress];
             proxyInitData = getHypERC4626CollateralProxyInitData({ account });
             break;
         default:
@@ -301,5 +310,6 @@ export async function getTokenRouterDeployTransactions(
         tokenRouterProxyAddress,
         transactions,
         proxyInitData,
+        tokenRouterImplConstructorArgs,
     };
 }
