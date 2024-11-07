@@ -1,11 +1,7 @@
 import { type Client, type Address, zeroHash, encodeFunctionData, Hash, Hex, encodeDeployData } from "viem";
-import {
-    getDeployAddress,
-    getDeployDeterministicAddress,
-    getDeployDeterministicFunctionData,
-    getDeployFunctionData,
-} from "@owlprotocol/contracts-create2factory";
+import { getDeployAddress, getDeployFunctionData } from "@owlprotocol/contracts-create2factory";
 import { getAction } from "viem/utils";
+import { getDeployDeterministicAddress, getDeployDeterministicFunctionData } from "@owlprotocol/viem-utils";
 import { getCode } from "viem/actions";
 import { getHypERC20CollateralProxyDeployData } from "./getHypERC20CollateralProxyDeployData.js";
 import { getHypERC20ProxyDeployData } from "./getHypERC20ProxyDeployData.js";
