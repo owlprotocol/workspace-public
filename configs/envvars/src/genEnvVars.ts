@@ -140,16 +140,20 @@ const EXPLORER_API_DEFAULTS: Record<string, string | undefined> = {
     1: "https://api.etherscan.io/api",
     5: "https://api-goerli.etherscan.io/api",
     11155111: "https://api-sepolia.etherscan.io/api",
+    17000: "https://api-holesky.etherscan.io/api",
     //Linea
     59144: "https://api.lineascan.build/api",
     59140: "https://api-goerli.lineascan.build/api",
     //Polygon
     137: "https://api.polygonscan.com/api",
     80001: "https://api-testnet.polygonscan.com/api",
+    80002: "https://api-amoy.polygonscan.com/api",
     //Arbitrum
     42161: "https://api.arbiscan.io/api",
+    421614: "https://api-sepolia.arbiscan.io/api",
     //Optimism
     10: "https://api-optimistic.etherscan.io/api",
+    11155420: "https://api-sepolia-optimistic.etherscan.io/api",
     //Avalanche
     43114: "https://api.snowtrace.io/api",
     //BSC
@@ -163,6 +167,11 @@ const EXPLORER_API_DEFAULTS: Record<string, string | undefined> = {
     //"https://api-moonbeam.moonscan.io"
     //Blast
     168587773: "https://api.routescan.io/v2/network/testnet/evm/168587773/etherscan",
+    //Base
+    8453: "https://api.basescan.org/api",
+    85432: "https://api-sepolia.basescan.org/api",
+    // Manta
+    3441006: "https://pacific-explorer.manta.network/api",
 };
 
 /** API Keys are per-domain */
@@ -172,6 +181,7 @@ const EXPLORER_API_KEY_DEFAULTS: Record<string, string | undefined> = {
     1: "BG78ZBIAH64QWA748MMNVVZEHW13JR4Z6I",
     5: "BG78ZBIAH64QWA748MMNVVZEHW13JR4Z6I",
     11155111: "BG78ZBIAH64QWA748MMNVVZEHW13JR4Z6I",
+    17000: "BG78ZBIAH64QWA748MMNVVZEHW13JR4Z6I",
     //Linea
     //59144: "",
     //59140: "",
@@ -180,7 +190,9 @@ const EXPLORER_API_KEY_DEFAULTS: Record<string, string | undefined> = {
     80001: "R6G9K1EKZGBYYG528576GS5A6J4YF1WS6I",
     //Arbitrum
     //42161: "",
+    421614: "",
     //Optimism
+    11155420: "BG78ZBIAH64QWA748MMNVVZEHW13JR4Z6I",
     //10: "",
     //Avalanche
     //43114: "",
@@ -189,6 +201,8 @@ const EXPLORER_API_KEY_DEFAULTS: Record<string, string | undefined> = {
     97: "9TRND69HZABV4HU73SPTECP72S94Q8K5B7",
     //Blast
     168587773: "routescan",
+    // Manta (no API key needed)
+    3441006: "",
 };
 
 /**

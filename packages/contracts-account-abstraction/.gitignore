@@ -60,6 +60,7 @@ cache
 factory
 /src/typechain
 /src/artifacts
+/src/solc-metadata
 /src/zsol
 /artifacts
 /docs-contracts-reference/*

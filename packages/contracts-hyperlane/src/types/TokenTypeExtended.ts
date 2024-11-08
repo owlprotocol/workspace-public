@@ -33,3 +33,23 @@ export const TOKEN_TYPE_EXTENDED_TO_STANDARD: Record<TokenTypeExtended, TokenSta
     [TokenTypeExtended.fastSynthetic]: TokenStandardExtended.EvmHypSynthetic,
     [TokenTypeExtended.nativeScaled]: TokenStandardExtended.EvmHypNative,
 };
+
+export const TOKEN_TYPE_TO_CONTRACT_NAME: Record<TokenTypeExtended, string> = {
+    [TokenTypeExtended.native]: "HypNative",
+    [TokenTypeExtended.collateral]: "HypERC20Collateral",
+    [TokenTypeExtended.collateralFiat]: "HypFiatToken",
+    [TokenTypeExtended.XERC20]: "HypXERC20",
+    [TokenTypeExtended.XERC20Lockbox]: "HypXERC20Lockbox",
+    [TokenTypeExtended.collateralVault]: "HypERC4626OwnerCollateral",
+    [TokenTypeExtended.collateralVaultRebase]: "HypERC4626Collateral",
+    // TODO find correct name
+    [TokenTypeExtended.collateralUri]: "",
+    [TokenTypeExtended.fastCollateral]: "FastHypERC20Collateral",
+    [TokenTypeExtended.synthetic]: "HypERC20",
+    // TODO find correct name
+    [TokenTypeExtended.syntheticRebase]: "",
+    // TODO find correct name
+    [TokenTypeExtended.syntheticUri]: "",
+    [TokenTypeExtended.fastSynthetic]: "FastHypERC20",
+    [TokenTypeExtended.nativeScaled]: "HypNativeScaled",
+};

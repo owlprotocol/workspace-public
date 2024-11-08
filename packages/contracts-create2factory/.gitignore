@@ -61,6 +61,7 @@ factory
 /src/typechain
 /src/artifacts
 /src/zsol
+/src/solc-metadata
 /artifacts
 /docs-contracts-reference/*
 !/docs-contracts-reference/index.md

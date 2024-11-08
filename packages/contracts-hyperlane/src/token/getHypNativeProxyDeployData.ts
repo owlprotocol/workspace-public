@@ -25,13 +25,25 @@ export function getHypNativeProxyDeployData({
             args: [
                 tokenRouterImplAddress,
                 proxyAdminAddress,
-                encodeFunctionData({
-                    abi: HypNative.abi,
-                    functionName: "initialize",
-                    args: [hookAddress, ismAddress, account],
-                }),
+                getHypNativeProxyInitData({ hookAddress, ismAddress, account }),
             ],
         }),
         initData: "0x" as const,
     };
+}
+
+export function getHypNativeProxyInitData({
+    account,
+    hookAddress = zeroAddress,
+    ismAddress = zeroAddress,
+}: {
+    account: Address;
+    hookAddress?: Address;
+    ismAddress?: Address;
+}) {
+    return encodeFunctionData({
+        abi: HypNative.abi,
+        functionName: "initialize",
+        args: [hookAddress, ismAddress, account],
+    });
 }

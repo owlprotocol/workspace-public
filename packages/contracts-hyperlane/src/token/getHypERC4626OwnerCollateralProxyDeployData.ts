@@ -25,13 +25,25 @@ export function getHypERC4626OwnerCollateralProxyDeployData({
             args: [
                 tokenRouterImplAddress,
                 proxyAdminAddress,
-                encodeFunctionData({
-                    abi: HypERC4626OwnerCollateral.abi,
-                    functionName: "initialize",
-                    args: [hookAddress, ismAddress, account],
-                }),
+                getHypERC4626OwnerCollateralProxyInitData({ hookAddress, ismAddress, account }),
             ],
         }),
         initData: "0x" as const,
     };
+}
+
+export function getHypERC4626OwnerCollateralProxyInitData({
+    account,
+    hookAddress = zeroAddress,
+    ismAddress = zeroAddress,
+}: {
+    account: Address;
+    hookAddress?: Address;
+    ismAddress?: Address;
+}) {
+    return encodeFunctionData({
+        abi: HypERC4626OwnerCollateral.abi,
+        functionName: "initialize",
+        args: [hookAddress, ismAddress, account],
+    });
 }

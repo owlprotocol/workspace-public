@@ -2,12 +2,32 @@ import { Account, Address, Chain, Client, formatEther, TransactionRequest, Trans
 import { getAction } from "viem/utils";
 import { getBalance, sendTransaction, waitForTransactionReceipt } from "viem/actions";
 
-import { getOrDeployDeterministicDeployer, GetOrPrepareDeterministicContractReturnType } from "@owlprotocol/viem-utils";
+import {
+    getOrDeployDeterministicDeployer,
+    GetOrPrepareDeterministicContractReturnType,
+    verifyContract,
+} from "@owlprotocol/viem-utils";
 
 import { prepareERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
 import { prepareDiamondFacets, prepareERC721Facets, prepareCoreContractFacets } from "@owlprotocol/contracts-diamond";
 import { prepareHyperlaneContracts } from "@owlprotocol/contracts-hyperlane";
 import { getOrPrepareCreate2Factory } from "@owlprotocol/contracts-create2factory";
+import { SolcMetadata } from "@owlprotocol/viem-utils";
+import * as HyperlaneMetadata from "@owlprotocol/contracts-hyperlane/solc-metadata";
+import * as ERC4337Metadata from "@owlprotocol/contracts-account-abstraction/solc-metadata";
+import * as DiamondMetadata from "@owlprotocol/contracts-diamond/solc-metadata";
+import * as Create2FactoryMetadata from "@owlprotocol/contracts-create2factory/solc-metadata";
+
+const allMetadata: Record<string, SolcMetadata> = {
+    ...HyperlaneMetadata,
+    ...ERC4337Metadata,
+    ...DiamondMetadata,
+    ...Create2FactoryMetadata,
+};
+
+function getContractMetadata(contractName: string): SolcMetadata | undefined {
+    return allMetadata[contractName] ?? undefined;
+}
 
 export async function prepareChainContracts(
     client: Client<Transport, Chain, Account>,
@@ -83,6 +103,8 @@ export interface SetupChainContractParameters {
 export async function setupChainContracts(
     client: Client<Transport, Chain, Account>,
     parameters: SetupChainContractParameters,
+    apiUrl?: string,
+    apiKey?: string,
 ) {
     if (!client.account.nonceManager) {
         throw new Error("client.account.nonceManager undefined");
@@ -122,6 +144,28 @@ export async function setupChainContracts(
     const receipts = await Promise.all(
         transactions.map((hash) => getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash })),
     );
+
+    if (apiUrl && apiKey) {
+        for (const receipt of receipts) {
+            if (receipt.contractAddress) {
+                const contractMetadata = getContractMetadata(receipt.contractAddress);
+                if (contractMetadata) {
+                    await verifyContract({
+                        apiUrl,
+                        apiKey,
+                        contractAddress: receipt.contractAddress as Address,
+                        metadata: contractMetadata,
+                    });
+                } else {
+                    console.warn(
+                        `Skipping verification for contract at ${receipt.contractAddress} due to missing metadata.`,
+                    );
+                }
+            }
+        }
+    } else {
+        console.log("API URL or API Key not provided, skipping contract verification.");
+    }
 
     //2. Deploy ERC4337 Paymaster (constructor requires EntryPoint deployment so need to wait for receipt)
     const verifyingPaymaster = await setupVerifyingPaymaster(client, { verifyingSignerAddress });

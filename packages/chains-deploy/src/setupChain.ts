@@ -43,7 +43,12 @@ export type SetupChainParams = Prettify<
  * Topup chain utility account
  * @param params
  */
-export async function setupChain(client: Client<Transport, Chain, Account>, params: SetupChainParams) {
+export async function setupChain(
+    client: Client<Transport, Chain, Account>,
+    params: SetupChainParams,
+    apiUrl?: string,
+    apiKey?: string,
+) {
     const { clientL1 } = params;
 
     //0. Topup amounts
@@ -76,7 +81,7 @@ export async function setupChain(client: Client<Transport, Chain, Account>, para
 
     //2. Contracts
     const { verifyingSignerAddress, mailboxAddress } = params;
-    const contracts = await setupChainContracts(client, { verifyingSignerAddress, mailboxAddress });
+    const contracts = await setupChainContracts(client, { verifyingSignerAddress, mailboxAddress }, apiUrl, apiKey);
 
     //3. Bundler Topup
     const { bundlerAddress } = params;

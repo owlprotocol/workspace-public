@@ -25,13 +25,25 @@ export function getHypFiatTokenProxyDeployData({
             args: [
                 tokenRouterImplAddress,
                 proxyAdminAddress,
-                encodeFunctionData({
-                    abi: HypFiatToken.abi,
-                    functionName: "initialize",
-                    args: [hookAddress, ismAddress, account],
-                }),
+                getHypFiatTokenProxyInitData({ hookAddress, ismAddress, account }),
             ],
         }),
         initData: "0x" as const,
     };
+}
+
+export function getHypFiatTokenProxyInitData({
+    account,
+    hookAddress = zeroAddress,
+    ismAddress = zeroAddress,
+}: {
+    account: Address;
+    hookAddress?: Address;
+    ismAddress?: Address;
+}) {
+    return encodeFunctionData({
+        abi: HypFiatToken.abi,
+        functionName: "initialize",
+        args: [hookAddress, ismAddress, account],
+    });
 }

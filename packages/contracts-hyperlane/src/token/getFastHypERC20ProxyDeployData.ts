@@ -31,13 +31,31 @@ export function getFastHypERC20ProxyDeployData({
             args: [
                 tokenRouterImplAddress,
                 proxyAdminAddress,
-                encodeFunctionData({
-                    abi: FastHypERC20.abi,
-                    functionName: "initialize",
-                    args: [totalSupply, name, symbol, hookAddress, ismAddress, account],
-                }),
+                getFastHypERC20ProxyInitData({ account, totalSupply, name, symbol, hookAddress, ismAddress }),
             ],
         }),
         initData: "0x" as const,
     };
+}
+
+export function getFastHypERC20ProxyInitData({
+    account,
+    hookAddress = zeroAddress,
+    ismAddress = zeroAddress,
+    totalSupply = 0n,
+    name,
+    symbol,
+}: {
+    account: Address;
+    hookAddress?: Address;
+    ismAddress?: Address;
+    totalSupply?: bigint;
+    name: string;
+    symbol: string;
+}) {
+    return encodeFunctionData({
+        abi: FastHypERC20.abi,
+        functionName: "initialize",
+        args: [totalSupply, name, symbol, hookAddress, ismAddress, account],
+    });
 }
