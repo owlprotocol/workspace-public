@@ -65,6 +65,7 @@ async function verifyAllContracts(apiUrl: string, apiKey: string, mailboxAddress
     }
 }
 
+// TODO: cleanup this script
 (async () => {
     const network = sepolia;
     const apiUrl = network.blockExplorers?.default?.apiUrl;
