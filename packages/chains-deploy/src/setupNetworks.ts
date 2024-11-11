@@ -1,7 +1,7 @@
 import { ANVIL_RPCS, NODE_ENV, isProductionOrStaging } from "@owlprotocol/envvars";
 import { Network, NetworkDataInput, networkPrivateResource, networkResource } from "@owlprotocol/core-firebase/admin";
-
-import { localhost, opBedrockL1, opBedrockL2 } from "@owlprotocol/chains";
+import { localhost } from "@owlprotocol/core-firebase/data";
+import { opBedrockL1, opBedrockL2 } from "@owlprotocol/chains";
 import * as chains from "@owlprotocol/chains/chains";
 import { getUtilityAccount, getRelayerAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
 import { hyperlaneRegistry } from "@owlprotocol/contracts-hyperlane";

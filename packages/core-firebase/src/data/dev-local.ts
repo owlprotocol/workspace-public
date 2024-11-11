@@ -115,6 +115,7 @@ export function getBytes32(n: number | bigint): Hash {
 
 //anvil localhost
 export const chainId1337 = 1337;
+export { localhost } from "./chains.js";
 
 //TODO: Add back opBedrockL1, opBedrockL2, hedwigTestnet. Do NOT add chains package as dependency
 export const networks: Network[] = [localhost];
