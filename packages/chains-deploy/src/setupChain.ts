@@ -55,12 +55,12 @@ export async function setupChain(
     const gasPrice = await getAction(client, getGasPrice, "getGasPrice")({});
 
     // bundler gets refunded by paymaster, no need for large
-    const bundlerGasBudget = params.bundlerGasBudget ?? 50_00_000n;
+    const bundlerGasBudget = params.bundlerGasBudget ?? 50_000_000n;
     const bundlerTargetBalance = params.bundlerTargetBalance ?? bundlerGasBudget * gasPrice;
     // topup at 1/3
     const bundlerMinBalance = params.bundlerMinBalance ?? bundlerTargetBalance / 3n;
 
-    const paymasterGasBudget = params.paymasterGasBudget ?? 50_000_000n;
+    const paymasterGasBudget = params.paymasterGasBudget ?? 200_000_000n;
     const paymasterTargetBalance = params.paymasterTargetBalance ?? paymasterGasBudget * gasPrice;
     // topup at 1/4
     const paymasterMinBalance = params.paymasterMinBalance ?? paymasterTargetBalance / 4n;
