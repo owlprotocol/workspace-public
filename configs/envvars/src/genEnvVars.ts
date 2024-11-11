@@ -169,7 +169,7 @@ const EXPLORER_API_DEFAULTS: Record<string, string | undefined> = {
     168587773: "https://api.routescan.io/v2/network/testnet/evm/168587773/etherscan",
     //Base
     8453: "https://api.basescan.org/api",
-    85432: "https://api-sepolia.basescan.org/api",
+    84532: "https://api-sepolia.basescan.org/api",
     // Manta
     3441006: "https://pacific-explorer.manta.network/api",
 };
@@ -222,7 +222,10 @@ export function getEnvVarsForNetworkId(networkId: string): EnvVarDef[] {
 }
 
 //const chainIds = allChains.map((c) => c.chainId);
-const chainIds = [1, 5, 1337, 11155111, 59144, 59140, 137, 80001, 42161, 10, 43114, 56, 97, 168587773];
+const chainIds = [
+    1, 5, 1337, 11155111, 17000, 11155420, 59144, 59140, 137, 80001, 80002, 42161, 421614, 10, 43114, 56, 97, 168587773,
+    8453, 84532, 3441006,
+];
 //TODO: For all networkIds, right now this breaks because file is too big. Is there a better way?
 const NETWORK_ENVVARS: EnvVarDef[] = [];
 chainIds.forEach((c) => NETWORK_ENVVARS.push(...getEnvVarsForNetworkId(`${c}`)));
