@@ -1,10 +1,56 @@
 import { Address } from "abitype";
 import { Chain, Client, Transport } from "viem";
-import { balanceOf, allowance } from "@owlprotocol/contracts-diamond/artifacts/IERC20";
+import { balanceOf, allowance, Transfer } from "@owlprotocol/contracts-diamond/artifacts/IERC20";
 import { ERC20Allowance, ERC20Balance } from "@owlprotocol/eth-firebase/models";
 import { erc20AllowanceResource, erc20BalanceResource } from "@owlprotocol/eth-firebase/admin";
 import { getAction } from "viem/utils";
-import { getChainId, readContract } from "viem/actions";
+import { getChainId, getLogs, readContract } from "viem/actions";
+
+type BalanceInputs = { address: Address; account: Address; blockNumber: bigint };
+
+/**
+ * Gets all ERC20Balances for an address and / or account,
+ * and updates ERC20Balance if no cached data or stale
+ * @param clients publicClient
+ * @param address ERC20Balance address
+ * @param account owner address
+ * @returns
+ */
+export async function getERC20Tokens<chain extends Chain | undefined>(
+    client: Client<Transport, chain>,
+    params: {
+        address?: Address;
+        account?: Address;
+    },
+) {
+    const { address, account } = params;
+    if (!address && !account) {
+        throw new Error("One of address or account must be specified");
+    }
+
+    const getLogsAction = getAction(client, getLogs, "getLogs");
+    const logs = await getLogsAction({ address, event: Transfer, args: { to: account }, strict: true });
+
+    const addressAndAccountToBalanceInputs = new Map<string, BalanceInputs>();
+    const setIdIfBlockNumberGreater = (balanceInputs: BalanceInputs) => {
+        const id = balanceInputs.address + balanceInputs.account;
+        const idItem = addressAndAccountToBalanceInputs.get(id);
+        if (!idItem || idItem.blockNumber < balanceInputs.blockNumber) {
+            addressAndAccountToBalanceInputs.set(id, balanceInputs);
+        }
+    };
+
+    logs.forEach(({ address, args, blockNumber }) =>
+        setIdIfBlockNumberGreater({ address, blockNumber, account: args.to }),
+    );
+
+    const balancesPromises: Promise<ERC20Balance>[] = [];
+    addressAndAccountToBalanceInputs.forEach((balanceInputs) =>
+        balancesPromises.push(getERC20Balance(client, balanceInputs)),
+    );
+
+    return Promise.all(balancesPromises);
+}
 
 /**
  * Update ERC20Balance if no cached data or stale
