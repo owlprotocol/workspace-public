@@ -1,12 +1,55 @@
 import { Address } from "abitype";
 import { Chain, Client, Transport } from "viem";
-import { ownerOf } from "@owlprotocol/contracts-diamond/artifacts/IERC721";
+import { ownerOf, Transfer } from "@owlprotocol/contracts-diamond/artifacts/IERC721";
 import { tokenURI } from "@owlprotocol/contracts-diamond/artifacts/ITokenURI";
 import { ERC721 } from "@owlprotocol/eth-firebase/models";
 import { NetworkId } from "@owlprotocol/eth-firebase/models";
 import { erc721Resource } from "@owlprotocol/eth-firebase/admin";
 import { getAction } from "viem/utils";
-import { getChainId, readContract } from "viem/actions";
+import { getChainId, getLogs, readContract } from "viem/actions";
+
+type OwnerInputs = { address: Address; owner: Address; blockNumber: bigint };
+
+/**
+ * Gets all ERC721s for an address and / or account,
+ * and updates ERC721 if no cached data or stale
+ * @param clients publicClient
+ * @param address ERC721 address
+ * @param account owner address
+ * @returns
+ */
+export async function getERC721Tokens<chain extends Chain | undefined>(
+    client: Client<Transport, chain>,
+    params: {
+        address?: Address;
+        account?: Address;
+    },
+) {
+    const { address, account } = params;
+    if (!address && !account) {
+        throw new Error("One of address or account must be specified");
+    }
+
+    const getLogsAction = getAction(client, getLogs, "getLogs");
+    const logs = await getLogsAction({ address, event: Transfer, args: { to: account }, strict: true });
+
+    const idsToOwnerInputs = new Map<bigint, OwnerInputs>();
+    const setIdIfBlockNumberGreater = (id: bigint, ownerInputs: OwnerInputs) => {
+        const idItem = idsToOwnerInputs.get(id);
+        if (!idItem || idItem.blockNumber < ownerInputs.blockNumber) {
+            idsToOwnerInputs.set(id, ownerInputs);
+        }
+    };
+
+    logs.forEach(({ address, args, blockNumber }) =>
+        setIdIfBlockNumberGreater(args.tokenId, { address, blockNumber, owner: args.to }),
+    );
+
+    const ownersPromises: Promise<ERC721>[] = [];
+    idsToOwnerInputs.forEach((value, tokenId) => ownersPromises.push(getERC721Owner(client, { tokenId, ...value })));
+
+    return Promise.all(ownersPromises);
+}
 
 /**
  * Update ERC721 owner if no cached data or stale
