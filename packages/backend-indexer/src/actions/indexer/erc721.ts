@@ -31,7 +31,7 @@ export async function getERC721Tokens<chain extends Chain | undefined>(
     }
 
     const getLogsAction = getAction(client, getLogs, "getLogs");
-    const logs = await getLogsAction({ address, event: Transfer, args: { to: account }, strict: true });
+    const logs = await getLogsAction({ address, event: Transfer, args: { to: account }, strict: true, fromBlock: 0n });
 
     const idsToOwnerInputs = new Map<bigint, OwnerInputs>();
     const setIdIfBlockNumberGreater = (id: bigint, ownerInputs: OwnerInputs) => {

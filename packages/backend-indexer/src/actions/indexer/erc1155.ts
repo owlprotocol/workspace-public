@@ -31,8 +31,20 @@ export async function getERC1155Tokens<chain extends Chain | undefined>(
 
     const getLogsAction = getAction(client, getLogs, "getLogs");
 
-    const logsBatchPromise = getLogsAction({ address, event: TransferBatch, args: { to: account }, strict: true });
-    const logsSinglePromise = getLogsAction({ address, event: TransferSingle, args: { to: account }, strict: true });
+    const logsBatchPromise = getLogsAction({
+        address,
+        event: TransferBatch,
+        args: { to: account },
+        strict: true,
+        fromBlock: 0n,
+    });
+    const logsSinglePromise = getLogsAction({
+        address,
+        event: TransferSingle,
+        args: { to: account },
+        strict: true,
+        fromBlock: 0n,
+    });
 
     const [logsBatch, logsSingle] = await Promise.all([logsBatchPromise, logsSinglePromise]);
 
