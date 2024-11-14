@@ -6,7 +6,7 @@ import * as chains from "@owlprotocol/chains/chains";
 import { getUtilityAccount, getRelayerAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
 import { hyperlaneRegistry } from "@owlprotocol/contracts-hyperlane";
 
-import { Chain, createPublicClient, createWalletClient, http, nonceManager } from "viem";
+import { Address, Chain, createPublicClient, createWalletClient, http, nonceManager } from "viem";
 import { setupChain } from "./setupChain.js";
 
 /**
@@ -130,12 +130,6 @@ export async function setupNetworksForEnv() {
     //TODO: Chains that don't work
     const skipChainIds: number[] = [chains.linea.chainId, chains.lineaSepolia.chainId, chains.mainnet.chainId];
 
-    //TODO: Enable localhost custom registry override?
-
-    //Fetch full metadata to simply use chainIds instead of Hyperlane chain names
-    const hyperlaneMetadata = await hyperlaneRegistry.getMetadata();
-    const hyperlaneAddresses = await hyperlaneRegistry.getAddresses();
-
     for (const network of networksPrivate) {
         const chain = { id: network.chainId, ...network } as Chain;
 
@@ -161,16 +155,27 @@ export async function setupNetworksForEnv() {
 
         console.debug(`🛠️  Deploying ${network.name}`);
 
-        //TODO: get mailbox address
-        //TODO: Is the slug name === hyperlane name??? Add custom override for when these don't match
-        const hyperlaneChain = Object.values(hyperlaneMetadata).find((hyperlaneChain) => {
-            const chainId =
-                typeof hyperlaneChain.chainId === "number" ? hyperlaneChain.chainId : parseInt(hyperlaneChain.chainId);
-            return chainId === chain.id;
-        });
-        const hyperlaneChainName = hyperlaneChain?.name;
-        const hyperlaneChainAddresses = hyperlaneChainName ? hyperlaneAddresses[hyperlaneChainName] : undefined;
-        const mailboxAddress = hyperlaneChainAddresses?.mailbox;
+        //TODO: Enable localhost custom registry override?
+        let mailboxAddress: Address | undefined;
+
+        if (isProductionOrStaging()) {
+            //Fetch full metadata to simply use chainIds instead of Hyperlane chain names
+            const hyperlaneMetadata = await hyperlaneRegistry.getMetadata();
+            const hyperlaneAddresses = await hyperlaneRegistry.getAddresses();
+
+            //TODO: get mailbox address
+            //TODO: Is the slug name === hyperlane name??? Add custom override for when these don't match
+            const hyperlaneChain = Object.values(hyperlaneMetadata).find((hyperlaneChain) => {
+                const chainId =
+                    typeof hyperlaneChain.chainId === "number"
+                        ? hyperlaneChain.chainId
+                        : parseInt(hyperlaneChain.chainId);
+                return chainId === chain.id;
+            });
+            const hyperlaneChainName = hyperlaneChain?.name;
+            const hyperlaneChainAddresses = hyperlaneChainName ? hyperlaneAddresses[hyperlaneChainName] : undefined;
+            mailboxAddress = hyperlaneChainAddresses?.mailbox;
+        }
 
         const result = await setupChain(walletClient, {
             bundlerAddress: bundlerAccount.address,
