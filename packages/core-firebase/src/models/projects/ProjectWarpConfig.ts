@@ -33,7 +33,7 @@ export interface ProjectWarpConfigData {
     readonly bridgeUrl?: string;
     readonly owner?: Address;
     readonly deployerUser?: string;
-    readonly firstTokenChaindId?: number;
+    readonly firstTokenChainId?: number;
     readonly firstTokenAddress?: Address;
     readonly tokens: WarpTokenConfig[];
     readonly proxyDeploySalt?: Hex;
@@ -47,7 +47,7 @@ export const projectWarpConfigDataZod = z
         bridgeUrl: z.string().optional(),
         owner: addressZod.optional(),
         deployerUser: z.string().optional(),
-        firstTokenChaindId: z.number().optional(),
+        firstTokenChainId: z.number().optional(),
         firstTokenAddress: addressZod.optional(),
         tokens: z.array(
             z.object({
