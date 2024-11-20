@@ -1,7 +1,7 @@
 import { type Chain, type Address } from "viem";
 import { entryPoint07Address } from "viem/account-abstraction";
 
-import { createSmartAccountClient, SmartAccountClient } from "permissionless/clients";
+import { createSmartAccountClient } from "permissionless/clients";
 import { createPimlicoClient } from "permissionless/clients/pimlico";
 
 import { API_REST_BASE_URL } from "@owlprotocol/envvars";
@@ -14,7 +14,7 @@ export async function getUserSimpleSmartAccountClient(
     chain: Chain,
     owlApiRestBaseUrl = API_REST_BASE_URL,
     factoryAddress: Address = "0xe7A78BA9be87103C317a66EF78e6085BD74Dd538",
-): Promise<SmartAccountClient> {
+) {
     const simpleSmartAccount = await getUserSimpleSmartAccount(
         jwt,
         projectId,
@@ -50,7 +50,7 @@ export async function getAdminSimpleSmartAccountClient(
     chain: Chain,
     owlApiRestBaseUrl = API_REST_BASE_URL,
     factoryAddress: Address = "0xe7A78BA9be87103C317a66EF78e6085BD74Dd538",
-): Promise<SmartAccountClient> {
+) {
     const simpleSmartAccount = await getAdminSimpleSmartAccount(
         auth,
         projectId,
