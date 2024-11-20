@@ -1,9 +1,9 @@
 import { TypeOf, expectType } from "ts-expect";
 import { z } from "zod";
 import { FirestoreSDK, FirebaseQueryResource, Query, FirebaseResource } from "@owlprotocol/crud-firebase";
+import { Address, Hex } from "viem";
+import { addressZod, bytesZod } from "@owlprotocol/zod-sol";
 import { ProjectId } from "./Project.js";
-import { Hex } from "viem";
-import { bytesZod } from "@owlprotocol/zod-sol";
 
 export interface ProjectWarpConfigId {
     readonly warpConfigId: string;
@@ -31,6 +31,10 @@ export interface WarpTokenConfig {
 export interface ProjectWarpConfigData {
     readonly warpConfigId: string;
     readonly bridgeUrl?: string;
+    readonly owner: Address;
+    readonly deployerUser: string;
+    readonly firstTokenChaindId: number;
+    readonly firstTokenAddress: Address;
     readonly tokens: WarpTokenConfig[];
     readonly proxyDeploySalt?: Hex;
 }
@@ -41,6 +45,10 @@ export const projectWarpConfigDataZod = z
     .object({
         warpConfigId: z.string(),
         bridgeUrl: z.string().optional(),
+        owner: addressZod,
+        deployerUser: z.string(),
+        firstTokenChaindId: z.number(),
+        firstTokenAddress: addressZod,
         tokens: z.array(
             z.object({
                 standard: z.string(),
