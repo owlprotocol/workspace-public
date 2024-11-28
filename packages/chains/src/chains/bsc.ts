@@ -12,5 +12,5 @@ export const bsc = /*#__PURE__*/ defineNetwork({
     slug: "bsc",
     slugAnkr: "bsc",
     slugDrpc: "bsc",
-    enabled: false,
+    enabled: true,
 });

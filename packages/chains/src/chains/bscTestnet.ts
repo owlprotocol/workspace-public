@@ -10,5 +10,5 @@ export const bscTestnet = /*#__PURE__*/ defineNetwork({
     slug: "bsc-testnet",
     slugAnkr: "bsc_testnet_chapel",
     slugDrpc: "bsc-testnet",
-    enabled: false,
+    enabled: true,
 });

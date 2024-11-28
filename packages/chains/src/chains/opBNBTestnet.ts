@@ -13,7 +13,7 @@ export const opBNBTestnet = /*#__PURE__*/ defineNetwork({
     slug: "opbnb-testnet",
     slugAnkr: "opbnb-testnet",
     slugDrpc: "opbnb-testnet",
-    enabled: false,
+    enabled: true,
     stack: "opstack-bedrock",
     sourceId,
     contracts: {

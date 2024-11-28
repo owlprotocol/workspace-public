@@ -177,20 +177,25 @@ export async function setupNetworksForEnv() {
             mailboxAddress = hyperlaneChainAddresses?.mailbox;
         }
 
-        const result = await setupChain(walletClient, {
-            bundlerAddress: bundlerAccount.address,
-            verifyingSignerAddress: paymasterSignerAccount.address,
-            mailboxAddress,
-            clientL1: walletClientL1 as any,
-            bundlerTargetBalance: network.targetRelayerBalance as bigint,
-            bundlerMinBalance: network.minRelayerBalance as bigint,
-            paymasterTargetBalance: network.targetPaymasterBalance as bigint,
-            paymasterMinBalance: network.minPaymasterBalance as bigint,
-            utilityTargetBalance: network.targetUtilityBalance as bigint,
-            utilityMinBalance: network.minUtilityBalance as bigint,
-        });
+        try {
+            const result = await setupChain(walletClient, {
+                bundlerAddress: bundlerAccount.address,
+                verifyingSignerAddress: paymasterSignerAccount.address,
+                mailboxAddress,
+                clientL1: walletClientL1 as any,
+                bundlerTargetBalance: network.targetRelayerBalance as bigint,
+                bundlerMinBalance: network.minRelayerBalance as bigint,
+                paymasterTargetBalance: network.targetPaymasterBalance as bigint,
+                paymasterMinBalance: network.minPaymasterBalance as bigint,
+                utilityTargetBalance: network.targetUtilityBalance as bigint,
+                utilityMinBalance: network.minUtilityBalance as bigint,
+            });
 
-        console.debug({ bundlerTopup: result.bundlerTopup, paymasterTopup: result.paymasterTopup });
+            console.debug({ bundlerTopup: result.bundlerTopup, paymasterTopup: result.paymasterTopup });
+        } catch (e) {
+            console.error(`❌ Error deploying ${network.name}`);
+            console.error(e);
+        }
     }
 
     console.debug("✅ Deployed all networks");
