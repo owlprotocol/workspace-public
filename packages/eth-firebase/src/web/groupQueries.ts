@@ -32,6 +32,7 @@ import {
     erc20AllowanceColGroup,
     erc20BalanceColGroup,
     erc721ColGroup,
+    erc165SupportsInterfaceColGroup,
 } from "./collection.js";
 import {
     EthBlockId,
@@ -84,6 +85,11 @@ import {
     EthUserOpReceiptDecoded,
     EthUserOpReceiptEncoded,
     EthUserOpReceiptInput,
+    ERC165SupportsInterface,
+    ERC165SupportsInterfaceId,
+    decodeERC165SupportsInterfaceId,
+    encodeERC165SupportsInterfaceDataPartial,
+    decodeERC165SupportsInterfaceData,
 } from "../models/index.js";
 import { NetworkId, encodeNetworkId, decodeNetworkId } from "../models/Network.js";
 
@@ -232,6 +238,20 @@ export const erc1155BalanceGroupQuery = getFirebaseQueryResource<
     decodeId: decodeERC1155BalanceId,
     encodeDataPartial: encodeERC1155BalanceDataPartial,
     decodeData: decodeERC1155BalanceData,
+    encodeParentDocId: encodeNetworkId,
+    decodeParentDocId: decodeNetworkId,
+});
+export const erc165SupportsInterfaceGroupQuery = getFirebaseQueryResource<
+    ERC165SupportsInterface,
+    ERC165SupportsInterfaceId,
+    NetworkId,
+    ERC165SupportsInterface,
+    ERC165SupportsInterface,
+    Query<"web", ERC165SupportsInterface>
+>(erc165SupportsInterfaceColGroup, {
+    decodeId: decodeERC165SupportsInterfaceId,
+    encodeDataPartial: encodeERC165SupportsInterfaceDataPartial,
+    decodeData: decodeERC165SupportsInterfaceData,
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });

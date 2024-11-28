@@ -43,6 +43,7 @@ import {
     ethRoleCol,
     operatorCol,
     ethUserOpReceiptCol,
+    erc165SupportsInterfaceCol,
 } from "./collection.js";
 import {
     EthBlockId,
@@ -177,6 +178,13 @@ import {
     encodeEthUserOpReceiptData,
     decodeEthUserOpReceiptId,
     encodeEthUserOpReceiptId,
+    ERC165SupportsInterface,
+    ERC165SupportsInterfaceId,
+    encodeERC165SupportsInterfaceId,
+    decodeERC165SupportsInterfaceId,
+    encodeERC165SupportsInterfaceDataPartial,
+    encodeERC165SupportsInterfaceData,
+    decodeERC165SupportsInterfaceData,
 } from "../models/index.js";
 
 //Disabled for now
@@ -444,6 +452,21 @@ export const erc1155BalanceResource = getFirebaseResource<
     encodeDataPartial: encodeERC1155BalanceDataPartial,
     encodeData: encodeERC1155BalanceData,
     decodeData: decodeERC1155BalanceData,
+    encodeParentDocId: encodeNetworkId,
+    decodeParentDocId: decodeNetworkId,
+});
+export const erc165SupportsInterfaceResource = getFirebaseResource<
+    ERC165SupportsInterface,
+    ERC165SupportsInterfaceId,
+    NetworkId,
+    ERC165SupportsInterface,
+    ERC165SupportsInterface
+>(firestore, erc165SupportsInterfaceCol, {
+    encodeId: encodeERC165SupportsInterfaceId,
+    decodeId: decodeERC165SupportsInterfaceId,
+    encodeDataPartial: encodeERC165SupportsInterfaceDataPartial,
+    encodeData: encodeERC165SupportsInterfaceData,
+    decodeData: decodeERC165SupportsInterfaceData,
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });

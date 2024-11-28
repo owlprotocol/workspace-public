@@ -40,6 +40,8 @@ import {
     ethRoleResource,
     operatorResource,
     networkResource,
+    erc165SupportsInterfaceGroupQuery,
+    erc165SupportsInterfaceResource,
 } from "../web/index.js";
 import {
     ethBlockGroupPath,
@@ -59,6 +61,7 @@ import {
     ethRoleGroupPath,
     operatorGroupPath,
     networkPath,
+    erc165SupportsInterfaceGroupPath,
 } from "../collections.js";
 import {
     EthBlockId,
@@ -84,6 +87,8 @@ import {
     ERC721Encoded,
     ERC721Input,
     ERC721Decoded,
+    ERC165SupportsInterface,
+    ERC165SupportsInterfaceId,
 } from "../models/index.js";
 import { NetworkId, encodeNetworkId } from "../models/Network.js";
 
@@ -219,6 +224,15 @@ export const erc1155BalanceQueryOptions = getFirebaseResourceReactQueryOptions(
         };
     },
 );
+export const erc165SupportsInterfaceQueryOptions = getFirebaseResourceReactQueryOptions(
+    erc165SupportsInterfaceResource,
+    (collectionId: NetworkId) => {
+        return {
+            prefixPath: [networkPath, encodeNetworkId(collectionId)],
+            collectionGroup: erc165SupportsInterfaceGroupPath,
+        };
+    },
+);
 export const operatorQueryOptions = getFirebaseResourceReactQueryOptions(
     operatorResource,
     (collectionId: NetworkId) => {
@@ -282,3 +296,15 @@ export const erc1155BalanceGroupQueryOptions = getFirebaseQueryReactQueryOptions
     ERC1155BalanceEncoded,
     Query<"web", ERC1155BalanceEncoded>
 >(erc1155BalanceGroupQuery, { prefixPath: [], collectionGroup: erc1155GroupPath });
+
+export const erc165SupportsInterfaceGroupQueryOptions = getFirebaseQueryReactQueryOptions<
+    ERC165SupportsInterface,
+    ERC165SupportsInterfaceId,
+    NetworkId,
+    ERC165SupportsInterface,
+    ERC165SupportsInterface,
+    Query<"web", ERC165SupportsInterface>
+>(erc165SupportsInterfaceGroupQuery, {
+    prefixPath: [],
+    collectionGroup: erc165SupportsInterfaceGroupPath,
+});
