@@ -69,6 +69,11 @@ export const erc1155BalanceGroupPath = "erc1155Balance";
 export const erc1155BalancePath = (collectionId: NetworkId) => {
     return join(networkPath, encodeNetworkId(collectionId), erc1155BalanceGroupPath);
 };
+export const erc165SupportsInterfaceGroupPath = "erc165SupportsInterface";
+export const erc165SupportsInterfacePath = (collectionId: NetworkId) => {
+    return join(networkPath, encodeNetworkId(collectionId), erc165SupportsInterfaceGroupPath);
+};
+
 export const operatorGroupPath = "operator";
 export const operatorPath = (collectionId: NetworkId) => {
     return join(networkPath, encodeNetworkId(collectionId), operatorGroupPath);

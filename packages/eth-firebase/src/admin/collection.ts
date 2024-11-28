@@ -36,6 +36,8 @@ import {
     networkPrivatePath,
     ethUserOpReceiptGroupPath,
     ethUserOpReceiptPath,
+    erc165SupportsInterfaceGroupPath,
+    erc165SupportsInterfacePath,
 } from "../collections.js";
 import {
     ERC1155BalanceEncoded,
@@ -55,6 +57,7 @@ import {
     NetworkDataEncoded,
     NetworkId,
     EthUserOpReceiptEncoded,
+    ERC165SupportsInterface,
 } from "../models/index.js";
 
 //networks
@@ -119,6 +122,13 @@ export const erc1155Col = (collectionId: NetworkId) => getColRef<ERC1155Data>(fi
 export const erc1155BalanceColGroup = getColGroupRef<ERC1155BalanceEncoded>(firestore, erc1155BalanceGroupPath);
 export const erc1155BalanceCol = (collectionId: NetworkId) =>
     getColRef<ERC1155BalanceEncoded>(firestore, erc1155BalancePath(collectionId));
+export const erc165SupportsInterfaceColGroup = getColGroupRef<ERC165SupportsInterface>(
+    firestore,
+    erc165SupportsInterfaceGroupPath,
+);
+
+export const erc165SupportsInterfaceCol = (collectionId: NetworkId) =>
+    getColRef<ERC165SupportsInterface>(firestore, erc165SupportsInterfacePath(collectionId));
 
 export const operatorColGroup = getColGroupRef<OperatorData>(firestore, operatorGroupPath);
 export const operatorCol = (collectionId: NetworkId) => getColRef<OperatorData>(firestore, operatorPath(collectionId));
