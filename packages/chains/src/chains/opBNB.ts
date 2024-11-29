@@ -1,4 +1,5 @@
 import { opBNB as opBNBViem, bsc } from "viem/chains";
+import { parseEther } from "viem";
 import { defineNetwork } from "../defineChain.js";
 
 const sourceId = bsc.id;
@@ -25,4 +26,5 @@ export const opBNB = /*#__PURE__*/ defineNetwork({
             },
         },
     },
+    targetPaymasterBalance: parseEther("0.1"),
 });

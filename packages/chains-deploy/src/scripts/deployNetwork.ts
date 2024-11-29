@@ -1,21 +1,21 @@
-import { kaiaTestnet } from "@owlprotocol/chains";
+import { opBNBTestnet } from "@owlprotocol/chains";
 import { networkPrivateResource } from "@owlprotocol/core-firebase/admin";
 
 import { getUtilityAccount, getRelayerAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
-import { Chain, createWalletClient, http } from "viem";
+import { Chain, createWalletClient, http, nonceManager } from "viem";
 import { setupChain } from "../setupChain.js";
 
 export async function main() {
     // Accounts
     //Load viem utility account
-    const utilityAccount = getUtilityAccount();
+    const utilityAccount = getUtilityAccount({ nonceManager });
     // Load viem bundler account
-    const bundlerAccount = getRelayerAccount();
+    const bundlerAccount = getRelayerAccount({ nonceManager });
     //Load viem paymaster signer account
-    const paymasterSignerAccount = getPaymasterSignerAccount();
+    const paymasterSignerAccount = getPaymasterSignerAccount({ nonceManager });
 
     //Network to deploy
-    const network = kaiaTestnet;
+    const network = opBNBTestnet;
 
     const chain = { id: network.chainId, ...network } as Chain;
     const walletClient = createWalletClient({
@@ -29,7 +29,7 @@ export async function main() {
     const walletClientL1 = chainL1
         ? createWalletClient({
               transport: http(chainL1.rpcUrls.default.http[0]),
-              chain,
+              chain: chainL1,
               account: utilityAccount,
           })
         : undefined;
@@ -44,7 +44,7 @@ export async function main() {
         bundlerMinBalance: network.minRelayerBalance as bigint,
         paymasterTargetBalance: network.targetPaymasterBalance as bigint,
         paymasterMinBalance: network.minPaymasterBalance as bigint,
-        paymasterGasBudget: 1_000_000_000n,
+        // paymasterGasBudget: 1_000_000_000n,
         utilityTargetBalance: network.targetUtilityBalance as bigint,
         utilityMinBalance: network.minUtilityBalance as bigint,
     });

@@ -1,3 +1,3 @@
 import { setupNetworksForEnv } from "../setupNetworks.js";
 
-setupNetworksForEnv().then(() => console.log("Done"));
+await setupNetworksForEnv().then(() => console.log("Done"));
