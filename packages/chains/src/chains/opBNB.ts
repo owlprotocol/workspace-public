@@ -21,8 +21,7 @@ export const opBNB = /*#__PURE__*/ defineNetwork({
     contracts: {
         portal: {
             [sourceId]: {
-                address: "0x4386C8ABf2009aC0c263462Da568DD9d46e52a31",
-                blockCreated: 30727869,
+                address: "0x1876EA7702C0ad0C6A2ae6036DE7733edfBca519",
             },
         },
     },
