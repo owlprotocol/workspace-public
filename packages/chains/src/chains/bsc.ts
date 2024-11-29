@@ -1,4 +1,5 @@
 import { bsc as bscViem } from "viem/chains";
+import { parseEther } from "viem";
 import { defineNetwork } from "../defineChain.js";
 
 export const bsc = /*#__PURE__*/ defineNetwork({
@@ -12,5 +13,6 @@ export const bsc = /*#__PURE__*/ defineNetwork({
     slug: "bsc",
     slugAnkr: "bsc",
     slugDrpc: "bsc",
-    enabled: false,
+    enabled: true,
+    targetPaymasterBalance: parseEther("0.2"),
 });

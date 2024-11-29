@@ -159,6 +159,8 @@ const EXPLORER_API_DEFAULTS: Record<string, string | undefined> = {
     //BSC
     56: "https://api.bscscan.com/api",
     97: "https://api-testnet.bscscan.com/api",
+    204: "https://api-opbnb.bscscan.com/api",
+    5611: "https://api-opbnb-testnet.bscscan.com/api",
     //Gnosis
     //"https://api.blockscout.com/xdai/mainnet/api"
     //Moonriver

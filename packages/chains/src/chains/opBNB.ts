@@ -1,4 +1,5 @@
 import { opBNB as opBNBViem, bsc } from "viem/chains";
+import { parseEther } from "viem";
 import { defineNetwork } from "../defineChain.js";
 
 const sourceId = bsc.id;
@@ -14,7 +15,7 @@ export const opBNB = /*#__PURE__*/ defineNetwork({
     slug: "opbnb",
     slugAnkr: "opbnb",
     slugDrpc: "opbnb",
-    enabled: false,
+    enabled: true,
     stack: "opstack-bedrock",
     sourceId,
     contracts: {
@@ -25,4 +26,5 @@ export const opBNB = /*#__PURE__*/ defineNetwork({
             },
         },
     },
+    targetPaymasterBalance: parseEther("0.1"),
 });

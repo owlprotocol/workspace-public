@@ -1,4 +1,4 @@
-import { ANVIL_RPCS, NODE_ENV, isProductionOrStaging } from "@owlprotocol/envvars";
+import { ANVIL_RPCS, NODE_ENV, getChainEnvvars, isProductionOrStaging } from "@owlprotocol/envvars";
 import { Network, NetworkDataInput, networkPrivateResource, networkResource } from "@owlprotocol/core-firebase/admin";
 
 import { localhost, opBedrockL1, opBedrockL2 } from "@owlprotocol/chains";
@@ -84,7 +84,7 @@ export const localNetworks = [localhost, opBedrockL1, opBedrockL2];
  */
 export async function setupNetworksForEnv() {
     // Delete All
-    await Promise.all([networkResource.deleteAll(), networkPrivateResource.deleteAll()]);
+    // await Promise.all([networkResource.deleteAll(), networkPrivateResource.deleteAll()]);
 
     // Accounts
     //Load viem utility account
@@ -148,7 +148,7 @@ export async function setupNetworksForEnv() {
         const walletClientL1 = chainL1
             ? createWalletClient({
                   transport: http(chainL1.rpcUrls.default.http[0]),
-                  chain,
+                  chain: chainL1,
                   account: utilityAccount,
               })
             : undefined;
@@ -177,20 +177,32 @@ export async function setupNetworksForEnv() {
             mailboxAddress = hyperlaneChainAddresses?.mailbox;
         }
 
-        const result = await setupChain(walletClient, {
-            bundlerAddress: bundlerAccount.address,
-            verifyingSignerAddress: paymasterSignerAccount.address,
-            mailboxAddress,
-            clientL1: walletClientL1 as any,
-            bundlerTargetBalance: network.targetRelayerBalance as bigint,
-            bundlerMinBalance: network.minRelayerBalance as bigint,
-            paymasterTargetBalance: network.targetPaymasterBalance as bigint,
-            paymasterMinBalance: network.minPaymasterBalance as bigint,
-            utilityTargetBalance: network.targetUtilityBalance as bigint,
-            utilityMinBalance: network.minUtilityBalance as bigint,
-        });
+        const chainEnvVars = getChainEnvvars(network.chainId);
 
-        console.debug({ bundlerTopup: result.bundlerTopup, paymasterTopup: result.paymasterTopup });
+        try {
+            const result = await setupChain(
+                walletClient,
+                {
+                    bundlerAddress: bundlerAccount.address,
+                    verifyingSignerAddress: paymasterSignerAccount.address,
+                    mailboxAddress,
+                    clientL1: walletClientL1 as any,
+                    bundlerTargetBalance: network.targetRelayerBalance as bigint,
+                    bundlerMinBalance: network.minRelayerBalance as bigint,
+                    paymasterTargetBalance: network.targetPaymasterBalance as bigint,
+                    paymasterMinBalance: network.minPaymasterBalance as bigint,
+                    utilityTargetBalance: network.targetUtilityBalance as bigint,
+                    utilityMinBalance: network.minUtilityBalance as bigint,
+                },
+                chainEnvVars.explorerApi,
+                chainEnvVars.explorerApiKey,
+            );
+
+            console.debug({ bundlerTopup: result.bundlerTopup, paymasterTopup: result.paymasterTopup });
+        } catch (e) {
+            console.error(`❌ Error deploying ${network.name}`);
+            console.error(e);
+        }
     }
 
     console.debug("✅ Deployed all networks");
