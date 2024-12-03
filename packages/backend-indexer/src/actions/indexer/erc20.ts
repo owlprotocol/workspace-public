@@ -4,7 +4,8 @@ import { balanceOf, allowance, Transfer } from "@owlprotocol/contracts-diamond/a
 import { ERC20Allowance, ERC20Balance } from "@owlprotocol/eth-firebase/models";
 import { erc20AllowanceResource, erc20BalanceResource } from "@owlprotocol/eth-firebase/admin";
 import { getAction } from "viem/utils";
-import { getChainId, getLogs, readContract } from "viem/actions";
+import { getChainId, readContract } from "viem/actions";
+import { getLogs } from "./getLogs.js";
 
 type BalanceInputs = { address: Address; account: Address; blockNumber: bigint };
 
@@ -28,8 +29,13 @@ export async function getERC20Tokens<chain extends Chain | undefined>(
         throw new Error("One of address or account must be specified");
     }
 
-    const getLogsAction = getAction(client, getLogs, "getLogs");
-    const logs = await getLogsAction({ address, event: Transfer, args: { to: account }, strict: true, fromBlock: 0n });
+    // const getLogsAction = getAction(client, getLogs, "getLogs");
+    const logs = await getLogs(client, {
+        address,
+        event: Transfer,
+        args: { to: account },
+        strict: true,
+    });
 
     const addressAndAccountToBalanceInputs = new Map<string, BalanceInputs>();
     const setIdIfBlockNumberGreater = (balanceInputs: BalanceInputs) => {
