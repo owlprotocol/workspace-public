@@ -1,5 +1,5 @@
 import { Client, Chain, Transport, BlockNumber, BlockTag, AbiEvent } from "viem";
-import { getLogs as getLogsViem, GetLogsParameters, GetLogsReturnType } from "viem/actions";
+import { getLogs as getLogsViem, GetLogsParameters, GetLogsReturnType, getBlockNumber } from "viem/actions";
 
 export async function getLogs<
     chain extends Chain | undefined,
@@ -14,9 +14,9 @@ export async function getLogs<
     client: Client<Transport, chain>,
     params: GetLogsParameters<abiEvent, abiEvents, strict, fromBlock, toBlock>,
 ): Promise<GetLogsReturnType<abiEvent, abiEvents, strict, fromBlock, toBlock>> {
-    const toBlock = params.toBlock ?? BigInt(await client.request({ method: "eth_blockNumber" }));
+    const toBlock = params.toBlock ?? (await getBlockNumber(client));
 
-    let fromBlock = params.fromBlock ?? (typeof toBlock === "bigint" ? toBlock - 10_000n : 0n);
+    let fromBlock = params.fromBlock ?? (typeof toBlock === "bigint" ? toBlock - 10_000n : undefined);
 
     if (typeof fromBlock === "bigint") {
         fromBlock = fromBlock < 0n ? 0n : fromBlock;
