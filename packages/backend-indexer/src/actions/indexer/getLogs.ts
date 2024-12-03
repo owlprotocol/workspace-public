@@ -1,5 +1,6 @@
 import { Client, Chain, Transport, BlockNumber, BlockTag, AbiEvent } from "viem";
 import { getLogs as getLogsViem, GetLogsParameters, GetLogsReturnType } from "viem/actions";
+
 export async function getLogs<
     chain extends Chain | undefined,
     const abiEvent extends AbiEvent | undefined = undefined,
@@ -13,19 +14,21 @@ export async function getLogs<
     client: Client<Transport, chain>,
     params: GetLogsParameters<abiEvent, abiEvents, strict, fromBlock, toBlock>,
 ): Promise<GetLogsReturnType<abiEvent, abiEvents, strict, fromBlock, toBlock>> {
-    const { fromBlock, toBlock } = params;
+    const toBlock = params.toBlock ?? BigInt(await client.request({ method: "eth_blockNumber" }));
+
+    let fromBlock = params.fromBlock ?? (typeof toBlock === "bigint" ? toBlock - 10_000n : 0n);
 
     if (typeof fromBlock === "bigint") {
-        if (typeof toBlock === "bigint" && toBlock - fromBlock > 10_000n) {
-            throw new Error("Block range too large. Ensure `toBlock - fromBlock < 10,000`.");
-        }
-
-        if (!toBlock || toBlock === undefined) {
-            throw new Error(
-                "`toBlock` is undefined. Set a valid `toBlock` or adjust your query to use smaller block ranges.",
-            );
-        }
+        fromBlock = fromBlock < 0n ? 0n : fromBlock;
     }
 
-    return await getLogsViem<chain, abiEvent, abiEvents, strict, fromBlock, toBlock>(client, params);
+    if (typeof fromBlock === "bigint" && typeof toBlock === "bigint" && toBlock - fromBlock > 10_000n) {
+        throw new Error("Block range too large. Ensure `toBlock - fromBlock < 10,000`.");
+    }
+
+    return await getLogsViem<chain, abiEvent, abiEvents, strict, fromBlock, toBlock>(client, {
+        ...params,
+        fromBlock,
+        toBlock,
+    } as GetLogsParameters<abiEvent, abiEvents, strict, fromBlock, toBlock>);
 }
