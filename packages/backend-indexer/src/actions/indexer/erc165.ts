@@ -63,7 +63,7 @@ export async function checkERC165InterfaceSupport<chain extends Chain | undefine
  * Check if a contract supports multiple ERC165 interfaces.
  * @param client publicClient
  * @param params An object containing the address and interfaceIds to check.
- * @returns An array of supported interfaceIds.
+ * @returns A Record of interfaceIds to their support status (true/false).
  */
 export async function checkERC165InterfaceSupportList<chain extends Chain | undefined>(
     client: Client<Transport, chain>,
@@ -71,17 +71,15 @@ export async function checkERC165InterfaceSupportList<chain extends Chain | unde
         address: Address;
         interfaceIds?: Hash[];
     },
-): Promise<Hash[]> {
+): Promise<Record<Hash, boolean>> {
     const { address, interfaceIds = defaultInterfaceIds } = params;
 
-    const supportedInterfaces: Hash[] = [];
+    const supportMap: Record<Hash, boolean> = {};
 
     for (const interfaceId of interfaceIds) {
         try {
             const supported = await checkERC165InterfaceSupport(client, { address, interfaceId });
-            if (supported) {
-                supportedInterfaces.push(interfaceId);
-            }
+            supportMap[interfaceId] = supported;
         } catch (error) {
             throw new Error(
                 `Error checking interface ${interfaceId} for contract ${address}: ${
@@ -91,5 +89,5 @@ export async function checkERC165InterfaceSupportList<chain extends Chain | unde
         }
     }
 
-    return supportedInterfaces;
+    return supportMap;
 }
