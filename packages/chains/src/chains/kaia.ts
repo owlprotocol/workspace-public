@@ -11,5 +11,5 @@ export const kaia = /*#__PURE__*/ defineNetwork({
     slug: "kaia",
     slugAnkr: "klaytn",
     slugDrpc: "klaytn",
-    enabled: true,
+    enabled: false,
 });
