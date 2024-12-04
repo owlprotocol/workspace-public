@@ -51,6 +51,8 @@ export async function setupChain(
 ) {
     const { clientL1 } = params;
 
+    const chainName = client.chain.name;
+
     //0. Topup amounts
     const gasPrice = await getAction(client, getGasPrice, "getGasPrice")({});
 
@@ -80,10 +82,12 @@ export async function setupChain(
     });
 
     //2. Contracts
+    console.log(`Setting up chain contracts on ${chainName}`);
     const { verifyingSignerAddress, mailboxAddress } = params;
     const contracts = await setupChainContracts(client, { verifyingSignerAddress, mailboxAddress }, apiUrl, apiKey);
 
     //3. Bundler Topup
+    console.log(`Topping up bundler ${chainName}`);
     const { bundlerAddress } = params;
 
     const bundlerTopup = await topupAddress(client, {
@@ -96,6 +100,7 @@ export async function setupChain(
     }
 
     //4. Paymaster Topup
+    console.log(`Topping up paymaster ${chainName}`);
     const paymasterTopup = await topupPaymaster(client, {
         paymaster: contracts.verifyingPaymaster.address,
         minBalance: paymasterMinBalance,
