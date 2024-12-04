@@ -1,5 +1,3 @@
-import { addressZod } from "@owlprotocol/zod-sol";
-import { Address } from "viem";
 import { z } from "zod";
 import {
     FieldOverridesSchema,
@@ -9,6 +7,8 @@ import {
     Query,
 } from "@owlprotocol/crud-firebase";
 import { expectType, TypeOf } from "ts-expect";
+import { bytes32Zod } from "@owlprotocol/zod-sol";
+import { Hex } from "viem";
 import { chainIdZod, NetworkId } from "./Network.js";
 
 /**
@@ -17,20 +17,20 @@ import { chainIdZod, NetworkId } from "./Network.js";
  */
 export interface HyperlaneWarpRouteId {
     readonly chainA: number;
-    readonly tokenA: Address;
+    readonly tokenA: Hex;
     readonly chainB: number;
-    readonly tokenB: Address;
+    readonly tokenB: Hex;
 }
 
 export const hyperlaneWarpRouteIdRegex =
-    /^(?<chainA>\d+)-(?<tokenA>0x[a-fA-F0-9]{40})-(?<chainB>\d+)-(?<tokenB>0x[a-fA-F0-9]{40})$/;
+    /^(?<chainA>\d+)-(?<tokenA>0x[a-fA-F0-9]{64})-(?<chainB>\d+)-(?<tokenB>0x[a-fA-F0-9]{64})$/;
 
 export const hyperlaneWarpRouteIdZod = z
     .object({
         chainA: chainIdZod,
-        tokenA: addressZod,
+        tokenA: bytes32Zod,
         chainB: chainIdZod,
-        tokenB: addressZod,
+        tokenB: bytes32Zod,
     })
     .transform(({ chainA, tokenA, chainB, tokenB }) => `${chainA}-${tokenA}-${chainB}-${tokenB}`);
 
@@ -40,16 +40,16 @@ export const decodeHyperlaneWarpRouteId: (id: string) => HyperlaneWarpRouteId = 
 
 export interface HyperlaneWarpRouteData {
     readonly chainA: number;
-    readonly tokenA: Address;
+    readonly tokenA: Hex;
     readonly chainB: number;
-    readonly tokenB: Address;
+    readonly tokenB: Hex;
 }
 
 export const hyperlaneWarpRouteDataZod = z.object({
     chainA: chainIdZod,
-    tokenA: addressZod,
+    tokenA: bytes32Zod,
     chainB: chainIdZod,
-    tokenB: addressZod,
+    tokenB: bytes32Zod,
 });
 
 export const encodeHyperlaneWarpRouteData: (data: HyperlaneWarpRouteData) => HyperlaneWarpRouteData =
