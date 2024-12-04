@@ -51,7 +51,7 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
                 });
             }
         } catch (error) {
-            console.error(`Failed to fetch router for domain ${domain}:`, error);
+            throw new Error(`Failed to fetch router for domain ${domain}: ${error}`);
         }
     }
 
