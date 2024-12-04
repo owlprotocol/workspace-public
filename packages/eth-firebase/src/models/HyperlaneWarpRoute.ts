@@ -7,9 +7,9 @@ import {
     Query,
 } from "@owlprotocol/crud-firebase";
 import { expectType, TypeOf } from "ts-expect";
-import { chainIdZod, NetworkId } from "./Network.js";
 import { bytes32Zod } from "@owlprotocol/zod-sol";
 import { Hex } from "viem";
+import { chainIdZod, NetworkId } from "./Network.js";
 
 /**
  * Store edges of warp routes between tokens

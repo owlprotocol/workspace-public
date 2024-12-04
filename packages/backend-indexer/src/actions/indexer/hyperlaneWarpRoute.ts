@@ -40,23 +40,16 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
             }),
     );
 
-    const results = await Promise.allSettled(promises);
+    const results = await Promise.all(promises);
 
-    const tokenRouters: Array<{ chainA: number; tokenA: Hex; chainB: number; tokenB: Hex }> = [];
-    const routes: { domain: number; router: Hex }[] = [];
+    const routes = results.filter((result): result is { domain: number; router: Hex } => result !== null);
 
-    results.forEach((result) => {
-        if (result.status === "fulfilled" && result.value !== null) {
-            const { domain, router } = result.value;
-            routes.push({ domain, router });
-            tokenRouters.push({
-                chainA,
-                tokenA,
-                chainB: domain,
-                tokenB: router,
-            });
-        }
-    });
+    const tokenRouters = routes.map(({ domain, router }) => ({
+        chainA,
+        tokenA,
+        chainB: domain,
+        tokenB: router,
+    }));
 
     await hyperlaneWarpRouteResource.setBatch(tokenRouters);
 
