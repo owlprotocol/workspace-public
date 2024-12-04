@@ -43,6 +43,8 @@ import {
     ethRoleCol,
     operatorCol,
     erc165SupportsInterfaceCol,
+    warpRouteCol,
+    hyperlaneWarpRouteCol,
 } from "./collection.js";
 import {
     EthBlockId,
@@ -175,6 +177,18 @@ import {
     encodeERC165SupportsInterfaceDataPartial,
     encodeERC165SupportsInterfaceData,
     decodeERC165SupportsInterfaceData,
+    WarpRouteData,
+    WarpRouteId,
+    encodeWarpRouteId,
+    decodeWarpRouteId,
+    encodeWarpRouteDataPartial,
+    encodeWarpRouteData,
+    HyperlaneWarpRouteData,
+    HyperlaneWarpRouteId,
+    encodeHyperlaneWarpRouteData,
+    encodeHyperlaneWarpRouteDataPartial,
+    decodeHyperlaneWarpRouteId,
+    encodeHyperlaneWarpRouteId,
 } from "../models/index.js";
 
 //Disabled for now
@@ -348,6 +362,28 @@ export const ethUserOpResource = getFirebaseResource<
         decodeParentDocId: decodeNetworkId,
     },
     { lruCacheSize },
+);
+// warp route
+export const warpRouteResource = getFirebaseResource<WarpRouteData, WarpRouteId, NetworkId>(firestore, warpRouteCol, {
+    encodeId: encodeWarpRouteId,
+    decodeId: decodeWarpRouteId,
+    encodeDataPartial: encodeWarpRouteDataPartial,
+    encodeData: encodeWarpRouteData,
+    encodeParentDocId: encodeNetworkId,
+    decodeParentDocId: decodeNetworkId,
+});
+
+export const hyperlaneWarpRouteResource = getFirebaseResource<HyperlaneWarpRouteData, HyperlaneWarpRouteId, NetworkId>(
+    firestore,
+    hyperlaneWarpRouteCol,
+    {
+        encodeId: encodeHyperlaneWarpRouteId,
+        decodeId: decodeHyperlaneWarpRouteId,
+        encodeDataPartial: encodeHyperlaneWarpRouteDataPartial,
+        encodeData: encodeHyperlaneWarpRouteData,
+        encodeParentDocId: encodeNetworkId,
+        decodeParentDocId: decodeNetworkId,
+    },
 );
 
 //contractmodels

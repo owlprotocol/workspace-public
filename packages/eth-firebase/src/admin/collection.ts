@@ -38,6 +38,7 @@ import {
     ethUserOpReceiptPath,
     erc165SupportsInterfaceGroupPath,
     erc165SupportsInterfacePath,
+    warpRoutePath,
 } from "../collections.js";
 import {
     ERC1155BalanceEncoded,
@@ -58,6 +59,7 @@ import {
     NetworkId,
     EthUserOpReceiptEncoded,
     ERC165SupportsInterface,
+    WarpRouteData,
 } from "../models/index.js";
 
 //networks
@@ -100,6 +102,10 @@ export const ethUserOpCol = (collectionId: NetworkId) =>
 export const ethUserOpReceiptColGroup = getColGroupRef<EthUserOpReceiptEncoded>(firestore, ethUserOpReceiptGroupPath);
 export const ethUserOpReceiptCol = (collectionId: NetworkId) =>
     getColRef<EthUserOpReceiptEncoded>(firestore, ethUserOpReceiptPath(collectionId));
+// warp route
+export const warpRouteColGroup = getColGroupRef<WarpRouteData>(firestore, ethLogGroupPath);
+export const warpRouteCol = (collectionId: NetworkId) =>
+    getColRef<WarpRouteData>(firestore, warpRoutePath(collectionId));
 
 //contractmodels
 export const erc20ColGroup = getColGroupRef<ERC20Data>(firestore, erc20GroupPath);

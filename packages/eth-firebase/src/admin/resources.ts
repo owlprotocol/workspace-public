@@ -44,6 +44,7 @@ import {
     operatorCol,
     ethUserOpReceiptCol,
     erc165SupportsInterfaceCol,
+    warpRouteCol,
 } from "./collection.js";
 import {
     EthBlockId,
@@ -185,6 +186,12 @@ import {
     encodeERC165SupportsInterfaceDataPartial,
     encodeERC165SupportsInterfaceData,
     decodeERC165SupportsInterfaceData,
+    WarpRouteId,
+    WarpRouteData,
+    encodeWarpRouteId,
+    decodeWarpRouteId,
+    encodeWarpRouteDataPartial,
+    encodeWarpRouteData,
 } from "../models/index.js";
 
 //Disabled for now
@@ -379,6 +386,16 @@ export const ethUserOpReceiptResource = getFirebaseResource<
     },
     { lruCacheSize },
 );
+
+// warp route
+export const warpRouteResource = getFirebaseResource<WarpRouteData, WarpRouteId, NetworkId>(firestore, warpRouteCol, {
+    encodeId: encodeWarpRouteId,
+    decodeId: decodeWarpRouteId,
+    encodeDataPartial: encodeWarpRouteDataPartial,
+    encodeData: encodeWarpRouteData,
+    encodeParentDocId: encodeNetworkId,
+    decodeParentDocId: decodeNetworkId,
+});
 
 //contractmodels
 export const erc20Resource = getFirebaseResource<ERC20Data, ERC20Id, NetworkId>(firestore, erc20Col, {
