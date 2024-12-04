@@ -44,6 +44,8 @@ export const ethUserOpReceiptPath = (collectionId: NetworkId) => {
     return join(networkPath, encodeNetworkId(collectionId), ethUserOpReceiptGroupPath);
 };
 
+export const hyperlaneWarpRoutePath = "hyperlaneWarpRoute";
+
 //contractmodels
 export const erc20GroupPath = "erc20";
 export const erc20Path = (collectionId: NetworkId) => {

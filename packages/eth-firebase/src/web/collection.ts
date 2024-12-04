@@ -36,6 +36,7 @@ import {
     networkPrivatePath,
     erc165SupportsInterfaceGroupPath,
     erc165SupportsInterfacePath,
+    hyperlaneWarpRoutePath,
 } from "../collections.js";
 import {
     ERC1155BalanceEncoded,
@@ -55,6 +56,7 @@ import {
     NetworkDataEncoded,
     NetworkId,
     ERC165SupportsInterface,
+    HyperlaneWarpRouteData,
 } from "../models/index.js";
 
 //networks
@@ -93,6 +95,9 @@ export const ethLogCol = (collectionId: NetworkId) => getColRef<LogEncoded>(fire
 export const ethUserOpColGroup = getColGroupRef<EthUserOpReceiptEncoded>(firestore, ethUserOpGroupPath);
 export const ethUserOpCol = (collectionId: NetworkId) =>
     getColRef<EthUserOpReceiptEncoded>(firestore, ethUserOpPath(collectionId));
+
+// hyperlane
+export const hyperlaneWarpRouteCol = getColRef<HyperlaneWarpRouteData>(firestore, hyperlaneWarpRoutePath);
 
 //contractmodels
 export const erc20ColGroup = getColGroupRef<ERC20Data>(firestore, erc20GroupPath);

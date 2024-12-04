@@ -43,6 +43,7 @@ import {
     ethRoleCol,
     operatorCol,
     erc165SupportsInterfaceCol,
+    hyperlaneWarpRouteCol,
 } from "./collection.js";
 import {
     EthBlockId,
@@ -175,6 +176,12 @@ import {
     encodeERC165SupportsInterfaceDataPartial,
     encodeERC165SupportsInterfaceData,
     decodeERC165SupportsInterfaceData,
+    HyperlaneWarpRouteData,
+    HyperlaneWarpRouteId,
+    encodeHyperlaneWarpRouteData,
+    encodeHyperlaneWarpRouteDataPartial,
+    decodeHyperlaneWarpRouteId,
+    encodeHyperlaneWarpRouteId,
 } from "../models/index.js";
 
 //Disabled for now
@@ -348,6 +355,18 @@ export const ethUserOpResource = getFirebaseResource<
         decodeParentDocId: decodeNetworkId,
     },
     { lruCacheSize },
+);
+
+// hyperlane
+export const hyperlaneWarpRouteResource = getFirebaseResource<HyperlaneWarpRouteData, HyperlaneWarpRouteId>(
+    firestore,
+    hyperlaneWarpRouteCol,
+    {
+        encodeId: encodeHyperlaneWarpRouteId,
+        decodeId: decodeHyperlaneWarpRouteId,
+        encodeDataPartial: encodeHyperlaneWarpRouteDataPartial,
+        encodeData: encodeHyperlaneWarpRouteData,
+    },
 );
 
 //contractmodels
