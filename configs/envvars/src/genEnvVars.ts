@@ -155,7 +155,8 @@ const EXPLORER_API_DEFAULTS: Record<string, string | undefined> = {
     10: "https://api-optimistic.etherscan.io/api",
     11155420: "https://api-sepolia-optimistic.etherscan.io/api",
     //Avalanche
-    43114: "https://api.snowtrace.io/api",
+    43114: "https://api.routescan.io/v2/network/mainnet/evm/43114/",
+    43113: "https://api.routescan.io/v2/network/mainnet/evm/43113/",
     //BSC
     56: "https://api.bscscan.com/api",
     97: "https://api-testnet.bscscan.com/api",
@@ -197,7 +198,8 @@ const EXPLORER_API_KEY_DEFAULTS: Record<string, string | undefined> = {
     11155420: "BG78ZBIAH64QWA748MMNVVZEHW13JR4Z6I",
     //10: "",
     //Avalanche
-    //43114: "",
+    43114: "",
+    43113: "",
     //BSC
     56: "9TRND69HZABV4HU73SPTECP72S94Q8K5B7",
     97: "9TRND69HZABV4HU73SPTECP72S94Q8K5B7",

@@ -1,6 +1,8 @@
 export * from "./arbitrum.js";
 export * from "./arbitrumNova.js";
 export * from "./arbitrumSepolia.js";
+export * from "./avalanche.js";
+export * from "./avalancheFuji.js";
 export * from "./base.js";
 export * from "./baseSepolia.js";
 export * from "./berachainArtioTestnet.js";
@@ -22,6 +24,7 @@ export * from "./hedwigTestnet.js";
 export * from "./holesky.js";
 export * from "./iotex.js";
 export * from "./iotexTestnet.js";
+export * from "./kaia.js";
 export * from "./kaiaTestnet.js";
 export * from "./linea.js";
 export * from "./lineaSepolia.js";

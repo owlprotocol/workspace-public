@@ -1,8 +1,9 @@
-import { opBNBTestnet } from "@owlprotocol/chains";
+import { avalanche } from "@owlprotocol/chains";
 import { networkPrivateResource } from "@owlprotocol/core-firebase/admin";
 
 import { getUtilityAccount, getRelayerAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
 import { Chain, createWalletClient, http, nonceManager } from "viem";
+import { getChainEnvvars } from "@owlprotocol/envvars";
 import { setupChain } from "../setupChain.js";
 
 export async function main() {
@@ -15,7 +16,7 @@ export async function main() {
     const paymasterSignerAccount = getPaymasterSignerAccount({ nonceManager });
 
     //Network to deploy
-    const network = opBNBTestnet;
+    const network = avalanche;
 
     const chain = { id: network.chainId, ...network } as Chain;
     const walletClient = createWalletClient({
@@ -34,20 +35,27 @@ export async function main() {
           })
         : undefined;
 
+    const chainEnvVars = getChainEnvvars(network.chainId);
+
     console.debug(`🛠️  Deploying ${network.name}`);
 
-    const result = await setupChain(walletClient, {
-        bundlerAddress: bundlerAccount.address,
-        verifyingSignerAddress: paymasterSignerAccount.address,
-        clientL1: walletClientL1 as any,
-        bundlerTargetBalance: network.targetRelayerBalance as bigint,
-        bundlerMinBalance: network.minRelayerBalance as bigint,
-        paymasterTargetBalance: network.targetPaymasterBalance as bigint,
-        paymasterMinBalance: network.minPaymasterBalance as bigint,
-        // paymasterGasBudget: 1_000_000_000n,
-        utilityTargetBalance: network.targetUtilityBalance as bigint,
-        utilityMinBalance: network.minUtilityBalance as bigint,
-    });
+    const result = await setupChain(
+        walletClient,
+        {
+            bundlerAddress: bundlerAccount.address,
+            verifyingSignerAddress: paymasterSignerAccount.address,
+            clientL1: walletClientL1 as any,
+            bundlerTargetBalance: network.targetRelayerBalance as bigint,
+            bundlerMinBalance: network.minRelayerBalance as bigint,
+            paymasterTargetBalance: network.targetPaymasterBalance as bigint,
+            paymasterMinBalance: network.minPaymasterBalance as bigint,
+            paymasterGasBudget: 50_000_000n,
+            utilityTargetBalance: network.targetUtilityBalance as bigint,
+            utilityMinBalance: network.minUtilityBalance as bigint,
+        },
+        chainEnvVars.explorerApi,
+        chainEnvVars.explorerApiKey,
+    );
 
     console.debug({ bundlerTopup: result.bundlerTopup, paymasterTopup: result.paymasterTopup });
 }
