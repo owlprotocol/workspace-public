@@ -262,7 +262,9 @@ export const ENVVARS: EnvVarDef[] = [
     ...NETWORK_ENVVARS,
     { name: "OPENAI_SECRET_KEY", platform: "node" },
     { name: "OWL_DOMAINS", platform: "node", defaultValue: "*" },
-    { name: "OWL_DASHBOARD_URL", platform: "browser", defaultValue: "http://localhost:5173" },
+    { name: "OWL_DASHBOARD_URL", platform: "browser", defaultValue: "http://dashboard.owlprotocol.xyz" },
+    { name: "OWL_AUTH_URL", platform: "browser", defaultValue: "https://auth.owl.build" },
+    { name: "OWL_WALLET_URL", platform: "browser", defaultValue: "https://wallet.owl.build" },
 ];
 
 const NODE_ENV_VAR = {
