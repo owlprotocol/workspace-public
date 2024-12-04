@@ -42,6 +42,7 @@ import {
     networkResource,
     erc165SupportsInterfaceGroupQuery,
     erc165SupportsInterfaceResource,
+    hyperlaneWarpRouteResource,
 } from "../web/index.js";
 import {
     ethBlockGroupPath,
@@ -62,6 +63,7 @@ import {
     operatorGroupPath,
     networkPath,
     erc165SupportsInterfaceGroupPath,
+    hyperlaneWarpRoutePath,
 } from "../collections.js";
 import {
     EthBlockId,
@@ -307,4 +309,10 @@ export const erc165SupportsInterfaceGroupQueryOptions = getFirebaseQueryReactQue
 >(erc165SupportsInterfaceGroupQuery, {
     prefixPath: [],
     collectionGroup: erc165SupportsInterfaceGroupPath,
+});
+
+// hyperlane
+export const hyperlaneWarpRouteQueryOptions = getFirebaseResourceReactQueryOptions(hyperlaneWarpRouteResource, {
+    prefixPath: [],
+    collectionGroup: hyperlaneWarpRoutePath,
 });
