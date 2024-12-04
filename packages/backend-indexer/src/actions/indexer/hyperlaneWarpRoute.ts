@@ -1,5 +1,5 @@
 import { Client, Transport, Address, Chain, Hex, zeroAddress } from "viem";
-import { readContract,getChainId } from "viem/actions";
+import { readContract, getChainId } from "viem/actions";
 import { Router } from "@owlprotocol/contracts-hyperlane/artifacts";
 import { hyperlaneWarpRouteResource } from "@owlprotocol/eth-firebase/admin";
 import { getAction } from "viem/utils";
@@ -12,48 +12,53 @@ import { getAction } from "viem/utils";
  */
 export async function getHyperlaneRoutes<chain extends Chain | undefined>(
     client: Client<Transport, chain>,
-    params: { address: Address }
+    params: { address: Address },
 ): Promise<{ domain: number; router: Hex }[]> {
     const { address: tokenA } = params;
 
-
     const chainA = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
 
+    const domains: number[] = [
+        ...(await readContract(client, {
+            address: tokenA,
+            abi: Router.abi,
+            functionName: "domains",
+        })),
+    ];
 
-    const readonlyDomains = await readContract(client, {
-        address: tokenA,
-        abi: Router.abi,
-        functionName: "domains",
-    });
+    const promises = domains.map((domain) =>
+        readContract(client, {
+            address: tokenA,
+            abi: Router.abi,
+            functionName: "routers",
+            args: [domain],
+        })
+            .then((routerAddress: Hex) => (routerAddress !== zeroAddress ? { domain, router: routerAddress } : null))
+            .catch((error) => {
+                console.error(`Failed to fetch router for domain ${domain}:`, error);
+                return null;
+            }),
+    );
 
-    const domains: number[] = [...readonlyDomains];
+    const results = await Promise.allSettled(promises);
 
+    const tokenRouters: Array<{ chainA: number; tokenA: Hex; chainB: number; tokenB: Hex }> = [];
     const routes: { domain: number; router: Hex }[] = [];
 
-    for (const domain of domains) {
-        try {
-            const routerAddress: Hex = await readContract(client, {
-                address: tokenA,
-                abi: Router.abi,
-                functionName: "routers",
-                args: [domain],
+    results.forEach((result) => {
+        if (result.status === "fulfilled" && result.value !== null) {
+            const { domain, router } = result.value;
+            routes.push({ domain, router });
+            tokenRouters.push({
+                chainA,
+                tokenA,
+                chainB: domain,
+                tokenB: router,
             });
-
-            if (routerAddress !== zeroAddress) {
-                routes.push({ domain, router: routerAddress });
-
-
-                await hyperlaneWarpRouteResource.upsert({
-                    chainA,
-                    tokenA,
-                    chainB: domain,
-                    tokenB: routerAddress,
-                });
-            }
-        } catch (error) {
-            throw new Error(`Failed to fetch router for domain ${domain}: ${error}`);
         }
-    }
+    });
+
+    await hyperlaneWarpRouteResource.setBatch(tokenRouters);
 
     return routes;
 }
