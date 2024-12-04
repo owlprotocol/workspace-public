@@ -36,9 +36,6 @@ import {
     networkPrivatePath,
     erc165SupportsInterfaceGroupPath,
     erc165SupportsInterfacePath,
-    warpRoutePath,
-    warpRouteGroupPath,
-    hyperlaneWarpRouteGroupPath,
     hyperlaneWarpRoutePath,
 } from "../collections.js";
 import {
@@ -59,7 +56,6 @@ import {
     NetworkDataEncoded,
     NetworkId,
     ERC165SupportsInterface,
-    WarpRouteData,
     HyperlaneWarpRouteData,
 } from "../models/index.js";
 
@@ -100,17 +96,8 @@ export const ethUserOpColGroup = getColGroupRef<EthUserOpReceiptEncoded>(firesto
 export const ethUserOpCol = (collectionId: NetworkId) =>
     getColRef<EthUserOpReceiptEncoded>(firestore, ethUserOpPath(collectionId));
 
-// warp route
-export const warpRouteColGroup = getColGroupRef<WarpRouteData>(firestore, warpRouteGroupPath);
-export const warpRouteCol = (collectionId: NetworkId) =>
-    getColRef<WarpRouteData>(firestore, warpRoutePath(collectionId));
-
-export const hyperlaneWarpRouteColGroup = getColGroupRef<HyperlaneWarpRouteData>(
-    firestore,
-    hyperlaneWarpRouteGroupPath,
-);
-export const hyperlaneWarpRouteCol = (collectionId: NetworkId) =>
-    getColRef<HyperlaneWarpRouteData>(firestore, hyperlaneWarpRoutePath(collectionId));
+// hyperlane
+export const hyperlaneWarpRouteCol = getColRef<HyperlaneWarpRouteData>(firestore, hyperlaneWarpRoutePath);
 
 //contractmodels
 export const erc20ColGroup = getColGroupRef<ERC20Data>(firestore, erc20GroupPath);

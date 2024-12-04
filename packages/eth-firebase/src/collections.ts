@@ -44,14 +44,7 @@ export const ethUserOpReceiptPath = (collectionId: NetworkId) => {
     return join(networkPath, encodeNetworkId(collectionId), ethUserOpReceiptGroupPath);
 };
 
-export const warpRouteGroupPath = "warpRoute";
-export const warpRoutePath = (collectionId: NetworkId) => {
-    return join(networkPath, encodeNetworkId(collectionId), warpRouteGroupPath);
-};
-export const hyperlaneWarpRouteGroupPath = "hyperlaneWarpRoute";
-export const hyperlaneWarpRoutePath = (collectionId: NetworkId) => {
-    return join(networkPath, encodeNetworkId(collectionId), hyperlaneWarpRouteGroupPath);
-};
+export const hyperlaneWarpRoutePath = "hyperlaneWarpRoute";
 
 //contractmodels
 export const erc20GroupPath = "erc20";

@@ -33,7 +33,6 @@ import {
     erc20BalanceColGroup,
     erc721ColGroup,
     erc165SupportsInterfaceColGroup,
-    warpRouteColGroup,
 } from "./collection.js";
 import {
     EthBlockId,
@@ -91,11 +90,6 @@ import {
     decodeERC165SupportsInterfaceId,
     encodeERC165SupportsInterfaceDataPartial,
     decodeERC165SupportsInterfaceData,
-    WarpRouteData,
-    WarpRouteId,
-    decodeWarpRouteId,
-    encodeWarpRouteDataPartial,
-    decodeWarpRouteData,
 } from "../models/index.js";
 import { NetworkId, encodeNetworkId, decodeNetworkId } from "../models/Network.js";
 
@@ -186,21 +180,6 @@ export const ethUserOpGroupQuery = getFirebaseQueryResource<
     decodeId: decodeEthUserOpId,
     encodeDataPartial: encodeEthUserOpDataPartial,
     decodeData: decodeEthUserOpData,
-    encodeParentDocId: encodeNetworkId,
-    decodeParentDocId: decodeNetworkId,
-});
-// warp route
-export const warpRouteGroupQuery = getFirebaseQueryResource<
-    WarpRouteData,
-    WarpRouteId,
-    NetworkId,
-    WarpRouteData,
-    WarpRouteData,
-    Query<"admin", WarpRouteData>
->(warpRouteColGroup, {
-    decodeId: decodeWarpRouteId,
-    encodeDataPartial: encodeWarpRouteDataPartial,
-    decodeData: decodeWarpRouteData,
     encodeParentDocId: encodeNetworkId,
     decodeParentDocId: decodeNetworkId,
 });

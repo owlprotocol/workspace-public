@@ -11,34 +11,45 @@ import {
 import { expectType, TypeOf } from "ts-expect";
 import { chainIdZod, NetworkId } from "./Network.js";
 
+/**
+ * Store edges of warp routes between tokens
+ * This could be used to generate a graph like https://hyperchains.vercel.app/routes
+ */
 export interface HyperlaneWarpRouteId {
-    readonly chainId: number;
-    readonly address: Address;
+    readonly chainA: number;
+    readonly tokenA: Address;
+    readonly chainB: number;
+    readonly tokenB: Address;
 }
 
-export const hyperlaneWarpRouteIdRegex = /^(?<chainId>\d+)-(?<address>0x[a-fA-F0-9]{40})$/;
+export const hyperlaneWarpRouteIdRegex =
+    /^(?<chainA>\d+)-(?<tokenA>0x[a-fA-F0-9]{40})-(?<chainB>\d+)-(?<tokenB>0x[a-fA-F0-9]{40})$/;
 
 export const hyperlaneWarpRouteIdZod = z
     .object({
-        chainId: chainIdZod,
-        address: addressZod,
+        chainA: chainIdZod,
+        tokenA: addressZod,
+        chainB: chainIdZod,
+        tokenB: addressZod,
     })
-    .transform(({ chainId, address }) => `${chainId}-${address}`);
+    .transform(({ chainA, tokenA, chainB, tokenB }) => `${chainA}-${tokenA}-${chainB}-${tokenB}`);
 
 export const encodeHyperlaneWarpRouteId: (id: string | HyperlaneWarpRouteId) => string = hyperlaneWarpRouteIdZod.parse;
 export const decodeHyperlaneWarpRouteId: (id: string) => HyperlaneWarpRouteId = (id) =>
     hyperlaneWarpRouteIdRegex.exec(id)!.groups! as unknown as HyperlaneWarpRouteId;
 
 export interface HyperlaneWarpRouteData {
-    readonly chainId: number;
-    readonly address: Address;
-    readonly type: string;
+    readonly chainA: number;
+    readonly tokenA: Address;
+    readonly chainB: number;
+    readonly tokenB: Address;
 }
 
 export const hyperlaneWarpRouteDataZod = z.object({
-    chainId: chainIdZod,
-    address: addressZod,
-    type: z.string(),
+    chainA: chainIdZod,
+    tokenA: addressZod,
+    chainB: chainIdZod,
+    tokenB: addressZod,
 });
 
 export const encodeHyperlaneWarpRouteData: (data: HyperlaneWarpRouteData) => HyperlaneWarpRouteData =
@@ -78,7 +89,8 @@ expectType<TypeOf<HyperlaneWarpRouteData, z.input<typeof hyperlaneWarpRouteDataZ
 expectType<TypeOf<HyperlaneWarpRouteData, z.output<typeof hyperlaneWarpRouteDataZod>>>(true);
 
 export const HyperlaneWarpRouteFieldOverrides: FieldOverridesSchema<keyof HyperlaneWarpRouteData> = {
-    chainId: "COLLECTION_GROUP",
-    address: "COLLECTION_GROUP",
-    type: "IGNORE",
+    chainA: "COLLECTION",
+    chainB: "COLLECTION",
+    tokenA: "COLLECTION",
+    tokenB: "COLLECTION",
 };

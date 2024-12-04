@@ -43,7 +43,6 @@ import {
     ethRoleCol,
     operatorCol,
     erc165SupportsInterfaceCol,
-    warpRouteCol,
     hyperlaneWarpRouteCol,
 } from "./collection.js";
 import {
@@ -177,12 +176,6 @@ import {
     encodeERC165SupportsInterfaceDataPartial,
     encodeERC165SupportsInterfaceData,
     decodeERC165SupportsInterfaceData,
-    WarpRouteData,
-    WarpRouteId,
-    encodeWarpRouteId,
-    decodeWarpRouteId,
-    encodeWarpRouteDataPartial,
-    encodeWarpRouteData,
     HyperlaneWarpRouteData,
     HyperlaneWarpRouteId,
     encodeHyperlaneWarpRouteData,
@@ -363,17 +356,9 @@ export const ethUserOpResource = getFirebaseResource<
     },
     { lruCacheSize },
 );
-// warp route
-export const warpRouteResource = getFirebaseResource<WarpRouteData, WarpRouteId, NetworkId>(firestore, warpRouteCol, {
-    encodeId: encodeWarpRouteId,
-    decodeId: decodeWarpRouteId,
-    encodeDataPartial: encodeWarpRouteDataPartial,
-    encodeData: encodeWarpRouteData,
-    encodeParentDocId: encodeNetworkId,
-    decodeParentDocId: decodeNetworkId,
-});
 
-export const hyperlaneWarpRouteResource = getFirebaseResource<HyperlaneWarpRouteData, HyperlaneWarpRouteId, NetworkId>(
+// hyperlane
+export const hyperlaneWarpRouteResource = getFirebaseResource<HyperlaneWarpRouteData, HyperlaneWarpRouteId>(
     firestore,
     hyperlaneWarpRouteCol,
     {
@@ -381,8 +366,6 @@ export const hyperlaneWarpRouteResource = getFirebaseResource<HyperlaneWarpRoute
         decodeId: decodeHyperlaneWarpRouteId,
         encodeDataPartial: encodeHyperlaneWarpRouteDataPartial,
         encodeData: encodeHyperlaneWarpRouteData,
-        encodeParentDocId: encodeNetworkId,
-        decodeParentDocId: decodeNetworkId,
     },
 );
 
