@@ -1,4 +1,4 @@
-import { Client, Transport, Address, Chain, Hex, zeroAddress } from "viem";
+import { Client, Transport, Address, Chain, Hex, zeroAddress, padHex } from "viem";
 import { readContract, getChainId } from "viem/actions";
 import { Router } from "@owlprotocol/contracts-hyperlane/artifacts";
 import { hyperlaneWarpRouteResource } from "@owlprotocol/eth-firebase/admin";
@@ -44,12 +44,24 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
 
     const routes = results.filter((result): result is { domain: number; router: Hex } => result !== null);
 
-    const tokenRouters = routes.map(({ domain, router }) => ({
-        chainA,
-        tokenA,
-        chainB: domain,
-        tokenB: router,
-    }));
+    const tokenRouters = routes.flatMap(({ domain, router }) => {
+        const tokenABytes32 = padHex(tokenA, { size: 32 });
+
+        return [
+            {
+                chainA,
+                tokenA: tokenABytes32,
+                chainB: domain,
+                tokenB: router,
+            },
+            {
+                chainA: domain,
+                tokenA: router,
+                chainB: chainA,
+                tokenB: tokenABytes32,
+            },
+        ];
+    });
 
     await hyperlaneWarpRouteResource.setBatch(tokenRouters);
 
