@@ -14,7 +14,7 @@ export async function getLogs<
     client: Client<Transport, chain>,
     params: GetLogsParameters<abiEvent, abiEvents, strict, fromBlock, toBlock>,
 ): Promise<GetLogsReturnType<abiEvent, abiEvents, strict, fromBlock, toBlock>> {
-    let resolvedToBlock: BlockNumber | BlockTag | undefined;
+    let resolvedToBlock: BlockNumber | BlockTag;
     if (params.toBlock === "latest" || params.toBlock === undefined) {
         resolvedToBlock = await getBlockNumber(client);
     } else {
