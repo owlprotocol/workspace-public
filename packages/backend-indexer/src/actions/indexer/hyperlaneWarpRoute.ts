@@ -62,7 +62,7 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
         },
     ]);
 
-    const wrappedTokenRoute = await getTokenAddress(client, address, chainA);
+    const wrappedTokenRoute = await getHypERC20WrappedTokenAddressAsBytes32(client, address, chainA);
     if (wrappedTokenRoute) {
         tokenRouters.push(wrappedTokenRoute);
     }
@@ -73,19 +73,20 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
 }
 
 /**
- * Fetch and return collateral address.
+ * Fetch and return wrapped token address as a bytes32.
  * @param client publicClient
  * @param address The router address.
  * @param chainId The chain ID.
+ * @returns Object containing the wrapped token address as a bytes32, the chainId, and the router address as a bytes32.
  */
-async function getTokenAddress(
+async function getHypERC20WrappedTokenAddressAsBytes32(
     client: Client<Transport>,
     address: Address,
     chainId: number,
 ): Promise<HyperlaneWarpRouteData | null> {
     const tokenA = padHex(address, { size: 32 });
     try {
-        // Fetch collateral address
+        // Fetch wrapped token address
         const token = await readContract(client, {
             address,
             abi: HypERC20Collateral.abi,
@@ -96,7 +97,7 @@ async function getTokenAddress(
 
         return {
             chainA: chainId,
-            tokenA: tokenBytes32, // collateral address
+            tokenA: tokenBytes32, // wrapped token address
             chainB: chainId,
             tokenB: tokenA, // router address
         };
