@@ -7,8 +7,8 @@ import {
     Query,
 } from "@owlprotocol/crud-firebase";
 import { expectType, TypeOf } from "ts-expect";
-import { bytes32Zod } from "@owlprotocol/zod-sol";
-import { Hex } from "viem";
+import { addressZod, bytes32Zod } from "@owlprotocol/zod-sol";
+import { Address, Hex } from "viem";
 import { chainIdZod, NetworkId } from "./Network.js";
 
 /**
@@ -39,6 +39,7 @@ export const decodeHyperlaneWarpRouteId: (id: string) => HyperlaneWarpRouteId = 
     hyperlaneWarpRouteIdRegex.exec(id)!.groups! as unknown as HyperlaneWarpRouteId;
 
 export interface HyperlaneWarpRouteData {
+    readonly wrappedTokenAddress?: Address;
     readonly chainA: number;
     readonly tokenA: Hex;
     readonly chainB: number;
@@ -46,6 +47,7 @@ export interface HyperlaneWarpRouteData {
 }
 
 export const hyperlaneWarpRouteDataZod = z.object({
+    wrappedTokenAddress: addressZod.optional(),
     chainA: chainIdZod,
     tokenA: bytes32Zod,
     chainB: chainIdZod,
@@ -93,4 +95,5 @@ export const HyperlaneWarpRouteFieldOverrides: FieldOverridesSchema<keyof Hyperl
     chainB: "COLLECTION",
     tokenA: "COLLECTION",
     tokenB: "COLLECTION",
+    wrappedTokenAddress: "COLLECTION",
 };
