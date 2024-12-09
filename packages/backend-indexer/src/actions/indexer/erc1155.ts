@@ -30,8 +30,6 @@ export async function getERC1155Tokens<chain extends Chain | undefined>(
         throw new Error("One of address or account must be specified");
     }
 
-    // const getLogsAction = getAction(client, getLogs, "getLogs");
-
     const logsBatchPromise = getLogs(client, {
         address,
         event: TransferBatch,

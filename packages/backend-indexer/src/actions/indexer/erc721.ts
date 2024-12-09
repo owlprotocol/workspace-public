@@ -31,7 +31,6 @@ export async function getERC721Tokens<chain extends Chain | undefined>(
         throw new Error("One of address or account must be specified");
     }
 
-    // const getLogsAction = getAction(client, getLogs, "getLogs");
     const logs = await getLogs(client, {
         address,
         event: Transfer,

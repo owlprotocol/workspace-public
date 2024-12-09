@@ -14,21 +14,26 @@ export async function getLogs<
     client: Client<Transport, chain>,
     params: GetLogsParameters<abiEvent, abiEvents, strict, fromBlock, toBlock>,
 ): Promise<GetLogsReturnType<abiEvent, abiEvents, strict, fromBlock, toBlock>> {
-    const toBlock = params.toBlock ?? (await getBlockNumber(client));
+    let resolvedToBlock: BlockNumber | BlockTag | undefined;
+    if (params.toBlock === "latest" || params.toBlock === undefined) {
+        resolvedToBlock = await getBlockNumber(client);
+    } else {
+        resolvedToBlock = params.toBlock;
+    }
 
-    let fromBlock = params.fromBlock ?? (typeof toBlock === "bigint" ? toBlock - 10_000n : undefined);
+    let fromBlock = params.fromBlock ?? (typeof resolvedToBlock === "bigint" ? resolvedToBlock - 10_000n : undefined);
 
     if (typeof fromBlock === "bigint") {
         fromBlock = fromBlock < 0n ? 0n : fromBlock;
     }
 
-    if (typeof fromBlock === "bigint" && typeof toBlock === "bigint" && toBlock - fromBlock > 10_000n) {
-        throw new Error("Block range too large. Ensure `toBlock - fromBlock < 10,000`.");
+    if (typeof fromBlock === "bigint" && typeof resolvedToBlock === "bigint" && resolvedToBlock - fromBlock > 10_000n) {
+        throw new Error("Block range must be less than 10,000 blocks.");
     }
 
     return await getLogsViem<chain, abiEvent, abiEvents, strict, fromBlock, toBlock>(client, {
         ...params,
         fromBlock,
-        toBlock,
+        toBlock: resolvedToBlock,
     } as GetLogsParameters<abiEvent, abiEvents, strict, fromBlock, toBlock>);
 }
