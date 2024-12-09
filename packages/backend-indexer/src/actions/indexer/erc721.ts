@@ -6,7 +6,8 @@ import { ERC721 } from "@owlprotocol/eth-firebase/models";
 import { NetworkId } from "@owlprotocol/eth-firebase/models";
 import { erc721Resource } from "@owlprotocol/eth-firebase/admin";
 import { getAction } from "viem/utils";
-import { getChainId, getLogs, readContract } from "viem/actions";
+import { getChainId, readContract } from "viem/actions";
+import { getLogs } from "./getLogs.js";
 
 type OwnerInputs = { address: Address; owner: Address; blockNumber: bigint };
 
@@ -30,8 +31,12 @@ export async function getERC721Tokens<chain extends Chain | undefined>(
         throw new Error("One of address or account must be specified");
     }
 
-    const getLogsAction = getAction(client, getLogs, "getLogs");
-    const logs = await getLogsAction({ address, event: Transfer, args: { to: account }, strict: true, fromBlock: 0n });
+    const logs = await getLogs(client, {
+        address,
+        event: Transfer,
+        args: { to: account },
+        strict: true,
+    });
 
     const idsToOwnerInputs = new Map<bigint, OwnerInputs>();
     const setIdIfBlockNumberGreater = (id: bigint, ownerInputs: OwnerInputs) => {

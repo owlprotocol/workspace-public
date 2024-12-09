@@ -1,11 +1,12 @@
 import { Address } from "abitype";
 import { Chain, Client, decodeEventLog, Transport } from "viem";
 import { getAction } from "viem/utils";
-import { getChainId, getLogs, readContract } from "viem/actions";
+import { getChainId, readContract } from "viem/actions";
 import { balanceOf } from "@owlprotocol/contracts-diamond/artifacts/IERC1155";
 import { ERC1155Balance } from "@owlprotocol/eth-firebase/models";
 import { erc1155BalanceResource } from "@owlprotocol/eth-firebase/admin";
 import { TransferBatch, TransferSingle } from "@owlprotocol/contracts-diamond/artifacts/IERC1155";
+import { getLogs } from "./getLogs.js";
 
 type BalanceInputs = { address: Address; account: Address; blockNumber: bigint };
 
@@ -29,16 +30,13 @@ export async function getERC1155Tokens<chain extends Chain | undefined>(
         throw new Error("One of address or account must be specified");
     }
 
-    const getLogsAction = getAction(client, getLogs, "getLogs");
-
-    const logsBatchPromise = getLogsAction({
+    const logsBatchPromise = getLogs(client, {
         address,
         event: TransferBatch,
         args: { to: account },
         strict: true,
-        fromBlock: 0n,
     });
-    const logsSinglePromise = getLogsAction({
+    const logsSinglePromise = getLogs(client, {
         address,
         event: TransferSingle,
         args: { to: account },
