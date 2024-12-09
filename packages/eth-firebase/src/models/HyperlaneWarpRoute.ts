@@ -95,5 +95,5 @@ export const HyperlaneWarpRouteFieldOverrides: FieldOverridesSchema<keyof Hyperl
     chainB: "COLLECTION",
     tokenA: "COLLECTION",
     tokenB: "COLLECTION",
-    wrappedTokenAddress: "IGNORE",
+    wrappedTokenAddress: "COLLECTION",
 };
