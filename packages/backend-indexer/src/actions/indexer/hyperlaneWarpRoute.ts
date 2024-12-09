@@ -14,12 +14,23 @@ import { HyperlaneWarpRouteData } from "@owlprotocol/eth-firebase/admin";
 export async function getHyperlaneRoutes<chain extends Chain | undefined>(
     client: Client<Transport, chain>,
     params: { address: Address },
-): Promise<{ domain: number; router: Hex }[]> {
+): Promise<{ domain: number; router: Hex; wrappedTokenAddress?: Address }[]> {
     const { address } = params;
 
     const tokenA = padHex(address, { size: 32 });
 
     const chainA = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
+
+    let wrappedTokenAddress: Address | undefined;
+    try {
+        wrappedTokenAddress = await readContract(client, {
+            address,
+            abi: HypERC20Collateral.abi,
+            functionName: "wrappedToken",
+        });
+    } catch (error) {
+        console.warn(`Failed to fetch wrapped token for router ${address}:`, error);
+    }
 
     const domains: number[] = [
         ...(await readContract(client, {
@@ -49,12 +60,14 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
 
     const tokenRouters: HyperlaneWarpRouteData[] = routes.flatMap(({ domain, router }) => [
         {
+            wrappedTokenAddress,
             chainA,
             tokenA,
             chainB: domain,
             tokenB: router,
         },
         {
+            wrappedTokenAddress,
             chainA: domain,
             tokenA: router,
             chainB: chainA,
@@ -62,47 +75,7 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
         },
     ]);
 
-    const wrappedTokenRoute = await getHypERC20WrappedTokenAddressAsBytes32(client, address, chainA);
-    if (wrappedTokenRoute) {
-        tokenRouters.push(wrappedTokenRoute);
-    }
-
     await hyperlaneWarpRouteResource.setBatch(tokenRouters);
 
     return routes;
-}
-
-/**
- * Fetch and return wrapped token address as a bytes32.
- * @param client publicClient
- * @param address The router address.
- * @param chainId The chain ID.
- * @returns Object containing the wrapped token address as a bytes32, the chainId, and the router address as a bytes32.
- */
-async function getHypERC20WrappedTokenAddressAsBytes32(
-    client: Client<Transport>,
-    address: Address,
-    chainId: number,
-): Promise<HyperlaneWarpRouteData | null> {
-    const tokenA = padHex(address, { size: 32 });
-    try {
-        // Fetch wrapped token address
-        const token = await readContract(client, {
-            address,
-            abi: HypERC20Collateral.abi,
-            functionName: "wrappedToken",
-        });
-
-        const tokenBytes32 = padHex(token as Address, { size: 32 });
-
-        return {
-            chainA: chainId,
-            tokenA: tokenBytes32, // wrapped token address
-            chainB: chainId,
-            tokenB: tokenA, // router address
-        };
-    } catch (error) {
-        console.warn(`Failed to fetch wrapped token for router ${address}:`, error);
-        return null;
-    }
 }
