@@ -1,3 +1,4 @@
+export * from "./apeChain.js";
 export * from "./arbitrum.js";
 export * from "./arbitrumNova.js";
 export * from "./arbitrumSepolia.js";
@@ -15,6 +16,7 @@ export * from "./blastSepolia.js";
 export * from "./bsc.js";
 export * from "./bscTestnet.js";
 export * from "./coreDao.js";
+export * from "./curtis.js";
 export * from "./flareTestnet.js";
 export * from "./gelatoBlackberry.js";
 export * from "./gelatoBlueberry.js";
