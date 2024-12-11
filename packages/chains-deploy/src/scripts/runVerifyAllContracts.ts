@@ -1,6 +1,6 @@
 import { verifyContract } from "@owlprotocol/viem-utils";
 import { Address, encodeAbiParameters } from "viem";
-import { opBNBTestnet } from "@owlprotocol/chains";
+import { apeChain } from "@owlprotocol/chains";
 import { SolcMetadata } from "@owlprotocol/viem-utils";
 import { getMailboxAddressFromChainId } from "@owlprotocol/contracts-hyperlane";
 import * as HyperlaneMetadata from "@owlprotocol/contracts-hyperlane/solc-metadata";
@@ -23,6 +23,10 @@ const addressToMetadataMap: Record<string, string> = {
     diamondInit: "DiamondInit",
     diamondInitMulti: "DiamondInitMulti",
     hypNative: "HypNative",
+    erc721: "ERC721Facet",
+    erc721MintableAutoId: "ERC721MintableAutoIdFacet",
+    erc721BaseUri: "ERC721BaseURIFacet",
+    erc721PresetInit: "ERC721MintableAutoIdBaseURIFacetInit",
 };
 
 const mailboxToConstructorArgs = (mailboxAddress: Address) =>
@@ -67,7 +71,7 @@ async function verifyAllContracts(apiUrl: string, apiKey: string, mailboxAddress
 
 // TODO: cleanup this script
 (async () => {
-    const network = opBNBTestnet;
+    const network = apeChain;
 
     const chainEnvVars = getChainEnvvars(network.chainId);
     const apiUrl = chainEnvVars.explorerApi;
