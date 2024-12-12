@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Client, formatEther, TransactionRequest, Transport } from "viem";
+import { Account, Address, Chain, Client, encodeAbiParameters, formatEther, TransactionRequest, Transport } from "viem";
 import { getAction } from "viem/utils";
 import { getBalance, sendTransaction, waitForTransactionReceipt } from "viem/actions";
 
@@ -18,11 +18,59 @@ import * as ERC4337Metadata from "@owlprotocol/contracts-account-abstraction/sol
 import * as DiamondMetadata from "@owlprotocol/contracts-diamond/solc-metadata";
 import * as Create2FactoryMetadata from "@owlprotocol/contracts-create2factory/solc-metadata";
 
-const allMetadata: Record<string, SolcMetadata> = {
+export const allMetadata: Record<string, SolcMetadata> = {
     ...HyperlaneMetadata,
     ...ERC4337Metadata,
     ...DiamondMetadata,
     ...Create2FactoryMetadata,
+};
+
+export const addressToMetadataMap: Record<string, string> = {
+    // Core Contracts
+    erc165: "ERC165Facet",
+    accessControlRecursive: "AccessControlRecursiveFacet",
+    contractUri: "ContractURIFacet",
+    erc2981: "ERC2981Facet",
+    // Diamond Facets
+    diamondCut: "DiamondCutFacet",
+    diamondLoupe: "DiamondLoupeFacet",
+    diamondInit: "DiamondInit",
+    diamondInitMulti: "DiamondInitMulti",
+    // ERC721 Facets
+    erc721: "ERC721Facet",
+    erc721MintableAutoId: "ERC721MintableAutoIdFacet",
+    erc721BaseUri: "ERC721BaseURIFacet",
+    erc721PresetInit: "ERC721MintableAutoIdBaseURIFacetInit",
+    // Create2Factory
+    create2Factory: "Create2Factory",
+    // ERC4337 Contracts
+    entrypoint: "EntryPoint",
+    simpleAccountFactory: "SimpleAccountFactory",
+    entrypointSimulations: "EntryPointSimulations",
+    pimlicoEntrypointSimulations: "PimlicoEntryPointSimulations",
+    // Hyperlane Contracts
+    hypNative: "HypNative",
+    hypErc20: "HypERC20",
+    hypErc20Fast: "FastHypERC20",
+};
+
+const mailboxToConstructorArgs = (mailboxAddress: Address) =>
+    encodeAbiParameters([{ name: "_mailbox", type: "address" }], [mailboxAddress]).slice(2);
+
+const defaultDecimals = 18;
+const decimalsAndMailboxToConstructorArgs = (mailboxAddress: Address) =>
+    encodeAbiParameters(
+        [
+            { name: "__decimals", type: "uint8" },
+            { name: "_mailbox", type: "address" },
+        ],
+        [defaultDecimals, mailboxAddress],
+    ).slice(2);
+
+export const addressToMailboxConstructorArgsMap = {
+    hypNative: mailboxToConstructorArgs,
+    hypErc20: decimalsAndMailboxToConstructorArgs,
+    hypErc20Fast: decimalsAndMailboxToConstructorArgs,
 };
 
 function getContractMetadata(contractName: string): SolcMetadata | undefined {
@@ -146,6 +194,8 @@ export async function setupChainContracts(
     );
 
     if (apiUrl && apiKey) {
+        // TODO: decide if we only want to verify newly-deployed contracts, or all
+        // NOTE: for contracts with constructors or different default settings, this verification will fail
         for (const receipt of receipts) {
             if (receipt.contractAddress) {
                 const contractMetadata = getContractMetadata(receipt.contractAddress);
