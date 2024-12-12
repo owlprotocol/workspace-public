@@ -18,15 +18,32 @@ const allMetadata: Record<string, SolcMetadata> = {
 };
 
 const addressToMetadataMap: Record<string, string> = {
+    // Core Contracts
+    erc165: "ERC165Facet",
+    accessControlRecursive: "AccessControlRecursiveFacet",
+    contractUri: "ContractURIFacet",
+    erc2981: "ERC2981Facet",
+    // Diamond Facets
     diamondCut: "DiamondCutFacet",
     diamondLoupe: "DiamondLoupeFacet",
     diamondInit: "DiamondInit",
     diamondInitMulti: "DiamondInitMulti",
-    hypNative: "HypNative",
+    // ERC721 Facets
     erc721: "ERC721Facet",
     erc721MintableAutoId: "ERC721MintableAutoIdFacet",
     erc721BaseUri: "ERC721BaseURIFacet",
     erc721PresetInit: "ERC721MintableAutoIdBaseURIFacetInit",
+    // Create2Factory
+    create2Factory: "Create2Factory",
+    // ERC4337 Contracts
+    entrypoint: "EntryPoint",
+    simpleAccountFactory: "SimpleAccountFactory",
+    entrypointSimulations: "EntryPointSimulations",
+    pimlicoEntrypointSimulations: "PimlicoEntryPointSimulations",
+    // Hyperlane Contracts
+    hypNative: "HypNative",
+    hypErc20: "HypERC20",
+    hypErc20Fast: "FastHypERC20",
 };
 
 const mailboxToConstructorArgs = (mailboxAddress: Address) =>
@@ -35,8 +52,9 @@ const mailboxToConstructorArgs = (mailboxAddress: Address) =>
 // TODO: Make this cleaner
 const addressToConstructorArgsMap = {
     hypNative: mailboxToConstructorArgs,
+    hypErc20: mailboxToConstructorArgs,
+    hypErc20Fast: mailboxToConstructorArgs,
 };
-
 async function verifyAllContracts(apiUrl: string, apiKey: string, mailboxAddress: Address | null) {
     const addresses = getAllContractAddresses({ mailboxAddress });
 
@@ -54,8 +72,11 @@ async function verifyAllContracts(apiUrl: string, apiKey: string, mailboxAddress
         }
 
         let constructorArguments;
-        if (contractAlias === "hypNative" && mailboxAddress) {
-            constructorArguments = addressToConstructorArgsMap.hypNative(mailboxAddress);
+        if (
+            mailboxAddress &&
+            (contractAlias === "hypNative" || contractAlias === "hypErc20" || contractAlias === "hypErc20Fast")
+        ) {
+            constructorArguments = addressToConstructorArgsMap[contractAlias](mailboxAddress);
         }
 
         await verifyContract({
