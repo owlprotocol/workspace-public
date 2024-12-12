@@ -7,6 +7,7 @@ export async function verifyContract({
     contractAddress,
     constructorArguments,
     metadata,
+    settings,
 }: {
     apiUrl: string;
     apiKey: string;
@@ -14,6 +15,7 @@ export async function verifyContract({
     /** A hex-encoded string without the '0x' prefix */
     constructorArguments?: string;
     metadata: SolcMetadata;
+    settings?: any;
 }) {
     const contractName = Object.entries(metadata.settings.compilationTarget)[0].join(":");
 
@@ -33,18 +35,20 @@ export async function verifyContract({
         delete source.license;
     });
     //https://gist.github.com/0xV4L3NT1N3/974d6bfb58070e0fe4e38d626cdf1c44
-    const settings = {
-        metadata: metadata.settings.metadata,
-        optimizer: metadata.settings.optimizer,
-        evmVersion: metadata.settings.evmVersion,
-        viaIR: metadata.settings.viaIR,
-        outputSelection: {
-            "*": {
-                "*": ["abi", "evm.bytecode", "evm.deployedBytecode", "evm.methodIdentifiers", "metadata"],
-                "": ["ast"],
+    if (!settings) {
+        settings = {
+            metadata: metadata.settings.metadata,
+            optimizer: metadata.settings.optimizer,
+            evmVersion: metadata.settings.evmVersion,
+            viaIR: metadata.settings.viaIR,
+            outputSelection: {
+                "*": {
+                    "*": ["abi", "evm.bytecode", "evm.deployedBytecode", "evm.methodIdentifiers", "metadata"],
+                    "": ["ast"],
+                },
             },
-        },
-    };
+        };
+    }
 
     const compilerVersion = "v" + metadata.compiler.version;
 
