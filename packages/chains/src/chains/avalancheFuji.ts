@@ -3,7 +3,6 @@ import { defineNetwork } from "../defineChain.js";
 
 export const avalancheFuji = /*#__PURE__*/ defineNetwork({
     ...avalancheFujiViem,
-    testnet: true,
     rpcUrls: {
         ...avalancheFujiViem.rpcUrls,
         public: avalancheFujiViem.rpcUrls.default,

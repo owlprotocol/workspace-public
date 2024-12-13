@@ -3,7 +3,6 @@ import { defineNetwork } from "../defineChain.js";
 
 export const kaia = /*#__PURE__*/ defineNetwork({
     ...kaiaViem,
-    testnet: true,
     rpcUrls: {
         ...kaiaViem.rpcUrls,
         public: kaiaViem.rpcUrls.default,
