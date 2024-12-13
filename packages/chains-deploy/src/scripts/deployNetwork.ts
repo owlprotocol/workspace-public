@@ -68,4 +68,4 @@ export async function main() {
     console.debug({ bundlerTopup: result.bundlerTopup, paymasterTopup: result.paymasterTopup });
 }
 
-await main();
+// await main();
