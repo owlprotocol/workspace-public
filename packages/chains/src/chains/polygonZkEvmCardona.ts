@@ -7,7 +7,6 @@ export const polygonZkEvmCardona = /*#__PURE__*/ defineNetwork({
         ...polygonZkEvmCardonaViem.rpcUrls,
         public: polygonZkEvmCardonaViem.rpcUrls.default,
     },
-    testnet: true,
     slug: "polygon-zkevm-cardona",
     slugDrpc: "polygon-zkevm-cardona",
     enabled: false,

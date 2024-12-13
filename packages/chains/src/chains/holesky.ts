@@ -6,6 +6,5 @@ export const holesky = /*#__PURE__*/ defineNetwork({
     slug: "holesky",
     slugDrpc: "holesky",
     slugAnkr: "eth_holesky",
-    testnet: true,
     enabled: true,
 });
