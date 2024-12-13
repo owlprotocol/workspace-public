@@ -1,4 +1,4 @@
-import { avalanche } from "@owlprotocol/chains";
+import { sepolia } from "@owlprotocol/chains";
 import { networkPrivateResource } from "@owlprotocol/core-firebase/admin";
 
 import { getUtilityAccount, getRelayerAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
@@ -16,7 +16,7 @@ export async function main() {
     const paymasterSignerAccount = getPaymasterSignerAccount({ nonceManager });
 
     //Network to deploy
-    const network = avalanche;
+    const network = sepolia;
 
     const chain = { id: network.chainId, ...network } as Chain;
     const walletClient = createWalletClient({
@@ -36,8 +36,16 @@ export async function main() {
         : undefined;
 
     const chainEnvVars = getChainEnvvars(network.chainId);
+    let apiUrl: string | undefined;
+    let apiKey: string | undefined;
 
-    console.debug(`🛠️  Deploying ${network.name}`);
+    if (process.argv[2] === "noverify") {
+        console.debug(`🛠️  Deploying ${network.name} without verifying`);
+    } else {
+        apiUrl = chainEnvVars.explorerApi;
+        apiKey = chainEnvVars.explorerApiKey;
+        console.debug(`🛠️  Deploying ${network.name}`);
+    }
 
     const result = await setupChain(
         walletClient,
@@ -53,11 +61,11 @@ export async function main() {
             utilityTargetBalance: network.targetUtilityBalance as bigint,
             utilityMinBalance: network.minUtilityBalance as bigint,
         },
-        chainEnvVars.explorerApi,
-        chainEnvVars.explorerApiKey,
+        apiUrl,
+        apiKey,
     );
 
     console.debug({ bundlerTopup: result.bundlerTopup, paymasterTopup: result.paymasterTopup });
 }
 
-// await main();
+await main();
