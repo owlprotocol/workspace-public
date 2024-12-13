@@ -59,7 +59,12 @@ export async function topupUtilityAccount(client: Client<Transport, Chain>, para
         }
 
         return { balance };
-    } else if (clientL1) {
+    } else if (
+        clientL1 &&
+        chain.contracts &&
+        chain.contracts["portal"] &&
+        clientL1.chain.id in chain.contracts.portal
+    ) {
         //TODO: Can crash when waiting for receipt too long
         //TODO: Maybe add longer confirmation time?
         // Topup from L1 balance
