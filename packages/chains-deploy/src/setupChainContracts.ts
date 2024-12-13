@@ -4,7 +4,7 @@ import { getBalance, sendTransaction, waitForTransactionReceipt } from "viem/act
 import { getOrDeployDeterministicDeployer, GetOrPrepareDeterministicContractReturnType } from "@owlprotocol/viem-utils";
 import { prepareERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
 import { prepareDiamondFacets, prepareERC721Facets, prepareCoreContractFacets } from "@owlprotocol/contracts-diamond";
-import { getMailboxAddressFromChainId, prepareHyperlaneContracts } from "@owlprotocol/contracts-hyperlane";
+import { prepareHyperlaneContracts } from "@owlprotocol/contracts-hyperlane";
 import { getOrPrepareCreate2Factory } from "@owlprotocol/contracts-create2factory";
 import { verifyAllContracts } from "./verifyAllContracts.js";
 
@@ -148,8 +148,7 @@ export async function setupChainContracts(
         //         }
         //     }
         // }
-        const chainId = client.chain.id;
-        const mailboxAddress = await getMailboxAddressFromChainId(chainId);
+        const mailboxAddress = parameters.mailboxAddress ?? null;
         await verifyAllContracts(apiUrl, apiKey, mailboxAddress);
     } else {
         console.log("API URL or API Key not provided, skipping contract verification.");
