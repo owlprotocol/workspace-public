@@ -1,81 +1,16 @@
-import { Account, Address, Chain, Client, encodeAbiParameters, formatEther, TransactionRequest, Transport } from "viem";
+import { Account, Address, Chain, Client, formatEther, TransactionRequest, Transport } from "viem";
 import { getAction } from "viem/utils";
 import { getBalance, sendTransaction, waitForTransactionReceipt } from "viem/actions";
-
-import {
-    getOrDeployDeterministicDeployer,
-    GetOrPrepareDeterministicContractReturnType,
-    verifyContract,
-} from "@owlprotocol/viem-utils";
-
+import { getOrDeployDeterministicDeployer, GetOrPrepareDeterministicContractReturnType } from "@owlprotocol/viem-utils";
 import { prepareERC4337Contracts, setupVerifyingPaymaster } from "@owlprotocol/contracts-account-abstraction";
 import { prepareDiamondFacets, prepareERC721Facets, prepareCoreContractFacets } from "@owlprotocol/contracts-diamond";
-import { prepareHyperlaneContracts } from "@owlprotocol/contracts-hyperlane";
+import { getMailboxAddressFromChainId, prepareHyperlaneContracts } from "@owlprotocol/contracts-hyperlane";
 import { getOrPrepareCreate2Factory } from "@owlprotocol/contracts-create2factory";
-import { SolcMetadata } from "@owlprotocol/viem-utils";
-import * as HyperlaneMetadata from "@owlprotocol/contracts-hyperlane/solc-metadata";
-import * as ERC4337Metadata from "@owlprotocol/contracts-account-abstraction/solc-metadata";
-import * as DiamondMetadata from "@owlprotocol/contracts-diamond/solc-metadata";
-import * as Create2FactoryMetadata from "@owlprotocol/contracts-create2factory/solc-metadata";
+import { verifyAllContracts } from "./verifyAllContracts.js";
 
-export const allMetadata: Record<string, SolcMetadata> = {
-    ...HyperlaneMetadata,
-    ...ERC4337Metadata,
-    ...DiamondMetadata,
-    ...Create2FactoryMetadata,
-};
-
-export const addressToMetadataMap: Record<string, string> = {
-    // Core Contracts
-    erc165: "ERC165Facet",
-    accessControlRecursive: "AccessControlRecursiveFacet",
-    contractUri: "ContractURIFacet",
-    erc2981: "ERC2981Facet",
-    // Diamond Facets
-    diamondCut: "DiamondCutFacet",
-    diamondLoupe: "DiamondLoupeFacet",
-    diamondInit: "DiamondInit",
-    diamondInitMulti: "DiamondInitMulti",
-    // ERC721 Facets
-    erc721: "ERC721Facet",
-    erc721MintableAutoId: "ERC721MintableAutoIdFacet",
-    erc721BaseUri: "ERC721BaseURIFacet",
-    erc721PresetInit: "ERC721MintableAutoIdBaseURIFacetInit",
-    // Create2Factory
-    create2Factory: "Create2Factory",
-    // ERC4337 Contracts
-    entrypoint: "EntryPoint",
-    simpleAccountFactory: "SimpleAccountFactory",
-    entrypointSimulations: "EntryPointSimulations",
-    pimlicoEntrypointSimulations: "PimlicoEntryPointSimulations",
-    // Hyperlane Contracts
-    hypNative: "HypNative",
-    hypErc20: "HypERC20",
-    hypErc20Fast: "FastHypERC20",
-};
-
-const mailboxToConstructorArgs = (mailboxAddress: Address) =>
-    encodeAbiParameters([{ name: "_mailbox", type: "address" }], [mailboxAddress]).slice(2);
-
-const defaultDecimals = 18;
-const decimalsAndMailboxToConstructorArgs = (mailboxAddress: Address) =>
-    encodeAbiParameters(
-        [
-            { name: "__decimals", type: "uint8" },
-            { name: "_mailbox", type: "address" },
-        ],
-        [defaultDecimals, mailboxAddress],
-    ).slice(2);
-
-export const addressToMailboxConstructorArgsMap = {
-    hypNative: mailboxToConstructorArgs,
-    hypErc20: decimalsAndMailboxToConstructorArgs,
-    hypErc20Fast: decimalsAndMailboxToConstructorArgs,
-};
-
-function getContractMetadata(contractName: string): SolcMetadata | undefined {
-    return allMetadata[contractName] ?? undefined;
-}
+// function getContractMetadata(contractName: string): SolcMetadata | undefined {
+//     return allMetadata[contractName] ?? undefined;
+// }
 
 export async function prepareChainContracts(
     client: Client<Transport, Chain, Account>,
@@ -194,25 +129,28 @@ export async function setupChainContracts(
     );
 
     if (apiUrl && apiKey) {
-        // TODO: decide if we only want to verify newly-deployed contracts, or all
+        // TODO: decide if we want to do anything with the receipts. verifyAllContracts is more robust though
         // NOTE: for contracts with constructors or different default settings, this verification will fail
-        for (const receipt of receipts) {
-            if (receipt.contractAddress) {
-                const contractMetadata = getContractMetadata(receipt.contractAddress);
-                if (contractMetadata) {
-                    await verifyContract({
-                        apiUrl,
-                        apiKey,
-                        contractAddress: receipt.contractAddress as Address,
-                        metadata: contractMetadata,
-                    });
-                } else {
-                    console.warn(
-                        `Skipping verification for contract at ${receipt.contractAddress} due to missing metadata.`,
-                    );
-                }
-            }
-        }
+        // for (const receipt of receipts) {
+        //     if (receipt.contractAddress) {
+        //         const contractMetadata = getContractMetadata(receipt.contractAddress);
+        //         if (contractMetadata) {
+        //             await verifyContract({
+        //                 apiUrl,
+        //                 apiKey,
+        //                 contractAddress: receipt.contractAddress as Address,
+        //                 metadata: contractMetadata,
+        //             });
+        //         } else {
+        //             console.warn(
+        //                 `Skipping verification for contract at ${receipt.contractAddress} due to missing metadata.`,
+        //             );
+        //         }
+        //     }
+        // }
+        const chainId = client.chain.id;
+        const mailboxAddress = await getMailboxAddressFromChainId(chainId);
+        await verifyAllContracts(apiUrl, apiKey, mailboxAddress);
     } else {
         console.log("API URL or API Key not provided, skipping contract verification.");
     }
