@@ -1,0 +1,99 @@
+import { Steps } from "nextra/components";
+import { Screenshot } from "components/screenshot";
+import basescan from "../../public/assets/verabridge/basescan.png";
+import complete from "../../public/assets/verabridge/complete.png";
+import connectWallet from "../../public/assets/verabridge/connectWallet.png";
+import selectBaseChain from "../../public/assets/verabridge/selectBaseChain.png";
+import selectRemoteNetworks from "../../public/assets/verabridge/selectRemoteNetworks.png";
+import setAdminAddress from "../../public/assets/verabridge/setAdminAddress.png";
+import verabridgeUI from "../../public/assets/verabridge/verabridgeUI.png";
+import verifyMetadata from "../../public/assets/verabridge/verifyMetadata.png";
+
+# VeraBridge
+
+VeraBridge is a no-code, cross-chain bridge deployment platform that allows you to seamlessly deploy multiple bridges across dozens of chains simultaneously.
+
+Under the hood, VeraBridge leverages the [Hyperlane](https://hyperlane.xyz/) architecture, a robust and battle-tested solution that has facilitated over **$3 billion** in bridged value and supports more than **70 chains**. For more details, explore the [Hyperlane documentation](https://docs.hyperlane.xyz/).
+
+VeraBridge offers a user-friendly interface that abstracts the technical complexities of deploying and managing cross-chain bridges, making it accessible to non-technical users. Whether you're a developer or a project owner, VeraBridge simplifies the process of bridging tokens across multiple blockchains.
+
+## What You’ll Achieve in This Guide
+
+In this guide, you will:
+
+1. **Deploy a Hyperlane Warp Route** through VeraBridge.
+2. **Bridge an ERC-20 collateral token** to create synthetic tokens across multiple chains.
+3. Understand how the synthetic token is:
+    - **Minted** when bridging from Base Sepolia.
+    - **Burned** when bridging back to Base Sepolia.
+
+By the end of this guide, you’ll have successfully set up and managed a cross-chain token bridge using VeraBridge, enabling efficient token transfer across your selected blockchain networks.
+
+## Prerequisites
+
+Before starting, ensure the following:
+
+-   **MetaMask Wallet**: Have MetaMask installed and configured to interact with the networks you’ll be deploying to.
+-   **ERC-20 Tokens**: Ensure you have an ERC-20 token on the first chain where you plan to deploy. Additionally, you’ll need some native tokens to cover transaction fees. In this tutorial, we’ll use Base Sepolia, but you can choose any other supported network.
+-   **Native Tokens on Other Chains**: It’s recommended to have some native tokens on the additional chains you’ll be deploying to. This will allow you to test bridging your token back after deployment.
+
+These requirements are necessary for testing the full token bridging flow after successfully deploying your cross-chain bridge.
+
+## Steps
+
+### Connect Wallet
+
+Go to [VeraBridge](https://deploy.verabridge.io/) and connect your wallet. VeraBridge uses **Owl Protocol's Smart Wallets** under the hood to provide a seamless and secure experience. If you don't already have a wallet, VeraBridge will create one for you during the authentication process using Social Login.
+
+Owl Protocol's Smart Wallets are ERC4337-compatible, enabling advanced features like transaction batching and gasless experiences, making them ideal for users who want an intuitive and frictionless blockchain experience.
+
+To learn more about Owl Protocol's Smart Wallets and how they work, check out the [Wallet Documentation](/learn-wallets.mdx).
+
+<Screenshot src={connectWallet} alt="Connect Wallet" />
+
+### Select the Token to Bridge
+
+Choose the chain where your ERC20 token is deployed and specify its contract address. For this guide, we will use the Base Sepolia [Tea Token (TEA)](https://base-sepolia.blockscout.com/token/0x87C51CD469A0E1E2aF0e0e597fD88D9Ae4BaA967) as an example.
+
+Currently, VeraBridge supports deploying token routers exclusively for ERC20 tokens. Additionally, note that if you select a testnet for your token, you will only be able to bridge it to other testnets.
+
+<Screenshot src={selectBaseChain} alt="Select Token" />
+
+### Set the Metadata
+
+Once you have submitted the token, its metadata will be automatically populated. If desired, you can customize the name and symbol of the synthetic token. For example, you might want to use a different name or symbol to distinguish the synthetic token from the original.
+
+<Screenshot src={verifyMetadata} alt="Verify Metadata" />
+
+### Set Admin Address
+
+Choose the admin address, which will own the bridge. By default, this is your Owl smart wallet. To ensure you can make future updates, it's recommended to set an address you control, like your MetaMask (EOA) address. Leaving it blank assigns ownership to your Owl wallet.
+
+<Screenshot src={setAdminAddress} alt="Set Admin Address" />
+
+### Select Remote Chains
+
+Choose the chains you want to bridge to. For this example, we’ll select OP Sepolia (11155420) and Sepolia (11155111). To add more chains, click "+ Add New Chain." Once you've made your selections, click "Submit Selected Chains" to proceed.
+
+<Screenshot src={selectRemoteNetworks} alt="Select Remote Chains" />
+
+### Confirmation
+
+<Screenshot src={complete} alt="Confirmation" />
+
+After submitting the chains, you'll see a confirmation message along with the Token Router Address for each selected chain. To learn more about the deployed contract, copy its address and paste it into the search bar of the relevant blockchain explorer. For example, here's the [deployed contract on Base Sepolia](https://sepolia.basescan.org/address/0xB68C4B24c8a8A2Ee6fECBcf011e817Fef776FF02).
+
+<Screenshot src={basescan} alt="Explorer" />
+
+Click "View on VeraBridge" to access the Bridge UI. Connect the wallet holding the token you want to bridge. You can now bridge the token to the selected chains, where a synthetic token will be minted. Similarly, you can bridge the synthetic token back to the original chain as needed.
+
+<Screenshot src={verabridgeUI} alt="Bridge UI" />
+
+## Further Steps
+
+-   Try bridging back your synthetic token by switching the "from" and "to" chains in the bridge UI.
+    -   Note: You will need native tokens on the second chain to pay for the transaction fees.
+-   Deploy to additional chains by clicking on "+ Add Token".
+    -   Note: Each time you click "Deploy Token Router," new bridging contracts will be deployed. Decide which chains to support before deploying warp routes to avoid deploying unnecessary contracts.
+
+For more advanced deployment scenarios, such as configuring warp routes with multiple types of tokens or chains, you can use the [Owl Protocol Dashboard](https://dashboard.owlprotocol.xyz). The dashboard provides additional flexibility and control over bridge deployment, including support for various warp route types like "Native to Native" "Native to Synthetic" and "Collateral to Synthetic" Check out the [Owl Protocol Warp Route Documentation](/howto-token-bridges/deploy-bridge) for step-by-step guidance and additional resources.
