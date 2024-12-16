@@ -84,6 +84,7 @@ import { trpc } from "@owlprotocol/core-trpc/react-query";
 import {
     getDefaultConfig,
     useOwlTrpcContext,
+    OwlWalletButton,
 } from "@owlprotocol/ui-components";
 import { Chain } from "viem";
 import { WagmiProvider } from "wagmi";
@@ -104,7 +105,7 @@ export const OwlWalletTest = () => {
 
     return (
         <WagmiProvider config={config}>
-            <OwlWallet projectId={projectId} />
+            <OwlWalletButton projectId={projectId} />
         </WagmiProvider>
     );
 };
@@ -117,6 +118,7 @@ import { trpc } from "@owlprotocol/core-trpc/react-query";
 import {
     getDefaultConfigForRainbowKit,
     useOwlTrpcContext,
+    OwlWalletButton,
 } from "@owlprotocol/ui-components";
 import { Chain } from "viem";
 import { WagmiProvider } from "wagmi";
@@ -143,7 +145,7 @@ export const OwlWalletTest = () => {
     return (
         <WagmiProvider config={config}>
             {/* Enable RainbowKit by passing `useRainbowKit={true}` */}
-            <OwlWallet projectId={projectId} useRainbowKit={true} />
+            <OwlWalletButton projectId={projectId} useRainbowKit={true} />
         </WagmiProvider>
     );
 };
