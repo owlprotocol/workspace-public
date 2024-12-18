@@ -8,7 +8,7 @@
     "erc4337"
   ],
   "private": false,
-  "type": "commonjs",
+  "type": "module",
   "homepage": "https://github.com/owlprotocol/workspace-public",
   "repository": {
     "type": "git",
