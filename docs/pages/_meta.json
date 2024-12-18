@@ -59,6 +59,10 @@
     "type": "separator",
     "title": "How-to Guides"
   },
+  "howto-verabridge": {
+    "title": "VeraBridge",
+    "display": "normal"
+  },
   "howto-token-bridges":{
     "title": "Token Bridges",
     "display": "normal"
