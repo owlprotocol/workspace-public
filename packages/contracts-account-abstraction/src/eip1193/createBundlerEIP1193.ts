@@ -31,6 +31,7 @@ import {
     sendUserOperation,
 } from "../actions/index.js";
 import { decodeUserOp } from "../models/UserOperation.js";
+import { ExecutionError } from "../models/Errors.js";
 
 export type BundlerRpcMethod = (typeof bundlerRpcMethods)[number];
 
@@ -189,6 +190,17 @@ export function createBackendBundlerEIP1193(
         } catch (error) {
             if (error instanceof RpcRequestError) {
                 throw error;
+            }
+
+            if (error instanceof ExecutionError) {
+                throw new RpcRequestError({
+                    body: args,
+                    url: "",
+                    error: {
+                        code: -32603,
+                        message: error.message,
+                    },
+                });
             }
 
             // Unhandled error
