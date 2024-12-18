@@ -13,6 +13,7 @@ import {
     Hex,
     RpcRequestError,
     PublicRpcSchema,
+    ContractFunctionExecutionError,
 } from "viem";
 import { getAction } from "viem/utils";
 import { RpcEstimateUserOperationGasReturnType } from "viem/account-abstraction";
@@ -191,8 +192,7 @@ export function createBackendBundlerEIP1193(
             if (error instanceof RpcRequestError) {
                 throw error;
             }
-
-            if (error instanceof ExecutionError) {
+            if (error instanceof ExecutionError || error instanceof ContractFunctionExecutionError) {
                 throw new RpcRequestError({
                     body: args,
                     url: "",
