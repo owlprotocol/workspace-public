@@ -189,7 +189,7 @@ export async function setupNetworksForEnv() {
                     clientL1: walletClientL1 as any,
                     bundlerTargetBalance: network.targetRelayerBalance as bigint,
                     bundlerMinBalance: network.minRelayerBalance as bigint,
-                    paymasterGasBudget: 10_000_000n,
+                    // paymasterGasBudget: 10_000_000n,
                     paymasterTargetBalance: network.targetPaymasterBalance as bigint,
                     paymasterMinBalance: network.minPaymasterBalance as bigint,
                     utilityTargetBalance: network.targetUtilityBalance as bigint,
