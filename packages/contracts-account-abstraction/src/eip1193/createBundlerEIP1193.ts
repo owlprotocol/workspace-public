@@ -194,7 +194,7 @@ export function createBackendBundlerEIP1193(
             }
             if (error instanceof ExecutionError || error instanceof ContractFunctionExecutionError) {
                 throw new RpcRequestError({
-                    body: args,
+                    body: { method: args.method },
                     url: "",
                     error: {
                         code: -32603,
