@@ -1,4 +1,4 @@
-import { describe, test, beforeAll, beforeEach, expect } from "vitest";
+import { describe, test, beforeEach, expect } from "vitest";
 import {
     Address,
     PrivateKeyAccount,
@@ -11,9 +11,9 @@ import {
     nonceManager,
 } from "viem";
 import { localhost } from "viem/chains";
-import { getLocalAccount, getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
+import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { entryPoint07Address, UserOperation, getUserOperationHash } from "viem/account-abstraction";
+import { UserOperation, getUserOperationHash } from "viem/account-abstraction";
 
 import { port } from "./test/constants.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
@@ -23,7 +23,7 @@ import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";
 import { SimpleAccount } from "./artifacts/SimpleAccount.js";
 import { encodeUserOp } from "./models/UserOperation.js";
 import { IEntryPoint } from "./artifacts/IEntryPoint.js";
-import { setupERC4337Contracts } from "./setupERC4337Contracts.js";
+import { erc4337Contracts } from "./setupERC4337Contracts.js";
 import { toPackedUserOperation } from "./models/PackedUserOperation.js";
 
 describe("SimpleAccount.test.ts", function () {
@@ -48,20 +48,8 @@ describe("SimpleAccount.test.ts", function () {
 
     // Generated account on each test
     let account: PrivateKeyAccount;
-    let entryPoint: typeof entryPoint07Address;
-    let simpleAccountFactory: Address;
-
-    beforeAll(async () => {
-        //Deploy Deterministic Deployer first
-        const { hash } = await getOrDeployDeterministicDeployer(walletClient);
-        if (hash) {
-            await publicClient.waitForTransactionReceipt({ hash });
-        }
-
-        const contracts = await setupERC4337Contracts(walletClient);
-        entryPoint = contracts.entrypoint.address;
-        simpleAccountFactory = contracts.simpleAccountFactory.address;
-    });
+    const entryPoint = erc4337Contracts.entrypoint;
+    const simpleAccountFactory = erc4337Contracts.simpleAccountFactory;
 
     beforeEach(async () => {
         account = privateKeyToAccount(generatePrivateKey());

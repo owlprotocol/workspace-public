@@ -92,9 +92,9 @@ export async function estimateUserOperationGas(
     const entryPointAddress = supportedEntryPoints[0];
 
     //TODO: Get fee per gas if undefined???
-    if (parameters.maxFeePerGas === 0n) {
-        throw new Error("user operation max fee per gas must be larger than 0 during gas estimation");
-    }
+    // if (parameters.maxFeePerGas === 0n) {
+    // throw new Error("user operation max fee per gas must be larger than 0 during gas estimation");
+    // }
 
     //TODO: This defines minimum paymaster balance required for initial gas estimation
     const userOperation: UserOperation<"0.7"> = {
