@@ -16,7 +16,7 @@ import {
     nonceManager,
 } from "viem";
 import { localhost } from "viem/chains";
-import { getLocalAccount, getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
+import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { entryPoint07Address, UserOperation, getUserOperationHash } from "viem/account-abstraction";
 
@@ -27,7 +27,7 @@ import { getSimpleAccountAddress } from "./SimpleAccount.js";
 import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
 import { dummySignature, encodeUserOp } from "./models/UserOperation.js";
-import { setupERC4337Contracts, setupVerifyingPaymaster } from "./setupERC4337Contracts.js";
+import { erc4337Contracts, setupVerifyingPaymaster } from "./setupERC4337Contracts.js";
 import { toPackedUserOperation } from "./models/PackedUserOperation.js";
 import { getVerifyingPaymasterHash } from "./VerifyingPaymaster.js";
 
@@ -55,15 +55,8 @@ describe("VerifyingPaymaster.test.ts", function () {
     let verifyingPaymaster: Address;
 
     beforeAll(async () => {
-        //Deploy Deterministic Deployer first
-        const { hash } = await getOrDeployDeterministicDeployer(walletClient);
-        if (hash) {
-            await publicClient.waitForTransactionReceipt({ hash });
-        }
-
-        const contracts = await setupERC4337Contracts(walletClient);
         // entryPoint = contracts.entrypoint.address;
-        simpleAccountFactory = contracts.simpleAccountFactory.address;
+        simpleAccountFactory = erc4337Contracts.simpleAccountFactory;
         verifyingPaymaster = (
             await setupVerifyingPaymaster(walletClient, {
                 verifyingSignerAddress: walletClient.account.address,
