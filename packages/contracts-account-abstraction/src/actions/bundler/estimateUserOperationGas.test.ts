@@ -24,7 +24,8 @@ import { getSimpleAccountAddress } from "../../SimpleAccount.js";
 import { erc4337Contracts, setupVerifyingPaymaster } from "../../setupERC4337Contracts.js";
 
 import { ERC1967Proxy } from "../../artifacts/ERC1967Proxy.js";
-import { SimpleAccountFactory } from "../../artifacts/SimpleAccountFactory.js";
+import { createAccount as createAccountAbi } from "../../artifacts/SimpleAccountFactory.js";
+import { execute as executeAbi } from "../../artifacts/SimpleAccount.js";
 import { MyContract } from "../../artifacts/MyContract.js";
 
 describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
@@ -69,7 +70,7 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
         );
 
         factoryData = encodeFunctionData({
-            abi: SimpleAccountFactory.abi,
+            abi: [createAccountAbi],
             functionName: "createAccount",
             args: [owner.address, 0n],
         });
@@ -86,19 +87,7 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
                 const data = "0x";
 
                 callData = encodeFunctionData({
-                    abi: [
-                        {
-                            inputs: [
-                                { name: "dest", type: "address" },
-                                { name: "value", type: "uint256" },
-                                { name: "func", type: "bytes" },
-                            ],
-                            name: "execute",
-                            outputs: [],
-                            stateMutability: "nonpayable",
-                            type: "function",
-                        },
-                    ],
+                    abi: [executeAbi],
                     args: [to, value, data],
                 });
             });
@@ -175,19 +164,7 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
                 const contractDeployTransaction = getDeployDeterministicFunctionData(deployParams);
 
                 callData = encodeFunctionData({
-                    abi: [
-                        {
-                            inputs: [
-                                { name: "dest", type: "address" },
-                                { name: "value", type: "uint256" },
-                                { name: "func", type: "bytes" },
-                            ],
-                            name: "execute",
-                            outputs: [],
-                            stateMutability: "nonpayable",
-                            type: "function",
-                        },
-                    ],
+                    abi: [executeAbi],
                     args: [contractDeployTransaction.to, 0n, contractDeployTransaction.data],
                 });
             });
@@ -292,19 +269,7 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
                 const data = "0x";
 
                 callData = encodeFunctionData({
-                    abi: [
-                        {
-                            inputs: [
-                                { name: "dest", type: "address" },
-                                { name: "value", type: "uint256" },
-                                { name: "func", type: "bytes" },
-                            ],
-                            name: "execute",
-                            outputs: [],
-                            stateMutability: "nonpayable",
-                            type: "function",
-                        },
-                    ],
+                    abi: [executeAbi],
                     args: [to, value, data],
                 });
             });
@@ -385,19 +350,7 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
                 const contractDeployTransaction = getDeployDeterministicFunctionData(deployParams);
 
                 callData = encodeFunctionData({
-                    abi: [
-                        {
-                            inputs: [
-                                { name: "dest", type: "address" },
-                                { name: "value", type: "uint256" },
-                                { name: "func", type: "bytes" },
-                            ],
-                            name: "execute",
-                            outputs: [],
-                            stateMutability: "nonpayable",
-                            type: "function",
-                        },
-                    ],
+                    abi: [executeAbi],
                     args: [contractDeployTransaction.to, 0n, contractDeployTransaction.data],
                 });
             });
