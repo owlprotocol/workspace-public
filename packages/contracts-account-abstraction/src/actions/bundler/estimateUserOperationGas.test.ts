@@ -92,36 +92,7 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
                 });
             });
 
-            test("gas price zero", async () => {
-                // Estimate gas with 0 balance on smart account and no paymaster, gas price set to 0
-                const gasPrice = { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n };
-                // Create UserOperation
-                const userOp: Omit<
-                    UserOperation<"0.7">,
-                    "callGasLimit" | "preVerificationGas" | "verificationGasLimit"
-                > = {
-                    sender: smartAccountAddress,
-                    nonce: 0n,
-                    signature: dummySignature,
-                    callData,
-                    maxFeePerGas: gasPrice.maxFeePerGas!,
-                    maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
-                    factory: factoryAddress,
-                    factoryData,
-                };
-
-                const result = await estimateUserOperationGas(
-                    { ...publicClient, entryPointSimulationsAddress },
-                    userOp,
-                );
-                expect(result.preVerificationGas).toBeGreaterThan(0n);
-                expect(result.verificationGasLimit).toBeGreaterThan(0n);
-                expect(result.callGasLimit).toBeGreaterThan(0n);
-                expect(result.paymasterVerificationGasLimit).toBeUndefined();
-                expect(result.paymasterPostOpGasLimit).toBeUndefined();
-            });
-
-            test("gas price current", async () => {
+            test("estimateUserOperationGas", async () => {
                 // Estimate gas with 0 balance on smart account and no paymaster, gas price set to current
                 const gasPrice = await publicClient.estimateFeesPerGas();
                 const userOp: Omit<
@@ -169,36 +140,7 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
                 });
             });
 
-            test("gas price zero", async () => {
-                // Estimate gas with 0 balance on smart account and no paymaster, gas price set to 0
-                const gasPrice = { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n };
-                // Create UserOperation
-                const userOp: Omit<
-                    UserOperation<"0.7">,
-                    "callGasLimit" | "preVerificationGas" | "verificationGasLimit"
-                > = {
-                    sender: smartAccountAddress,
-                    nonce: 0n,
-                    signature: dummySignature,
-                    callData,
-                    maxFeePerGas: gasPrice.maxFeePerGas!,
-                    maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
-                    factory: factoryAddress,
-                    factoryData,
-                };
-
-                const result = await estimateUserOperationGas(
-                    { ...publicClient, entryPointSimulationsAddress },
-                    userOp,
-                );
-                expect(result.preVerificationGas).toBeGreaterThan(0n);
-                expect(result.verificationGasLimit).toBeGreaterThan(0n);
-                expect(result.callGasLimit).toBeGreaterThan(0n);
-                expect(result.paymasterVerificationGasLimit).toBeUndefined();
-                expect(result.paymasterPostOpGasLimit).toBeUndefined();
-            });
-
-            test("gas price current", async () => {
+            test("estimateUserOperationGas", async () => {
                 // Estimate gas with 0 balance on smart account and no paymaster, gas price set to current
                 const gasPrice = await publicClient.estimateFeesPerGas();
                 const userOp: Omit<
@@ -274,38 +216,7 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
                 });
             });
 
-            test("gas price zero", async () => {
-                // Estimate gas with 0 balance on smart account and no paymaster, gas price set to 0
-                const gasPrice = { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n };
-                // Create UserOperation
-                const userOp: Omit<
-                    UserOperation<"0.7">,
-                    "callGasLimit" | "preVerificationGas" | "verificationGasLimit"
-                > = {
-                    sender: smartAccountAddress,
-                    nonce: 0n,
-                    signature: dummySignature,
-                    callData,
-                    maxFeePerGas: gasPrice.maxFeePerGas!,
-                    maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
-                    factory: factoryAddress,
-                    factoryData,
-                    paymaster: paymasterAddress,
-                    paymasterData,
-                };
-
-                const result = await estimateUserOperationGas(
-                    { ...publicClient, entryPointSimulationsAddress },
-                    userOp,
-                );
-                expect(result.preVerificationGas).toBeGreaterThan(0n);
-                expect(result.verificationGasLimit).toBeGreaterThan(0n);
-                expect(result.callGasLimit).toBeGreaterThan(0n);
-                expect(result.paymasterVerificationGasLimit).toBeGreaterThan(0n);
-                expect(result.paymasterPostOpGasLimit).toBeGreaterThan(0n);
-            });
-
-            test("gas price current", async () => {
+            test("estimateUserOperationGas", async () => {
                 // Estimate gas with 0 balance on smart account and no paymaster, gas price set to current
                 const gasPrice = await publicClient.estimateFeesPerGas();
                 const userOp: Omit<
@@ -355,38 +266,7 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
                 });
             });
 
-            test("gas price zero", async () => {
-                // Estimate gas with 0 balance on smart account and no paymaster, gas price set to 0
-                const gasPrice = { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n };
-                // Create UserOperation
-                const userOp: Omit<
-                    UserOperation<"0.7">,
-                    "callGasLimit" | "preVerificationGas" | "verificationGasLimit"
-                > = {
-                    sender: smartAccountAddress,
-                    nonce: 0n,
-                    signature: dummySignature,
-                    callData,
-                    maxFeePerGas: gasPrice.maxFeePerGas!,
-                    maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
-                    factory: factoryAddress,
-                    factoryData,
-                    paymaster: paymasterAddress,
-                    paymasterData,
-                };
-
-                const result = await estimateUserOperationGas(
-                    { ...publicClient, entryPointSimulationsAddress },
-                    userOp,
-                );
-                expect(result.preVerificationGas).toBeGreaterThan(0n);
-                expect(result.verificationGasLimit).toBeGreaterThan(0n);
-                expect(result.callGasLimit).toBeGreaterThan(0n);
-                expect(result.paymasterVerificationGasLimit).toBeGreaterThan(0n);
-                expect(result.paymasterPostOpGasLimit).toBeGreaterThan(0n);
-            });
-
-            test("gas price current", async () => {
+            test("estimateUserOperationGas", async () => {
                 // Estimate gas with 0 balance on smart account and no paymaster, gas price set to current
                 const gasPrice = await publicClient.estimateFeesPerGas();
                 const userOp: Omit<
