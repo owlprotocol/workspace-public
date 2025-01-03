@@ -1,5 +1,4 @@
 import { Address, Chain, Client, Transport } from "viem";
-import * as chains from "viem/chains";
 import { EstimateUserOperationGasReturnType, UserOperation } from "viem/account-abstraction";
 import { getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
@@ -10,7 +9,6 @@ import { getSupportedEntryPoints } from "./getSupportedEntryPoints.js";
 import { calcVerificationGasAndCallGasLimit } from "../../gasestimation/calcVerificationGasAndCallGasLimit.js";
 import { dummySignature, encodeUserOp } from "../../models/UserOperation.js";
 import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
-import { maxBigInt } from "../../utils/bigint.js";
 
 export type UserOperationGasLimitFields =
     | "preVerificationGas"
