@@ -1,5 +1,4 @@
 import { Address, Chain, Client, Transport } from "viem";
-import * as chains from "viem/chains";
 import { EstimateUserOperationGasReturnType, UserOperation } from "viem/account-abstraction";
 import { getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
