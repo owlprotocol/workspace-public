@@ -21,7 +21,6 @@ export async function getUserOperationReceipt(
 
     // If rpcMaxRange is less blockNumber, set fromBlock to rpcMaxRange away from blockNumber
     const fromBlock = rpcMaxRange < blockNumber ? blockNumber - rpcMaxRange : 0n;
-
     const filterResult = await getAction(
         client,
         getLogs,
