@@ -72,7 +72,7 @@ describe("eip1993/createPaymasterEIP1193.test.ts", function () {
 
     // Contracts
     const entryPointAddress = erc4337Contracts.entrypoint;
-    const entryPointSimulationsAddress = erc4337Contracts.entrypointSimulations;
+    const entryPointSimulationsAddress = erc4337Contracts.pimlicoEntrypointSimulations;
     const factoryAddress = erc4337Contracts.simpleAccountFactory;
     let paymasterAddress: Address;
 

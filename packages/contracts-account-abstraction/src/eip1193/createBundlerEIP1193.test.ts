@@ -66,7 +66,7 @@ describe("eip1993/createBundlerEIP1193.test.ts", function () {
 
     // Contracts
     const entryPointAddress = erc4337Contracts.entrypoint;
-    const entryPointSimulationsAddress = erc4337Contracts.entrypointSimulations;
+    const entryPointSimulationsAddress = erc4337Contracts.pimlicoEntrypointSimulations;
     const factoryAddress = erc4337Contracts.simpleAccountFactory;
 
     // AA clients
