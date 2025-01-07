@@ -165,6 +165,13 @@ describe("SimpleAccount.test.ts", function () {
             });
             const createAccountHash = await walletClient.writeContract(createAccountRequest);
             await publicClient.waitForTransactionReceipt({ hash: createAccountHash });
+
+            //Pre-fund wallet
+            const fundSimpleAccountHash = await walletClient.sendTransaction({
+                to: simpleAccount.address,
+                value: parseEther("1"),
+            });
+            await publicClient.waitForTransactionReceipt({ hash: fundSimpleAccountHash });
         });
 
         /**
@@ -178,7 +185,7 @@ describe("SimpleAccount.test.ts", function () {
             //Create UserOp
             //Encode smart account tx, send to random address
             const to = privateKeyToAccount(generatePrivateKey()).address;
-            const value = 0n;
+            const value = 1n;
             const data = "0x";
             const callData = encodeFunctionData({
                 abi: [
@@ -237,13 +244,6 @@ describe("SimpleAccount.test.ts", function () {
             //types seem to be inferred as [never[], Address]
             const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
 
-            //Pre-fund wallet
-            const fundSimpleAccountHash = await walletClient.sendTransaction({
-                to: simpleAccount.address,
-                value: parseEther("1"),
-            });
-            await publicClient.waitForTransactionReceipt({ hash: fundSimpleAccountHash });
-
             //Simulate handleOps
             const { request } = await publicClient.simulateContract({
                 account: walletClient.account,
@@ -256,6 +256,10 @@ describe("SimpleAccount.test.ts", function () {
             //Submit UserOp
             const handleOpsHash = await walletClient.writeContract(request as any);
             await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
+
+            //Get balanceOf "to"
+            const balance = await publicClient.getBalance({ address: to });
+            expect(balance).toBe(value);
         });
     });
 });
