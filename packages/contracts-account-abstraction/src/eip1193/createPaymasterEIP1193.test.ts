@@ -31,7 +31,6 @@ import {
     getLocalAccount,
     getDeployDeterministicAddress,
     getDeployDeterministicFunctionData,
-    getOrDeployDeterministicDeployer,
 } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
@@ -49,7 +48,7 @@ import { getSimpleAccountAddress } from "../SimpleAccount.js";
 
 import { ERC1967Proxy } from "../artifacts/ERC1967Proxy.js";
 import { MyContract } from "../artifacts/MyContract.js";
-import { setupERC4337Contracts, setupVerifyingPaymaster, topupPaymaster } from "../setupERC4337Contracts.js";
+import { erc4337Contracts, setupVerifyingPaymaster, topupPaymaster } from "../setupERC4337Contracts.js";
 
 describe("eip1993/createPaymasterEIP1193.test.ts", function () {
     const chain = {
@@ -72,9 +71,9 @@ describe("eip1993/createPaymasterEIP1193.test.ts", function () {
     });
 
     // Contracts
-    let entryPointAddress: typeof entryPoint07Address;
-    let entryPointSimulationsAddress: Address;
-    let factoryAddress: Address;
+    const entryPointAddress = erc4337Contracts.entrypoint;
+    const entryPointSimulationsAddress = erc4337Contracts.pimlicoEntrypointSimulations;
+    const factoryAddress = erc4337Contracts.simpleAccountFactory;
     let paymasterAddress: Address;
 
     // AA clients
@@ -86,18 +85,6 @@ describe("eip1993/createPaymasterEIP1193.test.ts", function () {
     let paymasterClient: PaymasterClient;
 
     beforeAll(async () => {
-        //Deploy Deterministic Deployer first
-        const { hash } = await getOrDeployDeterministicDeployer(walletClient);
-        if (hash) {
-            await publicClient.waitForTransactionReceipt({ hash });
-        }
-
-        // ERC4337 Contracts
-        const contracts = await setupERC4337Contracts(walletClient);
-        entryPointAddress = contracts.entrypoint.address;
-        entryPointSimulationsAddress = contracts.pimlicoEntrypointSimulations.address;
-        factoryAddress = contracts.simpleAccountFactory.address;
-
         // Paymaster
         paymasterAddress = (
             await setupVerifyingPaymaster(walletClient, {
