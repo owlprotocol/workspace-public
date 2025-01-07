@@ -13,14 +13,24 @@ import {
     concatHex,
     parseEther,
     LocalAccount,
+    zeroAddress,
 } from "viem";
 import { localhost } from "viem/chains";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { getUserOperationHash, entryPoint07Address, UserOperation } from "viem/account-abstraction";
+import {
+    getUserOperationHash,
+    entryPoint07Address,
+    UserOperation,
+    GetUserOperationParameters,
+    GetUserOperationReceiptParameters,
+    waitForUserOperationReceipt,
+} from "viem/account-abstraction";
 import { getDeployDeterministicFunctionData, getLocalAccount } from "@owlprotocol/viem-utils";
 
 import { estimateUserOperationGas, EstimateUserOperationGasParameters07 } from "./estimateUserOperationGas.js";
 import { sendUserOperation } from "./sendUserOperation.js";
+import { getUserOperation } from "./getUserOperation.js";
+import { getUserOperationReceipt } from "./getUserOperationReceipt.js";
 import { port } from "../../test/constants.js";
 import { getSimpleAccountAddress } from "../../SimpleAccount.js";
 import { erc4337Contracts, setupVerifyingPaymaster } from "../../setupERC4337Contracts.js";
@@ -62,6 +72,14 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
         chain,
         transport,
     });
+    const bundlerClient = publicClient.extend((client) => {
+        return {
+            getUserOperation: (parameters: GetUserOperationParameters) => getUserOperation(client, parameters),
+            getUserOperationReceipt: (parameters: GetUserOperationReceiptParameters) =>
+                getUserOperationReceipt(client, parameters),
+        };
+    });
+
     const walletClient = createWalletClient({
         account: getLocalAccount(0, { nonceManager }),
         chain,
@@ -141,7 +159,6 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 const userOp: UserOperation<"0.7"> = {
                     ...userOpData,
                     signature: dummySignature,
-                    callData,
                     callGasLimit,
                     verificationGasLimit,
                     preVerificationGas,
@@ -171,6 +188,22 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 // Send UserOp
                 const userOpHashSent = await sendUserOperation(walletClient, userOp);
                 expect(userOpHashSent).toBe(userOpHash);
+
+                // Wait for UserOp confirmation
+                // We use the extended "bundlerClient" that has `getUserOperationReceipt` action
+                const userOpReceipt = await waitForUserOperationReceipt(bundlerClient, { hash: userOpHash });
+                expect(userOpReceipt.userOpHash).toBe(userOpHash);
+                expect(userOpReceipt.success).toBe(true);
+                // Get UserOp
+                const userOpSent = await bundlerClient.getUserOperation({ hash: userOpHash });
+                expect(userOpSent.userOperation).toStrictEqual({
+                    ...userOp,
+                    callData: userOp.callData.toLowerCase(),
+                    paymaster: zeroAddress,
+                    paymasterData: "0x",
+                    paymasterPostOpGasLimit: 0n,
+                    paymasterVerificationGasLimit: 0n,
+                });
             });
         });
 
@@ -220,7 +253,6 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 const userOp: UserOperation<"0.7"> = {
                     ...userOpData,
                     signature: dummySignature,
-                    callData,
                     callGasLimit,
                     verificationGasLimit,
                     preVerificationGas,
@@ -250,6 +282,22 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 // Send UserOp
                 const userOpHashSent = await sendUserOperation(walletClient, userOp);
                 expect(userOpHashSent).toBe(userOpHash);
+
+                // Wait for UserOp confirmation
+                // We use the extended "bundlerClient" that has `getUserOperationReceipt` action
+                const userOpReceipt = await waitForUserOperationReceipt(bundlerClient, { hash: userOpHash });
+                expect(userOpReceipt.userOpHash).toBe(userOpHash);
+                expect(userOpReceipt.success).toBe(true);
+                // Get UserOp
+                const userOpSent = await bundlerClient.getUserOperation({ hash: userOpHash });
+                expect(userOpSent.userOperation).toStrictEqual({
+                    ...userOp,
+                    callData: userOp.callData.toLowerCase(),
+                    paymaster: zeroAddress,
+                    paymasterData: "0x",
+                    paymasterPostOpGasLimit: 0n,
+                    paymasterVerificationGasLimit: 0n,
+                });
             });
         });
     });
@@ -301,7 +349,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 });
             });
 
-            test("estimateUserOperationGas", async () => {
+            test("sendUserOperation", async () => {
                 const userOpData: EstimateUserOperationGasParameters07 = {
                     sender: smartAccountAddress,
                     nonce: 0n,
@@ -331,7 +379,6 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 const userOp: UserOperation<"0.7"> = {
                     ...userOpData,
                     signature: dummySignature,
-                    callData,
                     callGasLimit,
                     verificationGasLimit,
                     preVerificationGas,
@@ -384,6 +431,18 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 // Send UserOp
                 const userOpHashSent = await sendUserOperation(walletClient, userOp);
                 expect(userOpHashSent).toBe(userOpHash);
+
+                // Wait for UserOp confirmation
+                // We use the extended "bundlerClient" that has `getUserOperationReceipt` action
+                const userOpReceipt = await waitForUserOperationReceipt(bundlerClient, { hash: userOpHash });
+                expect(userOpReceipt.userOpHash).toBe(userOpHash);
+                expect(userOpReceipt.success).toBe(true);
+                // Get UserOp
+                const userOpSent = await bundlerClient.getUserOperation({ hash: userOpHash });
+                expect(userOpSent.userOperation).toStrictEqual({
+                    ...userOp,
+                    callData: userOp.callData.toLowerCase(),
+                });
             });
         });
 
@@ -405,7 +464,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 });
             });
 
-            test("estimateUserOperationGas", async () => {
+            test("sendUserOperation", async () => {
                 const userOpData: EstimateUserOperationGasParameters07 = {
                     sender: smartAccountAddress,
                     nonce: 0n,
@@ -435,7 +494,6 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 const userOp: UserOperation<"0.7"> = {
                     ...userOpData,
                     signature: dummySignature,
-                    callData,
                     callGasLimit,
                     verificationGasLimit,
                     preVerificationGas,
@@ -488,6 +546,18 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 // Send UserOp
                 const userOpHashSent = await sendUserOperation(walletClient, userOp);
                 expect(userOpHashSent).toBe(userOpHash);
+
+                // Wait for UserOp confirmation
+                // We use the extended "bundlerClient" that has `getUserOperationReceipt` action
+                const userOpReceipt = await waitForUserOperationReceipt(bundlerClient, { hash: userOpHash });
+                expect(userOpReceipt.userOpHash).toBe(userOpHash);
+                expect(userOpReceipt.success).toBe(true);
+                // Get UserOp
+                const userOpSent = await bundlerClient.getUserOperation({ hash: userOpHash });
+                expect(userOpSent.userOperation).toStrictEqual({
+                    ...userOp,
+                    callData: userOp.callData.toLowerCase(),
+                });
             });
         });
     });
