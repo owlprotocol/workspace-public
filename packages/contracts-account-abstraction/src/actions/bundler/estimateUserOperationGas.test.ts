@@ -18,7 +18,7 @@ import { UserOperation } from "viem/account-abstraction";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
 import { getDeployDeterministicFunctionData, getLocalAccount } from "@owlprotocol/viem-utils";
-import { estimateUserOperationGas } from "./estimateUserOperationGas.js";
+import { estimateUserOperationGas, EstimateUserOperationGasParameters07 } from "./estimateUserOperationGas.js";
 import { port } from "../../test/constants.js";
 import { getSimpleAccountAddress } from "../../SimpleAccount.js";
 import { erc4337Contracts, setupVerifyingPaymaster } from "../../setupERC4337Contracts.js";
@@ -93,25 +93,17 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
             });
 
             test("estimateUserOperationGas", async () => {
-                // Estimate gas with 0 balance on smart account and no paymaster, gas price set to current
-                const gasPrice = await publicClient.estimateFeesPerGas();
-                const userOp: Omit<
-                    UserOperation<"0.7">,
-                    "callGasLimit" | "preVerificationGas" | "verificationGasLimit"
-                > = {
+                const userOpData: EstimateUserOperationGasParameters07 = {
                     sender: smartAccountAddress,
                     nonce: 0n,
-                    signature: dummySignature,
                     callData,
-                    maxFeePerGas: gasPrice.maxFeePerGas!,
-                    maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
                     factory: factoryAddress,
                     factoryData,
                 };
 
                 const result = await estimateUserOperationGas(
                     { ...publicClient, entryPointSimulationsAddress },
-                    userOp,
+                    userOpData,
                 );
                 expect(result.preVerificationGas).toBeGreaterThan(0n);
                 expect(result.verificationGasLimit).toBeGreaterThan(0n);
@@ -121,7 +113,6 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
             });
         });
 
-        //TODO: Test with larger UserOp that deploys a contract
         describe("contract deploy", () => {
             let callData: Hex;
 
@@ -141,25 +132,17 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
             });
 
             test("estimateUserOperationGas", async () => {
-                // Estimate gas with 0 balance on smart account and no paymaster, gas price set to current
-                const gasPrice = await publicClient.estimateFeesPerGas();
-                const userOp: Omit<
-                    UserOperation<"0.7">,
-                    "callGasLimit" | "preVerificationGas" | "verificationGasLimit"
-                > = {
+                const userOpData: EstimateUserOperationGasParameters07 = {
                     sender: smartAccountAddress,
                     nonce: 0n,
-                    signature: dummySignature,
                     callData,
-                    maxFeePerGas: gasPrice.maxFeePerGas!,
-                    maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
                     factory: factoryAddress,
                     factoryData,
                 };
 
                 const result = await estimateUserOperationGas(
                     { ...publicClient, entryPointSimulationsAddress },
-                    userOp,
+                    userOpData,
                 );
                 expect(result.preVerificationGas).toBeGreaterThan(0n);
                 expect(result.verificationGasLimit).toBeGreaterThan(0n);
@@ -217,18 +200,10 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
             });
 
             test("estimateUserOperationGas", async () => {
-                // Estimate gas with 0 balance on smart account and no paymaster, gas price set to current
-                const gasPrice = await publicClient.estimateFeesPerGas();
-                const userOp: Omit<
-                    UserOperation<"0.7">,
-                    "callGasLimit" | "preVerificationGas" | "verificationGasLimit"
-                > = {
+                const userOpData: EstimateUserOperationGasParameters07 = {
                     sender: smartAccountAddress,
                     nonce: 0n,
-                    signature: dummySignature,
                     callData,
-                    maxFeePerGas: gasPrice.maxFeePerGas!,
-                    maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
                     factory: factoryAddress,
                     factoryData,
                     paymaster: paymasterAddress,
@@ -237,7 +212,7 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
 
                 const result = await estimateUserOperationGas(
                     { ...publicClient, entryPointSimulationsAddress },
-                    userOp,
+                    userOpData,
                 );
                 expect(result.preVerificationGas).toBeGreaterThan(0n);
                 expect(result.verificationGasLimit).toBeGreaterThan(0n);
@@ -247,7 +222,6 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
             });
         });
 
-        //TODO: Test with larger UserOp that deploys a contract
         describe("contract deploy", () => {
             let callData: Hex;
 
@@ -267,18 +241,10 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
             });
 
             test("estimateUserOperationGas", async () => {
-                // Estimate gas with 0 balance on smart account and no paymaster, gas price set to current
-                const gasPrice = await publicClient.estimateFeesPerGas();
-                const userOp: Omit<
-                    UserOperation<"0.7">,
-                    "callGasLimit" | "preVerificationGas" | "verificationGasLimit"
-                > = {
+                const userOpData: EstimateUserOperationGasParameters07 = {
                     sender: smartAccountAddress,
                     nonce: 0n,
-                    signature: dummySignature,
                     callData,
-                    maxFeePerGas: gasPrice.maxFeePerGas!,
-                    maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
                     factory: factoryAddress,
                     factoryData,
                     paymaster: paymasterAddress,
@@ -287,7 +253,7 @@ describe("actions/bundler/estimateUserOperationGas.test.ts", function () {
 
                 const result = await estimateUserOperationGas(
                     { ...publicClient, entryPointSimulationsAddress },
-                    userOp,
+                    userOpData,
                 );
                 expect(result.preVerificationGas).toBeGreaterThan(0n);
                 expect(result.verificationGasLimit).toBeGreaterThan(0n);

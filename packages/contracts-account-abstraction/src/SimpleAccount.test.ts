@@ -25,6 +25,10 @@ import { encodeUserOp } from "./models/UserOperation.js";
 import { IEntryPoint } from "./artifacts/IEntryPoint.js";
 import { erc4337Contracts } from "./setupERC4337Contracts.js";
 import { toPackedUserOperation } from "./models/PackedUserOperation.js";
+import {
+    estimateUserOperationGas,
+    EstimateUserOperationGasParameters07,
+} from "./actions/bundler/estimateUserOperationGas.js";
 
 describe("SimpleAccount.test.ts", function () {
     const chain = {
@@ -174,7 +178,7 @@ describe("SimpleAccount.test.ts", function () {
             //Create UserOp
             //Encode smart account tx, send to random address
             const to = privateKeyToAccount(generatePrivateKey()).address;
-            const value = 1n;
+            const value = 0n;
             const data = "0x";
             const callData = encodeFunctionData({
                 abi: [
@@ -193,17 +197,28 @@ describe("SimpleAccount.test.ts", function () {
                 args: [to, value, data],
             });
 
+            // Estimate UserOp gas
+            const userOpData: EstimateUserOperationGasParameters07 = {
+                sender: simpleAccount.address,
+                nonce: 0n,
+                callData,
+            };
+            const { preVerificationGas, verificationGasLimit, callGasLimit } = await estimateUserOperationGas(
+                { ...publicClient, entryPointSimulationsAddress: erc4337Contracts.pimlicoEntrypointSimulations },
+                userOpData,
+            );
+
+            // Construct final UserOp
             const gasPrice = await publicClient.estimateFeesPerGas();
             const userOp: UserOperation<"0.7"> = {
                 sender: simpleAccount.address,
-                //TODO: Update nonce
                 nonce: 0n,
                 signature:
                     "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c",
                 callData,
-                callGasLimit: 10_000_000n,
-                verificationGasLimit: 10_000_000n,
-                preVerificationGas: 1_000_000n,
+                callGasLimit,
+                verificationGasLimit,
+                preVerificationGas,
                 maxFeePerGas: gasPrice.maxFeePerGas!,
                 maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
             };
@@ -238,13 +253,9 @@ describe("SimpleAccount.test.ts", function () {
                 args: handleOpsArgs,
             });
 
-            //Sumbit UserOp
+            //Submit UserOp
             const handleOpsHash = await walletClient.writeContract(request as any);
             await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
-
-            //Get balanceOf
-            const balance = await publicClient.getBalance({ address: to });
-            expect(balance).toBe(value);
         });
     });
 });

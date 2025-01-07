@@ -1,4 +1,4 @@
-import { Address, Chain, Client, Transport } from "viem";
+import { Address, Chain, Client, Transport, zeroAddress } from "viem";
 import { EstimateUserOperationGasReturnType, UserOperation } from "viem/account-abstraction";
 import { getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
@@ -9,13 +9,6 @@ import { getSupportedEntryPoints } from "./getSupportedEntryPoints.js";
 import { calcVerificationGasAndCallGasLimit } from "../../gasestimation/calcVerificationGasAndCallGasLimit.js";
 import { dummySignature, encodeUserOp } from "../../models/UserOperation.js";
 import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
-
-export type UserOperationGasLimitFields =
-    | "preVerificationGas"
-    | "verificationGasLimit"
-    | "callGasLimit"
-    | "paymasterPostOpGasLimit"
-    | "paymasterVerificationGasLimit";
 
 export type EstimateUserOperationGasParameters07 = Pick<
     UserOperation<"0.7">,
@@ -82,8 +75,8 @@ export async function estimateUserOperationGas(
         sender,
         nonce,
         callData,
-        factory,
-        factoryData,
+        factory: factory ?? zeroAddress,
+        factoryData: factoryData ?? "0x",
         signature: dummySignature,
         // initial dummy gas values
         // populated first, based on byte-size of the user op, this is the gas cost of encoding the user op data before any contract execution
@@ -137,8 +130,8 @@ export async function estimateUserOperationGas(
         chainId,
         executionResult.data.callDataResult,
     );
-    //Additional 10% added
-    userOperation.verificationGasLimit = (verificationGasAndCallGasLimit.verificationGasLimit * 110n) / 100n;
+    //Additional 20% added
+    userOperation.verificationGasLimit = (verificationGasAndCallGasLimit.verificationGasLimit * 120n) / 100n;
 
     //Additional 10% added
     userOperation.callGasLimit = (verificationGasAndCallGasLimit.callGasLimit * 110n) / 100n;
