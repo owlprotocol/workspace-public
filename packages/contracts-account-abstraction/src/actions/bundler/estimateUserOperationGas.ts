@@ -73,7 +73,9 @@ export async function estimateUserOperationGas(
         signature: dummySignature,
         // initial dummy gas values
         // populated first, based on byte-size of the user op, this is the gas cost of encoding the user op data before any contract execution
-        preVerificationGas: 0n,
+        // preVerificationGas: 0n,
+        // TODO: Set preVerificationGas back to 0 once we fix gas estimation
+        preVerificationGas: 1_000_000n,
         // gas cost of verifying the user op (eg. smart account signature check)
         verificationGasLimit: 1_000_000n,
         // gas cost of executing the user op
