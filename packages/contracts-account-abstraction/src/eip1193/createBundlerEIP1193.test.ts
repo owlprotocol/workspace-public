@@ -18,6 +18,7 @@ import {
 } from "viem";
 import { localhost } from "viem/chains";
 import {
+    entryPoint07Address,
     SmartAccount,
     waitForUserOperationReceipt,
     createBundlerClient,
@@ -28,6 +29,7 @@ import {
     getLocalAccount,
     getDeployDeterministicAddress,
     getDeployDeterministicFunctionData,
+    getOrDeployDeterministicDeployer,
 } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
@@ -42,7 +44,7 @@ import { getSimpleAccountAddress } from "../SimpleAccount.js";
 
 import { ERC1967Proxy } from "../artifacts/ERC1967Proxy.js";
 import { MyContract } from "../artifacts/MyContract.js";
-import { erc4337Contracts } from "../setupERC4337Contracts.js";
+import { setupERC4337Contracts } from "../setupERC4337Contracts.js";
 
 describe("eip1993/createBundlerEIP1193.test.ts", function () {
     const chain = {
@@ -65,9 +67,9 @@ describe("eip1993/createBundlerEIP1193.test.ts", function () {
     });
 
     // Contracts
-    const entryPointAddress = erc4337Contracts.entrypoint;
-    const entryPointSimulationsAddress = erc4337Contracts.pimlicoEntrypointSimulations;
-    const factoryAddress = erc4337Contracts.simpleAccountFactory;
+    let entryPointAddress: typeof entryPoint07Address;
+    let entryPointSimulationsAddress: Address;
+    let factoryAddress: Address;
 
     // AA clients
     let bundlerRequest: EIP1193RequestFn;
@@ -75,6 +77,18 @@ describe("eip1993/createBundlerEIP1193.test.ts", function () {
     let bundlerClient: BundlerClient;
 
     beforeAll(async () => {
+        //Deploy Deterministic Deployer first
+        const { hash } = await getOrDeployDeterministicDeployer(walletClient);
+        if (hash) {
+            await publicClient.waitForTransactionReceipt({ hash });
+        }
+
+        // ERC4337 Contracts
+        const contracts = await setupERC4337Contracts(walletClient);
+        entryPointAddress = contracts.entrypoint.address;
+        entryPointSimulationsAddress = contracts.pimlicoEntrypointSimulations.address;
+        factoryAddress = contracts.simpleAccountFactory.address;
+
         // AA Clients
         const requestOverride = createPublicEIP1193(createHttpEIP1193(`http://127.0.0.1:${port}`));
 
