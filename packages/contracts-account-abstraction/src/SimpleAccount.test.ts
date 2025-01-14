@@ -209,6 +209,8 @@ describe("SimpleAccount.test.ts", function () {
                 sender: simpleAccount.address,
                 nonce: 0n,
                 callData,
+                // TODO: Remove once we stop needing maxFeePerGas
+                maxFeePerGas: 0n,
             };
             const { preVerificationGas, verificationGasLimit, callGasLimit } = await estimateUserOperationGas(
                 { ...publicClient, entryPointSimulationsAddress: erc4337Contracts.pimlicoEntrypointSimulations },
