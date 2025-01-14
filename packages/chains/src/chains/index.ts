@@ -58,6 +58,7 @@ export * from "./redstone.js";
 export * from "./redstoneTestnet.js";
 export * from "./scroll.js";
 export * from "./scrollSepolia.js";
+export * from "./sei.js";
 export * from "./sepolia.js";
 export * from "./zora.js";
 export * from "./zoraSepolia.js";
