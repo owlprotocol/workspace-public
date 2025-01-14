@@ -220,6 +220,8 @@ describe("VerifyingPaymaster.test.ts", function () {
                 paymaster: verifyingPaymaster,
                 //Empty, will be replaced with signature
                 paymasterData: paymasterDataDummySignature,
+                // TODO: Remove once we stop needing maxFeePerGas
+                maxFeePerGas: 0n,
             };
             const {
                 preVerificationGas,

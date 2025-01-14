@@ -138,6 +138,8 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     callData,
                     factory: factoryAddress,
                     factoryData,
+                    // TODO: Remove once we stop needing maxFeePerGas
+                    maxFeePerGas: 0n,
                 };
 
                 // Estimate UserOp gas
@@ -232,6 +234,8 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     callData,
                     factory: factoryAddress,
                     factoryData,
+                    // TODO: Remove once we stop needing maxFeePerGas
+                    maxFeePerGas: 0n,
                 };
 
                 // Estimate UserOp gas
@@ -358,6 +362,8 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     factoryData,
                     paymaster: paymasterAddress,
                     paymasterData: paymasterDataDummySignature,
+                    // TODO: Remove once we stop needing maxFeePerGas
+                    maxFeePerGas: 0n,
                 };
 
                 // Estimate UserOp gas
@@ -473,6 +479,8 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     factoryData,
                     paymaster: paymasterAddress,
                     paymasterData: paymasterDataDummySignature,
+                    // TODO: Remove once we stop needing maxFeePerGas
+                    maxFeePerGas: 0n,
                 };
 
                 // Estimate UserOp gas

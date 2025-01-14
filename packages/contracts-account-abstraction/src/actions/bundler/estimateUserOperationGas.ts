@@ -12,7 +12,8 @@ import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
 
 export type EstimateUserOperationGasParameters07 = Pick<
     UserOperation<"0.7">,
-    "sender" | "nonce" | "callData" | "factory" | "factoryData" | "paymaster" | "paymasterData"
+    // TODO: Remove maxFeePerGas once we can fix gas estimation
+    "sender" | "nonce" | "callData" | "factory" | "factoryData" | "paymaster" | "paymasterData" | "maxFeePerGas"
 >;
 
 /**
@@ -80,8 +81,11 @@ export async function estimateUserOperationGas(
         paymaster,
         paymasterData,
         // hard-coded to zero to avoid reverts for the initial large gas estimate
-        maxFeePerGas: 0n,
-        maxPriorityFeePerGas: 0n,
+        // maxFeePerGas: 0n,
+        // maxPriorityFeePerGas: 0n,
+        // TODO: Set maxFeePerGas and maxPriorityFeePerGas back to 0 once we fix gas estimation
+        maxFeePerGas: parameters.maxFeePerGas,
+        maxPriorityFeePerGas: parameters.maxFeePerGas,
     };
     if (userOperation.paymaster) {
         // gas cost of verifying the paymaster (eg. paymaster signer)
