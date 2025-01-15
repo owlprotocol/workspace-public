@@ -123,7 +123,7 @@ export async function estimateUserOperationGas(
         userOperation.verificationGasLimit = 5_000_000n;
     }
 
-    if (chainId === chains.celoAlfajores.id || chainId === chains.celo.id) {
+    if (chainId === chains.celoAlfajores.id || chainId === chains.celo.id || chainId === chains.sei.id) {
         userOperation.verificationGasLimit = 1_000_000n;
         userOperation.callGasLimit = 1_000_000n;
     }
