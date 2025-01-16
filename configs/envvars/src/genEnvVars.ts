@@ -175,12 +175,14 @@ const EXPLORER_API_DEFAULTS: Record<string, string | undefined> = {
     8453: "https://api.basescan.org/api",
     84532: "https://api-sepolia.basescan.org/api",
     // Manta
-    3441006: "https://pacific-explorer.manta.network/api",
+    3441006: "https://pacific-explorer.sepolia-testnet.manta.network/api",
     // ApeChain
     33139: "https://api.apescan.io/api",
     33111: "https://api-curtis.apescan.io/api",
     // Sei
     1329: "https://seitrace.com/pacific-1/api",
+    // Soneium
+    1868: "https://soneium.blockscout.com/api",
 };
 
 /** API Keys are per-domain */
@@ -212,7 +214,9 @@ const EXPLORER_API_KEY_DEFAULTS: Record<string, string | undefined> = {
     //Blast
     168587773: "routescan",
     // Manta (no API key needed)
-    3441006: "",
+    3441006: " ",
+    // Soneium (no API key needed)
+    1868: " ",
 };
 
 /**
@@ -234,7 +238,7 @@ export function getEnvVarsForNetworkId(networkId: string): EnvVarDef[] {
 //const chainIds = allChains.map((c) => c.chainId);
 const chainIds = [
     1, 5, 1337, 11155111, 17000, 11155420, 59144, 59140, 137, 80001, 80002, 42161, 421614, 42170, 10, 43114, 43113, 56,
-    97, 168587773, 8453, 84532, 3441006, 204, 5611, 33139, 33111, 1329,
+    97, 168587773, 8453, 84532, 3441006, 204, 5611, 33139, 33111, 1329, 1868,
 ];
 //TODO: For all networkIds, right now this breaks because file is too big. Is there a better way?
 const NETWORK_ENVVARS: EnvVarDef[] = [];

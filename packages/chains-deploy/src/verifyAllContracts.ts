@@ -111,14 +111,18 @@ export async function verifyAllContracts(apiUrl: string, apiKey: string, mailbox
             };
         }
 
-        await verifyContract({
-            apiUrl,
-            apiKey,
-            contractAddress: address,
-            metadata: contractMetadata,
-            constructorArguments,
-            settings,
-        });
-        console.log(`Verified ${contractAlias} at ${address}`);
+        try {
+            await verifyContract({
+                apiUrl,
+                apiKey,
+                contractAddress: address,
+                metadata: contractMetadata,
+                constructorArguments,
+                settings,
+            });
+            console.log(`✅ Verified ${contractAlias} at ${address}`);
+        } catch (e) {
+            console.error(`❌ Failed to verify ${contractAlias} at ${address}: ${e}`);
+        }
     }
 }
