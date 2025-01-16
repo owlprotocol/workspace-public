@@ -60,5 +60,6 @@ export * from "./scroll.js";
 export * from "./scrollSepolia.js";
 export * from "./sei.js";
 export * from "./sepolia.js";
+export * from "./soneium.js";
 export * from "./zora.js";
 export * from "./zoraSepolia.js";

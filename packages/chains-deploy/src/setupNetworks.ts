@@ -137,6 +137,10 @@ export async function setupNetworksForEnv() {
             continue;
         }
 
+        if (chain.id !== chains.soneium.chainId) {
+            continue;
+        }
+
         const walletClient = createWalletClient({
             transport: http(chain.rpcUrls.default.http[0]),
             chain,
@@ -189,7 +193,7 @@ export async function setupNetworksForEnv() {
                     clientL1: walletClientL1 as any,
                     bundlerTargetBalance: network.targetRelayerBalance as bigint,
                     bundlerMinBalance: network.minRelayerBalance as bigint,
-                    // paymasterGasBudget: 10_000_000n,
+                    paymasterGasBudget: 100_000_000n,
                     paymasterTargetBalance: network.targetPaymasterBalance as bigint,
                     paymasterMinBalance: network.minPaymasterBalance as bigint,
                     utilityTargetBalance: network.targetUtilityBalance as bigint,

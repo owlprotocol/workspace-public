@@ -1,4 +1,4 @@
-import { sepolia } from "@owlprotocol/chains";
+import { soneium } from "@owlprotocol/chains";
 import { networkPrivateResource } from "@owlprotocol/core-firebase/admin";
 
 import { getUtilityAccount, getRelayerAccount, getPaymasterSignerAccount } from "@owlprotocol/viem-utils";
@@ -16,7 +16,7 @@ export async function main() {
     const paymasterSignerAccount = getPaymasterSignerAccount({ nonceManager });
 
     //Network to deploy
-    const network = sepolia;
+    const network = soneium;
 
     const chain = { id: network.chainId, ...network } as Chain;
     const walletClient = createWalletClient({
