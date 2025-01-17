@@ -4,7 +4,7 @@ import {
     SendUserOperationReturnType,
     UserOperation,
 } from "viem/account-abstraction";
-import { Transport, Chain, Account, Client, Address, GetChainIdReturnType } from "viem";
+import { Transport, Chain, Account, Client, Address, GetChainIdReturnType, Hash } from "viem";
 
 import { getChainId } from "viem/actions";
 import {
@@ -13,6 +13,8 @@ import {
 } from "../../actions/bundler/estimateUserOperationGas.js";
 import { getSupportedEntryPoints } from "../../actions/bundler/getSupportedEntryPoints.js";
 import { sendUserOperation } from "../../actions/bundler/sendUserOperation.js";
+import { RpcGetUserOperationReceiptReturnType07 } from "../../eip1193/bundler/requestGetUserOperationReceipt.js";
+import { getUserOperationReceipt } from "../../actions/index.js";
 
 export type BackendBundlerActions = {
     getChainId: () => Promise<GetChainIdReturnType>;
@@ -20,6 +22,7 @@ export type BackendBundlerActions = {
         parameters: EstimateUserOperationGasParameters07,
     ) => Promise<EstimateUserOperationGasReturnType<undefined, undefined, undefined, "0.7">>;
     getSupportedEntryPoints: () => Promise<GetSupportedEntryPointsReturnType>;
+    getUserOperationReceipt: (parameters: { hash: Hash }) => Promise<RpcGetUserOperationReceiptReturnType07>;
     sendUserOperation: (parameters: UserOperation<"0.7">) => Promise<SendUserOperationReturnType>;
 };
 
@@ -36,6 +39,7 @@ export function backendBundlerActions<
         estimateUserOperationGas: (parameters) => estimateUserOperationGas(client, parameters),
         getChainId: () => getChainId(client),
         getSupportedEntryPoints: () => getSupportedEntryPoints(client),
+        getUserOperationReceipt: (parameters) => getUserOperationReceipt(client, parameters),
         sendUserOperation: (parameters) => sendUserOperation(client, parameters),
     };
 }
