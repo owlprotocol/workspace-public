@@ -1,7 +1,11 @@
 import { Transport, Chain, Account, Client, Address } from "viem";
 
 import { BackendBundlerActions } from "@owlprotocol/contracts-account-abstraction/clients";
-import { estimateUserOperationGas, getSupportedEntryPoints } from "@owlprotocol/contracts-account-abstraction/actions";
+import {
+    estimateUserOperationGas,
+    getSupportedEntryPoints,
+    getUserOperationReceipt,
+} from "@owlprotocol/contracts-account-abstraction/actions";
 
 import { getChainId } from "viem/actions";
 import { sendUserOperationWithFirebase } from "../../actions/bundler/sendUserOperation.js";
@@ -19,6 +23,7 @@ export function backendBundlerWithFirebaseActions<
         estimateUserOperationGas: (parameters) => estimateUserOperationGas(client, parameters),
         getChainId: () => getChainId(client),
         getSupportedEntryPoints: () => getSupportedEntryPoints(client),
+        getUserOperationReceipt: (parameters) => getUserOperationReceipt(client, parameters),
         sendUserOperation: (parameters) => sendUserOperationWithFirebase(client, parameters),
     };
 }
