@@ -1,26 +1,17 @@
+import { Client, Transport, Hash } from "viem";
 import {
-    Address,
-    Chain,
-    Client,
-    Transport,
-    Hash,
-    decodeEventLog,
-    numberToHex,
-    RpcTransactionReceipt,
-    getAbiItem,
-} from "viem";
-import { entryPoint07Address } from "viem/account-abstraction";
-import { getBlockNumber, getLogs } from "viem/actions";
+    entryPoint07Address,
+    GetUserOperationReceiptReturnType,
+    UserOperationReceiptNotFoundError,
+} from "viem/account-abstraction";
+import { getBlockNumber, getLogs, getTransactionReceipt } from "viem/actions";
 import { getAction } from "viem/utils";
 import { UserOperationEvent } from "../../artifacts/EntryPoint.js";
-import { RpcGetUserOperationReceiptReturnType07 } from "../../eip1193/bundler/requestGetUserOperationReceipt.js";
 
 export async function getUserOperationReceipt(
-    client: Client<Transport, Chain | undefined> & {
-        entryPointSimulationsAddress: Address;
-    },
+    client: Client<Transport>,
     parameters: { hash: Hash },
-): Promise<RpcGetUserOperationReceiptReturnType07 | null> {
+): Promise<GetUserOperationReceiptReturnType> {
     const { hash } = parameters;
 
     const blockNumber = await getBlockNumber(client);
@@ -37,54 +28,35 @@ export async function getUserOperationReceipt(
         "getLogs",
     )({
         address: entryPoint07Address,
-        event: getAbiItem({
-            abi: [UserOperationEvent],
-            name: "UserOperationEvent",
-        }),
-        args: { userOpHash: hash },
+        event: UserOperationEvent,
+        args: {
+            userOpHash: hash,
+        },
         fromBlock,
         toBlock: "latest",
-    });
-
-    if (filterResult.length === 0) {
-        return null;
-    }
-
-    const userOperationLog = filterResult[0];
-    const userOperationEvent = decodeEventLog({
-        abi: [UserOperationEvent],
-        eventName: "UserOperationEvent",
-        data: userOperationLog.data,
-        topics: userOperationLog.topics,
         strict: true,
     });
 
-    const transactionHash = userOperationLog.transactionHash;
-    if (transactionHash === null) {
-        return null;
-    }
+    const userOperationEvent = filterResult[0];
+    if (!userOperationEvent) throw new UserOperationReceiptNotFoundError({ hash });
 
-    const receipt = (await client.request({
-        method: "eth_getTransactionReceipt",
-        params: [transactionHash],
-    })) as RpcTransactionReceipt | null;
-    if (!receipt) {
-        return null;
-    }
+    // Get UserOp transaction receipt
+    const transactionHash = userOperationEvent.transactionHash;
+    const receipt = await getAction(client, getTransactionReceipt, "getTransactionReceipt")({ hash: transactionHash });
 
-    //We will filter the receipt logs
+    // Filter receipt logs
     const logs = receipt.logs;
-    //This logic filters logs emitted for this UserOp
+    // Filters logs emitted for this UserOp
     let startIndex = -1;
     let endIndex = -1;
     logs.forEach((log, index) => {
-        if (log?.topics[0] === userOperationLog.topics[0]) {
-            // process UserOperationEvent
-            if (log.topics[1] === userOperationLog.topics[1]) {
-                // it's our userOpHash. save as end of logs array
+        if (log.topics[0] === userOperationEvent.topics[0]) {
+            // Process UserOperationEvent
+            if (log.topics[1] === userOperationEvent.topics[1]) {
+                // It's our userOpHash. save as end of logs array
                 endIndex = index;
             } else if (endIndex === -1) {
-                // it's a different hash. remember it as beginning index, but only if we didn't find our end index yet.
+                // Different hash. remember it as beginning index, but only if we didn't find our end index yet.
                 startIndex = index;
             }
         }
@@ -100,9 +72,9 @@ export async function getUserOperationReceipt(
         entryPoint: entryPoint07Address,
         userOpHash: hash,
         sender: userOperationEvent.args.sender,
-        nonce: numberToHex(userOperationEvent.args.nonce),
-        actualGasUsed: numberToHex(userOperationEvent.args.actualGasUsed),
-        actualGasCost: numberToHex(userOperationEvent.args.actualGasCost),
+        nonce: userOperationEvent.args.nonce,
+        actualGasUsed: userOperationEvent.args.actualGasUsed,
+        actualGasCost: userOperationEvent.args.actualGasCost,
         success: userOperationEvent.args.success,
         receipt,
         logs: filteredLogs,

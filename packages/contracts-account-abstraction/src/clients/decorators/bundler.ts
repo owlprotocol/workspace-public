@@ -1,6 +1,7 @@
 import {
     EstimateUserOperationGasReturnType,
     GetSupportedEntryPointsReturnType,
+    GetUserOperationReceiptReturnType,
     SendUserOperationReturnType,
     UserOperation,
 } from "viem/account-abstraction";
@@ -13,7 +14,6 @@ import {
 } from "../../actions/bundler/estimateUserOperationGas.js";
 import { getSupportedEntryPoints } from "../../actions/bundler/getSupportedEntryPoints.js";
 import { sendUserOperation } from "../../actions/bundler/sendUserOperation.js";
-import { RpcGetUserOperationReceiptReturnType07 } from "../../eip1193/bundler/requestGetUserOperationReceipt.js";
 import { getUserOperationReceipt } from "../../actions/index.js";
 
 export type BackendBundlerActions = {
@@ -22,7 +22,7 @@ export type BackendBundlerActions = {
         parameters: EstimateUserOperationGasParameters07,
     ) => Promise<EstimateUserOperationGasReturnType<undefined, undefined, undefined, "0.7">>;
     getSupportedEntryPoints: () => Promise<GetSupportedEntryPointsReturnType>;
-    getUserOperationReceipt: (parameters: { hash: Hash }) => Promise<RpcGetUserOperationReceiptReturnType07>;
+    getUserOperationReceipt: (parameters: { hash: Hash }) => Promise<GetUserOperationReceiptReturnType>;
     sendUserOperation: (parameters: UserOperation<"0.7">) => Promise<SendUserOperationReturnType>;
 };
 
