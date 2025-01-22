@@ -137,10 +137,6 @@ export async function setupNetworksForEnv() {
             continue;
         }
 
-        if (chain.id !== chains.soneium.chainId) {
-            continue;
-        }
-
         const walletClient = createWalletClient({
             transport: http(chain.rpcUrls.default.http[0]),
             chain,
