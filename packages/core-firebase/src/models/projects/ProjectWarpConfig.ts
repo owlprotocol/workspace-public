@@ -38,7 +38,7 @@ export interface ProjectWarpConfigData {
     readonly firstTokenAddress?: Address;
     readonly tokens: WarpTokenConfig[];
     readonly proxyDeploySalt?: Hex;
-    readonly createdAt: number;
+    readonly createdAt?: number;
     readonly previousWarpConfigId?: string;
 }
 
@@ -53,7 +53,7 @@ export const projectWarpConfigDataZod = z
         firstTokenChainId: z.number().optional(),
         firstTokenAddress: addressZod.optional(),
         previousWarpConfigId: z.string().optional(),
-        createdAt: z.number().int().positive(),
+        createdAt: z.number().int().positive().optional(),
         tokens: z.array(
             z.object({
                 standard: z.string(),
