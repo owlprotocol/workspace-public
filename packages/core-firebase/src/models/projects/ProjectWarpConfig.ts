@@ -26,6 +26,7 @@ export interface WarpTokenConfig {
     readonly symbol: string;
     readonly decimals: number;
     readonly connections: { token: string }[];
+    readonly logoURI?: string;
 }
 
 export interface ProjectWarpConfigData {
@@ -37,6 +38,7 @@ export interface ProjectWarpConfigData {
     readonly firstTokenAddress?: Address;
     readonly tokens: WarpTokenConfig[];
     readonly proxyDeploySalt?: Hex;
+    readonly createdAt: number;
     readonly previousWarpConfigId?: string;
 }
 
@@ -50,6 +52,8 @@ export const projectWarpConfigDataZod = z
         deployerUser: z.string().optional(),
         firstTokenChainId: z.number().optional(),
         firstTokenAddress: addressZod.optional(),
+        previousWarpConfigId: z.string().optional(),
+        createdAt: z.number().int().positive(),
         tokens: z.array(
             z.object({
                 standard: z.string(),
@@ -60,6 +64,7 @@ export const projectWarpConfigDataZod = z
                 symbol: z.string(),
                 decimals: z.number(),
                 connections: z.array(tokenConnectionZod),
+                logoURI: z.string().optional(),
             }),
         ),
         proxyDeploySalt: bytesZod.optional(),
