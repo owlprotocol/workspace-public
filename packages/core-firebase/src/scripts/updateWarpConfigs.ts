@@ -6,13 +6,11 @@ export async function migrateWarpConfig() {
         const projects = await projectResource.getAll();
         const projectIds = projects.map((project) => project.projectId);
 
-        const allWarpConfigs = [];
+        const warpConfigs = await Promise.all(
+            projectIds.map((projectId) => projectWarpConfigResource.getAll({ projectId })),
+        );
 
-        // get all warp configs
-        for (const projectId of projectIds) {
-            const warpConfigs = await projectWarpConfigResource.getAll({ projectId });
-            allWarpConfigs.push(...warpConfigs);
-        }
+        const allWarpConfigs = warpConfigs.flat();
 
         const toUpdate = allWarpConfigs.filter((doc) => !doc.createdAt);
 
@@ -32,4 +30,4 @@ export async function migrateWarpConfig() {
     }
 }
 
-migrateWarpConfig();
+await migrateWarpConfig();
