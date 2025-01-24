@@ -1,4 +1,4 @@
-import { projectWarpConfigResource, projectResource } from "../web/resources.js";
+import { projectWarpConfigResource, projectResource } from "../admin/resources.js";
 
 export async function migrateWarpConfig() {
     try {
@@ -30,4 +30,4 @@ export async function migrateWarpConfig() {
     }
 }
 
-await migrateWarpConfig();
+// await migrateWarpConfig();
