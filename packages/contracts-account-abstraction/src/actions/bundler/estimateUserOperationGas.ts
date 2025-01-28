@@ -1,9 +1,8 @@
-import { Address, Chain, Client, Transport, zeroAddress } from "viem";
+import { Address, Chain, Client, StateOverride, Transport, zeroAddress } from "viem";
 import { EstimateUserOperationGasReturnType, UserOperation } from "viem/account-abstraction";
 import { getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
 
-import { celoAlfajores, celo, sei, seiDevnet, base } from "viem/chains";
 import { getExecutionResult } from "./simulateHandleOp.js";
 import { calcPreVerificationGas } from "./calcPreVerificationGas.js";
 import { getSupportedEntryPoints } from "./getSupportedEntryPoints.js";
@@ -15,8 +14,6 @@ export type EstimateUserOperationGasParameters07 = Pick<
     UserOperation<"0.7">,
     "sender" | "nonce" | "callData" | "factory" | "factoryData" | "paymaster" | "paymasterData"
 >;
-
-const chainsWithCallAndVerficationGasLimitOverrides: number[] = [celoAlfajores.id, celo.id, sei.id, seiDevnet.id];
 
 /**
  * Returns an estimate of gas values necessary to execute the User Operation.
@@ -77,7 +74,7 @@ export async function estimateUserOperationGas(
         // populated first, based on byte-size of the user op, this is the gas cost of encoding the user op data before any contract execution
         preVerificationGas: 0n,
         // gas cost of verifying the user op (eg. smart account signature check)
-        verificationGasLimit: 1_000_000n,
+        verificationGasLimit: 10_000_000n,
         // gas cost of executing the user op
         callGasLimit: 10_000_000n,
         paymaster,
@@ -103,20 +100,15 @@ export async function estimateUserOperationGas(
             110n) /
         100n;
 
-    //TODO: See if we can do without when using zero gas estimation
-    if (chainId === base.id) {
-        userOperation.verificationGasLimit = 5_000_000n;
-    }
-
-    if (chainsWithCallAndVerficationGasLimitOverrides.includes(chainId)) {
-        userOperation.verificationGasLimit = 1_000_000n;
-        userOperation.callGasLimit = 1_000_000n;
-    }
-
+    const stateOverride: StateOverride[number] = {
+        address: userOperation.sender,
+        balance: 10_000_000n,
+    };
     const executionResult = await getExecutionResult(client, {
         packedUserOperation: toPackedUserOperation(encodeUserOp(userOperation)),
         entryPoint: entryPointAddress,
         entryPointSimulationsAddress,
+        stateOverride,
     });
 
     const verificationGasAndCallGasLimit = calcVerificationGasAndCallGasLimit(
