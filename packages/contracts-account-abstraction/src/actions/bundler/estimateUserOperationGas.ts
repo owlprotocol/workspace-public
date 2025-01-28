@@ -3,6 +3,7 @@ import { EstimateUserOperationGasReturnType, UserOperation } from "viem/account-
 import { getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
 
+import { celoAlfajores, celo, sei, seiDevnet, base } from "viem/chains";
 import { getExecutionResult } from "./simulateHandleOp.js";
 import { calcPreVerificationGas } from "./calcPreVerificationGas.js";
 import { getSupportedEntryPoints } from "./getSupportedEntryPoints.js";
@@ -15,13 +16,7 @@ export type EstimateUserOperationGasParameters07 = Pick<
     "sender" | "nonce" | "callData" | "factory" | "factoryData" | "paymaster" | "paymasterData"
 >;
 
-const chainsWithCallAndVerficationGasLimitOverrides: number[] = [
-    chains.celoAlfajores.id,
-    chains.celo.id,
-    chains.sei.id,
-    chains.seiDevnet.id,
-    chains.sepolia.id,
-];
+const chainsWithCallAndVerficationGasLimitOverrides: number[] = [celoAlfajores.id, celo.id, sei.id, seiDevnet.id];
 
 /**
  * Returns an estimate of gas values necessary to execute the User Operation.
@@ -109,7 +104,7 @@ export async function estimateUserOperationGas(
         100n;
 
     //TODO: See if we can do without when using zero gas estimation
-    if (chainId === chains.base.id) {
+    if (chainId === base.id) {
         userOperation.verificationGasLimit = 5_000_000n;
     }
 
