@@ -132,12 +132,16 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
             });
 
             test("sendUserOperation", async () => {
+                // Construct UserOp
+                const gasPrice = await publicClient.estimateFeesPerGas();
+
                 const userOpData: EstimateUserOperationGasParameters07 = {
                     sender: smartAccountAddress,
                     nonce: 0n,
                     callData,
                     factory: factoryAddress,
                     factoryData,
+                    maxFeePerGas: gasPrice.maxFeePerGas!,
                 };
 
                 // Estimate UserOp gas
@@ -154,8 +158,6 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 expect(paymasterVerificationGasLimit).toBeUndefined();
                 expect(paymasterPostOpGasLimit).toBeUndefined();
 
-                // Construct UserOp
-                const gasPrice = await publicClient.estimateFeesPerGas();
                 const userOp: UserOperation<"0.7"> = {
                     ...userOpData,
                     signature: dummySignature,
@@ -226,12 +228,15 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
             });
 
             test("sendUserOperation", async () => {
+                const gasPrice = await publicClient.estimateFeesPerGas();
+
                 const userOpData: EstimateUserOperationGasParameters07 = {
                     sender: smartAccountAddress,
                     nonce: 0n,
                     callData,
                     factory: factoryAddress,
                     factoryData,
+                    maxFeePerGas: gasPrice.maxFeePerGas!,
                 };
 
                 // Estimate UserOp gas
@@ -249,7 +254,6 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 expect(paymasterPostOpGasLimit).toBeUndefined();
 
                 // Construct UserOp
-                const gasPrice = await publicClient.estimateFeesPerGas();
                 const userOp: UserOperation<"0.7"> = {
                     ...userOpData,
                     signature: dummySignature,
@@ -350,6 +354,8 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
             });
 
             test("sendUserOperation", async () => {
+                const gasPrice = await publicClient.estimateFeesPerGas();
+
                 const userOpData: EstimateUserOperationGasParameters07 = {
                     sender: smartAccountAddress,
                     nonce: 0n,
@@ -358,6 +364,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     factoryData,
                     paymaster: paymasterAddress,
                     paymasterData: paymasterDataDummySignature,
+                    maxFeePerGas: gasPrice.maxFeePerGas!,
                 };
 
                 // Estimate UserOp gas
@@ -375,7 +382,6 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 expect(paymasterPostOpGasLimit).toBeGreaterThan(0n);
 
                 // Construct UserOp
-                const gasPrice = await publicClient.estimateFeesPerGas();
                 const userOp: UserOperation<"0.7"> = {
                     ...userOpData,
                     signature: dummySignature,
@@ -465,6 +471,8 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
             });
 
             test("sendUserOperation", async () => {
+                const gasPrice = await publicClient.estimateFeesPerGas();
+
                 const userOpData: EstimateUserOperationGasParameters07 = {
                     sender: smartAccountAddress,
                     nonce: 0n,
@@ -473,6 +481,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     factoryData,
                     paymaster: paymasterAddress,
                     paymasterData: paymasterDataDummySignature,
+                    maxFeePerGas: gasPrice.maxFeePerGas!,
                 };
 
                 // Estimate UserOp gas
@@ -490,7 +499,6 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 expect(paymasterPostOpGasLimit).toBeGreaterThan(0n);
 
                 // Construct UserOp
-                const gasPrice = await publicClient.estimateFeesPerGas();
                 const userOp: UserOperation<"0.7"> = {
                     ...userOpData,
                     signature: dummySignature,

@@ -205,10 +205,13 @@ describe("SimpleAccount.test.ts", function () {
             });
 
             // Estimate UserOp gas
+            const gasPrice = await publicClient.estimateFeesPerGas();
+
             const userOpData: EstimateUserOperationGasParameters07 = {
                 sender: simpleAccount.address,
                 nonce: 0n,
                 callData,
+                maxFeePerGas: gasPrice.maxFeePerGas!,
             };
             const { preVerificationGas, verificationGasLimit, callGasLimit } = await estimateUserOperationGas(
                 { ...publicClient, entryPointSimulationsAddress: erc4337Contracts.pimlicoEntrypointSimulations },
@@ -216,7 +219,6 @@ describe("SimpleAccount.test.ts", function () {
             );
 
             // Construct final UserOp
-            const gasPrice = await publicClient.estimateFeesPerGas();
             const userOp: UserOperation<"0.7"> = {
                 sender: simpleAccount.address,
                 nonce: 0n,

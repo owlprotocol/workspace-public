@@ -213,6 +213,8 @@ describe("VerifyingPaymaster.test.ts", function () {
             const paymasterDataDummySignature = concatHex([paymasterDataUnsigned, dummySignature]);
 
             // Estimate UserOp gas
+            const gasPrice = await publicClient.estimateFeesPerGas();
+
             const userOpData: EstimateUserOperationGasParameters07 = {
                 sender: simpleAccount.address,
                 nonce: 0n,
@@ -220,6 +222,7 @@ describe("VerifyingPaymaster.test.ts", function () {
                 paymaster: verifyingPaymaster,
                 //Empty, will be replaced with signature
                 paymasterData: paymasterDataDummySignature,
+                maxFeePerGas: gasPrice.maxFeePerGas!,
             };
             const {
                 preVerificationGas,
@@ -233,7 +236,6 @@ describe("VerifyingPaymaster.test.ts", function () {
             );
 
             // Construct final UserOp
-            const gasPrice = await publicClient.estimateFeesPerGas();
             const userOp: UserOperation<"0.7"> = {
                 sender: simpleAccount.address,
                 nonce: 0n,
