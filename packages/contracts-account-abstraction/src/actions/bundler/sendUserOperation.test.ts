@@ -14,6 +14,8 @@ import {
     parseEther,
     LocalAccount,
     zeroAddress,
+    createTestClient,
+    toHex,
 } from "viem";
 import { localhost } from "viem/chains";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
@@ -27,7 +29,11 @@ import {
 } from "viem/account-abstraction";
 import { getDeployDeterministicFunctionData, getLocalAccount } from "@owlprotocol/viem-utils";
 
-import { estimateUserOperationGas, EstimateUserOperationGasParameters07 } from "./estimateUserOperationGas.js";
+import {
+    estimateUserOperationGas,
+    EstimateUserOperationGasParameters07,
+    getPaymasterSlot,
+} from "./estimateUserOperationGas.js";
 import { sendUserOperation } from "./sendUserOperation.js";
 import { getUserOperation } from "./getUserOperation.js";
 import { getUserOperationReceipt } from "./getUserOperationReceipt.js";
@@ -43,6 +49,7 @@ import { deposit as depositAbi, getHash as getHashAbi } from "../../artifacts/Ve
 
 import { dummySignature, encodeUserOp } from "../../models/UserOperation.js";
 import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
+import { ENTRYPOINT_ADDRESS_V07 } from "../../constants.js";
 
 /**
  * The tests below simulate submitting a UserOp using the viem actions:
@@ -141,7 +148,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     callData,
                     factory: factoryAddress,
                     factoryData,
-                    maxFeePerGas: gasPrice.maxFeePerGas!,
+                    maxFeePerGas: gasPrice.maxFeePerGas,
                 };
 
                 // Estimate UserOp gas
@@ -181,11 +188,8 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 userOp.signature = signature;
 
                 //Pre-fund wallet
-                const fundSimpleAccountHash = await walletClient.sendTransaction({
-                    to: smartAccountAddress,
-                    value: parseEther("0.1"),
-                });
-                await publicClient.waitForTransactionReceipt({ hash: fundSimpleAccountHash });
+                const testClient = createTestClient({ mode: "anvil", chain, transport });
+                testClient.setBalance({ address: smartAccountAddress, value: parseEther("0.1") });
 
                 // Send UserOp
                 const userOpHashSent = await sendUserOperation(walletClient, userOp);
@@ -277,11 +281,8 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 userOp.signature = signature;
 
                 //Pre-fund wallet
-                const fundSimpleAccountHash = await walletClient.sendTransaction({
-                    to: smartAccountAddress,
-                    value: parseEther("0.1"),
-                });
-                await publicClient.waitForTransactionReceipt({ hash: fundSimpleAccountHash });
+                const testClient = createTestClient({ mode: "anvil", chain, transport });
+                testClient.setBalance({ address: smartAccountAddress, value: parseEther("0.1") });
 
                 // Send UserOp
                 const userOpHashSent = await sendUserOperation(walletClient, userOp);
@@ -336,6 +337,37 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 [validUntil, validAfter],
             );
             paymasterDataDummySignature = concatHex([paymasterDataUnsigned, dummySignature]);
+        });
+
+        test("paymaster deposit", async () => {
+            const paymasterSlot = getPaymasterSlot(paymasterAddress);
+
+            const slotValueBefore = await publicClient.getStorageAt({
+                address: ENTRYPOINT_ADDRESS_V07,
+                slot: paymasterSlot,
+            });
+
+            expect(slotValueBefore).toEqual(toHex(0, { size: 32 }));
+
+            const topupAmount = parseEther("0.1");
+
+            const paymasterDeposit = await publicClient.simulateContract({
+                account: walletClient.account,
+                address: paymasterAddress,
+                abi: [depositAbi],
+                functionName: "deposit",
+                value: topupAmount,
+                args: [],
+            });
+            const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);
+            await publicClient.waitForTransactionReceipt({ hash: paymasterDepositHash });
+
+            const slotValueAfter = await publicClient.getStorageAt({
+                address: ENTRYPOINT_ADDRESS_V07,
+                slot: paymasterSlot,
+            });
+
+            expect(slotValueAfter).toEqual(toHex(topupAmount, { size: 32 }));
         });
 
         describe("simple transaction", () => {
@@ -481,7 +513,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     factoryData,
                     paymaster: paymasterAddress,
                     paymasterData: paymasterDataDummySignature,
-                    maxFeePerGas: gasPrice.maxFeePerGas!,
+                    maxFeePerGas: gasPrice.maxFeePerGas,
                 };
 
                 // Estimate UserOp gas

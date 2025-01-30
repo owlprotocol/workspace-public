@@ -38,7 +38,7 @@ export async function simulateEntryPoint(
         to: entryPointSimulationsAddress,
         data: callData,
         blockTag: "latest",
-        stateOverride: [...(stateOverride ? [stateOverride] : [])],
+        stateOverride: stateOverride ? [stateOverride] : undefined,
     });
 
     const result = callReturn.data;
