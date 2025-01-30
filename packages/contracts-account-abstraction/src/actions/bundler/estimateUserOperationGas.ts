@@ -1,5 +1,15 @@
-import { Address, Chain, Client, PartialBy, Transport } from "viem";
-import * as chains from "viem/chains";
+import {
+    Address,
+    Chain,
+    Client,
+    encodeAbiParameters,
+    keccak256,
+    parseEther,
+    StateOverride,
+    toHex,
+    Transport,
+    zeroAddress,
+} from "viem";
 import { EstimateUserOperationGasReturnType, UserOperation } from "viem/account-abstraction";
 import { getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
@@ -10,47 +20,18 @@ import { getSupportedEntryPoints } from "./getSupportedEntryPoints.js";
 import { calcVerificationGasAndCallGasLimit } from "../../gasestimation/calcVerificationGasAndCallGasLimit.js";
 import { dummySignature, encodeUserOp } from "../../models/UserOperation.js";
 import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
-import { maxBigInt } from "../../utils/bigint.js";
+import { ENTRYPOINT_ADDRESS_V07 } from "../../constants.js";
 
-export type UserOperationGasLimitFields =
-    | "preVerificationGas"
-    | "verificationGasLimit"
-    | "callGasLimit"
-    | "paymasterPostOpGasLimit"
-    | "paymasterVerificationGasLimit";
-
-export type EstimateUserOperationGasParameters07 = PartialBy<
-    Pick<
-        UserOperation<"0.7">,
-        | "callData"
-        | "callGasLimit"
-        | "factory"
-        | "factoryData"
-        | "maxFeePerGas"
-        | "maxPriorityFeePerGas"
-        | "nonce"
-        | "sender"
-        | "preVerificationGas"
-        | "verificationGasLimit"
-        | "paymasterPostOpGasLimit"
-        | "paymasterVerificationGasLimit"
-    >,
-    | "callGasLimit"
-    | "factory"
-    | "factoryData"
-    // | "maxFeePerGas"
-    | "maxPriorityFeePerGas"
-    | "preVerificationGas"
-    | "verificationGasLimit"
+export type EstimateUserOperationGasParameters07 = Pick<
+    UserOperation<"0.7">,
+    "sender" | "nonce" | "callData" | "factory" | "factoryData" | "paymaster" | "paymasterData" | "maxFeePerGas"
 >;
 
-const chainsWithCallAndVerficationGasLimitOverrides: number[] = [
-    chains.celoAlfajores.id,
-    chains.celo.id,
-    chains.sei.id,
-    chains.seiDevnet.id,
-    chains.sepolia.id,
-];
+// THe slot where the deposit mapping is stored
+export const entryPointDepositSlot = 0;
+
+export const getPaymasterSlot = (paymaster: Address) =>
+    keccak256(encodeAbiParameters([{ type: "address" }, { type: "uint8" }], [paymaster, entryPointDepositSlot]));
 
 /**
  * Returns an estimate of gas values necessary to execute the User Operation.
@@ -85,61 +66,70 @@ export async function estimateUserOperationGas(
     },
     parameters: EstimateUserOperationGasParameters07,
 ): Promise<EstimateUserOperationGasReturnType<undefined, undefined, undefined, "0.7">> {
+    const { factory, factoryData, paymaster } = parameters;
     const { entryPointSimulationsAddress } = client;
 
     // Default entryPoint
     const supportedEntryPoints = await getAction(client, getSupportedEntryPoints, "getSupportedEntryPoints")({});
     const entryPointAddress = supportedEntryPoints[0];
+    // Chain id for custom gas overrides
+    const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
 
     //TODO: Get fee per gas if undefined???
-    if (parameters.maxFeePerGas === 0n) {
-        throw new Error("user operation max fee per gas must be larger than 0 during gas estimation");
-    }
+    // if (parameters.maxFeePerGas === 0n) {
+    // throw new Error("user operation max fee per gas must be larger than 0 during gas estimation");
+    // }
 
     //TODO: This defines minimum paymaster balance required for initial gas estimation
     const userOperation: UserOperation<"0.7"> = {
         ...parameters,
+        factory: factory ?? zeroAddress,
+        factoryData: factoryData ?? "0x",
         signature: dummySignature,
-        preVerificationGas: 1_000_000n,
+        // initial dummy gas values
+        // populated first, based on byte-size of the user op, this is the gas cost of encoding the user op data before any contract execution
+        preVerificationGas: 0n,
+        // gas cost of verifying the user op (eg. smart account signature check)
         verificationGasLimit: 10_000_000n,
+        // gas cost of executing the user op
         callGasLimit: 10_000_000n,
-        // This is necessary because entryPoint pays
-        // min(maxFeePerGas, baseFee + maxPriorityFeePerGas) for the verification
-        // Since we don't want our estimations to depend upon baseFee, we set
-        // maxFeePerGas to maxPriorityFeePerGas
+        maxFeePerGas: parameters.maxFeePerGas,
         maxPriorityFeePerGas: parameters.maxFeePerGas,
     };
+
     if (userOperation.paymaster) {
+        // gas cost of verifying the paymaster (eg. paymaster signer)
         userOperation.paymasterVerificationGasLimit = 5_000_000n;
+        // gas cost of post-execution paymaster hook (eg. ERC20 paymaster)
         userOperation.paymasterPostOpGasLimit = 2_000_000n;
     }
 
-    const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
+    let stateOverride: StateOverride[number];
+    if (paymaster) {
+        const paymasterSlot = getPaymasterSlot(paymaster);
 
-    //Additional 10% added
-    userOperation.preVerificationGas =
-        ((await calcPreVerificationGas(client, {
-            packedUserOperation: toPackedUserOperation(encodeUserOp(userOperation)),
-            //TODO: Rename to entryPointAddress
-            entryPoint: entryPointAddress,
-        })) *
-            110n) /
-        100n;
-
-    //TODO: Make more modular for chain overrides
-    if (chainId === chains.base.id) {
-        userOperation.verificationGasLimit = 5_000_000n;
-    }
-
-    if (chainsWithCallAndVerficationGasLimitOverrides.includes(chainId)) {
-        userOperation.verificationGasLimit = 1_000_000n;
-        userOperation.callGasLimit = 1_000_000n;
+        stateOverride = {
+            address: ENTRYPOINT_ADDRESS_V07,
+            stateDiff: [
+                {
+                    slot: paymasterSlot,
+                    value: toHex(parseEther("1000000"), { size: 32 }),
+                },
+            ],
+        };
+    } else {
+        stateOverride = {
+            // Either the paymaster or the smart account would pay. Override accordingly
+            address: paymaster ?? userOperation.sender,
+            balance: parseEther("1000000"),
+        };
     }
 
     const executionResult = await getExecutionResult(client, {
         packedUserOperation: toPackedUserOperation(encodeUserOp(userOperation)),
         entryPoint: entryPointAddress,
         entryPointSimulationsAddress,
+        stateOverride,
     });
 
     const verificationGasAndCallGasLimit = calcVerificationGasAndCallGasLimit(
@@ -148,22 +138,24 @@ export async function estimateUserOperationGas(
         chainId,
         executionResult.data.callDataResult,
     );
-    userOperation.verificationGasLimit = verificationGasAndCallGasLimit.verificationGasLimit;
-    //TODO: Cleanup (over-estimate by 50%)
-    userOperation.callGasLimit = (verificationGasAndCallGasLimit.callGasLimit * 150n) / 100n;
+    //Additional 20% added
+    userOperation.verificationGasLimit = (verificationGasAndCallGasLimit.verificationGasLimit * 120n) / 100n;
 
-    if (chainId === chains.base.id || chainId === chains.baseSepolia.id) {
-        userOperation.callGasLimit += 10_000n;
-    }
+    //Additional 10% added
+    userOperation.callGasLimit = (verificationGasAndCallGasLimit.callGasLimit * 110n) / 100n;
 
-    if (chainId === chains.base.id || chainId === chains.optimism.id) {
-        userOperation.callGasLimit = maxBigInt(userOperation.callGasLimit, 120_000n);
-    }
-
+    //Empty call data
     if (userOperation.callData === "0x") {
         userOperation.callGasLimit = 0n;
     }
 
+    //Paymaster gas
+    if (userOperation.paymaster != null) {
+        userOperation.paymasterVerificationGasLimit = 100_000n;
+        userOperation.paymasterPostOpGasLimit = 100_000n;
+    }
+    /*
+    // Too complex, right now estimation is always null for paymaster gas data, so we just hard-code
     if (
         userOperation.paymaster !== null &&
         "paymasterVerificationGasLimit" in executionResult.data.executionResult &&
@@ -182,6 +174,18 @@ export async function estimateUserOperationGas(
         userOperation.paymasterVerificationGasLimit = 100_000n;
         userOperation.paymasterPostOpGasLimit = 100_000n;
     }
+    */
+
+    // In alto, this seems to happen after execution
+    //Additional 10% added
+    userOperation.preVerificationGas =
+        ((await calcPreVerificationGas(client, {
+            packedUserOperation: toPackedUserOperation(encodeUserOp(userOperation)),
+            //TODO: Rename to entryPointAddress
+            entryPoint: entryPointAddress,
+        })) *
+            110n) /
+        100n;
 
     const userOpGas: EstimateUserOperationGasReturnType<undefined, undefined, undefined, "0.7"> = {
         preVerificationGas: userOperation.preVerificationGas,
@@ -194,9 +198,6 @@ export async function estimateUserOperationGas(
     if (userOperation.paymasterPostOpGasLimit) {
         userOpGas.paymasterPostOpGasLimit = userOperation.paymasterPostOpGasLimit;
     }
-
-    //TODO: Fix
-    // userOpGas.callGasLimit = 10_000_000n;
 
     return userOpGas;
 }

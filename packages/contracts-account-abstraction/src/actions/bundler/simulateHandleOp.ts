@@ -42,7 +42,7 @@ export async function getExecutionResult(
         packedUserOperation: PackedUserOperation;
         entryPoint: Address;
         entryPointSimulationsAddress: Address;
-        stateOverride?: StateOverride[number] | undefined;
+        stateOverride?: StateOverride[number];
     },
 ): Promise<SimulateHandleOpResult<"execution">> {
     const { packedUserOperation, entryPoint, entryPointSimulationsAddress, stateOverride } = parameters;

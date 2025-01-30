@@ -1,4 +1,4 @@
-import { describe, test, beforeAll, beforeEach, expect } from "vitest";
+import { describe, test, beforeEach, expect } from "vitest";
 import {
     Address,
     PrivateKeyAccount,
@@ -11,9 +11,9 @@ import {
     nonceManager,
 } from "viem";
 import { localhost } from "viem/chains";
-import { getLocalAccount, getOrDeployDeterministicDeployer } from "@owlprotocol/viem-utils";
+import { getLocalAccount } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { entryPoint07Address, UserOperation, getUserOperationHash } from "viem/account-abstraction";
+import { UserOperation, getUserOperationHash } from "viem/account-abstraction";
 
 import { port } from "./test/constants.js";
 import { SimpleAccountFactory } from "./artifacts/SimpleAccountFactory.js";
@@ -23,8 +23,12 @@ import { ERC1967Proxy } from "./artifacts/ERC1967Proxy.js";
 import { SimpleAccount } from "./artifacts/SimpleAccount.js";
 import { encodeUserOp } from "./models/UserOperation.js";
 import { IEntryPoint } from "./artifacts/IEntryPoint.js";
-import { setupERC4337Contracts } from "./setupERC4337Contracts.js";
+import { erc4337Contracts } from "./setupERC4337Contracts.js";
 import { toPackedUserOperation } from "./models/PackedUserOperation.js";
+import {
+    estimateUserOperationGas,
+    EstimateUserOperationGasParameters07,
+} from "./actions/bundler/estimateUserOperationGas.js";
 
 describe("SimpleAccount.test.ts", function () {
     const chain = {
@@ -48,20 +52,8 @@ describe("SimpleAccount.test.ts", function () {
 
     // Generated account on each test
     let account: PrivateKeyAccount;
-    let entryPoint: typeof entryPoint07Address;
-    let simpleAccountFactory: Address;
-
-    beforeAll(async () => {
-        //Deploy Deterministic Deployer first
-        const { hash } = await getOrDeployDeterministicDeployer(walletClient);
-        if (hash) {
-            await publicClient.waitForTransactionReceipt({ hash });
-        }
-
-        const contracts = await setupERC4337Contracts(walletClient);
-        entryPoint = contracts.entrypoint.address;
-        simpleAccountFactory = contracts.simpleAccountFactory.address;
-    });
+    const entryPoint = erc4337Contracts.entrypoint;
+    const simpleAccountFactory = erc4337Contracts.simpleAccountFactory;
 
     beforeEach(async () => {
         account = privateKeyToAccount(generatePrivateKey());
@@ -173,6 +165,13 @@ describe("SimpleAccount.test.ts", function () {
             });
             const createAccountHash = await walletClient.writeContract(createAccountRequest);
             await publicClient.waitForTransactionReceipt({ hash: createAccountHash });
+
+            //Pre-fund wallet
+            const fundSimpleAccountHash = await walletClient.sendTransaction({
+                to: simpleAccount.address,
+                value: parseEther("1"),
+            });
+            await publicClient.waitForTransactionReceipt({ hash: fundSimpleAccountHash });
         });
 
         /**
@@ -205,17 +204,30 @@ describe("SimpleAccount.test.ts", function () {
                 args: [to, value, data],
             });
 
+            // Estimate UserOp gas
             const gasPrice = await publicClient.estimateFeesPerGas();
+
+            const userOpData: EstimateUserOperationGasParameters07 = {
+                sender: simpleAccount.address,
+                nonce: 0n,
+                callData,
+                maxFeePerGas: gasPrice.maxFeePerGas!,
+            };
+            const { preVerificationGas, verificationGasLimit, callGasLimit } = await estimateUserOperationGas(
+                { ...publicClient, entryPointSimulationsAddress: erc4337Contracts.pimlicoEntrypointSimulations },
+                userOpData,
+            );
+
+            // Construct final UserOp
             const userOp: UserOperation<"0.7"> = {
                 sender: simpleAccount.address,
-                //TODO: Update nonce
                 nonce: 0n,
                 signature:
                     "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c",
                 callData,
-                callGasLimit: 10_000_000n,
-                verificationGasLimit: 10_000_000n,
-                preVerificationGas: 1_000_000n,
+                callGasLimit,
+                verificationGasLimit,
+                preVerificationGas,
                 maxFeePerGas: gasPrice.maxFeePerGas!,
                 maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
             };
@@ -234,13 +246,6 @@ describe("SimpleAccount.test.ts", function () {
             //types seem to be inferred as [never[], Address]
             const handleOpsArgs = [[userOpPacked] as any[], walletClient.account.address] as const;
 
-            //Pre-fund wallet
-            const fundSimpleAccountHash = await walletClient.sendTransaction({
-                to: simpleAccount.address,
-                value: parseEther("1"),
-            });
-            await publicClient.waitForTransactionReceipt({ hash: fundSimpleAccountHash });
-
             //Simulate handleOps
             const { request } = await publicClient.simulateContract({
                 account: walletClient.account,
@@ -250,11 +255,11 @@ describe("SimpleAccount.test.ts", function () {
                 args: handleOpsArgs,
             });
 
-            //Sumbit UserOp
+            //Submit UserOp
             const handleOpsHash = await walletClient.writeContract(request as any);
             await publicClient.waitForTransactionReceipt({ hash: handleOpsHash });
 
-            //Get balanceOf
+            //Get balanceOf "to"
             const balance = await publicClient.getBalance({ address: to });
             expect(balance).toBe(value);
         });

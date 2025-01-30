@@ -45,7 +45,8 @@ export const blockEncodeZod = z
     .object({
         /** Block Base  */
         hash: bytes32Zod.describe("Block hash or `null` if pending"),
-        number: quantityEncodeZod.describe("Block number or `null` if pending "),
+        number: quantityEncodeZod.describe("Block number or `null` if pending"),
+        parentBeaconBlockRoot: bytes32Zod.describe("Parent beacon block root"),
         parentHash: bytes32Zod.describe("Parent block hash"),
         nonce: bytesZod.describe("Proof-of-work hash or `null` if pending"),
         difficulty: quantityEncodeZod.describe("Difficulty for this block"),
