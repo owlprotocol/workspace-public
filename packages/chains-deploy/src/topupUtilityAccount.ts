@@ -30,7 +30,7 @@ export async function topupUtilityAccount(client: Client<Transport, Chain>, para
     // Local development
     // chainId is local L1 network (anvil/L1 Optimism Devnet)
     //TODO: Make dynamic
-    if (!isProductionOrStaging() && (chain.id === 1337 || chain.id === 1338 || chain.id === 900)) {
+    if (!isProductionOrStaging()) {
         // Check account balance
         const balance = await getAction(client, getBalance, "getBalance")({ address });
         if (balance === 0n) {
