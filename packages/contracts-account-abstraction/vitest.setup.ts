@@ -10,12 +10,14 @@ import { getOrDeployDeterministicDeployer, getLocalAccount } from "@owlprotocol/
 import { port } from "./src/test/constants.js";
 import { setupERC4337Contracts } from "./src/setupERC4337Contracts.js";
 
-let instance: Instance;
+let instance: Instance | undefined;
 
 /**
  * Run once on `vitest` command. NOT on test re-runs
  */
 export async function setup() {
+    if (process.env.NODE_ENV !== "test") return;
+
     instance = anvil({
         host: "127.0.0.1",
         port,
@@ -52,5 +54,5 @@ export async function setup() {
  * Run once `vitest` process has exited. NOT on test re-runs
  */
 export async function teardown() {
-    await instance.stop();
+    await instance?.stop();
 }

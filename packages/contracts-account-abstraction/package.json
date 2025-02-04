@@ -139,6 +139,8 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-viem": "^2.0.0",
+    "@owlprotocol/chains": "workspace:*",
+    "@owlprotocol/envvars": "workspace:*",
     "@owlprotocol/esbuild-config": "workspace:*",
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/hardhat-config": "workspace:*",
