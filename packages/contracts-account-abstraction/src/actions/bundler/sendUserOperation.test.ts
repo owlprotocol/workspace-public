@@ -8,14 +8,16 @@ import {
     padHex,
     Address,
     createWalletClient,
-    nonceManager,
     encodeAbiParameters,
     concatHex,
     parseEther,
     LocalAccount,
     zeroAddress,
-    createTestClient,
     toHex,
+    Chain,
+    nonceManager,
+    Account,
+    HttpTransport,
 } from "viem";
 import { localhost } from "viem/chains";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
@@ -27,8 +29,9 @@ import {
     GetUserOperationReceiptParameters,
     waitForUserOperationReceipt,
 } from "viem/account-abstraction";
-import { getDeployDeterministicFunctionData, getLocalAccount } from "@owlprotocol/viem-utils";
-
+import { getDeployDeterministicFunctionData, getLocalAccount, getUtilityAccount } from "@owlprotocol/viem-utils";
+import { NODE_ENV } from "@owlprotocol/envvars";
+import { sepolia } from "@owlprotocol/chains";
 import {
     estimateUserOperationGas,
     EstimateUserOperationGasParameters07,
@@ -50,6 +53,7 @@ import { deposit as depositAbi, getHash as getHashAbi } from "../../artifacts/Ve
 import { dummySignature, encodeUserOp } from "../../models/UserOperation.js";
 import { toPackedUserOperation } from "../../models/PackedUserOperation.js";
 import { ENTRYPOINT_ADDRESS_V07 } from "../../constants.js";
+import { getUserOperationTotalGas } from "../../utils/getUserOperationTotalGas.js";
 
 /**
  * The tests below simulate submitting a UserOp using the viem actions:
@@ -66,15 +70,27 @@ import { ENTRYPOINT_ADDRESS_V07 } from "../../constants.js";
  * current smart account / paymaster balance is left as a responsibility to the user.
  **/
 describe("actions/bundler/sendUserOperation.test.ts", function () {
-    const chain = {
-        ...localhost,
-        rpcUrls: {
-            default: {
-                http: [`http://127.0.0.1:${port}`],
+    let chain: Chain;
+    let account: Account;
+    let transport: HttpTransport;
+
+    if (NODE_ENV === "test") {
+        chain = {
+            ...localhost,
+            rpcUrls: {
+                default: {
+                    http: [`http://127.0.0.1:${port}`],
+                },
             },
-        },
-    };
-    const transport = http(chain.rpcUrls.default.http[0]);
+        };
+        account = getLocalAccount(0, { nonceManager });
+        transport = http(chain.rpcUrls.default.http[0]);
+    } else {
+        chain = sepolia as unknown as Chain;
+        account = getUtilityAccount({ nonceManager });
+        transport = http(sepolia.rpcUrls.drpc!.http[0]);
+    }
+
     const publicClient = createPublicClient({
         chain,
         transport,
@@ -88,10 +104,12 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
     });
 
     const walletClient = createWalletClient({
-        account: getLocalAccount(0, { nonceManager }),
+        account,
         chain,
         transport,
     });
+
+    // const testClient = createTestClient({ mode: "anvil", chain, transport });
 
     // Contracts
     const entryPointSimulationsAddress = erc4337Contracts.pimlicoEntrypointSimulations;
@@ -174,27 +192,35 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     maxFeePerGas: gasPrice.maxFeePerGas!,
                     maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas!,
                 };
+                console.log({ userOp });
 
                 // Sign UserOp
                 const userOpHash = getUserOperationHash({
                     userOperation: userOp,
                     entryPointAddress: entryPoint07Address,
                     entryPointVersion: "0.7",
-                    chainId: localhost.id,
+                    chainId: chain.id,
                 });
+                console.log({ userOpHash });
+
                 const signature = await owner.signMessage({
                     message: { raw: userOpHash },
                 });
                 userOp.signature = signature;
 
                 //Pre-fund wallet
-                const testClient = createTestClient({ mode: "anvil", chain, transport });
-                testClient.setBalance({ address: smartAccountAddress, value: parseEther("0.1") });
+                const prefundHash = await walletClient.sendTransaction({
+                    to: smartAccountAddress,
+                    value: getUserOperationTotalGas(userOp),
+                });
+                console.log({ prefundHash });
+                await publicClient.waitForTransactionReceipt({ hash: prefundHash });
 
                 // Send UserOp
                 const userOpHashSent = await sendUserOperation(walletClient, userOp);
                 expect(userOpHashSent).toBe(userOpHash);
 
+                console.log("waitingForUserOpReceipt");
                 // Wait for UserOp confirmation
                 // We use the extended "bundlerClient" that has `getUserOperationReceipt` action
                 const userOpReceipt = await waitForUserOperationReceipt(bundlerClient, { hash: userOpHash });
@@ -273,7 +299,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     userOperation: userOp,
                     entryPointAddress: entryPoint07Address,
                     entryPointVersion: "0.7",
-                    chainId: localhost.id,
+                    chainId: chain.id,
                 });
                 const signature = await owner.signMessage({
                     message: { raw: userOpHash },
@@ -281,8 +307,11 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 userOp.signature = signature;
 
                 //Pre-fund wallet
-                const testClient = createTestClient({ mode: "anvil", chain, transport });
-                testClient.setBalance({ address: smartAccountAddress, value: parseEther("0.1") });
+                const prefundHash = await walletClient.sendTransaction({
+                    to: smartAccountAddress,
+                    value: getUserOperationTotalGas(userOp),
+                });
+                await publicClient.waitForTransactionReceipt({ hash: prefundHash });
 
                 // Send UserOp
                 const userOpHashSent = await sendUserOperation(walletClient, userOp);
@@ -339,7 +368,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
             paymasterDataDummySignature = concatHex([paymasterDataUnsigned, dummySignature]);
         });
 
-        test("paymaster deposit", async () => {
+        test.skipIf(NODE_ENV != "test")("paymaster deposit", async () => {
             const paymasterSlot = getPaymasterSlot(paymasterAddress);
 
             const slotValueBefore = await publicClient.getStorageAt({
@@ -349,7 +378,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
 
             expect(slotValueBefore).toEqual(toHex(0, { size: 32 }));
 
-            const topupAmount = parseEther("0.1");
+            const topupAmount = parseEther("0.0000001");
 
             const paymasterDeposit = await publicClient.simulateContract({
                 account: walletClient.account,
@@ -447,7 +476,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     userOperation: userOp,
                     entryPointAddress: entryPoint07Address,
                     entryPointVersion: "0.7",
-                    chainId: localhost.id,
+                    chainId: chain.id,
                 });
                 const signature = await owner.signMessage({
                     message: { raw: userOpHash },
@@ -460,7 +489,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     address: paymasterAddress,
                     abi: [depositAbi],
                     functionName: "deposit",
-                    value: parseEther("0.1"),
+                    value: getUserOperationTotalGas(userOp),
                     args: [],
                 });
                 const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);
@@ -564,7 +593,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     userOperation: userOp,
                     entryPointAddress: entryPoint07Address,
                     entryPointVersion: "0.7",
-                    chainId: localhost.id,
+                    chainId: chain.id,
                 });
                 const signature = await owner.signMessage({
                     message: { raw: userOpHash },
@@ -577,7 +606,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     address: paymasterAddress,
                     abi: [depositAbi],
                     functionName: "deposit",
-                    value: parseEther("0.1"),
+                    value: getUserOperationTotalGas(userOp),
                     args: [],
                 });
                 const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);
