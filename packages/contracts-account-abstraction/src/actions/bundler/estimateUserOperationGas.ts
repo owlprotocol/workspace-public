@@ -14,6 +14,17 @@ import { EstimateUserOperationGasReturnType, UserOperation } from "viem/account-
 import { getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
 
+import {
+    optimismSepolia,
+    optimism,
+    base,
+    baseSepolia,
+    celoAlfajores,
+    seiDevnet,
+    seiTestnet,
+    sei,
+    celo,
+} from "viem/chains";
 import { getExecutionResult } from "./simulateHandleOp.js";
 import { calcPreVerificationGas } from "./calcPreVerificationGas.js";
 import { getSupportedEntryPoints } from "./getSupportedEntryPoints.js";
@@ -141,13 +152,38 @@ export async function estimateUserOperationGas(
     //Additional 20% added
     userOperation.verificationGasLimit = (verificationGasAndCallGasLimit.verificationGasLimit * 120n) / 100n;
 
-    //Additional 10% added
-    userOperation.callGasLimit = (verificationGasAndCallGasLimit.callGasLimit * 110n) / 100n;
+    if (chainId === base.id || chainId === baseSepolia.id) {
+        userOperation.callGasLimit += 10_000n;
+    }
+
+    if (
+        chainId === base.id ||
+        chainId === optimism.id ||
+        chainId === baseSepolia.id ||
+        chainId === optimismSepolia.id
+    ) {
+        const currCallGasLimit = userOperation.callGasLimit;
+        userOperation.callGasLimit = currCallGasLimit > 120_000n ? currCallGasLimit : 120_000n;
+    }
+
+    if (
+        chainId === celoAlfajores.id ||
+        chainId === celo.id ||
+        chainId === sei.id ||
+        chainId === seiDevnet.id ||
+        chainId === seiTestnet.id
+    ) {
+        userOperation.verificationGasLimit = 1_000_000n;
+        userOperation.callGasLimit = 1_000_000n;
+    }
 
     //Empty call data
     if (userOperation.callData === "0x") {
         userOperation.callGasLimit = 0n;
     }
+
+    //Additional 10% added
+    userOperation.callGasLimit = (verificationGasAndCallGasLimit.callGasLimit * 110n) / 100n;
 
     //Paymaster gas
     if (userOperation.paymaster != null) {
@@ -176,16 +212,13 @@ export async function estimateUserOperationGas(
     }
     */
 
-    // In alto, this seems to happen after execution
+    const preVerificationGas = await calcPreVerificationGas(client, {
+        packedUserOperation: toPackedUserOperation(encodeUserOp(userOperation)),
+        //TODO: Rename to entryPointAddress
+        entryPoint: entryPointAddress,
+    });
     //Additional 10% added
-    userOperation.preVerificationGas =
-        ((await calcPreVerificationGas(client, {
-            packedUserOperation: toPackedUserOperation(encodeUserOp(userOperation)),
-            //TODO: Rename to entryPointAddress
-            entryPoint: entryPointAddress,
-        })) *
-            110n) /
-        100n;
+    userOperation.preVerificationGas = (preVerificationGas * 110n) / 100n;
 
     const userOpGas: EstimateUserOperationGasReturnType<undefined, undefined, undefined, "0.7"> = {
         preVerificationGas: userOperation.preVerificationGas,
