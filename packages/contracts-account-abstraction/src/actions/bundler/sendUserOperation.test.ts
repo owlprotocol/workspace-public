@@ -31,7 +31,7 @@ import {
 } from "viem/account-abstraction";
 import { getDeployDeterministicFunctionData, getLocalAccount, getUtilityAccount } from "@owlprotocol/viem-utils";
 import { NODE_ENV } from "@owlprotocol/envvars";
-import { sepolia } from "@owlprotocol/chains";
+import { optimismSepolia } from "@owlprotocol/chains";
 import {
     estimateUserOperationGas,
     EstimateUserOperationGasParameters07,
@@ -86,9 +86,9 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
         account = getLocalAccount(0, { nonceManager });
         transport = http(chain.rpcUrls.default.http[0]);
     } else {
-        chain = sepolia as unknown as Chain;
+        chain = optimismSepolia as unknown as Chain;
         account = getUtilityAccount({ nonceManager });
-        transport = http(sepolia.rpcUrls.drpc!.http[0]);
+        transport = http(optimismSepolia.rpcUrls.drpc!.http[0]);
     }
 
     const publicClient = createPublicClient({
@@ -610,17 +610,25 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     args: [],
                 });
                 const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);
+
+                console.log({ paymasterDepositHash });
+
                 await publicClient.waitForTransactionReceipt({ hash: paymasterDepositHash });
 
                 // Send UserOp
                 const userOpHashSent = await sendUserOperation(walletClient, userOp);
                 expect(userOpHashSent).toBe(userOpHash);
 
+                console.log({ userOpHash });
+
                 // Wait for UserOp confirmation
                 // We use the extended "bundlerClient" that has `getUserOperationReceipt` action
                 const userOpReceipt = await waitForUserOperationReceipt(bundlerClient, { hash: userOpHash });
                 expect(userOpReceipt.userOpHash).toBe(userOpHash);
                 expect(userOpReceipt.success).toBe(true);
+
+                console.log({ userOpTxHash: userOpReceipt.receipt.transactionHash });
+
                 // Get UserOp
                 const userOpSent = await bundlerClient.getUserOperation({ hash: userOpHash });
                 expect(userOpSent.userOperation).toStrictEqual({
