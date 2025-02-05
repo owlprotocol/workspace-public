@@ -9,14 +9,16 @@ import {
     parseEther,
     PrivateKeyAccount,
     padHex,
-    LocalAccount,
     custom,
     Hex,
     EIP1193RequestFn,
     numberToHex,
     nonceManager,
+    Account,
+    HttpTransport,
 } from "viem";
 import { localhost } from "viem/chains";
+import { sepolia } from "@owlprotocol/chains";
 import {
     entryPoint07Address,
     createPaymasterClient,
@@ -31,6 +33,8 @@ import {
     getLocalAccount,
     getDeployDeterministicAddress,
     getDeployDeterministicFunctionData,
+    getUtilityAccount,
+    getPaymasterSignerAccount,
 } from "@owlprotocol/viem-utils";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
@@ -39,6 +43,7 @@ import { createSmartAccountClient, SmartAccountClient } from "permissionless/cli
 import { getUserOperationGasPrice } from "permissionless/actions/pimlico";
 
 import { createHttpEIP1193, createPublicEIP1193 } from "@owlprotocol/backend-public/eip1193";
+import { NODE_ENV } from "@owlprotocol/envvars";
 import { createBackendBundlerEIP1193 } from "./createBundlerEIP1193.js";
 import { createBackendPaymasterEIP1193 } from "./createPaymasterEIP1193.js";
 import { createBackendBundler } from "../clients/createBackendBundler.js";
@@ -51,21 +56,34 @@ import { MyContract } from "../artifacts/MyContract.js";
 import { erc4337Contracts, setupVerifyingPaymaster, topupPaymaster } from "../setupERC4337Contracts.js";
 
 describe("eip1993/createPaymasterEIP1193.test.ts", function () {
-    const chain = {
-        ...localhost,
-        rpcUrls: {
-            default: {
-                http: [`http://127.0.0.1:${port}`],
+    let chain: Chain;
+    let account: Account;
+    let transport: HttpTransport;
+
+    if (NODE_ENV === "test") {
+        chain = {
+            ...localhost,
+            rpcUrls: {
+                default: {
+                    http: [`http://127.0.0.1:${port}`],
+                },
             },
-        },
-    };
-    const transport = http(chain.rpcUrls.default.http[0]);
+        };
+        account = getLocalAccount(0, { nonceManager });
+        transport = http(chain.rpcUrls.default.http[0]);
+    } else {
+        chain = sepolia as unknown as Chain;
+        account = getUtilityAccount({ nonceManager });
+        transport = http(sepolia.rpcUrls.drpc!.http[0]);
+    }
+
     const publicClient = createPublicClient({
         chain,
         transport,
     });
+
     const walletClient = createWalletClient({
-        account: getLocalAccount(0, { nonceManager }),
+        account,
         chain,
         transport,
     });
@@ -88,16 +106,18 @@ describe("eip1993/createPaymasterEIP1193.test.ts", function () {
         // Paymaster
         paymasterAddress = (
             await setupVerifyingPaymaster(walletClient, {
-                verifyingSignerAddress: walletClient.account.address,
+                verifyingSignerAddress: getPaymasterSignerAccount({ nonceManager }).address,
             })
         ).address;
 
-        const { hash: topupHash } = await topupPaymaster(walletClient, {
-            paymaster: paymasterAddress,
-            minBalance: parseEther("10"),
-        });
-        if (topupHash) {
-            await publicClient.waitForTransactionReceipt({ hash: topupHash });
+        if (NODE_ENV === "test") {
+            const { hash: topupHash } = await topupPaymaster(walletClient, {
+                paymaster: paymasterAddress,
+                minBalance: parseEther("1"),
+            });
+            if (topupHash) {
+                await publicClient.waitForTransactionReceipt({ hash: topupHash });
+            }
         }
 
         // AA Clients
@@ -105,8 +125,8 @@ describe("eip1993/createPaymasterEIP1193.test.ts", function () {
 
         const bundlerRequest = createBackendBundlerEIP1193(
             createBackendBundler({
-                account: getLocalAccount(0) as LocalAccount,
-                chain: localhost,
+                account: walletClient.account,
+                chain,
                 transport,
                 entryPointSimulationsAddress,
             }),
@@ -121,8 +141,8 @@ describe("eip1993/createPaymasterEIP1193.test.ts", function () {
 
         paymasterRequest = createBackendPaymasterEIP1193(
             createBackendPaymaster({
-                account: getLocalAccount(0) as LocalAccount,
-                chain: localhost,
+                account: getPaymasterSignerAccount({ nonceManager }),
+                chain,
                 transport,
                 paymaster: paymasterAddress,
             }),
@@ -138,7 +158,7 @@ describe("eip1993/createPaymasterEIP1193.test.ts", function () {
         test("pm_getPaymasterStubData", async () => {
             const result = await paymasterClient.request({
                 method: "pm_getPaymasterStubData",
-                params: [{} as any, entryPoint07Address, numberToHex(localhost.id), {}],
+                params: [{} as any, entryPoint07Address, numberToHex(chain.id), {}],
             });
             expect(result).toBeDefined();
         });
@@ -213,6 +233,8 @@ describe("eip1993/createPaymasterEIP1193.test.ts", function () {
             const userOpHash = await bundlerClient.sendUserOperation(userOperation as any);
             const userOpReceipt = await waitForUserOperationReceipt(bundlerClient, { hash: userOpHash });
             expect(userOpReceipt).toBeDefined();
+
+            console.log({ contractAddressExpected });
 
             const contractBytecode = await publicClient.getCode({ address: contractAddressExpected });
             expect(contractBytecode).toBeDefined();
