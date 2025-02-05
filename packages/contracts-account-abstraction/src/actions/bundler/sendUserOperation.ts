@@ -61,7 +61,7 @@ export async function sendUserOperation(
     });
 
     //Submit userOp in background
-    getAction(client, writeContract, "writeContract")(request as any);
+    getAction(client, writeContract, "writeContract")({ ...(request as any), abi: [handleOps, ...IEntryPointErrors] });
 
     const userOpHash = getUserOperationHash({
         userOperation: userOperation,
