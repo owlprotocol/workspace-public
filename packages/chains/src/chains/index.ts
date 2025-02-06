@@ -6,6 +6,7 @@ export * from "./avalanche.js";
 export * from "./avalancheFuji.js";
 export * from "./base.js";
 export * from "./baseSepolia.js";
+export * from "./berachain.js";
 export * from "./berachainArtioTestnet.js";
 export * from "./berachainBartioTestnet.js";
 export * from "./bitfinityTestnet.js";
