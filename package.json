@@ -44,11 +44,12 @@
     "husky": "^7.0.4",
     "rimraf": "^3.0.2",
     "syncpack": "^12.3.3",
-    "turbo": "^1.10.12"
+    "turbo": "^2.4.0"
   },
   "engines": {
     "npm": ">=v10.5.0",
     "pnpm": ">=9.12.2",
     "node": "^18.0.0"
-  }
+  },
+  "packageManager": "pnpm@9.12.2"
 }
