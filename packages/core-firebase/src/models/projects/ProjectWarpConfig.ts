@@ -40,6 +40,7 @@ export interface ProjectWarpConfigData {
     readonly proxyDeploySalt?: Hex;
     readonly createdAt?: number;
     readonly previousWarpConfigId?: string;
+    readonly newWarpConfigId?: string;
     readonly testnet?: boolean;
 }
 
@@ -54,6 +55,7 @@ export const projectWarpConfigDataZod = z
         firstTokenChainId: z.number().optional(),
         firstTokenAddress: addressZod.optional(),
         previousWarpConfigId: z.string().optional(),
+        newWarpConfigId: z.string().optional(),
         createdAt: z.number().int().positive().optional(),
         testnet: z.boolean().optional(),
         tokens: z.array(
