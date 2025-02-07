@@ -88,7 +88,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
     } else {
         chain = optimismSepolia as unknown as Chain;
         account = getUtilityAccount({ nonceManager });
-        transport = http(optimismSepolia.rpcUrls.drpc!.http[0]);
+        transport = http(optimismSepolia.rpcUrls.ankr!.http[0]);
     }
 
     const publicClient = createPublicClient({
@@ -108,8 +108,6 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
         chain,
         transport,
     });
-
-    // const testClient = createTestClient({ mode: "anvil", chain, transport });
 
     // Contracts
     const entryPointSimulationsAddress = erc4337Contracts.pimlicoEntrypointSimulations;
@@ -183,6 +181,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 expect(paymasterVerificationGasLimit).toBeUndefined();
                 expect(paymasterPostOpGasLimit).toBeUndefined();
 
+                // Construct UserOp
                 const userOp: UserOperation<"0.7"> = {
                     ...userOpData,
                     signature: dummySignature,
@@ -211,7 +210,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 //Pre-fund wallet
                 const prefundHash = await walletClient.sendTransaction({
                     to: smartAccountAddress,
-                    value: getUserOperationTotalGas(userOp),
+                    value: (getUserOperationTotalGas(userOp) * 110n) / 100n,
                 });
                 console.log({ prefundHash });
                 await publicClient.waitForTransactionReceipt({ hash: prefundHash });
@@ -309,7 +308,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                 //Pre-fund wallet
                 const prefundHash = await walletClient.sendTransaction({
                     to: smartAccountAddress,
-                    value: getUserOperationTotalGas(userOp),
+                    value: (getUserOperationTotalGas(userOp) * 110n) / 100n,
                 });
                 await publicClient.waitForTransactionReceipt({ hash: prefundHash });
 
@@ -489,7 +488,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     address: paymasterAddress,
                     abi: [depositAbi],
                     functionName: "deposit",
-                    value: getUserOperationTotalGas(userOp),
+                    value: (getUserOperationTotalGas(userOp) * 115n) / 100n,
                     args: [],
                 });
                 const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);
@@ -606,7 +605,7 @@ describe("actions/bundler/sendUserOperation.test.ts", function () {
                     address: paymasterAddress,
                     abi: [depositAbi],
                     functionName: "deposit",
-                    value: getUserOperationTotalGas(userOp),
+                    value: (getUserOperationTotalGas(userOp) * 110n) / 100n,
                     args: [],
                 });
                 const paymasterDepositHash = await walletClient.writeContract(paymasterDeposit.request);

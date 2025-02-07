@@ -18,7 +18,7 @@ import {
     HttpTransport,
 } from "viem";
 import { localhost } from "viem/chains";
-import { sepolia } from "@owlprotocol/chains";
+import { optimismSepolia } from "@owlprotocol/chains";
 import {
     entryPoint07Address,
     createPaymasterClient,
@@ -72,9 +72,9 @@ describe("eip1993/createPaymasterEIP1193.test.ts", function () {
         account = getLocalAccount(0, { nonceManager });
         transport = http(chain.rpcUrls.default.http[0]);
     } else {
-        chain = sepolia as unknown as Chain;
+        chain = optimismSepolia as unknown as Chain;
         account = getUtilityAccount({ nonceManager });
-        transport = http(sepolia.rpcUrls.drpc!.http[0]);
+        transport = http(optimismSepolia.rpcUrls.ankr!.http[0]);
     }
 
     const publicClient = createPublicClient({
