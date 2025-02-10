@@ -73,7 +73,7 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
                 const { domain: chainA, router: tokenA } = routes[i];
 
                 tokenRouters.push({
-                    wrappedTokenAddress,
+                    wrappedTokenAddress: chainA === chainIds[0] ? wrappedTokenAddress : undefined,
                     chainA,
                     tokenA,
                     chainB,
