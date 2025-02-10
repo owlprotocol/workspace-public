@@ -13,13 +13,17 @@ import { HyperlaneWarpRouteData } from "@owlprotocol/eth-firebase/admin";
  */
 export async function getHyperlaneRoutes<chain extends Chain | undefined>(
     client: Client<Transport, chain>,
-    params: { address: Address },
+    params: { address: Address; chainIds: number[] },
 ): Promise<{ domain: number; router: Hex; wrappedTokenAddress?: Address }[]> {
-    const { address } = params;
+    const { address, chainIds } = params;
+
+    const routes: { domain: number; router: Hex }[] = [];
 
     const tokenA = padHex(address, { size: 32 });
 
     const chainA = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
+
+    routes.push({ domain: chainA, router: tokenA });
 
     let wrappedTokenAddress: Address | undefined;
     try {
@@ -32,48 +36,52 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
         console.warn(`Failed to fetch wrapped token for router ${address}:`, error);
     }
 
-    const domains: number[] = [
-        ...(await readContract(client, {
-            address,
-            abi: Router.abi,
-            functionName: "domains",
-        })),
-    ];
+    const domains = await readContract(client, {
+        address,
+        abi: Router.abi,
+        functionName: "domains",
+    });
 
-    const promises = domains.map((domain) =>
-        readContract(client, {
-            address,
-            abi: Router.abi,
-            functionName: "routers",
-            args: [domain],
-        })
-            .then((routerAddress: Hex) => (routerAddress !== zeroAddress ? { domain, router: routerAddress } : null))
-            .catch((error) => {
-                console.error(`Failed to fetch router for domain ${domain}:`, error);
-                return null;
-            }),
+    const invalidDomains = domains.filter((domain) => !chainIds.slice(1).includes(domain));
+    if (invalidDomains.length > 0) {
+        throw new Error(`Invalid domains found: ${invalidDomains.join(", ")}.`);
+    }
+
+    const routerResults = await Promise.all(
+        domains.map((domain) =>
+            readContract(client, {
+                address,
+                abi: Router.abi,
+                functionName: "routers",
+                args: [domain],
+            })
+                .then((routerAddress) => (routerAddress !== zeroAddress ? { domain, router: routerAddress } : null))
+                .catch((error) => {
+                    console.error(`Failed to fetch router for domain ${domain}:`, error);
+                    return null;
+                }),
+        ),
     );
 
-    const results = await Promise.all(promises);
+    routes.push(...routerResults.filter((result): result is { domain: number; router: Hex } => result !== null));
 
-    const routes = results.filter((result): result is { domain: number; router: Hex } => result !== null);
+    const tokenRouters: HyperlaneWarpRouteData[] = [];
+    for (let i = 0; i < routes.length; i++) {
+        for (let j = 0; j < routes.length; j++) {
+            if (i !== j) {
+                const { domain: chainB, router: tokenB } = routes[j];
+                const { domain: chainA, router: tokenA } = routes[i];
 
-    const tokenRouters: HyperlaneWarpRouteData[] = routes.flatMap(({ domain, router }) => [
-        {
-            wrappedTokenAddress,
-            chainA,
-            tokenA,
-            chainB: domain,
-            tokenB: router,
-        },
-        {
-            wrappedTokenAddress,
-            chainA: domain,
-            tokenA: router,
-            chainB: chainA,
-            tokenB: tokenA,
-        },
-    ]);
+                tokenRouters.push({
+                    wrappedTokenAddress,
+                    chainA,
+                    tokenA,
+                    chainB,
+                    tokenB,
+                });
+            }
+        }
+    }
 
     await hyperlaneWarpRouteResource.setBatch(tokenRouters);
 
