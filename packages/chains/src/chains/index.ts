@@ -63,5 +63,6 @@ export * from "./sei.js";
 export * from "./seiDevnet.js";
 export * from "./sepolia.js";
 export * from "./soneium.js";
+export * from "./storyOdyssey.js";
 export * from "./zora.js";
 export * from "./zoraSepolia.js";
