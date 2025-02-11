@@ -186,6 +186,8 @@ const EXPLORER_API_DEFAULTS: Record<string, string | undefined> = {
     1868: "https://soneium.blockscout.com/api",
     // Berachain
     80094: "https://api.berascan.com/api",
+    // Odyssey
+    1516: "https://odyssey.storyscan.xyz",
 };
 
 /** API Keys are per-domain */
@@ -220,6 +222,8 @@ const EXPLORER_API_KEY_DEFAULTS: Record<string, string | undefined> = {
     3441006: " ",
     // Soneium (no API key needed)
     1868: " ",
+    // Odyssey
+    1516: " ",
 };
 
 /**
@@ -241,7 +245,7 @@ export function getEnvVarsForNetworkId(networkId: string): EnvVarDef[] {
 //const chainIds = allChains.map((c) => c.chainId);
 const chainIds = [
     1, 5, 1337, 11155111, 17000, 11155420, 59144, 59140, 137, 80001, 80002, 42161, 421614, 42170, 10, 43114, 43113, 56,
-    97, 168587773, 8453, 84532, 3441006, 204, 5611, 33139, 33111, 1329, 713715, 1868, 80094,
+    97, 168587773, 8453, 84532, 3441006, 204, 5611, 33139, 33111, 1329, 713715, 1868, 80094, 1516,
 ];
 //TODO: For all networkIds, right now this breaks because file is too big. Is there a better way?
 const NETWORK_ENVVARS: EnvVarDef[] = [];
