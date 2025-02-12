@@ -17,7 +17,7 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
 ): Promise<{ domain: number; router: Hex; wrappedTokenAddress?: Address }[]> {
     const { address, chainIds } = params;
 
-    const routes: { domain: number; router: Hex }[] = [];
+    let routes: { domain: number; router: Hex }[] = [];
 
     const tokenA = padHex(address, { size: 32 });
 
@@ -42,7 +42,7 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
         functionName: "domains",
     });
 
-    const invalidDomains = domains.filter((domain) => !chainIds.slice(1).includes(domain));
+    const invalidDomains = domains.filter((domain) => !chainIds.includes(domain, 1));
     if (invalidDomains.length > 0) {
         throw new Error(`Invalid domains found: ${invalidDomains.join(", ")}.`);
     }
@@ -63,23 +63,32 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
         ),
     );
 
-    routes.push(...routerResults.filter((result): result is { domain: number; router: Hex } => result !== null));
+    const validRouterResults = routerResults.filter(
+        (result): result is { domain: number; router: Hex } => result !== null,
+    );
+    routes = routes.concat(validRouterResults);
 
     const tokenRouters: HyperlaneWarpRouteData[] = [];
     for (let i = 0; i < routes.length; i++) {
-        for (let j = 0; j < routes.length; j++) {
-            if (i !== j) {
-                const { domain: chainB, router: tokenB } = routes[j];
-                const { domain: chainA, router: tokenA } = routes[i];
+        for (let j = i + 1; j < routes.length; j++) {
+            const { domain: chainA, router: tokenA } = routes[i];
+            const { domain: chainB, router: tokenB } = routes[j];
 
-                tokenRouters.push({
-                    wrappedTokenAddress: chainA === chainIds[0] ? wrappedTokenAddress : undefined,
-                    chainA,
-                    tokenA,
-                    chainB,
-                    tokenB,
-                });
-            }
+            tokenRouters.push({
+                wrappedTokenAddress: chainA === chainIds[0] ? wrappedTokenAddress : undefined,
+                chainA,
+                tokenA,
+                chainB,
+                tokenB,
+            });
+
+            tokenRouters.push({
+                wrappedTokenAddress: chainB === chainIds[0] ? wrappedTokenAddress : undefined,
+                chainA: chainB,
+                tokenA: tokenB,
+                chainB: chainA,
+                tokenB: tokenA,
+            });
         }
     }
 
