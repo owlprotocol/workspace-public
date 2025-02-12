@@ -6,10 +6,14 @@ import { getAction } from "viem/utils";
 import { HyperlaneWarpRouteData } from "@owlprotocol/eth-firebase/admin";
 
 /**
- * Fetch and upload all Hyperlane Warp Routes for a specific Router contract.
- * @param client publicClient
- * @param params Object containing the Router contract's address.
- * @returns A list of token routes as { domain: number; router: Hex }[].
+ * This function retrieves and uploads all Hyperlane Warp Routes for a given Router address.
+ * It assumes that the first chainId in the chainIds array, along with the router address, corresponds to the collateral token.
+ *
+ * @param client - The public client.
+ * @param params - Contains the router's address and a list of chain IDs.
+ * @param params.address - The router's address (preferably for the collateral token).
+ * @param params.chainIds - An array of chain IDs, with the first ID assumed to be the collateral token.
+ * @returns - List of token routes, each including a domain, router address, and optionally a wrapped token address.
  */
 export async function getHyperlaneRoutes<chain extends Chain | undefined>(
     client: Client<Transport, chain>,
@@ -17,7 +21,7 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
 ): Promise<{ domain: number; router: Hex; wrappedTokenAddress?: Address }[]> {
     const { address, chainIds } = params;
 
-    let routes: { domain: number; router: Hex }[] = [];
+    const routes: { domain: number; router: Hex }[] = [];
 
     const tokenA = padHex(address, { size: 32 });
 
@@ -63,10 +67,8 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
         ),
     );
 
-    const validRouterResults = routerResults.filter(
-        (result): result is { domain: number; router: Hex } => result !== null,
-    );
-    routes = routes.concat(validRouterResults);
+    const validRouterResults = routerResults.filter((result) => result !== null);
+    routes.push(...validRouterResults);
 
     const tokenRouters: HyperlaneWarpRouteData[] = [];
     for (let i = 0; i < routes.length; i++) {
@@ -75,15 +77,13 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
             const { domain: chainB, router: tokenB } = routes[j];
 
             tokenRouters.push({
-                wrappedTokenAddress: chainA === chainIds[0] ? wrappedTokenAddress : undefined,
+                wrappedTokenAddress: i === 0 ? wrappedTokenAddress : undefined,
                 chainA,
                 tokenA,
                 chainB,
                 tokenB,
             });
-
             tokenRouters.push({
-                wrappedTokenAddress: chainB === chainIds[0] ? wrappedTokenAddress : undefined,
                 chainA: chainB,
                 tokenA: tokenB,
                 chainB: chainA,
