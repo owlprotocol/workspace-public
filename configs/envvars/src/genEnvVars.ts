@@ -283,6 +283,7 @@ export const ENVVARS: EnvVarDef[] = [
     { name: "OWL_AUTH_URL", platform: "browser", defaultValue: "https://auth.owl.build" },
     { name: "OWL_WALLET_URL", platform: "browser", defaultValue: "https://wallet.owl.build" },
     { name: "VERABRIDGE_PROJECT_ID", platform: "browser", defaultValue: "d66a8de5-df4b-45fe-85cd-8576bfc8ea00" },
+    { name: "VERABRIDGE_ENABLED_CHAIN_IDS", platform: "browser" },
 ];
 
 const NODE_ENV_VAR = {
