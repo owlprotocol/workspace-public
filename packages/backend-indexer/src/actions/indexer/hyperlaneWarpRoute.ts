@@ -67,7 +67,9 @@ export async function getHyperlaneRoutes<chain extends Chain | undefined>(
         ),
     );
 
-    const validRouterResults = routerResults.filter((result) => result !== null);
+    const validRouterResults = routerResults.filter(
+        (result): result is { domain: number; router: Hex } => result !== null,
+    );
     routes.push(...validRouterResults);
 
     const tokenRouters: HyperlaneWarpRouteData[] = [];
