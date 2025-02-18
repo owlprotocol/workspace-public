@@ -12,3 +12,5 @@ export * from "./prepareHyperlaneContracts.js";
 export * from "./registry.js";
 
 export * from "./types/index.js";
+
+export * from "./test/index.js";
