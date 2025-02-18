@@ -8,15 +8,16 @@ import { flatten, uniqBy } from "lodash-es";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { createHash } from "node:crypto";
 import { join } from "path";
+import path from "node:path";
 import { getDeployDeterministicAddress } from "../DeterministicDeployer/getAddress.js";
 
 export interface Artifact {
     _format: string;
-    contractName: string;
+    contractName?: string;
     sourceName: string;
     abi: Abi;
-    bytecode: Hex;
-    deployedBytecode: Hex;
+    bytecode: Hex | { object: Hex };
+    deployedBytecode: Hex | { object: Hex };
     linkReferences: Record<string, any>;
     deployedLinkReferences: Record<string, any>;
 }
@@ -137,13 +138,15 @@ export type GetArtifactImplementationFn = (artifact: Artifact) => Address;
  */
 export function getArtifactImplementationFactory(implementations: Record<string, Address> = {}) {
     return function getArtifactImplementation(artifact: Artifact) {
-        if (implementations[artifact.contractName]) {
-            return implementations[artifact.contractName];
+        const contractName = artifact.contractName;
+        if (contractName && implementations[contractName]) {
+            return implementations[contractName];
         }
 
+        const bytecode = typeof artifact.bytecode === "string" ? artifact.bytecode : artifact.bytecode.object;
         return getDeployDeterministicAddress({
             salt: zeroHash,
-            bytecode: artifact.bytecode,
+            bytecode,
         });
     };
 }
@@ -159,13 +162,17 @@ export function getArtifactExportFileContent(
     getImplementation: GetArtifactImplementationFn,
 ): string {
     const abiExportsString = getAbiExportsString(getAbiExports(artifact.abi));
-    if (artifact.bytecode != "0x") {
+    const bytecode = typeof artifact.bytecode === "string" ? artifact.bytecode : artifact.bytecode.object;
+    const deployedBytecode =
+        typeof artifact.deployedBytecode === "string" ? artifact.deployedBytecode : artifact.deployedBytecode.object;
+
+    if (bytecode != "0x") {
         const implementation = getImplementation(artifact);
         return `import { Hex, Address } from "viem";
 
 ${abiExportsString}
-export const bytecode = "${artifact.bytecode}" as Hex;
-export const deployedBytecode = "${artifact.deployedBytecode}" as Hex;
+export const bytecode = "${bytecode}" as Hex;
+export const deployedBytecode = "${deployedBytecode}" as Hex;
 export const implementation = "${implementation}" as Address;
 export const ${artifact.contractName} = {
     abi,
@@ -211,7 +218,12 @@ export async function hardhatArtifactsExport(
     // exists since libraries cannot have those
     const contractArtifacts = artifactPaths
         .map((artifactPath) => {
-            return JSON.parse(readFileSync(artifactPath, "utf-8")) as Artifact;
+            const artifact = JSON.parse(readFileSync(artifactPath, "utf-8")) as Artifact & { contractName: string };
+            if (!artifact.contractName) {
+                artifact.contractName = path.basename(artifactPath).replace(".json", "");
+            }
+
+            return artifact;
         })
         .filter((artifact) => {
             const abi = artifact.abi;
@@ -229,12 +241,12 @@ export async function hardhatArtifactsExport(
     //Filter artifacts that don't match cached hash
     const contractArtifactsChanged = contractArtifacts.filter((artifact) => {
         const artifactHash = createHash("md5").update(JSON.stringify(artifact)).digest("hex");
-        return artifactExportsCache[artifact.contractName] != artifactHash;
+        return artifactExportsCache[artifact.contractName!] != artifactHash;
     });
 
     //For each artifact, write to .ts file
     contractArtifactsChanged.forEach((artifact) => {
-        const contractName = artifact.contractName;
+        const contractName = artifact.contractName!;
         //update cache
         artifactExportsCache[contractName] = createHash("md5").update(JSON.stringify(artifact)).digest("hex");
 

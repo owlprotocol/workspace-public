@@ -11,10 +11,11 @@ import { getDeployAddress } from "../Create2Factory/getAddress.js";
  * @returns
  */
 export function getArtifactImplementationCreate2Factory(artifact: Artifact) {
+    const bytecode = typeof artifact.bytecode === "string" ? artifact.bytecode : artifact.bytecode.object;
     if (artifact.contractName === "Create2Factory") {
         const address = getDeployDeterministicAddress({
             salt: zeroHash,
-            bytecode: artifact.bytecode,
+            bytecode,
         });
 
         invariant(
@@ -26,7 +27,7 @@ export function getArtifactImplementationCreate2Factory(artifact: Artifact) {
     } else {
         return getDeployAddress(zeroAddress, {
             salt: zeroHash,
-            bytecode: artifact.bytecode,
+            bytecode,
             initData: "0x",
         });
     }
