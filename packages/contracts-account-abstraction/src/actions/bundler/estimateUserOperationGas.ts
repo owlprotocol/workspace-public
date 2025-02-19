@@ -143,17 +143,18 @@ export async function estimateUserOperationGas(
         stateOverride,
     });
 
-    const verificationGasAndCallGasLimit = calcVerificationGasAndCallGasLimit(
+    let { verificationGasLimit, callGasLimit } = calcVerificationGasAndCallGasLimit(
         userOperation,
         executionResult.data.executionResult,
         chainId,
         executionResult.data.callDataResult,
     );
+
     //Additional 20% added
-    userOperation.verificationGasLimit = (verificationGasAndCallGasLimit.verificationGasLimit * 120n) / 100n;
+    verificationGasLimit = (verificationGasLimit * 120n) / 100n;
 
     if (chainId === base.id || chainId === baseSepolia.id) {
-        userOperation.callGasLimit += 10_000n;
+        callGasLimit += 10_000n;
     }
 
     if (
@@ -162,8 +163,8 @@ export async function estimateUserOperationGas(
         chainId === baseSepolia.id ||
         chainId === optimismSepolia.id
     ) {
-        const currCallGasLimit = userOperation.callGasLimit;
-        userOperation.callGasLimit = currCallGasLimit > 120_000n ? currCallGasLimit : 120_000n;
+        const currCallGasLimit = callGasLimit;
+        callGasLimit = currCallGasLimit > 120_000n ? currCallGasLimit : 120_000n;
     }
 
     if (
@@ -173,17 +174,17 @@ export async function estimateUserOperationGas(
         chainId === seiDevnet.id ||
         chainId === seiTestnet.id
     ) {
-        userOperation.verificationGasLimit = 1_000_000n;
-        userOperation.callGasLimit = 1_000_000n;
+        verificationGasLimit = 1_000_000n;
+        callGasLimit = 1_000_000n;
     }
 
     //Empty call data
     if (userOperation.callData === "0x") {
-        userOperation.callGasLimit = 0n;
+        callGasLimit = 0n;
     }
 
     //Additional 10% added
-    userOperation.callGasLimit = (verificationGasAndCallGasLimit.callGasLimit * 110n) / 100n;
+    callGasLimit = (callGasLimit * 110n) / 100n;
 
     //Paymaster gas
     if (userOperation.paymaster != null) {
@@ -212,18 +213,18 @@ export async function estimateUserOperationGas(
     }
     */
 
-    const preVerificationGas = await calcPreVerificationGas(client, {
+    let preVerificationGas = await calcPreVerificationGas(client, {
         packedUserOperation: toPackedUserOperation(encodeUserOp(userOperation)),
         //TODO: Rename to entryPointAddress
         entryPoint: entryPointAddress,
     });
     //Additional 10% added
-    userOperation.preVerificationGas = (preVerificationGas * 110n) / 100n;
+    preVerificationGas = (preVerificationGas * 110n) / 100n;
 
     const userOpGas: EstimateUserOperationGasReturnType<undefined, undefined, undefined, "0.7"> = {
-        preVerificationGas: userOperation.preVerificationGas,
-        verificationGasLimit: userOperation.verificationGasLimit,
-        callGasLimit: userOperation.callGasLimit,
+        preVerificationGas,
+        verificationGasLimit,
+        callGasLimit,
     };
     if (userOperation.paymasterVerificationGasLimit) {
         userOpGas.paymasterVerificationGasLimit = userOperation.paymasterVerificationGasLimit;
