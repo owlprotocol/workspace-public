@@ -1,5 +1,5 @@
 {
-  "name": "@owlprotocol/artifacts-export",
+  "name": "@owlprotocol/create-deterministic",
   "version": "3.2.0",
   "keywords": [
     "viem"
@@ -44,14 +44,13 @@
     "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
+    "test": "pnpm run test:ci",
+    "test:ci": "vitest --run",
+    "test:watch": "vitest",
     "tsc": "tsc",
     "tsc:watch": "tsc -w"
   },
   "dependencies": {
-    "lodash-es": "4.17.21"
-  },
-  "peerDependencies": {
-    "abitype": "1.0.6",
     "viem": "2.21.19"
   },
   "devDependencies": {
@@ -59,14 +58,16 @@
     "@owlprotocol/eslint-config": "workspace:*",
     "@owlprotocol/prettier-config": "workspace:*",
     "@owlprotocol/tsconfig": "workspace:*",
-    "@types/lodash-es": "4.17.12",
     "@types/node": "^20.11.10",
+    "core-js": "^3.37.1",
     "depcheck": "^1.4.7",
     "eslint": "^8.55.0",
-    "glob": "10.3.10",
     "npm-run-all": "^4.1.5",
+    "prool": "^0.0.15",
     "rimraf": "^3.0.2",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "vite": "^5.1.6",
+    "vitest": "^1.4.0"
   },
   "bugs": {
     "url": "https://github.com/owlprotocol/workspace-public/issues",
