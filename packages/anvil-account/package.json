@@ -1,0 +1,67 @@
+{
+  "name": "@owlprotocol/anvil-account",
+  "version": "3.2.0",
+  "keywords": [
+    "viem"
+  ],
+  "private": false,
+  "type": "module",
+  "homepage": "https://github.com/owlprotocol/workspace-public",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/owlprotocol/workspace-public.git"
+  },
+  "copyright": "Copyright 2024 Owl Protocol",
+  "license": "MIT",
+  "author": {
+    "name": "Leo Vigna",
+    "email": "leo@owlprotocol.xyz",
+    "url": "https://github.com/leovigna"
+  },
+  "files": [
+    "dist/*",
+    "lib/*",
+    "src/*",
+    "LICENSE",
+    "README.md"
+  ],
+  "main": "./lib/cjs/index.cjs",
+  "module": "./lib/esm/index.mjs",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "require": "./lib/cjs/index.js",
+      "import": "./lib/esm/index.js"
+    }
+  },
+  "scripts": {
+    "build": "npm-run-all -p tsc esbuild",
+    "build:watch": "npm-run-all -p tsc:watch esbuild:watch",
+    "clean": "rimraf lib dist",
+    "depcheck": "depcheck",
+    "esbuild": "node esbuild.config.mjs",
+    "esbuild:watch": "ESBUILD_WATCH=true node esbuild.config.mjs",
+    "tsc": "tsc",
+    "tsc:watch": "tsc -w"
+  },
+  "peerDependencies": {
+    "viem": "^2.21.19"
+  },
+  "devDependencies": {
+    "@owlprotocol/esbuild-config": "workspace:*",
+    "@owlprotocol/tsconfig": "workspace:*",
+    "depcheck": "^1.4.7",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
+    "typescript": "5.4.5"
+  },
+  "bugs": {
+    "url": "https://github.com/owlprotocol/workspace-public/issues",
+    "email": "leo@owlprotocol.xyz"
+  },
+  "funding": "https://owlprotocol.xyz",
+  "engines": {
+    "node": "^18.0.0"
+  }
+}
