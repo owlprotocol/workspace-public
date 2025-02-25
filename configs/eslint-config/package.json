@@ -1,6 +1,6 @@
 {
   "name": "@owlprotocol/eslint-config",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "keywords": [
     "eslint"
   ],
@@ -18,7 +18,8 @@
     "url": "https://github.com/leovigna"
   },
   "files": [
-    ".eslintrc.cjs"
+    ".eslintrc.cjs",
+    ".eslintrc.react.cjs"
   ],
   "exports": {
     ".": "./.eslintrc.cjs",
