@@ -95,4 +95,10 @@ async function main() {
     }
 }
 
-main().then(() => console.log("Done"));
+main().then(() => {
+    console.log("Done");
+
+    // Stop the script from hanging
+    // eslint-disable-next-line no-process-exit
+    process.exit();
+});
