@@ -12,7 +12,7 @@ import {
     RpcTransactionReceipt,
 } from "viem";
 import { entryPoint07Address, UserOperationReceipt } from "viem/account-abstraction";
-import { sei, seiDevnet, seiTestnet } from "viem/chains";
+import { evmos, evmosTestnet, sei, seiDevnet, seiTestnet } from "viem/chains";
 import { UserOperationEvent } from "../../artifacts/IEntryPoint.js";
 
 export type RpcGetUserOperationReceiptReturnType07 = Prettify<
@@ -35,7 +35,13 @@ export function createRequestGetUserOperationReceipt(request: EIP1193RequestFn<P
         //TODO: Parametrize rpc max range
         // Certain RPCs enforce a max block range
         let rpcMaxRange = 90_000;
-        if (chainIdNumber === sei.id || chainIdNumber === seiDevnet.id || chainIdNumber === seiTestnet.id) {
+        if (
+            chainIdNumber === sei.id ||
+            chainIdNumber === seiDevnet.id ||
+            chainIdNumber === seiTestnet.id ||
+            chainIdNumber === evmos.id ||
+            chainIdNumber === evmosTestnet.id
+        ) {
             rpcMaxRange = 2_000;
         }
 

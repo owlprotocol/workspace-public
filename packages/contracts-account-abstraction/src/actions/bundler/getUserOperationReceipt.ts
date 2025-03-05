@@ -6,6 +6,7 @@ import {
 } from "viem/account-abstraction";
 import { getBlockNumber, getLogs, getTransactionReceipt } from "viem/actions";
 import { getAction } from "viem/utils";
+import { evmos } from "viem/chains";
 import { UserOperationEvent } from "../../artifacts/EntryPoint.js";
 
 export async function getUserOperationReceipt(
@@ -17,7 +18,8 @@ export async function getUserOperationReceipt(
     const blockNumber = await getBlockNumber(client);
     //TODO: Parametrize rpc max range
     // Certain RPCs enforce a max block range
-    const rpcMaxRange = 90_000n;
+    let rpcMaxRange = 90_000n;
+    if (client.chain?.id === evmos.id) rpcMaxRange = 2_000n;
 
     // If rpcMaxRange is less blockNumber, set fromBlock to rpcMaxRange away from blockNumber
     const fromBlock = rpcMaxRange < blockNumber ? blockNumber - rpcMaxRange : 0n;

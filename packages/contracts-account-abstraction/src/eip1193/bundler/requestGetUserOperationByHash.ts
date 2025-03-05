@@ -16,7 +16,7 @@ import {
 import { entryPoint07Address, UserOperation } from "viem/account-abstraction";
 import { decodeFunctionData } from "viem/utils";
 
-import { sei, seiDevnet, seiTestnet } from "viem/chains";
+import { evmos, evmosTestnet, sei, seiDevnet, seiTestnet } from "viem/chains";
 import { UserOperationEvent, handleOps } from "../../artifacts/IEntryPoint.js";
 import { PackedUserOperation, toUserOperationEncoded } from "../../models/PackedUserOperation.js";
 
@@ -51,7 +51,13 @@ export function createRequestGetUserOperationByHash(request: EIP1193RequestFn<Pu
         //TODO: Parametrize rpc max range
         // Certain RPCs enforce a max block range
         let rpcMaxRange = 90_000;
-        if (chainIdNumber === sei.id || chainIdNumber === seiDevnet.id || chainIdNumber === seiTestnet.id) {
+        if (
+            chainIdNumber === sei.id ||
+            chainIdNumber === seiDevnet.id ||
+            chainIdNumber === seiTestnet.id ||
+            chainIdNumber === evmos.id ||
+            chainIdNumber === evmosTestnet.id
+        ) {
             rpcMaxRange = 2_000;
         }
         const blockNumber = hexToNumber(blockNumberHex);
