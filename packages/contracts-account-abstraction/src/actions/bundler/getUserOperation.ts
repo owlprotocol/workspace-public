@@ -8,7 +8,7 @@ import {
 } from "viem/account-abstraction";
 import { getBlockNumber, getLogs, getTransaction } from "viem/actions";
 import { getAction } from "viem/utils";
-import { sei, seiDevnet, seiTestnet } from "viem/chains";
+import { evmos, evmosTestnet, sei, seiDevnet, seiTestnet } from "viem/chains";
 import { UserOperationEvent } from "../../artifacts/IEntryPointSimulations.js";
 import { PackedUserOperation, toUserOperationEncoded } from "../../models/PackedUserOperation.js";
 import { handleOps } from "../../artifacts/IEntryPoint.js";
@@ -22,7 +22,13 @@ export async function getUserOperation(
     //TODO: Parametrize rpc max range
     // Certain RPCs enforce a max block range
     let rpcMaxRange = 90_000n;
-    if (chainIdNumber === sei.id || chainIdNumber === seiDevnet.id || chainIdNumber === seiTestnet.id) {
+    if (
+        chainIdNumber === sei.id ||
+        chainIdNumber === seiDevnet.id ||
+        chainIdNumber === seiTestnet.id ||
+        chainIdNumber === evmos.id ||
+        chainIdNumber === evmosTestnet.id
+    ) {
         rpcMaxRange = 2_000n;
     }
 
