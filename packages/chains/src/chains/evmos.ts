@@ -5,9 +5,11 @@ export const evmos = /*#__PURE__*/ defineNetwork({
     ...evmosViem,
     rpcUrls: {
         ...evmosViem.rpcUrls,
-        public: evmosViem.rpcUrls.default,
+        // public: evmosViem.rpcUrls.default,
+        public: { http: ["https://evmos.lava.build"] },
+        default: { http: ["https://evmos.lava.build"] },
     },
     slug: "evmos",
-    slugDrpc: "evmos",
+    // slugDrpc: "evmos",
     enabled: true,
 });
