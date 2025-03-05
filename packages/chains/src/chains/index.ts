@@ -18,6 +18,7 @@ export * from "./bsc.js";
 export * from "./bscTestnet.js";
 export * from "./coreDao.js";
 export * from "./curtis.js";
+export * from "./evmos.js";
 export * from "./flareTestnet.js";
 export * from "./gelatoBlackberry.js";
 export * from "./gelatoBlueberry.js";

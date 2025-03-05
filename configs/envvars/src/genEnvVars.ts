@@ -247,7 +247,7 @@ export function getEnvVarsForNetworkId(networkId: string): EnvVarDef[] {
 //const chainIds = allChains.map((c) => c.chainId);
 const chainIds = [
     1, 5, 1337, 11155111, 17000, 11155420, 59144, 59140, 137, 80001, 80002, 42161, 421614, 42170, 10, 43114, 43113, 56,
-    97, 168587773, 8453, 84532, 3441006, 204, 5611, 33139, 33111, 1329, 713715, 1868, 80094, 1516, 1514,
+    97, 168587773, 8453, 84532, 3441006, 204, 5611, 33139, 33111, 1329, 713715, 1868, 80094, 1516, 1514, 9001,
 ];
 //TODO: For all networkIds, right now this breaks because file is too big. Is there a better way?
 const NETWORK_ENVVARS: EnvVarDef[] = [];
