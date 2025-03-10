@@ -317,6 +317,7 @@ export const users: User[] = [
     {
         userId: getUUID(100_000),
         email: "user100_000@example.com",
+        createdAt: Date.now(),
     },
 ];
 export const teams: Team[] = [
@@ -387,12 +388,14 @@ export const projectUsers: ProjectUser[] = [
     {
         userId: getUUID(100_250),
         email: "johnsmith@example.com",
+        createdAt: Date.now(),
         fullName: "John Smith",
         externalId: "",
     },
     {
         userId: getUUID(100_251),
         email: "maryjane@test.com",
+        createdAt: Date.now(),
         fullName: "Mary Jane",
         externalId: "maryJane123",
     },
