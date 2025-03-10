@@ -15,11 +15,13 @@ export const decodeUserId: (id: string) => Required<UserId> = (id) => {
 
 export interface UserData {
     readonly email: string;
+    readonly createdAt: number;
     unverified?: boolean;
 }
 export const userDataZod = z
     .object({
         email: z.string().email().describe("email"),
+        createdAt: z.number().int().describe("created at"),
         unverified: z.boolean().optional(),
     })
     .describe("user");

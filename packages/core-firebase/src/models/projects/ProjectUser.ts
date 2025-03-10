@@ -19,6 +19,7 @@ export const decodeProjectUserId: (id: string) => ProjectUserId = (id) => {
 export interface ProjectUserData {
     readonly userId: string;
     readonly email: string;
+    readonly createdAt: number;
     fullName?: string;
     externalId?: string;
 }
@@ -27,6 +28,7 @@ export const projectUserDataZod = z
     .object({
         userId: z.string(),
         email: z.string().email(),
+        createdAt: z.number().int().describe("created at"),
         fullName: z.string().optional(),
         externalId: z.string().describe("externalId").optional(),
     })

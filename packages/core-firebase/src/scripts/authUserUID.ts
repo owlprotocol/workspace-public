@@ -17,7 +17,7 @@ export async function migrateAuthUserUID(email: string) {
 
     console.log({ authUserId: userId, oldUserId: oldUserDocument.userId });
 
-    const newUserDocument: User = { email, userId };
+    const newUserDocument: User = { email, userId, createdAt: Date.now() };
 
     const userUpdates = [userResource.set(newUserDocument), userResource.delete(oldUserDocument)];
 

@@ -27,16 +27,19 @@ export const projectUsers: Omit<ProjectUser, "userId">[] = [
     {
         email: "gamer.john.777@example.com",
         fullName: "John Smith",
+        createdAt: Date.now(),
         externalId: getRandomExternalId(),
     },
     {
         email: "mary.jane@example.com",
         fullName: "Mary Jane",
+        createdAt: Date.now(),
         externalId: getRandomExternalId(),
     },
     {
         email: "j.potter@example.com",
         fullName: "Joseph Potter",
+        createdAt: Date.now(),
         externalId: getRandomExternalId(),
     },
 ];

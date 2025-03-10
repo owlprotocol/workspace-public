@@ -23,16 +23,19 @@ export const project: Pick<ProjectData, "name" | "description" | "coverImage"> =
 export const projectUsers: Omit<ProjectUserData, "userId">[] = [
     {
         email: "alice.thompson@example.com",
+        createdAt: Date.now(),
         fullName: "Alice Thompson",
         externalId: getRandomExternalId(),
     },
     {
         email: "bob.anderson@example.com",
+        createdAt: Date.now(),
         fullName: "Bob Anderson",
         externalId: getRandomExternalId(),
     },
     {
         email: "charlie.simpson@example.com",
+        createdAt: Date.now(),
         fullName: "Charlie Simpson",
         externalId: getRandomExternalId(),
     },
