@@ -30,5 +30,5 @@ export const storyOdyssey = /*#__PURE__*/ defineNetwork({
     slug: "storyOdyssey",
     // TODO: enable again if it works, currently times out
     // slugAnkr: "story_odyssey",
-    enabled: true,
+    enabled: false,
 });
