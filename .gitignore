@@ -3,6 +3,8 @@
 bin/
 cache/
 
+.vim/
+
 # dependencies
 node_modules
 .pnp
