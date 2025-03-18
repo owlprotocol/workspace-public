@@ -10,6 +10,7 @@ import {
     projectUserWalletSafeColGroup,
     projectWalletDfnsColGroup,
     projectWalletSafeColGroup,
+    teamApiKeyColGroup,
     teamMemberColGroup,
     teamNetworkColGroup,
 } from "./collection.js";
@@ -72,6 +73,13 @@ import {
     encodeTeamMemberData,
     encodeTeamMemberDataPartial,
 } from "../models/index.js";
+import {
+    decodeTeamApiKeyId,
+    encodeTeamApiKeyData,
+    encodeTeamApiKeyDataPartial,
+    TeamApiKeyData,
+    TeamApiKeyId,
+} from "../models/TeamApiKey.js";
 
 //users
 //Search user team membership across teams
@@ -98,6 +106,21 @@ export const teamNetworkGroupQuery = getFirebaseQueryResource<
     Query<"admin", NetworkDataEncoded>
 >(teamNetworkColGroup, {
     decodeId: decodeNetworkId,
+    encodeParentDocId: encodeTeamId,
+    decodeParentDocId: decodeTeamId,
+});
+
+export const teamApiKeyGroupQuery = getFirebaseQueryResource<
+    TeamApiKeyData,
+    TeamApiKeyId,
+    TeamId,
+    TeamApiKeyData,
+    TeamApiKeyData,
+    Query<"admin", TeamApiKeyData>
+>(teamApiKeyColGroup, {
+    decodeId: decodeTeamApiKeyId,
+    encodeDataPartial: encodeTeamApiKeyDataPartial,
+    decodeData: encodeTeamApiKeyData,
     encodeParentDocId: encodeTeamId,
     decodeParentDocId: decodeTeamId,
 });

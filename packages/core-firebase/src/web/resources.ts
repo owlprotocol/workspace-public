@@ -24,6 +24,7 @@ import {
     projectWalletDfnsCol,
     projectWalletSafeCol,
     projectWarpConfigCol,
+    teamApiKeyCol,
     teamCol,
     teamMemberCol,
     teamNetworkCol,
@@ -124,6 +125,14 @@ import {
     encodeProjectWarpConfigDataPartial,
     encodeProjectWarpConfigId,
 } from "../models/index.js";
+import {
+    decodeTeamApiKeyId,
+    encodeTeamApiKeyData,
+    encodeTeamApiKeyDataPartial,
+    encodeTeamApiKeyId,
+    TeamApiKeyData,
+    TeamApiKeyId,
+} from "../models/TeamApiKey.js";
 
 //user & team
 export const userResource = getFirebaseResource<UserData, UserId>(firestore, userCol, {
@@ -162,6 +171,15 @@ export const teamNetworkResource = getFirebaseResource<
     encodeParentDocId: encodeTeamId,
     decodeParentDocId: decodeTeamId,
 });
+export const teamApiKeyResource = getFirebaseResource<TeamApiKeyData, TeamApiKeyId, TeamId>(firestore, teamApiKeyCol, {
+    encodeId: encodeTeamApiKeyId,
+    decodeId: decodeTeamApiKeyId,
+    encodeDataPartial: encodeTeamApiKeyDataPartial,
+    encodeData: encodeTeamApiKeyData,
+    encodeParentDocId: encodeTeamId,
+    decodeParentDocId: decodeTeamId,
+});
+
 //project
 export const projectResource = getFirebaseResource<ProjectData, ProjectId>(firestore, projectCol, {
     encodeId: encodeProjectId,

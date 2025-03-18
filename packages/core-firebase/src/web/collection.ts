@@ -29,6 +29,8 @@ import {
     erc721MintGroupPath,
     erc721MintPath,
     projectWarpConfigPath,
+    teamApiKeyGroupPath,
+    teamApiKeyPath,
 } from "../collections.js";
 import {
     ERC721MintData,
@@ -55,6 +57,7 @@ import {
     TeamMemberData,
     UserData,
 } from "../models/index.js";
+import { TeamApiKeyData } from "../models/TeamApiKey.js";
 
 //users
 export const userCol = getColRef<UserData>(firestore, userPath);
@@ -67,6 +70,10 @@ export const teamMemberCol = (collectionId: TeamId) =>
 export const teamNetworkColGroup = getColGroupRef<NetworkDataEncoded>(firestore, teamNetworkGroupPath);
 export const teamNetworkCol = (collectionId: TeamId) =>
     getColRef<NetworkDataEncoded>(firestore, teamNetworkPath(collectionId));
+
+export const teamApiKeyColGroup = getColGroupRef<TeamApiKeyData>(firestore, teamApiKeyGroupPath);
+export const teamApiKeyCol = (collectionId: TeamId) =>
+    getColRef<TeamApiKeyData>(firestore, teamApiKeyPath(collectionId));
 
 //project
 export const projectCol = getColRef<ProjectData>(firestore, projectPath);

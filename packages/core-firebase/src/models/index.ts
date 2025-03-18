@@ -2,6 +2,7 @@ export * from "./projects/index.js";
 
 export * from "./common.js";
 export * from "./Team.js";
+export * from "./TeamApiKey.js";
 export * from "./TeamMember.js";
 export * from "./TeamNetwork.js";
 export * from "./ERC721Mint.js";

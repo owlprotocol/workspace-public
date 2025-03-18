@@ -3,7 +3,7 @@ import { isUUID } from "../../utils/uuid.js";
 import { Team } from "../../models/index.js";
 import { teamMemberResource, teamResource } from "../resources.js";
 import { getTeamsFactory } from "../../controllers/index.js";
-import { teamMemberGroupQuery } from "../groupQueries.js";
+import { teamApiKeyGroupQuery, teamMemberGroupQuery } from "../groupQueries.js";
 
 export const getTeams = getTeamsFactory(teamMemberGroupQuery, teamResource);
 
@@ -46,4 +46,12 @@ export async function createTeam(team: Omit<Team, "teamId">): Promise<string> {
     ]);
 
     return teamId;
+}
+
+export async function getTeamWithApiKey(apiKey: string): Promise<Team | null> {
+    const teamApiKey = await teamApiKeyGroupQuery.getWhereFirst({ apiKey });
+    if (!teamApiKey) return null;
+
+    const team = await teamResource.getOrNull({ teamId: teamApiKey.teamId });
+    return team;
 }

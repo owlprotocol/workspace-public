@@ -23,10 +23,16 @@ export const teamMemberGroupPath = "teamMember";
 export const teamMemberPath = (collectionId: TeamId) => {
     return join(teamPath, encodeTeamId(collectionId), teamMemberGroupPath);
 };
+//team
 export const teamNetworkGroupPath = "teamNetwork";
 export const teamNetworkPath = (collectionId: TeamId) => {
     return join(teamPath, encodeTeamId(collectionId), teamNetworkGroupPath);
 };
+export const teamApiKeyGroupPath = "teamApiKey";
+export const teamApiKeyPath = (collectionId: TeamId) => {
+    return join(teamPath, encodeTeamId(collectionId), teamApiKeyGroupPath);
+};
+
 //project
 export const projectPath = "project";
 export const projectApiKeyGroupPath = "projectApiKey";
