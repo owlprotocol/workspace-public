@@ -9,6 +9,8 @@ import {
 } from "@owlprotocol/crud-firebase";
 import { TeamId } from "./Team.js";
 
+export const teamApiKeyPrefix = "team_" as const;
+
 export interface TeamApiKeyId {
     readonly apiKey: string;
 }
