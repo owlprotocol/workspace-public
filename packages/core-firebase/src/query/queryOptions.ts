@@ -56,6 +56,7 @@ import {
     projectWalletDfnsGroupPath,
     projectWalletSafeGroupPath,
     projectWarpConfigGroupPath,
+    teamApiKeyGroupPath,
 } from "../collections.js";
 import {
     projectApiKeyGroupQuery,
@@ -63,8 +64,10 @@ import {
     projectUserGroupQuery,
     projectUserWalletDfnsGroupQuery,
     projectUserWalletSafeGroupQuery,
+    teamApiKeyGroupQuery,
     teamMemberGroupQuery,
 } from "../web/groupQueries.js";
+import { TeamApiKeyData, TeamApiKeyId } from "../models/TeamApiKey.js";
 
 /*** Collection Queries ***/
 //TODO: REQUIRED Replace prefixPath/collectionGroup with computed => need getWhere to support getColPath()
@@ -215,6 +218,14 @@ export const teamMemberGroupQueryOptions = getFirebaseQueryReactQueryOptions<
     TeamMemberData,
     Query<"web", TeamMemberData>
 >(teamMemberGroupQuery, { prefixPath: [], collectionGroup: teamMemberGroupPath });
+export const teamApiKeyGroupQueryOptions = getFirebaseQueryReactQueryOptions<
+    TeamApiKeyData,
+    TeamApiKeyId,
+    TeamId,
+    TeamApiKeyData,
+    TeamApiKeyData,
+    Query<"web", TeamApiKeyData>
+>(teamApiKeyGroupQuery, { prefixPath: [], collectionGroup: teamApiKeyGroupPath });
 
 //project
 export const projectApiKeyGroupQueryOptions = getFirebaseQueryReactQueryOptions<
