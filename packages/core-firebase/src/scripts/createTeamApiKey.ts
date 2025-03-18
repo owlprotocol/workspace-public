@@ -1,11 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 import { teamApiKeyResource } from "../admin/resources.js";
+import { teamApiKeyPrefix } from "../models/TeamApiKey.js";
 
 export async function createTeamApiKey() {
     if (process.argv.length != 3) throw new Error("Usage: node createTeamApiKey.js <teamId>");
     const teamId = process.argv[2];
 
-    const apiKey = uuidv4();
+    const apiKey = teamApiKeyPrefix + uuidv4();
 
     const numTeamApiKeys = await teamApiKeyResource.getWhereCount({ teamId });
 
