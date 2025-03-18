@@ -14,6 +14,8 @@ export async function createTeamApiKey() {
         throw new Error("Team already has an API key");
     }
     await teamApiKeyResource.set({ teamId, apiKey, createdAt: Date.now() });
+
+    console.log(`Created API key for team ${teamId}: ${apiKey}`);
 }
 
 createTeamApiKey().then(() => console.log("Done"));
