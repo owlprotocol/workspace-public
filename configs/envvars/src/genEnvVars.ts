@@ -137,30 +137,30 @@ const WS_DEFAULTS: Record<string, string | undefined> = {
 /** API endpoints are not stable. Usually testnet and mainnet are on same domain. */
 const EXPLORER_API_DEFAULTS: Record<string, string | undefined> = {
     //Ethereum
-    1: "https://api.etherscan.io/api",
+    1: "https://api.etherscan.io/v2/api?chainid=1",
     5: "https://api-goerli.etherscan.io/api",
-    11155111: "https://api-sepolia.etherscan.io/api",
-    17000: "https://api-holesky.etherscan.io/api",
+    11155111: "https://api.etherscan.io/v2/api?chainid=11155111",
+    17000: "https://api.etherscan.io/v2/api?chainid=17000",
     //Linea
-    59144: "https://api.lineascan.build/api",
-    59140: "https://api-goerli.lineascan.build/api",
+    59144: "https://api.etherscan.io/v2/api?chainid=59144",
+    59140: "https://api.etherscan.io/v2/api?chainid=59140",
     //Polygon
-    137: "https://api.polygonscan.com/api",
+    137: "https://api.etherscan.io/v2/api?chainid=137",
     80001: "https://api-testnet.polygonscan.com/api",
-    80002: "https://api-amoy.polygonscan.com/api",
+    80002: "https://api.etherscan.io/v2/api?chainid=80002",
     //Arbitrum
-    42161: "https://api.arbiscan.io/api",
-    421614: "https://api-sepolia.arbiscan.io/api",
-    42170: "https://api-nova.arbiscan.io/api",
+    42161: "https://api.etherscan.io/v2/api?chainid=42161",
+    421614: "https://api.etherscan.io/v2/api?chainid=421614",
+    42170: "https://api.etherscan.io/v2/api?chainid=42170",
     //Optimism
-    10: "https://api-optimistic.etherscan.io/api",
-    11155420: "https://api-sepolia-optimistic.etherscan.io/api",
+    10: "https://api.etherscan.io/v2/api?chainid=10",
+    11155420: "https://api.etherscan.io/v2/api?chainid=11155420",
     //Avalanche
-    43114: "https://api.routescan.io/v2/network/mainnet/evm/43114/",
-    43113: "https://api.routescan.io/v2/network/mainnet/evm/43113/",
+    43114: "https://api.etherscan.io/v2/api?chainid=43114",
+    43113: "https://api.etherscan.io/v2/api?chainid=43113",
     //BSC
-    56: "https://api.bscscan.com/api",
-    97: "https://api-testnet.bscscan.com/api",
+    56: "https://api.etherscan.io/v2/api?chainid=56",
+    97: "https://api.etherscan.io/v2/api?chainid=97",
     204: "https://api-opbnb.bscscan.com/api",
     5611: "https://api-opbnb-testnet.bscscan.com/api",
     //Gnosis
@@ -170,22 +170,24 @@ const EXPLORER_API_DEFAULTS: Record<string, string | undefined> = {
     //Moonbeam
     //"https://api-moonbeam.moonscan.io"
     //Blast
-    168587773: "https://api.routescan.io/v2/network/testnet/evm/168587773/etherscan",
+    81457: "https://api.etherscan.io/v2/api?chainid=81457",
+    168587773: "https://api.etherscan.io/v2/api?chainid=168587773",
     //Base
-    8453: "https://api.basescan.org/api",
-    84532: "https://api-sepolia.basescan.org/api",
+    8453: "https://api.etherscan.io/v2/api?chainid=8453",
+    84532: "https://api.etherscan.io/v2/api?chainid=84532",
     // Manta
     3441006: "https://pacific-explorer.sepolia-testnet.manta.network/api",
     // ApeChain
-    33139: "https://api.apescan.io/api",
-    33111: "https://api-curtis.apescan.io/api",
+    33139: "https://api.etherscan.io/v2/api?chainid=33139",
+    33111: "https://api.etherscan.io/v2/api?chainid=33111",
     // Sei
     1329: "https://seitrace.com/pacific-1/api",
     713715: "https://seitrace.com/arctic-1/api",
     // Soneium
     1868: "https://soneium.blockscout.com/api",
     // Berachain
-    80094: "https://api.berascan.com/api",
+    80094: "https://api.etherscan.io/v2/api?chainid=80094",
+    80069: "https://api.etherscan.io/v2/api?chainid=80069",
     // Story
     1514: "https://www.storyscan.xyz/api/v2/",
     1315: "https://aeneid.storyscan.xyz/api/v2",
