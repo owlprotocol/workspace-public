@@ -25,6 +25,7 @@ import {
     sei,
     celo,
 } from "viem/chains";
+import { citreaTestnet } from "@owlprotocol/chains";
 import { getExecutionResult } from "./simulateHandleOp.js";
 import { calcPreVerificationGas } from "./calcPreVerificationGas.js";
 import { getSupportedEntryPoints } from "./getSupportedEntryPoints.js";
@@ -172,7 +173,8 @@ export async function estimateUserOperationGas(
         chainId === celo.id ||
         chainId === sei.id ||
         chainId === seiDevnet.id ||
-        chainId === seiTestnet.id
+        chainId === seiTestnet.id ||
+        chainId === citreaTestnet.chainId
     ) {
         verificationGasLimit = 1_000_000n;
         callGasLimit = 1_000_000n;

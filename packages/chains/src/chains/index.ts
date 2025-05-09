@@ -16,6 +16,7 @@ export * from "./blast.js";
 export * from "./blastSepolia.js";
 export * from "./bsc.js";
 export * from "./bscTestnet.js";
+export * from "./citreaTestnet.js";
 export * from "./coreDao.js";
 export * from "./curtis.js";
 export * from "./evmos.js";
